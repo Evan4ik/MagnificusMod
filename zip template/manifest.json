@@ -1,0 +1,9 @@
+{
+    "name": "Magnificus_Mod",
+    "version_number": "3.3.1",
+    "website_url": "https://discord.gg/e3RTetnKvQ",
+    "description": "[LIGHTING OVERHAUL] Adds a new magnificus dungeon crawler based act to the game.",
+    "dependencies": [
+        "API_dev-API-2.15.1"
+    ]
+}
