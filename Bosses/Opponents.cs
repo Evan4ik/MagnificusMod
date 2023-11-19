@@ -1381,9 +1381,17 @@ namespace MagnificusMod
 				yield return new WaitForSeconds(0.75f);
 				if (turnsSinceDeckKill % 3 == 0 && turnsSinceDeckKill > 0)
                 {
-					Plugin.switchToSpeakerStyle(2);
-					yield return shuffleBoard(false);
-					Plugin.switchToSpeakerStyle(0);
+					bool hasEmptySlot = false;
+					foreach(CardSlot slot in Singleton<BoardManager>.Instance.OpponentSlotsCopy)
+                    {
+						if (slot.Card == null) { hasEmptySlot = true; }
+                    }
+					if (hasEmptySlot)
+					{
+						Plugin.switchToSpeakerStyle(2);
+						yield return shuffleBoard(false);
+						Plugin.switchToSpeakerStyle(0);
+					}
 				}
 				turnsSinceDeckKill++;
 				base.StartCoroutine(bellTimer());

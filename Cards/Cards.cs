@@ -728,7 +728,7 @@ namespace MagnificusMod
 			List<CardMetaCategory> list6 = list;
 			CardComplexity cardComplexity = CardComplexity.Simple;
 			CardTemple cardTemple = CardTemple.Nature;
-			string text3 = "I foresaw it's arrival.";
+			string text3 = "I foresaw its arrival.";
 			bool flag = false;
 			int num3 = 0;
 			int num4 = 0;
@@ -1226,7 +1226,7 @@ namespace MagnificusMod
 			list2.Add(Ability.TailOnHit);
 			list2.Add(Ability.DrawRandomCardOnDeath);
 			List<GemType> gemCost = new List<GemType> { GemType.Blue };
-			CardInfo myCard = CardManager.New("mag", "mag_rascal", "Trinket Bearer", 0, 1, "A mischevious little goblin creature. It carries around valueables in it's backpack.")
+			CardInfo myCard = CardManager.New("mag", "mag_rascal", "Trinket Bearer", 0, 1, "A mischevious little goblin creature. It carries around valueables in its backpack.")
 
 					.SetPortrait(Tools.GetTexture("rascal.png"))
 					.SetPixelPortrait(Tools.GetTexture("pixelportrait_rascal.png"))
@@ -1419,10 +1419,10 @@ namespace MagnificusMod
 			List<Ability> list2 = new List<Ability>();
 			list2.Add(SigilCode.Animator.ability);
 			List<GemType> gemCost = new List<GemType> { GemType.Blue, GemType.Blue };
-			CardInfo myCard = CardManager.New("mag", "mag_puppeteer", "Puppeteer", 1, 2, "It's mastery of control magicks lets even Practice Mages contribute.")
+			CardInfo myCard = CardManager.New("mag", "mag_puppeteer", "Puppeteer", 1, 2, "Its mastery of control magicks lets even Practice Mages contribute.")
 
 					.SetPortrait(Tools.GetTexture("puppeteer.png"))
-					.SetCost(bloodCost: 0)//, gemsCost: gemCost)
+					.SetCost(bloodCost: 0, gemsCost: gemCost)
 					.AddAbilities(list2[0]);
 			myCard.metaCategories = list;
 			myCard.temple = CardTemple.Wizard;
@@ -1686,7 +1686,7 @@ namespace MagnificusMod
 			list2.Add(Ability.GemDependant);
 
 			Sprite pixelTex = Tools.getSprite("pixelportrait_skeletonmage.png");
-			CardInfo myCard = CardManager.New("mag", "mag_skelemage", "Skelemagus", 4, 1, "It's incredibly powerful, but not for long.")
+			CardInfo myCard = CardManager.New("mag", "mag_skelemage", "Skelemagus", 4, 1, "Its incredibly powerful, but not for long.")
 
 							.SetCost(bloodCost: 1)
 							.SetPortrait(Tools.GetTexture("mag_skelemagus.png"))
@@ -1913,7 +1913,7 @@ namespace MagnificusMod
 			List<CardMetaCategory> list7 = list;
 			CardComplexity cardComplexity = CardComplexity.Simple;
 			CardTemple cardTemple = CardTemple.Nature;
-			string text3 = "It's chime can prove to be quite annoying..";
+			string text3 = "Its chime can prove to be quite annoying..";
 			bool flag = false;
 			int num3 = 0;
 			int num4 = 0;
@@ -1990,7 +1990,7 @@ namespace MagnificusMod
 			List<CardMetaCategory> list = new List<CardMetaCategory>();
 			list.Add(CardMetaCategory.ChoiceNode);
 
-			CardInfo myCard = CardManager.New("mag", "mag_spellsquid", "~~--~~--~~", 0, 3, "I foresaw it's arrival.")
+			CardInfo myCard = CardManager.New("mag", "mag_spellsquid", "~~--~~--~~", 0, 3, "I foresaw its arrival.")
 								.SetGemsCost(new List<GemType> { GemType.Blue })
 								.SetPortrait(Tools.GetTexture("spelltentacle.png"))
 								.AddSpecialAbilities(SigilCode.SpellPower.FullSpecial.Id)
@@ -3363,7 +3363,7 @@ namespace MagnificusMod
 			List<Ability> list5 = new List<Ability>();
 			list5.Add(SigilCode.VaseofGreed.ability);
 
-			CardInfo myCard = CardManager.New("mag", "mag_vaseofgreed", "Vase of Greed", 0, 1, "The vase of greed.. Look at it's smug face..")
+			CardInfo myCard = CardManager.New("mag", "mag_vaseofgreed", "Vase of Greed", 0, 1, "The vase of greed.. Look at its smug face..")
 
 					.SetPortrait(Tools.GetTexture("vase of greed.png"))
 					.AddAbilities(list5[0])

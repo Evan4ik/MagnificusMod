@@ -684,6 +684,61 @@ namespace MagnificusMod
 			}
 		}
 
+		public static IEnumerator leshyInterveneDialogue()
+        {
+			if (!SavedVars.LearnedMechanics.Contains("wrongdimension;"))
+			{
+				yield return new WaitForSeconds(1f);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Just what is going on here..?", -1.5f, 0.5f, Emotion.Curious, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("These cards,", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Did that [c:g2]foul little..[c:] get in here..?", -0.5f, 0.5f, Emotion.Anger, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I believe you are in the wrong place, challenger.", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hold still.", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				KayceeStorage.IsMagRun = true;
+				KayceeStorage.IsKaycee = true;
+				SavedVars.LearnedMechanics += "wrongdimension;";
+				Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetColor(GameColors.Instance.nearBlack);
+				Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(1f, float.MaxValue);
+				SaveManager.SaveToFile(false);
+				yield return new WaitForSeconds(0.5f);
+				LoadingScreenManager.LoadScene("finale_magnificus");
+			} else
+            {
+				KayceeStorage.IsMagRun = true;
+				KayceeStorage.IsKaycee = true;
+				Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetColor(GameColors.Instance.nearBlack);
+				Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(1f, float.MaxValue);
+				SaveManager.SaveToFile(false);
+				yield return new WaitForSeconds(0.15f);
+				LoadingScreenManager.LoadScene("finale_magnificus");
+			}
+			yield break;
+        }
+
+		[HarmonyPatch(typeof(Part1GameFlowManager), "Awake")]
+		public class FixLeshy
+		{
+			public static void Prefix(ref Part1GameFlowManager __instance)
+			{
+				if (SceneLoader.ActiveSceneName == "Part1_Cabin")
+                {
+					int magicCards = 0;
+					Debug.Log("forkload");
+					foreach(CardInfo card in RunState.Run.playerDeck.Cards)
+                    {
+						Debug.Log(card.name);
+						Debug.Log(card.temple);
+						if (card.temple == CardTemple.Wizard || card.name.Contains("mag_")) { magicCards++; }
+                    }
+					Debug.Log(magicCards);
+					if (magicCards > RunState.Run.playerDeck.Cards.Count / 2)
+                    {
+						__instance.StartCoroutine(leshyInterveneDialogue());
+
+					}
+                }
+			}
+		}
 		[HarmonyPatch(typeof(AscensionSaveData), "NewRun")]
 		public class DraftObeliskFix
 		{
