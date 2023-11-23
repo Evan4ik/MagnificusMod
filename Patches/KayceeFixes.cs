@@ -220,109 +220,54 @@ namespace MagnificusMod
 					"mag_alchemist",
 					"mag_orangemage",
 					"mag_crystalworm"
-				}), 0);
+				}), 1);
 				StarterDeckManager.FullStarterDeck rubyDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Orlu", "starterdeck_icon_ruby.png", new string[]
 				{
 					"mag_rubygolem",
 					"mag_knightmage",
 					"mag_magimorph",
 					"mag_forcemage"
-				}), 0);
+				}), 1);
 				StarterDeckManager.FullStarterDeck sapphireDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Bleene", "starterdeck_icon_sapphire.png", new string[]
 				{
 					"mag_rascal",
 					"mag_bluemage",
 					"mag_stimmage",
 					"mag_greenmage"
-				}), 0);
+				}), 1);
 				StarterDeckManager.FullStarterDeck manaDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Mana", "starterdeck_icon_mana.png", new string[]
 				{
 					"mag_erraticscholar",
 					"mag_gemabsorber",
 					"mag_gemboundripper"
-				}), 0);
+				}), 2);
 				StarterDeckManager.FullStarterDeck spellDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Spell", "starterdeck_icon_spell.png", new string[]
 				{
 					"mag_spellcaster",
 					"mag_rubygolem",
 					"mag_gnomespell"
-				}), 0);
+				}), 2);
 				StarterDeckManager.FullStarterDeck freeDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Free", "starterdeck_icon_free.png", new string[]
 				{
 					"mag_magepupil",
 					"mag_homunculus",
 					"mag_moxlarva"
-				}), 0);
+				}), 3);
 				StarterDeckManager.ModifyDeckList += delegate (List<StarterDeckManager.FullStarterDeck> decks)
 				{
 					CardTemple acceptableTemple = KayceeStorage.ScreenState;
 					if (acceptableTemple == CardTemple.Wizard)
 					{
 						decks.RemoveAll((StarterDeckManager.FullStarterDeck info) => info.Info.cards.FirstOrDefault((CardInfo ci) => ci.temple == acceptableTemple) == null);
-						if (Harmony.HasAnyPatches("arackulele.inscryption.grimoramod") || Harmony.HasAnyPatches("zorro.inscryption.infiniscryption.p03kayceerun"))
+						for (int i = 0; i < decks.Count; i++)
 						{
-							bool badCard = false;
-							foreach (StarterDeckManager.FullStarterDeck deck in decks)
+							if (decks[i].UnlockLevel > KayceeStorage.ChallengeLevel)
 							{
-								if (deck.Info.name == "silenceman.inscryption.magnificusmodstarterdecks_Magnificus_MagVanilla")
-								{
-									badCard = true;
-								}
-							}
-							if (!badCard)
-							{
-								decks.Add(starterDeck);
-							}
-							if (KayceeStorage.ChallengeLevel > 1)
-							{
-								badCard = false;
-								foreach (StarterDeckManager.FullStarterDeck deck2 in decks)
-								{
-									if (deck2.Info.name == "silenceman.inscryption.magnificusmodstarterdecks_Magnificus_Emerald")
-									{
-										badCard = true;
-									}
-								}
-								if (!badCard)
-								{
-									decks.Add(emeraldDeck);
-									decks.Add(rubyDeck);
-									decks.Add(sapphireDeck);
-								}
-							}
-							if (KayceeStorage.ChallengeLevel > 2)
-							{
-								badCard = false;
-								foreach (StarterDeckManager.FullStarterDeck deck2 in decks)
-								{
-									if (deck2.Info.name == "silenceman.inscryption.magnificusmodstarterdecks_Magnificus_Mana")
-									{
-										badCard = true;
-									}
-								}
-								if (!badCard)
-								{
-									decks.Add(manaDeck);
-									decks.Add(spellDeck);
-								}
-							}
-							if (KayceeStorage.ChallengeLevel > 3)
-							{
-								badCard = false;
-								foreach (StarterDeckManager.FullStarterDeck deck2 in decks)
-								{
-									if (deck2.Info.name == "silenceman.inscryption.magnificusmodstarterdecks_Magnificus_Free")
-									{
-										badCard = true;
-									}
-								}
-								if (!badCard)
-								{
-									decks.Add(freeDeck);
-								}
+								decks.Remove(decks[i]);
+								i--;
 							}
 						}
-						else if (KayceeStorage.ChallengeLevel < 1)
+						if (KayceeStorage.ChallengeLevel < 1)
 						{
 							decks = new List<StarterDeckManager.FullStarterDeck> { starterDeck };
 						}
@@ -545,7 +490,7 @@ namespace MagnificusMod
 								bool level3 = (challenges[i].Challenge.challengeType == AscensionChallenge.BossTotems && KayceeStorage.ChallengeLevel < 3) || (challenges[i].Challenge.challengeType == AscensionChallenge.StartingDamage && KayceeStorage.ChallengeLevel < 3);
 								bool level4 = (challenges[i].Challenge.challengeType == AscensionChallenge.AllTotems && KayceeStorage.ChallengeLevel < 4) || (challenges[i].Challenge.challengeType == AscensionChallenge.NoBossRares && KayceeStorage.ChallengeLevel < 4);
 								bool level5 = (challenges[i].Challenge.challengeType == AscensionChallenge.WeakStarterDeck && KayceeStorage.ChallengeLevel < 5) || (challenges[i].Challenge.challengeType == AscensionChallenge.LessLives && KayceeStorage.ChallengeLevel < 5);
-								if (!level2 && !level3 && !level4 && !level5)
+								if (!level2 && !level3 && !level4 && !level5 || config.unlockAllKaycee == true)
 								{
 									challenges[i] = new ChallengeManager.FullChallenge
 									{
@@ -636,6 +581,7 @@ namespace MagnificusMod
 		{
 			public static void Prefix()
 			{
+				Debug.Log(config.unlockAllKaycee);
 				KayceeStorage.IsKaycee = true;
 				Kill(CardTemple.Undead);
 			}
@@ -659,6 +605,7 @@ namespace MagnificusMod
 			public static bool Prefix(ref AscensionStartScreen __instance)
 			{
 				CommandLineTextDisplayer.PlayCommandLineClickSound();
+				Debug.Log(KayceeStorage.ScreenState);
 				if (__instance.RunExists)
 				{
 					Singleton<AscensionMenuScreens>.Instance.SwitchToScreen(AscensionMenuScreens.Screen.NewRunConfirm);
@@ -723,7 +670,6 @@ namespace MagnificusMod
 				if (SceneLoader.ActiveSceneName == "Part1_Cabin")
                 {
 					int magicCards = 0;
-					Debug.Log("forkload");
 					foreach(CardInfo card in RunState.Run.playerDeck.Cards)
                     {
 						Debug.Log(card.name);

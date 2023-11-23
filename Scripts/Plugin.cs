@@ -41,7 +41,7 @@ namespace MagnificusMod
 			{
 				CreatePack();
 			}
-		}
+		}	
 
 		private void Awake()
 		{
@@ -50,6 +50,9 @@ namespace MagnificusMod
 			Plugin.Directory = base.Info.Location.Replace("MagnificusMod.dll", "");
 			Harmony harmony = new Harmony("silenceman.inscryption.magnificusmod");
 			harmony.PatchAll();
+
+			config.bindConfig();
+
 			Sigils.ChangeMox();
 			Sigils.LIFEUP();
 			Sigils.Bleene();
