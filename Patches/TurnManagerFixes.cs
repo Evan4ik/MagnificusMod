@@ -138,7 +138,7 @@ namespace MagnificusMod
 				tPos.y -= 10;
 				Tween.Position(lifeCounter.transform, tPos, 1.5f, 0);
 				Singleton<TextDisplayer>.Instance.Clear();
-				if (!SavedVars.LearnedMechanics.Contains("lifelost;") && !KayceeStorage.IsKaycee)
+				if (!SavedVars.LearnedMechanics.Contains("lifelost;") && !SaveManager.saveFile.ascensionActive)
 				{
 					Singleton<ViewManager>.Instance.SwitchToView(View.Candles);
 					yield return new WaitForSeconds(1.49f);
@@ -317,7 +317,7 @@ namespace MagnificusMod
                 }
 				bool boss = (GameObject.Find("GameTable").transform.Find("Goober").gameObject.activeSelf || GameObject.Find("GameTable").transform.Find("Espeara").gameObject.activeSelf || GameObject.Find("GameTable").transform.Find("LonelyMage").gameObject.activeSelf);
 				int turns = boss ? 12 : 6;
-				if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("TurnWipeout") && __instance.TurnNumber > turns)
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("TurnWipeout") && __instance.TurnNumber > turns)
 				{
 					ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.TurnWipeout);
 					__instance.StartCoroutine(Singleton<MagnificusLifeManager>.Instance.ShowLifeLoss(true, 1));
@@ -335,7 +335,7 @@ namespace MagnificusMod
 					return;
 				}
 				bool boss = (GameObject.Find("GameTable").transform.Find("Goober").gameObject.activeSelf || GameObject.Find("GameTable").transform.Find("Espeara").gameObject.activeSelf || GameObject.Find("GameTable").transform.Find("LonelyMage").gameObject.activeSelf);
-				if (!boss && KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("MasterMagnus") && __instance.TurnNumber == 2 && RunState.Run.regionTier >= 1 && RunState.Run.regionTier <= 3)
+				if (!boss && SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("MasterMagnus") && __instance.TurnNumber == 2 && RunState.Run.regionTier >= 1 && RunState.Run.regionTier <= 3)
 				{
 					__instance.StartCoroutine(SpawnMagnus());
 				}
@@ -470,14 +470,14 @@ namespace MagnificusMod
 						}
 
 						int damage = MagnificusMod.Generation.damageDoneThisTurn - excessDamage;
-						if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("ShieldedMox") && damage > 4 && playerIsAttacker && SceneLoader.ActiveSceneName == "finale_magnificus")
+						if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("ShieldedMox") && damage > 4 && playerIsAttacker && SceneLoader.ActiveSceneName == "finale_magnificus")
 						{
 							excessDamage = Singleton<MagnificusLifeManager>.Instance.opponentLife - 4;
 							excessDamage = -excessDamage;
 							ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.ShieldedMox);
 							damage = 4;
 						}
-						if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("DyingBreath") && playerIsAttacker && SceneLoader.ActiveSceneName == "finale_magnificus" && !Generation.didDyingBreath)
+						if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("DyingBreath") && playerIsAttacker && SceneLoader.ActiveSceneName == "finale_magnificus" && !Generation.didDyingBreath)
 						{
 							if (Singleton<MagnificusLifeManager>.Instance.opponentLife - damage < 1)
 							{

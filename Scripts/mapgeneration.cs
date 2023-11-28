@@ -1604,7 +1604,7 @@ namespace MagnificusMod
 								nodesLoaded++;
 								break;
 							case "N1":
-								if (KayceeStorage.IsKaycee)
+								if (SaveManager.saveFile.ascensionActive)
 								{
 									icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 									icon2.name = "nodeIcon";
@@ -1627,7 +1627,7 @@ namespace MagnificusMod
 								}
 								break;
 							case "N2":
-								if (KayceeStorage.IsKaycee)
+								if (SaveManager.saveFile.ascensionActive)
 								{
 									icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 									icon2.name = "nodeIcon";
@@ -2166,7 +2166,7 @@ namespace MagnificusMod
 		public static IEnumerator LifeManagerStuff(int damage, bool toPlayer)
 		{
 			Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
-			if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("ShieldedMox") && !toPlayer && damage > 4)
+			if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("ShieldedMox") && !toPlayer && damage > 4)
 			{
 				ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.ShieldedMox);
 				damage = 4;
@@ -3403,7 +3403,8 @@ namespace MagnificusMod
 							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint7>(),
 							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint8>(),
 							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint9>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint10>()
+							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint10>(),
+							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint11>()
 							},
 							new List<EncounterBlueprintData>
 							{
@@ -3414,7 +3415,9 @@ namespace MagnificusMod
 							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint5>(),
 							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint6>(),
 							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint7>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint8>()
+							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint8>(),
+							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint9>(),
+							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint10>()
 							}
 						};
 						if (RunState.Run.regionTier > 0)
@@ -3572,6 +3575,10 @@ namespace MagnificusMod
 
 						BossBattleNodeData bossBattleNodeData = new BossBattleNodeData();
 						bossBattleNodeData.specialBattleId = "GoobertSequencer";
+						if (SaveManager.saveFile.ascensionActive && challenges.Contains("MasterBosses"))
+                        {
+							bossBattleNodeData.specialBattleId = "GoranjSequencer";
+						}
 
 						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, true);
 						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = false;
@@ -3683,7 +3690,10 @@ namespace MagnificusMod
 
 						BossBattleNodeData bossBattleNodeData = new BossBattleNodeData();
 						bossBattleNodeData.specialBattleId = "EspeararaSequencer";
-
+						if (SaveManager.saveFile.ascensionActive && challenges.Contains("MasterBosses"))
+						{
+							bossBattleNodeData.specialBattleId = "OrluSequencer";
+						}
 						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, true);
 						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = false;
 						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, true);
@@ -3755,15 +3765,18 @@ namespace MagnificusMod
 						instance.combatBell.gameObject.SetActive(true);
 						instance.combatBell.SetBesideBoard(false, true);
 
-						GameObject lavaOrbSpawner = GameObject.Instantiate(Resources.Load("prefabs/factoryindoors/gooplane3d/GooOrbSpawner") as GameObject);
-						lavaOrbSpawner.transform.parent = GameObject.Find("GameTable").transform;
-						lavaOrbSpawner.transform.localPosition = new Vector3(0, 2.18f, 43.32f);
-						lavaOrbSpawner.GetComponent<GooOrbSpawner>().enabled = false;
-						lavaOrbSpawner.AddComponent<LavaOrbSpawner>();
-						lavaOrbSpawner.GetComponent<LavaOrbSpawner>().frequency = 1.5f;
-						lavaOrbSpawner.GetComponent<LavaOrbSpawner>().originalFrequency = 1.5f;
-						lavaOrbSpawner.GetComponent<LavaOrbSpawner>().orbScale = 1f;
-						lavaOrbSpawner.name = "lavaOrbSpawner1";
+						if (!challenges.Contains("MasterBosses"))
+						{
+							GameObject lavaOrbSpawner = GameObject.Instantiate(Resources.Load("prefabs/factoryindoors/gooplane3d/GooOrbSpawner") as GameObject);
+							lavaOrbSpawner.transform.parent = GameObject.Find("GameTable").transform;
+							lavaOrbSpawner.transform.localPosition = new Vector3(0, 2.18f, 43.32f);
+							lavaOrbSpawner.GetComponent<GooOrbSpawner>().enabled = false;
+							lavaOrbSpawner.AddComponent<LavaOrbSpawner>();
+							lavaOrbSpawner.GetComponent<LavaOrbSpawner>().frequency = 1.5f;
+							lavaOrbSpawner.GetComponent<LavaOrbSpawner>().originalFrequency = 1.5f;
+							lavaOrbSpawner.GetComponent<LavaOrbSpawner>().orbScale = 1f;
+							lavaOrbSpawner.name = "lavaOrbSpawner1";
+						}
 
 						Singleton<MagnificusDuelDisk>.Instance.basePosition = new Vector3(0.89f, 4.2424f, -2.8576f);
 						instance.duelDiskParent.transform.localPosition = new Vector3(0.89f, 4.2424f, -2.8576f);
@@ -3775,7 +3788,7 @@ namespace MagnificusMod
 						Singleton<MagnificusCardDrawPiles>.Instance.Awake();
 
 						Tween.Rotation(GameObject.Find("Player").transform, Quaternion.Euler(0, 0, 0), 0.25f, 1);
-						Tween.LocalPosition(GameObject.Find("walls").transform, new Vector3(0, -31, 9), 5f, 10f);
+						Tween.LocalPosition(GameObject.Find("walls").transform, new Vector3(0, -33, 9), 5f, 10f);
 						Tween.LocalPosition(GameObject.Find("ceiling").transform, new Vector3(340f, 250f, -600f), 5f, 10f);
 					}
 				};
@@ -4122,7 +4135,7 @@ namespace MagnificusMod
 				string layout = MagSave.GetLayout();
 				//0,0,0 - north, 0,270,0 - west, 0,90,0 - east, 0,180,0 - south
 
-				if (KayceeStorage.IsKaycee)
+				if (SaveManager.saveFile.ascensionActive)
 				{
 					string chalenge = KayceeStorage.ActiveChallenges;
 					challenges = chalenge.Split(',');
@@ -4493,44 +4506,39 @@ namespace MagnificusMod
 		private static IEnumerator WAKEUP()
 		{
 			List<string> cardNamesToAdd = new List<string>();
-			for (int i = 0; i < SaveManager.saveFile.currentRun.playerDeck.Cards.Count; i++)
+			for (int i = 0; i < SaveManager.saveFile.CurrentDeck.Cards.Count; i++)
             {
-				if (SaveManager.saveFile.currentRun.playerDeck.Cards[i].name == "Wolf")
+				if (SaveManager.saveFile.CurrentDeck.Cards[i].name == "Wolf")
                 {
-					SaveManager.saveFile.currentRun.playerDeck.RemoveCardByName("Wolf");
+					SaveManager.saveFile.CurrentDeck.RemoveCardByName("Wolf");
 					if (SavedVars.LearnedMechanics.Contains("druid;"))
 					{
-						SaveManager.saveFile.currentRun.playerDeck.AddCard(CardLoader.GetCardByName("mag_druid"));
+						SaveManager.saveFile.CurrentDeck.AddCard(CardLoader.GetCardByName("mag_druid"));
 					}
 					else
 					{
-						SaveManager.saveFile.currentRun.playerDeck.AddCard(CardLoader.GetCardByName("mag_wolf"));
+						SaveManager.saveFile.CurrentDeck.AddCard(CardLoader.GetCardByName("mag_wolf"));
 					}
 					i--;
-				} else if (SaveManager.saveFile.currentRun.playerDeck.Cards[i].name == "Stinkbug_Talking")
+				} else if (SaveManager.saveFile.CurrentDeck.Cards[i].name == "Stinkbug_Talking")
 				{
-					SaveManager.saveFile.currentRun.playerDeck.RemoveCardByName("Stinkbug_Talking");
-					SaveManager.saveFile.currentRun.playerDeck.AddCard(CardLoader.GetCardByName("mag_stinkbug"));
+					SaveManager.saveFile.CurrentDeck.RemoveCardByName("Stinkbug_Talking");
+					SaveManager.saveFile.CurrentDeck.AddCard(CardLoader.GetCardByName("mag_stinkbug"));
 					i--;
 				}
-				else if (SaveManager.saveFile.currentRun.playerDeck.Cards[i].name == "Stoat_Talking")
+				else if (SaveManager.saveFile.CurrentDeck.Cards[i].name == "Stoat_Talking")
 				{
-					SaveManager.saveFile.currentRun.playerDeck.RemoveCardByName("Stoat_Talking");
-					SaveManager.saveFile.currentRun.playerDeck.AddCard(CardLoader.GetCardByName("mag_stoat"));
+					SaveManager.saveFile.CurrentDeck.RemoveCardByName("Stoat_Talking");
+					SaveManager.saveFile.CurrentDeck.AddCard(CardLoader.GetCardByName("mag_stoat"));
 					i--;
 				}
-				else if (SaveManager.saveFile.currentRun.playerDeck.Cards[i].name == "Bullfrog")
+				else if (SaveManager.saveFile.CurrentDeck.Cards[i].name == "Bullfrog")
 				{
-					SaveManager.saveFile.currentRun.playerDeck.RemoveCardByName("Bullfrog");
-					SaveManager.saveFile.currentRun.playerDeck.AddCard(CardLoader.GetCardByName("mag_hovermage"));
-					i--;
-				} else if (SaveManager.saveFile.currentRun.playerDeck.Cards[i].temple == CardTemple.Nature)
-                {
-					SaveManager.saveFile.currentRun.playerDeck.RemoveCard(SaveManager.saveFile.currentRun.playerDeck.Cards[i]);
+					SaveManager.saveFile.CurrentDeck.RemoveCardByName("Bullfrog");
+					SaveManager.saveFile.CurrentDeck.AddCard(CardLoader.GetCardByName("mag_hovermage"));
 					i--;
 				}
 			}
-			
 			AudioController.Instance.StopAllLoops();
 			Singleton<FirstPersonController>.Instance.enabled = false;
 			yield return new WaitForSeconds(1f);
@@ -4558,7 +4566,7 @@ namespace MagnificusMod
 					1
 				});
 			}
-			if (RunState.Run.regionTier == 0 && MagSave.layout.Contains("1") && !KayceeStorage.IsKaycee)
+			if (RunState.Run.regionTier == 0 && MagSave.layout.Contains("1") && !SaveManager.saveFile.ascensionActive)
             {
 				SaveManager.saveFile.part3Data.deck.cardIdModInfos = new Dictionary<string, List<CardModificationInfo>>();
 				SavedVars.KilledCards = "";
@@ -4589,12 +4597,12 @@ namespace MagnificusMod
 					SaveManager.SaveToFile();
 				}
 				Singleton<FirstPersonController>.Instance.enabled = true;
-			} else if (RunState.Run.regionTier == 0 && KayceeStorage.IsKaycee && MagSave.layout.Contains("1"))
+			} else if (RunState.Run.regionTier == 0 && SaveManager.saveFile.ascensionActive && MagSave.layout.Contains("1"))
             {
 				KayceeStorage.FleetingLife = 50;
 				SavedVars.HasMap = false;
 				SavedVars.HasMapIcons = false;
-				if (KayceeStorage.IsKaycee && challenges.Contains("FadingMox"))
+				if (SaveManager.saveFile.ascensionActive && challenges.Contains("FadingMox"))
 				{
 					RunState.Run.playerLives = 1;
 				}
@@ -4630,7 +4638,7 @@ namespace MagnificusMod
 				Singleton<TextDisplayer>.Instance.Clear();
 			}
 			if (SaveManager.saveFile.ascensionActive) { KayceeStorage.IsKaycee = true; KayceeStorage.IsMagRun = true;  } else { KayceeStorage.IsKaycee = false; }
-			if (!KayceeStorage.IsMagRun && KayceeStorage.IsKaycee) { KayceeStorage.IsMagRun = true; }
+			if (!KayceeStorage.IsMagRun && SaveManager.saveFile.ascensionActive) { KayceeStorage.IsMagRun = true; }
 			if (SavedVars.LoadWithFinaleCardBacks != SavedVars.FinaleCardBacks) { SavedVars.FinaleCardBacks = SavedVars.LoadWithFinaleCardBacks; }
 			if (SavedVars.LoadWithPaintSplashes != SavedVars.PaintSplashes) { SavedVars.PaintSplashes = SavedVars.LoadWithPaintSplashes; }
 			SaveManager.SaveToFile();
@@ -4884,7 +4892,7 @@ namespace MagnificusMod
 
 		private static IEnumerator leshyDialogue()
 		{
-			if (!SavedVars.LearnedMechanics.Contains("secretfight") && !KayceeStorage.IsKaycee)
+			if (!SavedVars.LearnedMechanics.Contains("secretfight") && !SaveManager.saveFile.ascensionActive)
 			{
 				SavedVars.LearnedMechanics += "secretfight;";
 				Singleton<FirstPersonController>.Instance.enabled = false;
@@ -4982,7 +4990,7 @@ namespace MagnificusMod
 					}
 					else if (towerLevel.Contains("3"))
                     {
-						if (!SavedVars.LearnedMechanics.Contains("druid;") && !KayceeStorage.IsKaycee)
+						if (!SavedVars.LearnedMechanics.Contains("druid;") && !SaveManager.saveFile.ascensionActive)
 						{
 							map =
 					new List<List<string>> {
@@ -6040,7 +6048,7 @@ namespace MagnificusMod
 						float modify = 0.1f * i;
 						GameObject.Find("Player").transform.position = new Vector3(GameObject.Find("Player").transform.position.x, 16.5f - modify, GameObject.Find("Player").transform.position.z);
 						Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetColor(GameColors.Instance.nearBlack);
-						if (!KayceeStorage.IsKaycee)
+						if (!SaveManager.saveFile.ascensionActive)
 						{
 							Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(1 - modify, float.MaxValue);
 						}
@@ -6093,7 +6101,7 @@ namespace MagnificusMod
 				SceneLoader.Load(SceneLoader.ActiveSceneName);
 			} else if (location == "depths")
 			{
-				if (!KayceeStorage.IsKaycee)
+				if (!SaveManager.saveFile.ascensionActive)
 				{
 					WaitThenEnablePlayer(0f);
 					GameObject.Find("x4 y1").GetComponentInChildren<NavigationZone3D>().events.Add(Generation.gameOver);
@@ -6124,7 +6132,7 @@ namespace MagnificusMod
 			{
 				GameObject.Find("Player").transform.Find("PixelCameraParent").transform.localPosition = new Vector3(0, 7, -6.86f);
 			}
-			if (KayceeStorage.IsKaycee && challenges.Contains("FreeMap") && location != "finale" && location != "tower")
+			if (SaveManager.saveFile.ascensionActive && challenges.Contains("FreeMap") && location != "finale" && location != "tower")
             {
 				minimap = true;
 				CreateMiniMap();
@@ -6587,7 +6595,7 @@ namespace MagnificusMod
 
 		public static IEnumerator spellBookTutorial()
         {
-			if (!SavedVars.LearnedMechanics.Contains("spellbook") && !KayceeStorage.IsKaycee)
+			if (!SavedVars.LearnedMechanics.Contains("spellbook") && !SaveManager.saveFile.ascensionActive)
 			{
 				SavedVars.LearnedMechanics += "spellbook;";
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hmm?", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
@@ -6720,19 +6728,19 @@ namespace MagnificusMod
 				LoadingScreenManager.LoadScene("finale_magnificus");
 				Time.timeScale = 1f;
 				FrameLoopManager.Instance.SetIterationDisabled(false);
-				SaveManager.saveFile.currentRun.playerDeck.Cards.Clear();
+				SaveManager.saveFile.CurrentDeck.Cards.Clear();
 				bool flag = SavedVars.LearnedMechanics.Contains("druid");
 				if (flag)
 				{
-					SaveManager.saveFile.currentRun.playerDeck.Cards.Add(CardLoader.GetCardByName("mag_druid"));
+					SaveManager.saveFile.CurrentDeck.Cards.Add(CardLoader.GetCardByName("mag_druid"));
 				}
 				else
 				{
-					SaveManager.saveFile.currentRun.playerDeck.Cards.Add(CardLoader.GetCardByName("mag_wolf"));
+					SaveManager.saveFile.CurrentDeck.Cards.Add(CardLoader.GetCardByName("mag_wolf"));
 				}
-				SaveManager.saveFile.currentRun.playerDeck.Cards.Add(CardLoader.GetCardByName("mag_stinkbug"));
-				SaveManager.saveFile.currentRun.playerDeck.Cards.Add(CardLoader.GetCardByName("mag_stoat"));
-				SaveManager.saveFile.currentRun.playerDeck.Cards.Add(CardLoader.GetCardByName("mag_hovermage"));
+				SaveManager.saveFile.CurrentDeck.Cards.Add(CardLoader.GetCardByName("mag_stinkbug"));
+				SaveManager.saveFile.CurrentDeck.Cards.Add(CardLoader.GetCardByName("mag_stoat"));
+				SaveManager.saveFile.CurrentDeck.Cards.Add(CardLoader.GetCardByName("mag_hovermage"));
 				RunState.Run.maxPlayerLives = 3;
 				RunState.Run.playerLives = 3;
 				SaveManager.SaveToFile();
@@ -7015,7 +7023,7 @@ namespace MagnificusMod
 
 		public static IEnumerator currencyTutorial()
         {
-			if (!SavedVars.LearnedMechanics.Contains("overkill") && !KayceeStorage.IsKaycee)
+			if (!SavedVars.LearnedMechanics.Contains("overkill") && !SaveManager.saveFile.ascensionActive)
 			{
 				SavedVars.LearnedMechanics += "overkill;";
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("With a blaze of Magick, you end the battle. You managed to deal more damage than needed.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);

@@ -563,8 +563,40 @@ namespace MagnificusMod
 				return amount > 0 && base.Card.HasAbility(SigilCode.OrluHit.ability);
 			}
 
+			public IEnumerator fixCardBacks()
+			{
+				yield return new WaitForSeconds(0.1f * Singleton<Deck>.Instance.CardsInDeck);
+				for (int i = 0; i < GameObject.Find("SelectableCardArray").transform.childCount; i++)
+				{
+					GameObject.Find("SelectableCardArray").transform.GetChild(i).gameObject.GetComponentInChildren<SkinnedMeshRenderer>().materials[1].mainTexture = Tools.getImage("magcardback.png");
+					GameObject.Find("SelectableCardArray").transform.GetChild(i).gameObject.GetComponent<BoxCollider>().size = new Vector3(0, 0, 0);
+				}
+				yield break;
+			}
+
 			public override IEnumerator OnDealDamageDirectly(int amount)
 			{
+				if (!base.Card.slot.IsPlayerSlot)
+                {
+					if (Singleton<Deck>.Instance.cards.Count < 1) { yield break; }
+					GameObject stolen = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
+					stolen.name = "stolencard";
+					stolen.transform.SetParent(GameObject.Find("GameTable").transform);
+					stolen.transform.localPosition = new Vector3(3.6f, 5.6f, -3.15f);
+					stolen.transform.localScale = new Vector3(1f, 1f, 1f);
+					stolen.transform.localRotation = Quaternion.Euler(0, 180, 0);
+					SelectableCard component10 = stolen.GetComponent<SelectableCard>();
+					component10.Anim.PlayQuickRiffleSound();
+					component10.Initialize(CardLoader.GetCardByName("mag_jrsage"));
+					component10.ExitBoard(1.25f, new Vector3(0f, 0.5f, 2.5f));
+					CardInfo selected = Singleton<Deck>.Instance.cards[UnityEngine.Random.RandomRangeInt(0, Singleton<Deck>.Instance.cards.Count)];
+					foreach(CardInfo card in Singleton<Deck>.Instance.cards)
+                    {
+						Debug.Log(card.name);
+                    }
+					Singleton<Deck>.Instance.cards.Remove(selected);
+					yield break;
+				}
 				if (this.originalDeckCards == null)
 				{
 					this.originalDeckCards = Singleton<CardDrawPiles>.Instance.Deck.cards;
@@ -622,6 +654,39 @@ namespace MagnificusMod
 			public static Ability ability;
 
 			private List<CardInfo> originalDeckCards;
+		}
+
+		public class LifeSteal : AbilityBehaviour
+		{
+			public override Ability Ability
+			{
+				get
+				{
+					return LifeSteal.ability;
+				}
+			}
+
+			public override bool RespondsToDealDamageDirectly(int amount)
+			{
+				return amount > 0;
+			}
+
+			public override IEnumerator OnDealDamageDirectly(int amount)
+			{
+				if (base.Card.slot.IsPlayerSlot)
+                {
+					Singleton<MagnificusLifeManager>.Instance.playerLife += amount;
+                } else
+                {
+					Singleton<MagnificusLifeManager>.Instance.opponentLife += amount;
+				}
+				Singleton<MagnificusLifeManager>.Instance.OpponentCounter.ShowValue(Singleton<MagnificusLifeManager>.Instance.opponentLife);
+				Singleton<MagnificusLifeManager>.Instance.PlayerCounter.ShowValue(Singleton<MagnificusLifeManager>.Instance.playerLife);//card_attack_damage
+				AudioController.Instance.PlaySound2D("card_attack_damage", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
+				yield break;
+			}
+
+			public static Ability ability;
 		}
 
 		public class sharkoKick : AbilityBehaviour
@@ -881,7 +946,7 @@ namespace MagnificusMod
 						   select slot).Count((CardSlot cardSlot) => cardSlot.Card.Info.HasTrait(Trait.Gem));
 				int[] array = new int[2];
 				array[1] = num;
-				if (num < 1 && !Singleton<TurnManager>.Instance.GameIsOver() && !Singleton<TurnManager>.Instance.Opponent.Queue.Exists((PlayableCard x) => x != null && x.Info.HasTrait(Trait.Gem)))
+				if (num < 1 && !Singleton<TurnManager>.Instance.GameIsOver() && !Singleton<TurnManager>.Instance.Opponent.Queue.Exists((PlayableCard x) => x != null && x.Info.HasTrait(Trait.Gem)) && base.PlayableCard.Health <= 0)
 				{
 					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(base.PlayableCard.Die(false));
 				} else

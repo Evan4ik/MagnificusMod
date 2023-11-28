@@ -226,7 +226,7 @@ namespace MagnificusMod
 				}
 				catch { }
 
-				if (MagnificusMod.Generation.challenges.Contains("RandomSidedeck") && KayceeStorage.IsKaycee)
+				if (MagnificusMod.Generation.challenges.Contains("RandomSidedeck") && SaveManager.saveFile.ascensionActive)
 				{
 					__instance.sideDeckList = new List<CardInfo>();
 					for (int i = 0; i < 10; i++)
@@ -366,6 +366,20 @@ namespace MagnificusMod
 								__state.pile.gameObject.transform.GetChild(i).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0);
 							}
 						}
+						if (__state.pile.gameObject.transform.childCount > 2 && Singleton<Deck>.Instance.Cards.Count < 1)
+                        {
+							for (int i = 2; i < __state.pile.gameObject.transform.childCount; i++)
+							{
+								__state.pile.gameObject.transform.GetChild(i).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0);
+							}
+						}
+						if (__state.sidePile.gameObject.transform.childCount > 2 && __state.SideDeck.Cards.Count < 1)
+						{
+							for (int i = 2; i < __state.sidePile.gameObject.transform.childCount; i++)
+							{
+								__state.sidePile.gameObject.transform.GetChild(i).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0);
+							}
+						}
 					}
 					catch { }
 				} else
@@ -491,7 +505,7 @@ namespace MagnificusMod
 
 				if (selectedPile == __state.sidePile)
 				{
-					if (MagnificusMod.Generation.challenges.Contains("RandomSidedeck") && KayceeStorage.IsKaycee)
+					if (MagnificusMod.Generation.challenges.Contains("RandomSidedeck") && SaveManager.saveFile.ascensionActive)
 					{
 						ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.RandomSidedeck);
 					}

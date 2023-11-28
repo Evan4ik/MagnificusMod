@@ -141,7 +141,7 @@ namespace MagnificusMod
 					return true;
 				}
 				__instance.cardLibraryUI.SetActive(true);
-				Singleton<GBC.CollectionUI>.Instance.Initialize(SaveManager.saveFile.currentRun.playerDeck.Cards, GBC.CollectionUI.CardDisplayMode.Showcase);
+				Singleton<GBC.CollectionUI>.Instance.Initialize(SaveManager.saveFile.CurrentDeck.Cards, GBC.CollectionUI.CardDisplayMode.Showcase);
 				__instance.DisplayMenuCardTitle(null);
 				return false;
 			}
@@ -232,7 +232,7 @@ namespace MagnificusMod
 		public static IEnumerator ViewDeckbutton(MenuCard optionsCard)
 		{
 			Singleton<MenuController>.Instance.DoingCardTransition = true;
-			float cardPos = KayceeStorage.IsKaycee ? -1.268f : -1.038f;
+			float cardPos = SaveManager.saveFile.ascensionActive ? -1.268f : -1.038f;
 			yield return Singleton<MenuController>.Instance.TransitionToSlottedState(optionsCard, cardPos, false);
 			Singleton<MenuController>.Instance.DoingCardTransition = false;
 			Singleton<MenuController>.Instance.DisplayMenuCardTitle(optionsCard);

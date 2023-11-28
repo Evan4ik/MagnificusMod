@@ -28,6 +28,9 @@
     <None Remove="Resources\ability_tripleblood_scratched.png" />
     <None Remove="Resources\ability_tutor_scratched.png" />
     <None Remove="Resources\ability_whackamole_scratched.png" />
+    <None Remove="Resources\achievement_gnome.png" />
+    <None Remove="Resources\achievement_locked.png" />
+    <None Remove="Resources\achievement_magnificus.png" />
     <None Remove="Resources\algae.png" />
     <None Remove="Resources\animator.png" />
     <None Remove="Resources\antichallenge_mana.png" />
@@ -77,6 +80,7 @@
     <None Remove="Resources\challenge_gemdependant.png" />
     <None Remove="Resources\challenge_itemspells.png" />
     <None Remove="Resources\challenge_lesshealth.png" />
+    <None Remove="Resources\challenge_masterbosses.png" />
     <None Remove="Resources\challenge_morehpopponent.png" />
     <None Remove="Resources\challenge_morehpopponent_active.png" />
     <None Remove="Resources\challenge_nocostchange.png" />
@@ -84,6 +88,8 @@
     <None Remove="Resources\challenge_randommox.png" />
     <None Remove="Resources\challenge_shieldedmox.png" />
     <None Remove="Resources\challenge_turnwipeout.png" />
+    <None Remove="Resources\cloudfloor.png" />
+    <None Remove="Resources\cloudfloornormal.png" />
     <None Remove="Resources\coffeemage.png" />
     <None Remove="Resources\copycardnode.png" />
     <None Remove="Resources\cost_2blue.png" />
@@ -165,6 +171,7 @@
     <None Remove="Resources\goo_drip7.png" />
     <None Remove="Resources\goo_drip8.png" />
     <None Remove="Resources\goo_drip9.png" />
+    <None Remove="Resources\goranjboss.png" />
     <None Remove="Resources\goranjdrake.png" />
     <None Remove="Resources\health_spellbuff.png" />
     <None Remove="Resources\him.png" />
@@ -183,6 +190,7 @@
     <None Remove="Resources\lifepainting1.png" />
     <None Remove="Resources\lifepainting2.png" />
     <None Remove="Resources\lifepainting3.png" />
+    <None Remove="Resources\lifesteal.png" />
     <None Remove="Resources\lonely1life.png" />
     <None Remove="Resources\lonely2life.png" />
     <None Remove="Resources\magbacknone.png" />
@@ -243,6 +251,7 @@
     <None Remove="Resources\node.png" />
     <None Remove="Resources\obelisk.png" />
     <None Remove="Resources\orlu pheonix.png" />
+    <None Remove="Resources\orluboss.png" />
     <None Remove="Resources\orluflame.png" />
     <None Remove="Resources\paint splotches.png" />
     <None Remove="Resources\paint.png" />
@@ -352,6 +361,8 @@
     <None Remove="Resources\trapdoornormal.png" />
     <None Remove="Resources\trasgnomification.png" />
     <None Remove="Resources\trasmogification spell.png" />
+    <None Remove="Resources\valkyrie.png" />
+    <None Remove="Resources\valkyriethief.png" />
     <None Remove="Resources\vase of greed.png" />
     <None Remove="Resources\vase of greed_ability.png" />
     <None Remove="Resources\venus.png" />
@@ -380,6 +391,9 @@
     <EmbeddedResource Include="Resources\ability_tripleblood_scratched.png" />
     <EmbeddedResource Include="Resources\ability_tutor_scratched.png" />
     <EmbeddedResource Include="Resources\ability_whackamole_scratched.png" />
+    <EmbeddedResource Include="Resources\achievement_gnome.png" />
+    <EmbeddedResource Include="Resources\achievement_locked.png" />
+    <EmbeddedResource Include="Resources\achievement_magnificus.png" />
     <EmbeddedResource Include="Resources\animator.png" />
     <EmbeddedResource Include="Resources\antichallenge_mana.png" />
     <EmbeddedResource Include="Resources\antichallenge_map.png" />
@@ -411,6 +425,7 @@
     <EmbeddedResource Include="Resources\challenge_gemdependant.png" />
     <EmbeddedResource Include="Resources\challenge_itemspells.png" />
     <EmbeddedResource Include="Resources\challenge_lesshealth.png" />
+    <EmbeddedResource Include="Resources\challenge_masterbosses.png" />
     <EmbeddedResource Include="Resources\challenge_morehpopponent.png" />
     <EmbeddedResource Include="Resources\challenge_morehpopponent_active.png" />
     <EmbeddedResource Include="Resources\challenge_nocostchange.png" />
@@ -418,6 +433,8 @@
     <EmbeddedResource Include="Resources\challenge_randommox.png" />
     <EmbeddedResource Include="Resources\challenge_shieldedmox.png" />
     <EmbeddedResource Include="Resources\challenge_turnwipeout.png" />
+    <EmbeddedResource Include="Resources\cloudfloor.png" />
+    <EmbeddedResource Include="Resources\cloudfloornormal.png" />
     <EmbeddedResource Include="Resources\copycardnode.png" />
   </ItemGroup>
 
@@ -564,6 +581,7 @@
     <EmbeddedResource Include="Resources\goo_drip7.png" />
     <EmbeddedResource Include="Resources\goo_drip8.png" />
     <EmbeddedResource Include="Resources\goo_drip9.png" />
+    <EmbeddedResource Include="Resources\goranjboss.png" />
     <EmbeddedResource Include="Resources\goranjdrake.png" />
     <EmbeddedResource Include="Resources\GreenMageEmmission.png" />
     <EmbeddedResource Include="Resources\health_spellbuff.png" />
@@ -583,6 +601,7 @@
     <EmbeddedResource Include="Resources\lifepainting1.png" />
     <EmbeddedResource Include="Resources\lifepainting2.png" />
     <EmbeddedResource Include="Resources\lifepainting3.png" />
+    <EmbeddedResource Include="Resources\lifesteal.png" />
     <EmbeddedResource Include="Resources\lonely1life.png" />
     <EmbeddedResource Include="Resources\lonely2life.png" />
     <EmbeddedResource Include="Resources\magbacknone.png" />
@@ -648,6 +667,7 @@
     <EmbeddedResource Include="Resources\obelisk.png" />
     <EmbeddedResource Include="Resources\OrangeMageEmmission.png" />
     <EmbeddedResource Include="Resources\orlu pheonix.png" />
+    <EmbeddedResource Include="Resources\orluboss.png" />
     <EmbeddedResource Include="Resources\orluflame.png" />
     <EmbeddedResource Include="Resources\pack mageEmmission.png" />
     <EmbeddedResource Include="Resources\paint splotches.png" />
@@ -762,6 +782,8 @@
     <EmbeddedResource Include="Resources\trapdoornormal.png" />
     <EmbeddedResource Include="Resources\trasgnomification.png" />
     <EmbeddedResource Include="Resources\trasmogification spell.png" />
+    <EmbeddedResource Include="Resources\valkyrie.png" />
+    <EmbeddedResource Include="Resources\valkyriethief.png" />
     <EmbeddedResource Include="Resources\vase of greed.png" />
     <EmbeddedResource Include="Resources\vase of greed_ability.png" />
     <EmbeddedResource Include="Resources\venus.png" />
@@ -933,6 +955,9 @@
     </Reference>
 	  <Reference Include="PackManager">
 		  <HintPath>lib\Infiniscryption.PackManager.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Achievements">
+		  <HintPath>lib\Infiniscryption.Achievements.dll</HintPath>
 	  </Reference>
   </ItemGroup>
 

@@ -754,7 +754,7 @@ namespace MagnificusMod
 		{
 			public static bool Prefix(ref PlayableCard __instance, ref bool __result, CardSlot opposingSlot)
 			{
-				__result = opposingSlot.Card == null || (__instance.HasAbility(Ability.Flying) && !opposingSlot.Card.HasAbility(Ability.Reach)) || opposingSlot.Card.Info.HasAbility(Ability.Submerge) || opposingSlot.Card.Info.HasAbility(MagnificusMod.SigilCode.submergekraken.ability);
+				__result = opposingSlot.Card == null || (__instance.HasAbility(Ability.Flying) && !opposingSlot.Card.HasAbility(Ability.Reach)) || opposingSlot.Card.HasAbility(Ability.Submerge) || opposingSlot.Card.HasAbility(MagnificusMod.SigilCode.submergekraken.ability);
 				return false;
 			}
 		}

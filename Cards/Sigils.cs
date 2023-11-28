@@ -104,6 +104,14 @@ namespace MagnificusMod
 			SigilCode.OrluHit.ability = newAbility.ability;
 		}
 
+		public static void AddLifeSteal()
+		{
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Life Steal", "When a card bearing this sigil deals direct damage, the amount dealt will be healed to the owner of this card.", typeof(SigilCode.LifeSteal), Tools.GetTexture("lifesteal.png"))
+				.SetDefaultPart1Ability()
+				.SetIcon(Tools.GetTexture("lifesteal.png"));
+			SigilCode.LifeSteal.ability = newAbility.ability;
+		}
+
 		public static void SharkoHit()
 		{
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Knockback Hit", "When a card bearing this sigil hits an opposing card, the opposing card will be kicked in the direction inscrybed in the sigil.", typeof(SigilCode.sharkoKick), Tools.GetTexture("sharko_kick.png"))

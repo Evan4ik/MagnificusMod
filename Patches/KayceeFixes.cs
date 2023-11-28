@@ -152,6 +152,10 @@ namespace MagnificusMod
 			{
 				KayceeStorage.ActiveChallenges += "MasterMagnus,";
 			}
+			if (AscensionSaveData.Data.ChallengeIsActive(ChallengeManagement.MasterBosses))
+			{
+				KayceeStorage.ActiveChallenges += "MasterBosses,";
+			}
 			if (AscensionSaveData.Data.ChallengeIsActive(ChallengeManagement.GemDependantDeck))
 			{
 				KayceeStorage.ActiveChallenges += "GemDependantDeck,";
@@ -259,17 +263,20 @@ namespace MagnificusMod
 					if (acceptableTemple == CardTemple.Wizard)
 					{
 						decks.RemoveAll((StarterDeckManager.FullStarterDeck info) => info.Info.cards.FirstOrDefault((CardInfo ci) => ci.temple == acceptableTemple) == null);
-						for (int i = 0; i < decks.Count; i++)
+						if (config.unlockAllKaycee == false)
 						{
-							if (decks[i].UnlockLevel > KayceeStorage.ChallengeLevel)
+							for (int i = 0; i < decks.Count; i++)
 							{
-								decks.Remove(decks[i]);
-								i--;
+								if (decks[i].UnlockLevel > KayceeStorage.ChallengeLevel)
+								{
+									decks.Remove(decks[i]);
+									i--;
+								}
 							}
-						}
-						if (KayceeStorage.ChallengeLevel < 1)
-						{
-							decks = new List<StarterDeckManager.FullStarterDeck> { starterDeck };
+							if (KayceeStorage.ChallengeLevel < 1)
+							{
+								decks = new List<StarterDeckManager.FullStarterDeck> { starterDeck };
+							}
 						}
 					}
 					return decks;
@@ -294,6 +301,7 @@ namespace MagnificusMod
 
 			public static AscensionChallenge MasterMagnus { get; private set; }
 
+			public static AscensionChallenge MasterBosses { get; private set; }
 			public static AscensionChallenge ShieldedMox { get; private set; }
 
 			public static AscensionChallenge FadingMox { get; private set; }
@@ -335,6 +343,7 @@ namespace MagnificusMod
 				ChallengeManagement.FadingMox = GuidManager.GetEnumValue<AscensionChallenge>("silenceman.inscryption.magnificusmodstarterdecks", "FadingMox");
 				ChallengeManagement.GemDependantDeck = GuidManager.GetEnumValue<AscensionChallenge>("silenceman.inscryption.magnificusmodstarterdecks", "GemDependantDeck");
 				ChallengeManagement.MasterMagnus = GuidManager.GetEnumValue<AscensionChallenge>("silenceman.inscryption.magnificusmodstarterdecks", "MasterMagnus");
+				ChallengeManagement.MasterBosses = GuidManager.GetEnumValue<AscensionChallenge>("silenceman.inscryption.magnificusmodstarterdecks", "MasterBosses");
 				ChallengeManagement.FreeMap = GuidManager.GetEnumValue<AscensionChallenge>("silenceman.inscryption.magnificusmodstarterdecks", "FreeMap");
 				ChallengeManagement.Mana = GuidManager.GetEnumValue<AscensionChallenge>("silenceman.inscryption.magnificusmodstarterdecks", "AllMana");
 				ChallengeManagement.PatchedChallengesReference = new Dictionary<AscensionChallenge, AscensionChallengeInfo>();
@@ -430,6 +439,15 @@ namespace MagnificusMod
 					activatedSprite = Tools.getSprite("challenge_2lives_active.png"),
 					pointValue = 40
 				});
+				ChallengeManagement.PatchedChallengesReference.Add(AscensionChallenge.FinalBoss, new AscensionChallengeInfo
+				{
+					challengeType = ChallengeManagement.MasterBosses,
+					title = "Master Bosses",
+					description = "Every bossfight is replaced with one of the Mox Masters.",
+					iconSprite = Tools.getSprite("challenge_masterbosses.png"),
+					activatedSprite = Tools.getSprite("challenge_base_active.png"),
+					pointValue = 50
+				});
 				ChallengeManagement.PatchedChallengesReference.Add(AscensionChallenge.NoBossRares, new AscensionChallengeInfo
 				{
 					challengeType = ChallengeManagement.GemDependantDeck,
@@ -466,6 +484,7 @@ namespace MagnificusMod
 					ChallengeManagement.ItemSpells,
 					ChallengeManagement.DyingBreath,
 					ChallengeManagement.MasterMagnus,
+					ChallengeManagement.MasterBosses,
 					ChallengeManagement.ShieldedMox,
 					ChallengeManagement.FadingMox,
 					ChallengeManagement.GemDependantDeck,
@@ -490,7 +509,8 @@ namespace MagnificusMod
 								bool level3 = (challenges[i].Challenge.challengeType == AscensionChallenge.BossTotems && KayceeStorage.ChallengeLevel < 3) || (challenges[i].Challenge.challengeType == AscensionChallenge.StartingDamage && KayceeStorage.ChallengeLevel < 3);
 								bool level4 = (challenges[i].Challenge.challengeType == AscensionChallenge.AllTotems && KayceeStorage.ChallengeLevel < 4) || (challenges[i].Challenge.challengeType == AscensionChallenge.NoBossRares && KayceeStorage.ChallengeLevel < 4);
 								bool level5 = (challenges[i].Challenge.challengeType == AscensionChallenge.WeakStarterDeck && KayceeStorage.ChallengeLevel < 5) || (challenges[i].Challenge.challengeType == AscensionChallenge.LessLives && KayceeStorage.ChallengeLevel < 5);
-								if (!level2 && !level3 && !level4 && !level5 || config.unlockAllKaycee == true)
+								bool level6 = (challenges[i].Challenge.challengeType == AscensionChallenge.FinalBoss && KayceeStorage.ChallengeLevel < 6);
+								if (!level2 && !level3 && !level4 && !level5 && !level6 || config.unlockAllKaycee == true)
 								{
 									challenges[i] = new ChallengeManager.FullChallenge
 									{
@@ -510,23 +530,34 @@ namespace MagnificusMod
 
 			public static void setUpMagChallengePos()
 			{
+
 				GameObject gameObject = GameObject.Find("Screens").transform.Find("ChallengesScreen").transform.Find("Icons").Find("ChallengeIconGrid").gameObject;
-				gameObject.transform.Find("TopRow").Find("Icon_5").gameObject.SetActive(true);
-				gameObject.transform.Find("TopRow").Find("Icon_6").gameObject.SetActive(true);
-				gameObject.transform.Find("BottomRow").Find("Icon_12").gameObject.SetActive(true);
-				gameObject.transform.Find("TopRow").Find("Icon_6").transform.localPosition = new Vector3(1.1f, 0.51f, 0f);
-				gameObject.transform.Find("BottomRow").Find("Icon_13").transform.localPosition = new Vector3(1.1f, -0.01f, 0f);
-				gameObject.transform.Find("TopRow").Find("Icon_7").transform.localPosition = new Vector3(1.65f, 0.51f, 0f);
-				gameObject.transform.Find("BottomRow").Find("Icon_14").transform.localPosition = new Vector3(1.65f, -0.01f, 0f);
-				gameObject.transform.Find("BottomRow").Find("Icon_12").localPosition = new Vector3(0.55f, -0.01f, 0);
+				gameObject.transform.Find("BottomRow").Find("Icon_15").localPosition = new Vector3(1.8f, 0.24f, 0);
+				gameObject.transform.Find("BottomRow").Find("Icon_15").gameObject.SetActive(true);
 				if (KayceeFixes.currentState == CardTemple.Wizard)
 				{
+					gameObject.transform.Find("TopRow").Find("Icon_5").gameObject.SetActive(true);
+					gameObject.transform.Find("TopRow").Find("Icon_6").gameObject.SetActive(true);
+					gameObject.transform.Find("BottomRow").Find("Icon_12").gameObject.SetActive(true);
+					gameObject.transform.Find("TopRow").Find("Icon_6").transform.localPosition = new Vector3(1.1f, 0.51f, 0f);
+					gameObject.transform.Find("BottomRow").Find("Icon_13").transform.localPosition = new Vector3(1.1f, -0.01f, 0f);
+					gameObject.transform.Find("TopRow").Find("Icon_7").transform.localPosition = new Vector3(1.65f, 0.51f, 0f);
+					gameObject.transform.Find("BottomRow").Find("Icon_14").transform.localPosition = new Vector3(1.65f, -0.01f, 0f);
+					gameObject.transform.Find("BottomRow").Find("Icon_12").localPosition = new Vector3(0.55f, -0.01f, 0);
 					gameObject.transform.Find("TopRow").Find("Icon_6").transform.localPosition = new Vector3(0.55f, 0.51f, 0f);
 					gameObject.transform.Find("BottomRow").Find("Icon_13").transform.localPosition = new Vector3(0.55f, -0.01f, 0f);
 					gameObject.transform.Find("TopRow").Find("Icon_7").transform.localPosition = new Vector3(1.1f, 0.51f, 0f);
 					gameObject.transform.Find("BottomRow").Find("Icon_14").transform.localPosition = new Vector3(1.1f, -0.01f, 0f);
 					gameObject.transform.Find("TopRow").Find("Icon_5").gameObject.SetActive(false);
 					gameObject.transform.Find("BottomRow").Find("Icon_12").gameObject.SetActive(false);
+					if (KayceeStorage.ChallengeLevel >= 5 || config.unlockAllKaycee == true)
+                    {
+						gameObject.transform.Find("BottomRow").Find("Icon_15").gameObject.SetActive(true);//1.7 0.165 0
+						gameObject.transform.Find("BottomRow").Find("Icon_15").localPosition = new Vector3(1.7f, 0.24f, 0);
+					} else
+                    {
+						gameObject.transform.Find("BottomRow").Find("Icon_15").gameObject.SetActive(false);
+					}
 					if (KayceeFixes.setUpMagPos)
 					{
 						gameObject.transform.Find("TopRow").Find("Icon_6").gameObject.SetActive(false);
@@ -538,6 +569,13 @@ namespace MagnificusMod
 					KayceeFixes.setUpMagPos = true;
 				} else if (KayceeFixes.currentState != CardTemple.Wizard)
                 {
+					gameObject.transform.Find("BottomRow").Find("Icon_13").transform.localPosition = new Vector3(0.75f, -0.01f, 0);
+					gameObject.transform.Find("BottomRow").Find("Icon_14").transform.localPosition = new Vector3(1.25f, -0.01f, 0f);
+					gameObject.transform.Find("BottomRow").Find("Icon_12").localPosition = new Vector3(0.25f, -0.01f, 0);
+					gameObject.transform.Find("TopRow").Find("Icon_6").transform.localPosition = new Vector3(0.75f, 0.51f, 0);
+					gameObject.transform.Find("TopRow").Find("Icon_7").transform.localPosition = new Vector3(1.25f, 0.51f, 0f);
+					gameObject.transform.Find("TopRow").Find("Icon_5").gameObject.SetActive(true);
+					gameObject.transform.Find("BottomRow").Find("Icon_12").gameObject.SetActive(true);
 					KayceeFixes.setUpMagPos = false;
 				}
 			}
@@ -581,7 +619,7 @@ namespace MagnificusMod
 		{
 			public static void Prefix()
 			{
-				Debug.Log(config.unlockAllKaycee);
+				setUpMagPos = false;
 				KayceeStorage.IsKaycee = true;
 				Kill(CardTemple.Undead);
 			}
@@ -605,7 +643,6 @@ namespace MagnificusMod
 			public static bool Prefix(ref AscensionStartScreen __instance)
 			{
 				CommandLineTextDisplayer.PlayCommandLineClickSound();
-				Debug.Log(KayceeStorage.ScreenState);
 				if (__instance.RunExists)
 				{
 					Singleton<AscensionMenuScreens>.Instance.SwitchToScreen(AscensionMenuScreens.Screen.NewRunConfirm);
@@ -633,31 +670,34 @@ namespace MagnificusMod
 
 		public static IEnumerator leshyInterveneDialogue()
         {
-			if (!SavedVars.LearnedMechanics.Contains("wrongdimension;"))
+			Debug.Log("forkload");
+			if (SceneLoader.ActiveSceneName != "finale_magnificus")
 			{
-				yield return new WaitForSeconds(1f);
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Just what is going on here..?", -1.5f, 0.5f, Emotion.Curious, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("These cards,", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Did that [c:g2]foul little..[c:] get in here..?", -0.5f, 0.5f, Emotion.Anger, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I believe you are in the wrong place, challenger.", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hold still.", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-				KayceeStorage.IsMagRun = true;
-				KayceeStorage.IsKaycee = true;
-				SavedVars.LearnedMechanics += "wrongdimension;";
-				Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetColor(GameColors.Instance.nearBlack);
-				Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(1f, float.MaxValue);
-				SaveManager.SaveToFile(false);
-				yield return new WaitForSeconds(0.5f);
-				LoadingScreenManager.LoadScene("finale_magnificus");
-			} else
-            {
-				KayceeStorage.IsMagRun = true;
-				KayceeStorage.IsKaycee = true;
-				Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetColor(GameColors.Instance.nearBlack);
-				Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(1f, float.MaxValue);
-				SaveManager.SaveToFile(false);
-				yield return new WaitForSeconds(0.15f);
-				LoadingScreenManager.LoadScene("finale_magnificus");
+				if (!SavedVars.LearnedMechanics.Contains("wrongdimension;"))
+				{
+					yield return new WaitForSeconds(1f);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Just what is going on here..?", -1.5f, 0.5f, Emotion.Curious, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("These cards,", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Did that [c:g2]foul little..[c:] get in here..?", -0.5f, 0.5f, Emotion.Anger, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I believe you are in the wrong place, challenger.", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hold still.", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					KayceeStorage.IsMagRun = true;
+					KayceeStorage.IsKaycee = true;
+					SavedVars.LearnedMechanics += "wrongdimension;";
+					Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetColor(GameColors.Instance.nearBlack);
+					Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(1f, float.MaxValue);
+					SaveManager.SaveToFile(false);
+					LoadingScreenManager.LoadScene("finale_magnificus");
+				}
+				else
+				{
+					KayceeStorage.IsMagRun = true;
+					KayceeStorage.IsKaycee = true;
+					Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetColor(GameColors.Instance.nearBlack);
+					Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(1f, float.MaxValue);
+					SaveManager.SaveToFile(false);
+					LoadingScreenManager.LoadScene("finale_magnificus");
+				}
 			}
 			yield break;
         }
@@ -672,11 +712,8 @@ namespace MagnificusMod
 					int magicCards = 0;
 					foreach(CardInfo card in RunState.Run.playerDeck.Cards)
                     {
-						Debug.Log(card.name);
-						Debug.Log(card.temple);
 						if (card.temple == CardTemple.Wizard || card.name.Contains("mag_")) { magicCards++; }
                     }
-					Debug.Log(magicCards);
 					if (magicCards > RunState.Run.playerDeck.Cards.Count / 2)
                     {
 						__instance.StartCoroutine(leshyInterveneDialogue());
@@ -685,6 +722,27 @@ namespace MagnificusMod
                 }
 			}
 		}
+
+		[HarmonyPatch(typeof(SaveFile), "CurrentDeck", MethodType.Getter)]
+		[HarmonyPrefix]
+		public static bool SaveFile_CurrentDeck(ref DeckInfo __result)
+		{
+			if (KayceeStorage.IsMagRun)
+			{
+				if (SaveFile.IsAscension)
+				{
+					__result = SaveManager.saveFile.ascensionData.currentRun.playerDeck;
+				}
+				else
+				{
+					__result = SaveManager.saveFile.CurrentDeck;
+				}
+				return false;
+			}
+
+			return true;
+		}
+
 		[HarmonyPatch(typeof(AscensionSaveData), "NewRun")]
 		public class DraftObeliskFix
 		{
@@ -741,6 +799,7 @@ namespace MagnificusMod
 				}
 				else
 				{
+					SaveManager.saveFile.ascensionActive = true;
 					__instance.currentRun.maxPlayerLives = (__instance.currentRun.playerLives = 3);
 					if (__instance.ChallengeIsActive(ChallengeManagement.GemDependantDeck))
 					{
@@ -944,7 +1003,7 @@ namespace MagnificusMod
 					}
 					int activeChallengePoints = AscensionSaveData.Data.GetActiveChallengePoints();
 					string magChalllengeLevel;
-					if (challengeLevel <= 4)
+					if (challengeLevel <= 5)
 					{
 						string theChallengeThingManIdk = "<color=#eef4c6>" + challengeLevel.ToString() + "</color>";
 						if (activeChallengePoints > AscensionSaveData.GetChallengePointsForLevel(challengeLevel))
@@ -958,7 +1017,7 @@ namespace MagnificusMod
 						magChalllengeLevel = Localization.Translate("ALL CHALLENGE LEVELS CLEARED!");
 					}
 					string challengePoints = "<color=#eef4c6>" + activeChallengePoints.ToString() + "</color>";
-					if (challengeLevel <= 4)
+					if (challengeLevel <= 5)
 					{
 						challengePoints += "/" + AscensionSaveData.GetChallengePointsForLevel(challengeLevel).ToString();
 					}
@@ -1015,7 +1074,7 @@ namespace MagnificusMod
 		{
 			public static bool Prefix(bool newGameGBC)
 			{
-				if (!newGameGBC && KayceeStorage.IsKaycee && KayceeStorage.IsMagRun)
+				if (!newGameGBC && SaveManager.saveFile.ascensionActive && KayceeStorage.IsMagRun)
 				{
 					SaveManager.LoadFromFile();
 					LoadingScreenManager.LoadScene("finale_magnificus");
@@ -1031,7 +1090,7 @@ namespace MagnificusMod
 		{
 			public static void Prefix(ref GameFlowManager __instance)
 			{
-				if (KayceeStorage.IsKaycee && SceneLoader.ActiveSceneName == "finale_magnificus")
+				if (SaveManager.saveFile.ascensionActive && SceneLoader.ActiveSceneName == "finale_magnificus")
 				{
 					if (RunState.Run.playerLives <= 1)
 					{

@@ -252,7 +252,7 @@ namespace MagnificusMod
 						yield return (object)new WaitForSeconds(0.2f);
 						ProgressionData.SetMechanicLearned((MechanicsConcept)60);
 					}
-					if (flag && SceneLoader.ActiveSceneName == "finale_magnificus" && !KayceeStorage.IsKaycee)
+					if (flag && SceneLoader.ActiveSceneName == "finale_magnificus" && !SaveManager.saveFile.ascensionActive)
 					{
 						SavedVars.LearnedMechanics += "cardchoice;";
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Through this maze of paintings and illusions, there may be some that deign to join your deck.\nChoose carefully.", -2.5f, 0.5f, (Emotion)0, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Magnificus, (string[])null, true);
@@ -310,7 +310,7 @@ namespace MagnificusMod
 				}
 				List<CardChoice> list = new List<CardChoice>();
 				List<CardInfo> allChoices = CardLoader.GetUnlockedCards(CardMetaCategory.ChoiceNode, CardTemple.Wizard);
-				if (SaveManager.saveFile.part3Data.bountyHunterMods.Count > 0 && !KayceeStorage.IsKaycee)
+				if (SaveManager.saveFile.part3Data.bountyHunterMods.Count > 0 && !SaveManager.saveFile.ascensionActive)
                 {
 					List<string> modNames = new List<string>();
 					List<List<CardModificationInfo>> modList = RunState.Run.playerDeck.cardIdModInfos.Values.ToList();

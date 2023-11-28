@@ -656,7 +656,7 @@ namespace MagnificusMod
 					{
 						componentInfoShite.negateAbilities = CardLoader.GetCardByName(component.Info.name).abilities;
 						unbleachableAbility = componentInfoShite.negateAbilities.Contains(Ability.GemDependant) || componentInfoShite.negateAbilities.Contains(SigilCode.FamiliarA.ability) || componentInfoShite.negateAbilities.Contains(Ability.Brittle);
-						if (unbleachableAbility && MagModGeneration.challenges.Contains("WeakBleach") && KayceeStorage.IsKaycee )
+						if (unbleachableAbility && MagModGeneration.challenges.Contains("WeakBleach") && SaveManager.saveFile.ascensionActive)
 						{
 							failBleach = true;
 							componentInfoShite.negateAbilities = new List<Ability>();
@@ -665,7 +665,7 @@ namespace MagnificusMod
 					{
 						componentInfoShite.negateAbilities = new List<Ability> { CardLoader.GetCardByName(component.Info.name).abilities[UnityEngine.Random.Range(0, 2)] };
 						unbleachableAbility = componentInfoShite.negateAbilities.Contains(Ability.GemDependant) || componentInfoShite.negateAbilities.Contains(SigilCode.FamiliarA.ability) || componentInfoShite.negateAbilities.Contains(Ability.Brittle);
-						if (unbleachableAbility && MagModGeneration.challenges.Contains("WeakBleach") && KayceeStorage.IsKaycee)
+						if (unbleachableAbility && MagModGeneration.challenges.Contains("WeakBleach") && SaveManager.saveFile.ascensionActive)
 						{
 							failBleach = true;
 							componentInfoShite.negateAbilities = new List<Ability>();
@@ -677,11 +677,11 @@ namespace MagnificusMod
 						{
 							if (mod.abilities.Count > 0)
 							{
-								if (!KayceeStorage.IsKaycee || KayceeStorage.IsKaycee && !MagModGeneration.challenges.Contains("WeakBleach"))
+								if (!SaveManager.saveFile.ascensionActive || SaveManager.saveFile.ascensionActive && !MagModGeneration.challenges.Contains("WeakBleach"))
 								{
 									mod.abilities.Clear();
 								}
-								else if (MagModGeneration.challenges.Contains("WeakBleach") && KayceeStorage.IsKaycee)
+								else if (MagModGeneration.challenges.Contains("WeakBleach") && SaveManager.saveFile.ascensionActive)
 								{
 									unbleachableAbility = mod.abilities.Contains(Ability.GemDependant) || mod.abilities.Contains(SigilCode.FamiliarA.ability) || mod.abilities.Contains(Ability.Brittle);
 									if (!unbleachableAbility)
@@ -924,7 +924,7 @@ namespace MagnificusMod
 					component5.GetComponent<Collider>().enabled = true;
 					this.created.Add(component5);
 
-					if (!MagModGeneration.challenges.Contains("RandomSidedeck") || !KayceeStorage.IsKaycee)
+					if (!MagModGeneration.challenges.Contains("RandomSidedeck") || !SaveManager.saveFile.ascensionActive)
 					{
 						sideDeckObject.transform.localPosition = new Vector3(3.05f, 5.01f, -1.35f);
 						GameObject sidePrefab = Instantiate(sideDeckPile.cardbackPrefab.gameObject);
@@ -1178,7 +1178,7 @@ namespace MagnificusMod
 					{
 						return;
 					}
-					if (component.Info.DisplayedNameLocalized.Contains("Cardpack"))
+					if (component.Info.displayedName.Contains("Cardpack"))
 					{
 						if (RunState.Run.currency >= 5)
 						{
@@ -1194,7 +1194,7 @@ namespace MagnificusMod
 							RunState.Run.currency -= 5;
 						}
 					}
-					else if (component.Info.DisplayedNameLocalized == "View Deck")
+					else if (component.Info.displayedName == "View Deck")
 					{
 						GameObject.Find("sidedeckBack").transform.position = new Vector3(GameObject.Find("GameTable").transform.position.x + 2.86f, 14.73f, GameObject.Find("GameTable").transform.position.z + -0.1801f);
 						GameObject.Find("shopObjects").transform.position = new Vector3(0f, -9f, 0f);
@@ -1234,25 +1234,25 @@ namespace MagnificusMod
 							num5++;
 						}
 					}
-					else if (component.Info.DisplayedNameLocalized == "Sapphire Mox")
+					else if (component.Info.displayedName == "Sapphire Mox")
 					{
 						List<CardInfo> list3 = new List<CardInfo>();
 						MagCurrentNode.editSideDeck(1, 0, -1);
 						component.SetInfo(CardLoader.GetCardByName("mag_rubymox"));
 					}
-					else if (component.Info.DisplayedNameLocalized == "Ruby Mox")
+					else if (component.Info.displayedName == "Ruby Mox")
 					{
 						List<CardInfo> list4 = new List<CardInfo>();
 						MagCurrentNode.editSideDeck(-1, 1, 0);
 						component.SetInfo(CardLoader.GetCardByName("mag_greenmox"));
 					}
-					else if (component.Info.DisplayedNameLocalized == "Emerald Mox")
+					else if (component.Info.displayedName == "Emerald Mox")
 					{
 						List<CardInfo> list5 = new List<CardInfo>();
 						MagCurrentNode.editSideDeck(0, -1, 1);
 						component.SetInfo(CardLoader.GetCardByName("mag_bluemox"));
 					}
-					else if (component.Info.DisplayedNameLocalized == "Back")
+					else if (component.Info.displayedName == "Back")
 					{
 						GameObject.Find("sidedeckBack").transform.position = new Vector3(342.24f, 13.73f, -339.4001f);
 						GameObject.Find("shopObjects").transform.position = new Vector3(GameObject.Find("GameTable").transform.position.x, 9.72f, GameObject.Find("GameTable").transform.position.z);
@@ -1291,7 +1291,7 @@ namespace MagnificusMod
 						
 
 					}
-					else if (component.Info.DisplayedNameLocalized == "Magnus Mox Spell")
+					else if (component.Info.displayedName == "Magnus Mox Spell")
 					{
 						bool flag34 = RunState.Run.currency >= 4;
 						if (flag34)
@@ -1314,7 +1314,7 @@ namespace MagnificusMod
 							component.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
 						}
 					}
-					else if (component.Info.DisplayedNameLocalized == "Buy Minimap")
+					else if (component.Info.displayedName == "Buy Minimap")
 					{
 						if (RunState.Run.currency >= 4)
 						{
@@ -1327,7 +1327,7 @@ namespace MagnificusMod
 							SaveManager.SaveToFile();
 						}
 					}
-					else if (component.Info.DisplayedNameLocalized == "Fill In Minimap")
+					else if (component.Info.displayedName == "Fill In Minimap")
 					{
 						if (RunState.Run.currency >= 4)
 						{
@@ -1340,7 +1340,7 @@ namespace MagnificusMod
 							component.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
 						}
 					}
-					else if (component.Info.DisplayedNameLocalized == "Exit")
+					else if (component.Info.displayedName == "Exit")
 					{
 						bool flag38 = Singleton<GameFlowManager>.Instance != null;
 						if (flag38)
@@ -1520,8 +1520,9 @@ namespace MagnificusMod
 					Singleton<ViewManager>.Instance.Controller.LockState = (true ? ViewLockState.Locked : ViewLockState.Unlocked);
 				}, null));
 				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Unlocked;
-				float pauseTime = CardPile.GetPauseBetweenCardTime(SaveManager.saveFile.currentRun.playerDeck.Cards.Count);
-				pauseTime *= SaveManager.saveFile.currentRun.playerDeck.Cards.Count;
+				Debug.Log(SaveManager.saveFile.CurrentDeck.Cards.Count);
+				float pauseTime = CardPile.GetPauseBetweenCardTime(SaveManager.saveFile.CurrentDeck.Cards.Count);
+				pauseTime *= SaveManager.saveFile.CurrentDeck.Cards.Count;
 				yield return new WaitForSeconds(pauseTime + 1.25f);
 				lifeCounter.GetComponent<SineWaveMovement>().enabled = true;
 				Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
@@ -1647,7 +1648,7 @@ namespace MagnificusMod
 				sequencer.name = "PaintingEvent";
 				sequencer.transform.parent = base.transform;
 				sequencer.transform.localPosition = new Vector3(0, 0, 0);
-				if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("FadingMox"))
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("FadingMox"))
 				{
 					Singleton<MagnificusLifeManager>.Instance.playerLife = KayceeStorage.FleetingLife;
 				}
@@ -2326,7 +2327,7 @@ namespace MagnificusMod
 				Plugin.switchToSpeakerStyle(1);
 				this.cardpickedfromdeck = new List<SelectableCard>();
 				upgraded = false;
-				if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("FadingMox"))
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("FadingMox"))
 				{
 					Singleton<MagnificusLifeManager>.Instance.playerLife = KayceeStorage.FleetingLife;
 				}
@@ -2371,8 +2372,17 @@ namespace MagnificusMod
 					}
 					else
 					{
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Greetings..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Give me one of your [c:g1]spells[c:]", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						if (Generation.challenges.Contains("MasterBosses"))
+						{
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hmm..?", -1f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Here already? We haven't even battled..", -1f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Well anyways, just hand over a [c:g1]spell[c:].", -1f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
+						}
+						else
+						{
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Greetings..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Give me one of your [c:g1]spells[c:]", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						}
 					}
 				}
 				Singleton<ViewManager>.Instance.SwitchToView(View.MapDefault, false, true);
@@ -2420,7 +2430,7 @@ namespace MagnificusMod
 						selectedCards.Add(spell);
 						spellCards.Remove(spellCards[selected]);
 					}
-					if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("ItemSpells"))
+					if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("ItemSpells"))
 					{
 						ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.ItemSpells);
 						foreach (CardInfo spell in selectedCards)
@@ -3099,7 +3109,7 @@ namespace MagnificusMod
 			{
 				doing = false;
 				done = false;
-				if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("FadingMox"))
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("FadingMox"))
 				{
 					Singleton<MagnificusLifeManager>.Instance.playerLife = KayceeStorage.FleetingLife;
 				}
@@ -3456,7 +3466,7 @@ namespace MagnificusMod
 				doing = false;
 				done = false;
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default);
-				if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("FadingMox"))
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("FadingMox"))
 				{
 					Singleton<MagnificusLifeManager>.Instance.playerLife = KayceeStorage.FleetingLife;
 				}
@@ -3473,7 +3483,12 @@ namespace MagnificusMod
 				yield return GameObject.Find("TextDisplayer").GetComponent<TextDisplayer>().ShowUntilInput("GRREETINGS CHALLENGER!", -1f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
 				if (RunState.Run.regionTier == 2)
 				{
-					if (!SavedVars.LearnedMechanics.Contains("goobertf2"))
+					if (Generation.challenges.Contains("MasterBosses"))
+                    {
+						yield return GameObject.Find("TextDisplayer").GetComponent<TextDisplayer>().ShowUntilInput("YOU'RE ALREADY HERE?", -1f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
+						yield return GameObject.Find("TextDisplayer").GetComponent<TextDisplayer>().ShowUntilInput("I DON'T REALLY RECALL US BATTLING..", -1f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
+						yield return GameObject.Find("TextDisplayer").GetComponent<TextDisplayer>().ShowUntilInput("WELL ANYWAYS.. WHAT CARD WHOULD I PRACTICE ON?", -1f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
+					} else if (!SavedVars.LearnedMechanics.Contains("goobertf2"))
 					{
 						SavedVars.LearnedMechanics += "goobertf2;";
 						yield return GameObject.Find("TextDisplayer").GetComponent<TextDisplayer>().ShowUntilInput("IT WOULD SEEM THAT YOU HAVE DISGRACED ME!", -1f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
@@ -3911,7 +3926,7 @@ namespace MagnificusMod
 				Singleton<TextDisplayer>.Instance.alternateSpeakerStyles.Add(style);
 				Singleton<TextDisplayer>.Instance.SetTextStyle(style);
 				*/
-				if (!SavedVars.LearnedMechanics.Contains("mushrooms") && !KayceeStorage.IsKaycee)
+				if (!SavedVars.LearnedMechanics.Contains("mushrooms") && !SaveManager.saveFile.ascensionActive)
 				{
 					SavedVars.LearnedMechanics += "mushrooms;";
 
@@ -4692,7 +4707,7 @@ namespace MagnificusMod
 					List<List<Ability>> tier2 = new List<List<Ability>> { new List<Ability> { Ability.Sharp, Ability.Sniper, Ability.Flying, Ability.Reach, Ability.ShieldGems, Ability.BuffNeighbours, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability }, new List<Ability> { Ability.ExplodeOnDeath, Ability.SwapStats, Ability.EdaxioLegs, SigilCode.MoxCycling.ability, Ability.GemDependant, SigilCode.FamiliarA.ability, SigilCode.RandomPower.ability } };
 					List<List<Ability>> tier3 = new List<List<Ability>> { new List<Ability> { Ability.Sharp, Ability.Sniper, Ability.ShieldGems, Ability.BuffGems, Ability.DebuffEnemy, SigilCode.MagDropEmeraldOnDeath.ability, Ability.EdaxioHead, Ability.SplitStrike, SigilCode.FecundityCycle.ability }, new List<Ability> { Ability.EdaxioLegs, Ability.SwapStats, SigilCode.GemAbsorber.ability, SigilCode.MoxCycling.ability, SigilCode.MagDropSpear.ability, SigilCode.RandomPower.ability } };
 					List<List<Ability>> tier4 = new List<List<Ability>> { new List<Ability> { Ability.SplitStrike, Ability.Sniper, SigilCode.BlueMageDraw.ability, Ability.Deathtouch, Ability.EdaxioHead, SigilCode.FecundityCycle.ability }, new List<Ability> { SigilCode.MidasTouchA.ability, Ability.EdaxioArms, SigilCode.GemAbsorber.ability, Ability.DeleteFile, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability, SigilCode.RandomPower.ability } };
-					List<List<Ability>> tier5 = new List<List<Ability>> { new List<Ability> { Ability.SplitStrike, SigilCode.BlueMageDraw.ability, Ability.Tutor, Ability.VirtualReality, SigilCode.FecundityCycle.ability }, new List<Ability> { SigilCode.MidasTouchA.ability, Ability.DeleteFile, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability } };
+					List<List<Ability>> tier5 = new List<List<Ability>> { new List<Ability> { Ability.SplitStrike, SigilCode.LifeSteal.ability, Ability.Tutor, Ability.VirtualReality, SigilCode.FecundityCycle.ability }, new List<Ability> { SigilCode.MidasTouchA.ability, Ability.DeleteFile, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability } };
 
 					List<List<Ability>> curses = new List<List<Ability>> { new List<Ability>(), new List<Ability> { Ability.ExplodeOnDeath, Ability.ExplodeGems, Ability.GemDependant, Ability.SwapStats, Ability.EdaxioLegs, Ability.MoveBeside, SigilCode.MoxCycling.ability, Ability.EdaxioTorso, SigilCode.RandomPower.ability } };
 					List<List<Ability>> curses2 = new List<List<Ability>> { new List<Ability>(), new List<Ability> { SigilCode.MidasTouchA.ability, Ability.DeleteFile, Ability.SwapStats, Ability.EdaxioArms, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability } };
@@ -5462,7 +5477,7 @@ namespace MagnificusMod
 					selectedCards.Add(spellCards[selected]);
 					spellCards.Remove(spellCards[selected]);
 				}
-				if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("ItemSpells"))
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("ItemSpells"))
 				{
 					ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.ItemSpells);
 					foreach(CardInfo spell in selectedCards)

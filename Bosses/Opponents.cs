@@ -93,6 +93,90 @@ namespace MagnificusMod
 		{
 			typeof(EncounterData)
 		})]
+		public class SpawnGoranj
+		{
+			public static bool Prefix(TurnManager __instance, ref Opponent __result, EncounterData encounterData)
+			{
+				bool flag = encounterData.opponentType == (Opponent.Type)111;
+				bool flag2 = flag;
+				bool result;
+				if (flag2)
+				{
+					GameObject gameObject = new GameObject();
+					gameObject.name = "Opponent";
+					Opponent.Type opponentType = GoranjOpponent.FullOpponent.Id;
+					Part1BossOpponent part1BossOpponent = gameObject.AddComponent<GoranjOpponent>();
+					string text = encounterData.aiId;
+					bool flag3 = string.IsNullOrEmpty(text);
+					bool flag4 = flag3;
+					if (flag4)
+					{
+						text = "AI";
+					}
+					part1BossOpponent.AI = (Activator.CreateInstance(CustomType.GetType("DiskCardGame", text)) as AI);
+					part1BossOpponent.NumLives = part1BossOpponent.StartingLives;
+					part1BossOpponent.OpponentType = opponentType;
+					part1BossOpponent.TurnPlan = part1BossOpponent.ModifyTurnPlan(encounterData.opponentTurnPlan);
+					part1BossOpponent.Blueprint = encounterData.Blueprint;
+					part1BossOpponent.Difficulty = encounterData.Difficulty;
+					part1BossOpponent.ExtraTurnsToSurrender = SeededRandom.Range(0, 3, SaveManager.SaveFile.GetCurrentRandomSeed());
+					__result = part1BossOpponent;
+					result = false;
+				}
+				else
+				{
+					result = true;
+				}
+				return result;
+			}
+		}
+
+		[HarmonyPatch(typeof(Opponent), "SpawnOpponent", new Type[]
+		{
+			typeof(EncounterData)
+		})]
+		public class SpawnOrlu
+		{
+			public static bool Prefix(TurnManager __instance, ref Opponent __result, EncounterData encounterData)
+			{
+				bool flag = encounterData.opponentType == (Opponent.Type)111;
+				bool flag2 = flag;
+				bool result;
+				if (flag2)
+				{
+					GameObject gameObject = new GameObject();
+					gameObject.name = "Opponent";
+					Opponent.Type opponentType = OrluOpponent.FullOpponent.Id;
+					Part1BossOpponent part1BossOpponent = gameObject.AddComponent<OrluOpponent>();
+					string text = encounterData.aiId;
+					bool flag3 = string.IsNullOrEmpty(text);
+					bool flag4 = flag3;
+					if (flag4)
+					{
+						text = "AI";
+					}
+					part1BossOpponent.AI = (Activator.CreateInstance(CustomType.GetType("DiskCardGame", text)) as AI);
+					part1BossOpponent.NumLives = part1BossOpponent.StartingLives;
+					part1BossOpponent.OpponentType = opponentType;
+					part1BossOpponent.TurnPlan = part1BossOpponent.ModifyTurnPlan(encounterData.opponentTurnPlan);
+					part1BossOpponent.Blueprint = encounterData.Blueprint;
+					part1BossOpponent.Difficulty = encounterData.Difficulty;
+					part1BossOpponent.ExtraTurnsToSurrender = SeededRandom.Range(0, 3, SaveManager.SaveFile.GetCurrentRandomSeed());
+					__result = part1BossOpponent;
+					result = false;
+				}
+				else
+				{
+					result = true;
+				}
+				return result;
+			}
+		}
+
+		[HarmonyPatch(typeof(Opponent), "SpawnOpponent", new Type[]
+		{
+			typeof(EncounterData)
+		})]
 		public class SpawnOpponentPatch2
 		{
 			public static bool Prefix(TurnManager __instance, ref Opponent __result, EncounterData encounterData)
@@ -230,6 +314,56 @@ namespace MagnificusMod
 				{
 					GameObject.Destroy(__instance.SpecialSequencer);
 					__instance.GetType().GetProperty("SpecialSequencer").SetValue(__instance, __instance.gameObject.AddComponent(typeof(GoobertSequencer)));
+					result = false;
+				}
+				else
+				{
+					result = true;
+				}
+				return result;
+			}
+		}
+
+		[HarmonyPatch(typeof(TurnManager), "UpdateSpecialSequencer", new Type[]
+		{
+			typeof(string)
+		})]
+		public class GoranjSequencerPatch : TurnManager
+		{
+			public static bool Prefix(TurnManager __instance, string specialBattleId)
+			{
+				bool flag = specialBattleId == "GoranjSequencer";
+				bool flag2 = flag;
+				bool result;
+				if (flag2)
+				{
+					GameObject.Destroy(__instance.SpecialSequencer);
+					__instance.GetType().GetProperty("SpecialSequencer").SetValue(__instance, __instance.gameObject.AddComponent(typeof(GoranjSequencer)));
+					result = false;
+				}
+				else
+				{
+					result = true;
+				}
+				return result;
+			}
+		}
+
+		[HarmonyPatch(typeof(TurnManager), "UpdateSpecialSequencer", new Type[]
+	{
+			typeof(string)
+	})]
+		public class OrluSequencerPatch : TurnManager
+		{
+			public static bool Prefix(TurnManager __instance, string specialBattleId)
+			{
+				bool flag = specialBattleId == "OrluSequencer";
+				bool flag2 = flag;
+				bool result;
+				if (flag2)
+				{
+					GameObject.Destroy(__instance.SpecialSequencer);
+					__instance.GetType().GetProperty("SpecialSequencer").SetValue(__instance, __instance.gameObject.AddComponent(typeof(OrluSequencer)));
 					result = false;
 				}
 				else
@@ -390,13 +524,13 @@ namespace MagnificusMod
 			{
 				Singleton<MagnificusLifeManager>.Instance.opponentLife = 10;
 				Singleton<MagnificusLifeManager>.Instance.opponentLifeCounter.ShowValue(10);
-				if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("MoreHpOpponent"))
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("MoreHpOpponent"))
 				{
 					Singleton<MagnificusLifeManager>.Instance.opponentLife = 15;
 					Singleton<MagnificusLifeManager>.Instance.opponentLifeCounter.ShowValue(15);
 				}
 				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Locked;
-				yield return this.StrikeGoldSequence();
+				yield return this.NewPhaseSequence();
 				yield return base.ClearQueue();
 				base.Blueprint = ScriptableObject.CreateInstance<BossBlueprints.GoobertP2Blueprint>();
 				if (RunState.Run.regionTier > 1)
@@ -409,7 +543,7 @@ namespace MagnificusMod
 				yield break;
 			}
 
-			public IEnumerator StrikeGoldSequence()
+			public IEnumerator NewPhaseSequence()
 			{
 				base.TurnPlan.Clear();
 				int num = 0;
@@ -457,7 +591,7 @@ namespace MagnificusMod
 					AudioController.Instance.PlaySound2D("Footsteps_Goo#5", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
 					List<CardSlot>.Enumerator enumerator2 = default(List<CardSlot>.Enumerator);
 					yield return new WaitForSeconds(0.1f);
-					yield return GameObject.Find("TextDisplayer").GetComponent<TextDisplayer>().ShowUntilInput("Thats better.", -0.65f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
+					yield return GameObject.Find("TextDisplayer").GetComponent<TextDisplayer>().ShowUntilInput("That's better.", -0.65f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
 					yield return new WaitForSeconds(0.1f);
 					Plugin.setBaseTextDisplayerOn(false);
 					List<CardSlot> list = Singleton<BoardManager>.Instance.OpponentSlotsCopy.FindAll((CardSlot x) => x.opposingSlot.Card == null);
@@ -563,7 +697,7 @@ namespace MagnificusMod
 				else
 				{
 					/*
-					if (!KayceeStorage.IsKaycee)
+					if (!SaveManager.saveFile.ascensionActive)
 					{
 						Singleton<TextDisplayer>.Instance.ShowMessage("its over!!");
 						Singleton<TableVisualEffectsManager>.Instance.ResetTableColors();
@@ -602,14 +736,14 @@ namespace MagnificusMod
 			{
 				Singleton<MagnificusLifeManager>.Instance.opponentLife = 10;
 				Singleton<MagnificusLifeManager>.Instance.opponentLifeCounter.ShowValue(10);
-				if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("MoreHpOpponent"))
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("MoreHpOpponent"))
 				{
 					Singleton<MagnificusLifeManager>.Instance.opponentLife = 15;
 					Singleton<MagnificusLifeManager>.Instance.opponentLifeCounter.ShowValue(15);
 				}
 				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Locked;
 				yield return base.ClearQueue();
-				yield return this.StrikeGoldSequence();
+				yield return this.NewPhaseSequence();
 				base.Blueprint = ScriptableObject.CreateInstance<BossBlueprints.EspeararaP2Blueprint>();
 				List<List<CardInfo>> plan = EncounterBuilder.BuildOpponentTurnPlan(base.Blueprint, 0, false);
 				base.ReplaceAndAppendTurnPlan(plan);
@@ -617,7 +751,7 @@ namespace MagnificusMod
 				yield break;
 			}
 
-			public IEnumerator StrikeGoldSequence()
+			public IEnumerator NewPhaseSequence()
 			{
 				Singleton<ViewManager>.Instance.SwitchToView(View.OpponentQueue, false, true);
 				base.TurnPlan.Clear();
@@ -739,7 +873,7 @@ namespace MagnificusMod
 				phase = 2;
 				Singleton<MagnificusLifeManager>.Instance.opponentLife = 10;
 				Singleton<MagnificusLifeManager>.Instance.opponentLifeCounter.ShowValue(10);
-				if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("MoreHpOpponent"))
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("MoreHpOpponent"))
 				{
 					Singleton<MagnificusLifeManager>.Instance.opponentLife = 15;
 					Singleton<MagnificusLifeManager>.Instance.opponentLifeCounter.ShowValue(15);
@@ -747,7 +881,7 @@ namespace MagnificusMod
 				Singleton<ViewManager>.Instance.SwitchToView(View.OpponentQueue, false, true);
 				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Locked;
 				yield return new WaitForSeconds(0.5f);
-				yield return this.StrikeGoldSequence();
+				yield return this.NewPhaseSequence();
 				base.Blueprint = ScriptableObject.CreateInstance<BossBlueprints.LonelyMageP2BlueprintNERF>();
 				if (RunState.Run.regionTier > 0)
 				{
@@ -759,7 +893,7 @@ namespace MagnificusMod
 				yield break;
 			}
 
-			public IEnumerator StrikeGoldSequence()
+			public IEnumerator NewPhaseSequence()
 			{
 				base.TurnPlan.Clear();
 				Plugin.switchToSpeakerStyle(2);
@@ -843,9 +977,11 @@ namespace MagnificusMod
 					AudioController.Instance.StopAllLoops();
 					Singleton<InteractionCursor>.Instance.SetHidden(true);
 					yield return new WaitForSeconds(0.5f);
+					if (SaveFile.IsAscension) { AchievementManager.Unlock(MagnificusMod.Achievements.MagicalLabyrinth); }
 					yield return new WaitForSeconds(3f);
 					if (SaveFile.IsAscension)
 					{
+						
 						AscensionMenuScreens.ReturningFromSuccessfulRun = true;
 						AscensionStatsData.TryIncrementStat(AscensionStat.Type.Victories);
 						AscensionStatsData.TryIncrementStat(AscensionStat.Type.BossesDefeated);
@@ -922,7 +1058,7 @@ namespace MagnificusMod
 			{
 				Singleton<MagnificusLifeManager>.Instance.opponentLife = 10;
 				Singleton<MagnificusLifeManager>.Instance.opponentLifeCounter.ShowValue(10);
-				if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("MoreHpOpponent"))
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("MoreHpOpponent"))
 				{
 					Singleton<MagnificusLifeManager>.Instance.opponentLife = 15;
 					Singleton<MagnificusLifeManager>.Instance.opponentLifeCounter.ShowValue(15);
@@ -1097,7 +1233,7 @@ namespace MagnificusMod
 				yield break;
 			}
 
-			public IEnumerator StrikeGoldSequence()
+			public IEnumerator NewPhaseSequence()
 			{
 				base.TurnPlan.Clear();
 				bool doneDat = false;
@@ -1170,6 +1306,335 @@ namespace MagnificusMod
 			private CardModificationInfo mod;
 		}
 
+		public class GoranjOpponent : Part1BossOpponent
+		{
+			public static readonly InscryptionAPI.Encounters.OpponentManager.FullOpponent FullOpponent = InscryptionAPI.Encounters.OpponentManager.Add(MagnificusMod.Plugin.PluginGuid, "GoranjOpponent", GoranjSequencer.ID, typeof(GoranjOpponent));
+			public static readonly Opponent.Type ID = InscryptionAPI.Encounters.OpponentManager.Add(MagnificusMod.Plugin.PluginGuid, "GoranjOpponent", GoranjSequencer.ID, typeof(GoranjOpponent)).Id;
+			public override string DefeatedPlayerDialogue
+			{
+				get
+				{
+					return "[c:g1]Yet[c:] [c:g2]another[c:] [c:g1]soul[c:] [c:g2]I[c:] [c:g1]claim.[c:] [c:g2]Banish[c:] [c:g1]yourself[c:] [c:g2]to[c:] [c:g1]the[c:] [c:g2]depths,[c:] [c:g1]and[c:] [c:g2]do[c:] [c:g1]not[c:] [c:g2]return.[c:]";
+				}
+			}
+
+			public override IEnumerator IntroSequence(EncounterData encounter)
+			{
+				AudioController.Instance.FadeOutLoop(0.75f, Array.Empty<int>());
+				yield return base.IntroSequence(encounter);
+				yield return new WaitForSeconds(0.75f);
+				if (!SavedVars.LearnedMechanics.Contains("goranjboss;"))
+				{
+					yield return new WaitForSeconds(2.05f);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput(".. Where on earth is my [c:g1]Goo Mage[c:]?", 2f, 0f, Emotion.Quiet, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Magnificus, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Have your.. Modifications removed him?", 2f, 0f, Emotion.Anger, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Magnificus, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("This tampering has gone on for far too long. I shall not allow it anymore.", 2f, 0f, Emotion.Anger, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Magnificus, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("When we face off, I won't be going easy on you.", 2f, 0f, Emotion.Anger, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Magnificus, null);
+					SavedVars.LearnedMechanics += "goranjboss;";
+				}
+				GameObject bossPainting = GameObject.Instantiate(GameObject.Find("GameTable").transform.Find("LifePainting").gameObject);
+				bossPainting.name = "goranjPainting";
+				bossPainting.SetActive(true);
+				bossPainting.transform.parent = GameObject.Find("GameTable").transform;
+				bossPainting.transform.localPosition = new Vector3(0f, -5f, 13.5f);
+				bossPainting.transform.localRotation = Quaternion.Euler(0, 0, 0);
+				bossPainting.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+				bossPainting.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("goranjboss.png");
+				bossPainting.transform.Find("Frame").Find("Glow_Edge_Right").gameObject.SetActive(true);
+				bossPainting.transform.Find("Frame").Find("Glow_Edge_Left").gameObject.SetActive(true);
+				bossPainting.transform.Find("Frame").Find("Glow_Edge_Right").gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 0.5f, 0f, 1f);
+				bossPainting.transform.Find("Frame").Find("Glow_Edge_Left").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.4f, 1f, 0.4f, 1f);
+				bossPainting.GetComponent<SineWaveMovement>().originalPosition = new Vector3(0f, 5.5f, 13.5f);
+				bossPainting.GetComponent<SineWaveMovement>().enabled = false;
+				this.SetSceneEffectsShown(true);
+				ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.MasterBosses);
+				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
+				yield return new WaitForSeconds(1.55f);
+				Tween.LocalPosition(bossPainting.transform, new Vector3(0f, 6f, 13.5f), 0.45f, 0f);
+				GameObject.Find("deckLight").transform.parent.gameObject.GetComponent<Light>().intensity = 3f;
+				GameObject.Find("deckLight").transform.parent.gameObject.GetComponent<Light>().color = new Color(1, 0.7f, 0, 1);
+				yield return new WaitForSeconds(0.35f);
+				Singleton<ViewManager>.Instance.SwitchToView(View.BossCloseup, false, true);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g1]Halt![c:] [c:g2]A[c:] [c:g1]challenger[c:] [c:g2]dare[c:] [c:g1]approach?![c:]", 2f, 0f, Emotion.Anger, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.AnglerTalkingCard, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g1]Quaint,[c:] [c:g2]I[c:] [c:g1]shall[c:] [c:g2]make[c:] [c:g1]mince[c:] [c:g2]meat[c:] [c:g1]out[c:] [c:g2]of[c:] [c:g1]you.[c:]", 2f, 0f, Emotion.Anger, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.AnglerTalkingCard, null);
+				yield return new WaitForSeconds(0.1f);
+				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
+				bossPainting.GetComponent<SineWaveMovement>().enabled = true;
+				yield return new WaitForSeconds(0.5f);
+				AudioController.Instance.SetLoopAndPlay("Goo_Mage", 0, true, true);
+				AudioController.Instance.SetLoopVolume(0.3f, 4f, 1, true);
+				yield return new WaitForSeconds(0.15f);
+				yield break;
+			}
+
+			public static string GetGameObjectPath(GameObject obj)
+			{
+				string text = "/" + obj.name;
+				while (obj.transform.parent != null)
+				{
+					obj = obj.transform.parent.gameObject;
+					text = "/" + obj.name + text;
+				}
+				return text;
+			}
+
+			public override void SetSceneEffectsShown(bool showEffects)
+			{
+
+				if (showEffects)
+				{
+					Color darkLimeGreen = GameColors.Instance.darkLimeGreen;
+					darkLimeGreen.a = 0.5f;
+					foreach (CardSlot cardSlot in Singleton<BoardManager>.Instance.AllSlots)
+					{
+						if (cardSlot.Index % 2 == 0)
+						{
+							cardSlot.SetColors(darkLimeGreen, GameColors.Instance.limeGreen, GameColors.Instance.darkLimeGreen);
+						} else
+                        {
+							cardSlot.SetColors(GameColors.Instance.orange, GameColors.Instance.brownOrange, GameColors.Instance.orange);
+						}
+					}
+				}
+				else
+				{
+					foreach (CardSlot cardSlot in Singleton<BoardManager>.Instance.AllSlots)
+					{
+						cardSlot.ResetColors();
+					}
+				}
+			}
+
+			public override IEnumerator StartNewPhaseSequence()
+			{
+				Singleton<MagnificusLifeManager>.Instance.opponentLife = 10;
+				Singleton<MagnificusLifeManager>.Instance.opponentLifeCounter.ShowValue(10);
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("MoreHpOpponent"))
+				{
+					Singleton<MagnificusLifeManager>.Instance.opponentLife = 15;
+					Singleton<MagnificusLifeManager>.Instance.opponentLifeCounter.ShowValue(15);
+				}
+				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Locked;
+				Singleton<ViewManager>.Instance.SwitchToView(View.Default);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g1]Irritating,[c:] [c:g2]you[c:] [c:g1]persist.[c:] [c:g2]You[c:] [c:g1]have[c:] [c:g2]bound[c:] [c:g1]me[c:] [c:g2]to[c:] [c:g1]excert[c:] [c:g2]my[c:] [c:g1]blade.[c:]", 2f, 0f, Emotion.Anger, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.AnglerTalkingCard, null);
+
+				base.Blueprint = ScriptableObject.CreateInstance<BossBlueprints.GoranjP2Blueprint>();
+				List<List<CardInfo>> plan = EncounterBuilder.BuildOpponentTurnPlan(base.Blueprint, 0, false);
+				base.ReplaceAndAppendTurnPlan(plan);
+				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Unlocked;
+				yield break;
+			}
+
+
+			private CardModificationInfo mod;
+		}
+
+		public class OrluOpponent : Part1BossOpponent
+		{
+			public static readonly InscryptionAPI.Encounters.OpponentManager.FullOpponent FullOpponent = InscryptionAPI.Encounters.OpponentManager.Add(MagnificusMod.Plugin.PluginGuid, "OrluOpponent", OrluSequencer.ID, typeof(OrluOpponent));
+			public static readonly Opponent.Type ID = InscryptionAPI.Encounters.OpponentManager.Add(MagnificusMod.Plugin.PluginGuid, "OrluOpponent", OrluSequencer.ID, typeof(OrluOpponent)).Id;
+			public override string DefeatedPlayerDialogue
+			{
+				get
+				{
+					return "[c:g2]Farewell,[c:] [c:g3]young[c:] [c:g2]mage![c:] [c:g3]'Twas[c:] [c:g2]a[c:] [c:g3]fantastic[c:] [c:g2]duel.[c:]";
+				}
+			}
+
+			public override IEnumerator IntroSequence(EncounterData encounter)
+			{
+				AudioController.Instance.FadeOutLoop(0.75f, Array.Empty<int>());
+				yield return base.IntroSequence(encounter);
+				yield return new WaitForSeconds(0.75f);
+				GameObject.Find("Player").transform.Find("PixelCameraParent").Find("Pixel Camera").gameObject.GetComponent<Camera>().backgroundColor = new Color(0.4f, 0.15f, 0.4f, 1);
+				GameObject bossPainting = GameObject.Instantiate(GameObject.Find("GameTable").transform.Find("LifePainting").gameObject);
+				bossPainting.name = "orluPainting";
+				bossPainting.SetActive(true);
+				bossPainting.transform.parent = GameObject.Find("GameTable").transform;
+				bossPainting.transform.localPosition = new Vector3(0f, 15f, 13.5f);
+				bossPainting.transform.localRotation = Quaternion.Euler(0, 0, 0);
+				bossPainting.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+				bossPainting.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("orluboss.png");
+				bossPainting.transform.Find("Frame").Find("Glow_Edge_Right").gameObject.SetActive(true);
+				bossPainting.transform.Find("Frame").Find("Glow_Edge_Left").gameObject.SetActive(true);
+				bossPainting.transform.Find("Frame").Find("Glow_Edge_Right").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.5f, 0.8f, 1f, 1f);
+				bossPainting.transform.Find("Frame").Find("Glow_Edge_Left").gameObject.GetComponent<MeshRenderer>().material.color = new Color(1f, 0.57f, 0f, 1f);
+				bossPainting.GetComponent<SineWaveMovement>().originalPosition = new Vector3(0f, 4.5f, 13.5f);
+				bossPainting.GetComponent<SineWaveMovement>().yMagnitude = -0.5f;
+				bossPainting.GetComponent<SineWaveMovement>().enabled = false;
+				this.SetSceneEffectsShown(true);
+				ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.MasterBosses);
+				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
+				yield return new WaitForSeconds(1.55f);
+				Tween.LocalPosition(bossPainting.transform, new Vector3(0f, 6f, 13.5f), 0.45f, 0f);
+				GameObject.Find("deckLight").transform.parent.gameObject.GetComponent<Light>().intensity = 3f;
+				GameObject.Find("deckLight").transform.parent.gameObject.GetComponent<Light>().color = new Color(0.25f, 0f, 0.25f, 1);
+				yield return new WaitForSeconds(0.35f);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g2]Hmm?[c:] [c:g3]An[c:] [c:g2]opponent..?[c:]", 2f, 0f, Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.AnglerTalkingCard, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g2]I[c:] [c:g3]haven't[c:] [c:g2]had[c:] [c:g3]a[c:] [c:g2]duel[c:] [c:g3]in[c:] [c:g2]a[c:] [c:g3]century![c:]", 2f, 0f, Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.AnglerTalkingCard, null);
+				Singleton<ViewManager>.Instance.SwitchToView(View.BossCloseup, false, true);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g2]Have[c:] [c:g3]at[c:] [c:g2]thee![c:]", 2f, 0f, Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.AnglerTalkingCard, null);
+				yield return new WaitForSeconds(0.1f);
+				GameObject clouds = Instantiate(GameObject.Find("DungeonFloor"));
+				clouds.transform.localScale = new Vector3(650, 1550, 1);
+				clouds.transform.position = new Vector3(-1500, 3.25f, 0);
+				clouds.transform.localRotation = Quaternion.Euler(88.9999f, 249.95f, 0);
+				clouds.transform.Find("BrickGround").GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("cloudfloor.png");
+				clouds.transform.Find("BrickGround").GetComponent<MeshRenderer>().material.color = new Color(1, 0.8f, 1, 1);
+				clouds.transform.Find("BrickGround").GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(65, 25);
+				clouds.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.SetTexture("_BumpMap", Tools.getImage("cloudfloornormal.png") as Texture);
+				clouds.transform.Find("BrickGround").gameObject.AddComponent<UVScroller>();
+				clouds.transform.Find("BrickGround").gameObject.GetComponent<UVScroller>().XscrollSpeed = 0.0002f;
+				clouds.transform.Find("BrickGround").gameObject.GetComponent<UVScroller>().YscrollSpeed = 0.0002f;
+				for(int i = 0; i < GameObject.Find("lanterns").transform.childCount; i++)
+                {
+					GameObject.Find("lanterns").transform.GetChild(i).gameObject.SetActive(false);
+				}
+				Tween.LocalPosition(clouds.transform, new Vector3(0, 3.25f, 0), 4f, 0);
+				Tween.LocalPosition(GameObject.Find("scenery").transform, new Vector3(0, -25, 0), 5f, 4f);
+				Tween.LocalPosition(GameObject.Find("DungeonFloor").transform, new Vector3(340f, -7f, -600f), 0.5f, 3.5f);
+				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
+				bossPainting.GetComponent<SineWaveMovement>().enabled = true;
+				yield return new WaitForSeconds(0.5f);
+				AudioController.Instance.SetLoopAndPlay("gbc_battle_wizard", 0, true, true);
+				AudioController.Instance.SetLoopVolume(0.3f, 4f, 1, true);
+				yield return new WaitForSeconds(0.15f);
+				yield break;
+			}
+
+			public static string GetGameObjectPath(GameObject obj)
+			{
+				string text = "/" + obj.name;
+				while (obj.transform.parent != null)
+				{
+					obj = obj.transform.parent.gameObject;
+					text = "/" + obj.name + text;
+				}
+				return text;
+			}
+
+			public override void SetSceneEffectsShown(bool showEffects)
+			{
+
+				if (showEffects)
+				{
+					Color darkLimeGreen = GameColors.Instance.darkLimeGreen;
+					darkLimeGreen.a = 0.5f;
+					foreach (CardSlot cardSlot in Singleton<BoardManager>.Instance.AllSlots)
+					{
+						if (cardSlot.Index % 2 == 0)
+						{
+							cardSlot.SetColors(GameColors.Instance.orange, GameColors.Instance.brownOrange, GameColors.Instance.orange);
+						}
+						else
+						{
+							cardSlot.SetColors(new Color(0, 0.3f, 0.8f, 0.5f), new Color(0, 0.3f, 0.8f, 1), new Color(0, 0.8f, 0.8f, 1));
+						}
+					}
+				}
+				else
+				{
+					foreach (CardSlot cardSlot in Singleton<BoardManager>.Instance.AllSlots)
+					{
+						cardSlot.ResetColors();
+					}
+				}
+			}
+
+			public override IEnumerator StartNewPhaseSequence()
+			{
+				Singleton<MagnificusLifeManager>.Instance.opponentLife = 10;
+				Singleton<MagnificusLifeManager>.Instance.opponentLifeCounter.ShowValue(10);
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("MoreHpOpponent"))
+				{
+					Singleton<MagnificusLifeManager>.Instance.opponentLife = 15;
+					Singleton<MagnificusLifeManager>.Instance.opponentLifeCounter.ShowValue(15);
+				}
+				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Locked;
+				Singleton<ViewManager>.Instance.SwitchToView(View.Default);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g2]A[c:] [c:g3]fierce[c:] [c:g2]opponent[c:] [c:g3]you[c:] [c:g2]are![c:]", 2f, 0f, Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.AnglerTalkingCard, null);
+				int summoned = 0;
+				CardModificationInfo thief = new CardModificationInfo();
+				thief.abilities = new List<Ability> { SigilCode.OrluHit.ability };
+				foreach (CardSlot slot in Singleton<BoardManager>.Instance.OpponentSlotsCopy)
+				{
+					if (slot.Card == null && summoned < 2)
+					{
+						summoned++;
+						CardInfo valk = CardLoader.GetCardByName("mag_BOSSvalkyrie");
+						valk.mods.Add(thief);
+						yield return Singleton<BoardManager>.Instance.CreateCardInSlot(valk, slot, 0.2f, true);
+					}
+				}
+				if (summoned < 1)
+                {
+					yield return Singleton<BoardManager>.Instance.OpponentSlotsCopy[0].Card.Die(false);
+					yield return Singleton<BoardManager>.Instance.OpponentSlotsCopy[3].Card.Die(false);
+					foreach (CardSlot slot in Singleton<BoardManager>.Instance.OpponentSlotsCopy)
+					{
+						if (slot.Card == null)
+						{
+							CardInfo valk = CardLoader.GetCardByName("mag_BOSSvalkyrie");
+							valk.mods.Add(thief);
+							yield return Singleton<BoardManager>.Instance.CreateCardInSlot(valk, slot, 0.2f, true);
+						}
+					}
+				}
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g2]I'll[c:] [c:g3]just[c:] [c:g2]have[c:] [c:g3]to[c:] [c:g2]use[c:] [c:g3]some[c:] [c:g2]more[c:] [c:g3]dirty[c:] [c:g2]tricks[c:] [c:g3]to[c:] [c:g2]beat[c:] [c:g3]you![c:]", 2f, 0f, Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.AnglerTalkingCard, null);
+				if (summoned < 1)
+                {
+					GameObject spell = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
+					spell.name = "WindSpell";
+					spell.transform.SetParent(GameObject.Find("GameTable").transform);
+					spell.transform.localPosition = new Vector3(-4.65f, 5.55f, 4.3f);
+					spell.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+					spell.transform.localRotation = Quaternion.Euler(65, 0, 0);
+					spell.SetActive(false);
+					SelectableCard component10 = spell.GetComponent<SelectableCard>();
+					component10.Anim.PlayQuickRiffleSound();
+					component10.Initialize(CardLoader.GetCardByName("mag_windspell"));
+					Singleton<ViewManager>.Instance.SwitchToView(View.Board, false, true);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g2]And[c:] [c:g3]something[c:] [c:g2]else,[c:] [c:g3]why[c:] [c:g2]not.[c:]", 2f, 0f, Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.AnglerTalkingCard, null);
+					spell.SetActive(true);
+					Tween.LocalPosition(spell.transform, new Vector3(0f, 5.55f, 4.3f), 0.15f, 0);
+					yield return new WaitForSeconds(0.125f);
+					AudioController.Instance.PlaySound2D("wizard_opponent_summon", MixerGroup.TableObjectsSFX, 1f, 0f, null, null, null, null, false);
+					CardModificationInfo fly = new CardModificationInfo();
+					fly.abilities = new List<Ability> { Ability.Flying };
+					foreach (CardSlot slot in Singleton<BoardManager>.Instance.OpponentSlotsCopy)
+					{
+						if (slot.Card != null)
+						{
+							slot.Card.AddTemporaryMod(fly);
+							if (GameObject.Find("OpponentSlots").transform.GetChild(slot.Index).childCount > 5)
+							{
+								GameObject model = GameObject.Find("OpponentSlots").transform.GetChild(slot.Index).GetChild(5).gameObject;
+								model.GetComponent<Card>().RenderCard();
+							}
+						}
+					}
+					yield return new WaitForSeconds(0.65f);
+					Tween.LocalPosition(spell.transform, new Vector3(8.65f, 5.55f, 4.3f), 0.25f, 0);
+					yield return new WaitForSeconds(0.35f);
+					spell.SetActive(false);
+					Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
+					GameObject.Destroy(spell);
+				}
+				base.Blueprint = ScriptableObject.CreateInstance<BossBlueprints.OrluP2Blueprint>();
+				List<List<CardInfo>> plan = EncounterBuilder.BuildOpponentTurnPlan(base.Blueprint, 0, false);
+				base.ReplaceAndAppendTurnPlan(plan);
+				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Unlocked;
+				yield break;
+			}
+
+			private IEnumerator hideSpell(GameObject spell)
+			{
+				yield return new WaitForSeconds(0.25f);
+				spell.SetActive(false);
+			}
+
+			private CardModificationInfo mod;
+		}
 		public class GoobertSequencer : Part1BossBattleSequencer
 		{
 			public static readonly string ID = InscryptionAPI.Encounters.SpecialSequenceManager.Add(MagnificusMod.Plugin.PluginGuid, "GoobertSequencer", typeof(GoobertSequencer)).Id;
@@ -1220,6 +1685,259 @@ namespace MagnificusMod
 				}
 				encounterData.Blueprint = blueprint;
 				encounterData.opponentType = GoobertOpponnent.FullOpponent.Id;
+				encounterData.opponentTurnPlan = EncounterBuilder.BuildOpponentTurnPlan(blueprint, 15 + 3, false);
+				return encounterData;
+			}
+		}
+
+		public class GoranjSequencer : Part1BossBattleSequencer
+		{
+			public static readonly string ID = InscryptionAPI.Encounters.SpecialSequenceManager.Add(MagnificusMod.Plugin.PluginGuid, "GoranjSequencer", typeof(GoranjSequencer)).Id;
+			public override Opponent.Type BossType
+			{
+				get
+				{
+					return (Opponent.Type)111;
+				}
+			}
+
+			public override StoryEvent DefeatedStoryEvent
+			{
+				get
+				{
+					return (StoryEvent)1001;
+				}
+			}
+
+			public override bool RespondsToUpkeep(bool playerUpkeep)
+			{
+				return playerUpkeep && Singleton<TurnManager>.Instance.Opponent.NumLives < 2;
+			}
+
+			public override IEnumerator OnUpkeep(bool playerUpkeep)
+			{
+				if (targetSlots.Count > 0)
+				{
+					yield return StrikeSwordSequence();
+				}
+				yield return ChooseTargetsSequence();
+				yield break;
+			}
+
+			public IEnumerator ChooseTargetsSequence()
+			{
+				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Locked;
+				yield return new WaitForSeconds(0.3f);
+				int num = SaveManager.SaveFile.GetCurrentRandomSeed() + Singleton<TurnManager>.Instance.TurnNumber;
+				if (this.targetIconPrefab == null)
+				{
+					this.targetIconPrefab = ResourceBank.Get<GameObject>("Prefabs/Cards/SpecificCardModels/CannonTargetIcon");
+				}
+				List<CardSlot> opponentSlotsCopy = Singleton<BoardManager>.Instance.OpponentSlotsCopy;
+				opponentSlotsCopy.RemoveAll((CardSlot x) => this.targetSlots.Contains(x));
+				List<CardSlot> playerSlotsCopy = Singleton<BoardManager>.Instance.PlayerSlotsCopy;
+				playerSlotsCopy.RemoveAll((CardSlot x) => this.targetSlots.Contains(x));
+				this.targetSlots.Clear();
+				this.targetSlots.Add(opponentSlotsCopy[SeededRandom.Range(0, opponentSlotsCopy.Count, num++)]);
+				this.targetSlots.Add(playerSlotsCopy[SeededRandom.Range(0, playerSlotsCopy.Count, num++)]);
+				Singleton<ViewManager>.Instance.SwitchToView(View.Board, false, true);
+				yield return new WaitForSeconds(0.25f);
+				foreach (CardSlot slot in this.targetSlots)
+				{
+					yield return new WaitForSeconds(0.05f);
+					GameObject slotType = slot.IsPlayerSlot ? GameObject.Find("PlayerSlots") : GameObject.Find("OpponentSlots");
+					GameObject gameObject = GameObject.Instantiate<GameObject>(this.targetIconPrefab, slotType.transform);
+					gameObject.transform.position = slotType.transform.GetChild(slot.Index).position;
+					gameObject.transform.localPosition = new Vector3(gameObject.transform.localPosition.x, 5, gameObject.transform.localPosition.z);
+					gameObject.transform.localScale = new Vector3(15, 10f, 15);
+					gameObject.transform.localRotation = Quaternion.identity;
+					this.targetIcons.Add(gameObject);
+				}
+				yield return new WaitForSeconds(0.3f);
+				yield break;
+			}
+
+			private IEnumerator StrikeSwordSequence()
+			{
+				GameObject spell = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
+				spell.name = "GoranjRageSpell";
+				spell.transform.SetParent(GameObject.Find("GameTable").transform);
+				spell.transform.localPosition = new Vector3(-4.65f, 5.55f, 4.3f);
+				spell.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+				spell.transform.localRotation = Quaternion.Euler(65, 0, 0);
+				spell.SetActive(false);
+				SelectableCard component10 = spell.GetComponent<SelectableCard>();
+				component10.Anim.PlayQuickRiffleSound();
+				component10.Initialize(CardLoader.GetCardByName("mag_goranjrage"));
+				for (int i = 0; i < this.targetSlots.Count; i++)
+				{
+					CardSlot slot = this.targetSlots[i];
+					if (slot.Card != null && !slot.Card.Dead)
+					{
+						playedStrikeDialogue = !this.playedStrikeDialogue;
+						if (this.playedStrikeDialogue)
+						{
+							base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowThenClear("[c:g1]STRIKE![c:]", 2.5f, 0f, Emotion.Anger, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.AnglerTalkingCard, null));
+						}
+						yield return new WaitForSeconds(0.3f);
+						if (i == 0)
+						{
+							spell.SetActive(true);
+						}
+						Singleton<ViewManager>.Instance.SwitchToView(View.Board, false, true);
+						Tween.LocalPosition(spell.transform, new Vector3(0f, 5.55f, 4.3f), 0.15f, 0);
+						yield return new WaitForSeconds(0.125f);
+						this.CleanUpTargetIcon(this.targetIcons[i]);
+						yield return new WaitForSeconds(0.1666f);
+						AudioController.Instance.PlaySound2D("wizard_opponent_summon", MixerGroup.TableObjectsSFX, 1f, 0f, null, null, null, null, false);
+						yield return slot.Card.TakeDamage(10, null);
+						Tween.LocalPosition(spell.transform, new Vector3(8.65f, 5.55f, 4.3f), 0.25f, 0);
+						base.StartCoroutine(hideSpell(spell));
+					}
+				}
+				this.CleanupTargetIcons();
+				try
+				{
+					if (spell != null)
+					{
+						GameObject.Destroy(spell);
+					}
+                }
+                catch { }
+				yield break;
+			}
+
+			private IEnumerator hideSpell(GameObject spell)
+            {
+				yield return new WaitForSeconds(0.25f);
+				spell.SetActive(false);
+			}
+
+			private void CleanUpTargetIcon(GameObject icon)
+			{
+				Tween.LocalScale(icon.transform, Vector3.zero, 0.1f, 0f, Tween.EaseIn, Tween.LoopType.None, null, delegate ()
+				{
+					GameObject.Destroy(icon);
+				}, true);
+			}
+
+			public void CleanupTargetIcons()
+			{
+				this.targetIcons.ForEach(delegate (GameObject x)
+				{
+					if (x != null)
+					{
+						this.CleanUpTargetIcon(x);
+					}
+				});
+				this.targetIcons.Clear();
+			}
+
+			public override EncounterData BuildCustomEncounter(CardBattleNodeData nodeData)
+			{
+				EncounterData encounterData = base.BuildCustomEncounter(nodeData);
+				EncounterBlueprintData blueprint = ScriptableObject.CreateInstance<BossBlueprints.GoranjP1Blueprint>();
+				encounterData.Blueprint = blueprint;
+				encounterData.opponentType = GoranjOpponent.FullOpponent.Id;
+				encounterData.opponentTurnPlan = EncounterBuilder.BuildOpponentTurnPlan(blueprint, 15 + 3, false);
+				return encounterData;
+			}
+
+			public bool playedStrikeDialogue = false;
+
+			public List<CardSlot> targetSlots = new List<CardSlot>();
+
+			public List<GameObject> targetIcons = new List<GameObject>();
+
+			public GameObject targetIconPrefab;
+		}
+
+		public class OrluSequencer : Part1BossBattleSequencer
+		{
+			public static readonly string ID = InscryptionAPI.Encounters.SpecialSequenceManager.Add(MagnificusMod.Plugin.PluginGuid, "OrluSequencer", typeof(OrluSequencer)).Id;
+			public override Opponent.Type BossType
+			{
+				get
+				{
+					return (Opponent.Type)112;
+				}
+			}
+
+			public override bool RespondsToOtherCardResolve(PlayableCard otherCard)
+			{
+				return otherCard.Info.name == "mag_pheonix" || otherCard.Info.name == "mag_masterob";
+			}
+
+			public override IEnumerator OnOtherCardResolve(PlayableCard otherCard)
+			{
+				if (otherCard.Info.name == "mag_masterob")
+				{
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g2]Ooh![c:] [c:g3]What[c:] [c:g2]a[c:] [c:g3]great[c:] [c:g2]portrait![c:]", -0.65f, 0.4f, Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.Single, null, true);
+				} else if (otherCard.Info.name == "mag_pheonix")
+                {
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g2]A[c:] [c:g3]replica[c:] [c:g2]of[c:] [c:g3]my[c:] [c:g2]loyal[c:] [c:g3]phoenix,[c:] [c:g2]isn't[c:] [c:g3]she[c:] [c:g2]absolutely[c:] [c:g3]stunning?[c:]", -0.65f, 0.4f, Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.Single, null, true);
+				}
+				yield break;
+			}
+
+
+			public override bool RespondsToUpkeep(bool playerUpkeep)
+			{
+				return playerUpkeep && Singleton<MagnificusLifeManager>.Instance.opponentLife < 5 && !doneVampireValk;
+			}
+
+			public override IEnumerator OnUpkeep(bool playerUpkeep)
+			{
+				int summoned = 0;
+				CardModificationInfo vampire = new CardModificationInfo();
+				vampire.abilities = new List<Ability> { SigilCode.LifeSteal.ability };
+				foreach(CardSlot slot in Singleton<BoardManager>.Instance.OpponentSlotsCopy)
+                {
+					if (slot.Card == null && summoned < 2)
+                    {
+						summoned++;
+						CardInfo valk = CardLoader.GetCardByName("mag_BOSSvalkyrie");
+						valk.mods.Add(vampire);
+						yield return Singleton<BoardManager>.Instance.CreateCardInSlot(valk, slot, 0.2f, true);
+					}
+                }
+				if (summoned > 0)
+                {
+					doneVampireValk = true;
+					if (Singleton<OrluOpponent>.Instance.NumLives > 1)
+					{
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g2]I[c:] [c:g3]see[c:] [c:g2]you've[c:] [c:g3]done[c:] [c:g2]a[c:] [c:g3]fair[c:] [c:g2]bit[c:] [c:g3]of[c:] [c:g2]damage![c:]", 2f, 0f, Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.AnglerTalkingCard, null);
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g2]Don't[c:] [c:g3]mind[c:] [c:g2]if[c:] [c:g3]I[c:] [c:g2]just[c:] [c:g3]place[c:] [c:g2]my[c:] [c:g3]thieves..[c:]", 2f, 0f, Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.AnglerTalkingCard, null);
+					} else
+                    {
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g2]Don't[c:] [c:g3]mind[c:] [c:g2]if[c:] [c:g3]I[c:] [c:g2]just[c:] [c:g3]place[c:] [c:g2]my[c:] [c:g3]thieves..[c:]", 2f, 0f, Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.AnglerTalkingCard, null);
+					}
+				}
+				yield break;
+			}
+
+			public static void resetValk()
+            {
+				doneVampireValk = false;
+            }
+
+			public static bool doneVampireValk = false;
+
+
+			public override StoryEvent DefeatedStoryEvent
+			{
+				get
+				{
+					return (StoryEvent)1001;
+				}
+			}
+
+			public override EncounterData BuildCustomEncounter(CardBattleNodeData nodeData)
+			{
+				EncounterData encounterData = base.BuildCustomEncounter(nodeData);
+				EncounterBlueprintData blueprint = ScriptableObject.CreateInstance<BossBlueprints.OrluP1Blueprint>();
+				encounterData.Blueprint = blueprint;
+				encounterData.opponentType = OrluOpponent.FullOpponent.Id;
 				encounterData.opponentTurnPlan = EncounterBuilder.BuildOpponentTurnPlan(blueprint, 15 + 3, false);
 				return encounterData;
 			}

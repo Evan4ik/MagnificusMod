@@ -48,7 +48,7 @@ namespace MagnificusMod
 				return !instance.FaceDown && (instance.Info.Sacrificable || instance.HasAbility(Ability.TripleBlood));
 			}
 			bool isManaHeart = false;
-			if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("AllMana"))
+			if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("AllMana"))
 			{
 				isManaHeart = true;
 			}
@@ -93,7 +93,7 @@ namespace MagnificusMod
 			foreach (CardSlot cardSlot in sacrifices)
 			{
 				bool isManaHeart = false;
-				if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("AllMana"))
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("AllMana"))
 				{
 					isManaHeart = true;
 				}

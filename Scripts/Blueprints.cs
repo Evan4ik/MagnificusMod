@@ -1955,6 +1955,114 @@ namespace MagnificusMod
 			}
 		}
 
+		public class region2blueprint11 : EncounterBlueprintData
+		{
+			public region2blueprint11()
+			{
+				base.name = "region2blueprint11";
+				this.turns = new List<List<EncounterBlueprintData.CardBlueprint>>();
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_whitesmith")
+					},
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_rubymox")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_rubymox")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_orangemage")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_greenmage")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_gemfiend")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_crystalworm")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_gemfiend")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_greenmage")
+					},
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_greenmage")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						
+					}
+				});
+			}
+		}
+
 		public class region3blueprint1 : EncounterBlueprintData
 		{
 			public region3blueprint1()
@@ -2747,6 +2855,221 @@ namespace MagnificusMod
 				new EncounterBlueprintData.CardBlueprint
 				{
 					card = CardLoader.GetCardByName("mag_magimorph")
+				}
+			});
+			}
+		}
+
+		public class region3blueprint9 : EncounterBlueprintData
+		{
+			public region3blueprint9()
+			{
+				base.name = "region3blueprint9";
+				this.turns = new List<List<EncounterBlueprintData.CardBlueprint>>();
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_coffeemage")
+				},
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_rubymox")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_greenmox")
+				},
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_jrsage")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_sodamage")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_alchemist")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint()
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_stimmage")
+				},
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_greenmox")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_musclemage")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_coffeemage")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_greenmox")
+				},
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_greenmox")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint()
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_srsage")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint()
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_greenmox")
+				}
+			});
+			}
+		}
+
+		public class region3blueprint10 : EncounterBlueprintData
+		{
+			public region3blueprint10()
+			{
+				base.name = "region3blueprint10";
+				this.turns = new List<List<EncounterBlueprintData.CardBlueprint>>();
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_practicemage")
+				},
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_practicemage")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_puppeteer")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint()
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_wolf")
+				}
+			});
+
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_alchemist")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint()
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_puppeteer")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_jester")
+				},
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_bluemox")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint()
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_gemfiend")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_rubymox")
+				},
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_practicemage")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint()
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_wolf")
+				}
+			});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+			{
+				new EncounterBlueprintData.CardBlueprint
+				{
+					card = CardLoader.GetCardByName("mag_crystalworm")
 				}
 			});
 			}

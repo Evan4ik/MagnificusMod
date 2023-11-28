@@ -1444,6 +1444,31 @@ namespace MagnificusMod
 			myCard.temple = CardTemple.Wizard;
 		}
 
+		public static void AddValkyrie()
+		{
+			List<CardMetaCategory> list = new List<CardMetaCategory> { CardMetaCategory.ChoiceNode };
+			List<GemType> gemCost = new List<GemType> { GemType.Orange, GemType.Blue };
+			CardInfo myCard = CardManager.New("mag", "mag_valkyrie", "Valkyrie", 3, 1, "A student that has trained under Master Orlu. It has become an expert in airborne magicks.")
+
+					.SetPortrait(Tools.GetTexture("valkyrie.png"))
+					.SetCost(bloodCost: 0, gemsCost: gemCost)
+					.AddAbilities(Ability.Flying);
+			myCard.metaCategories = list;
+			myCard.temple = CardTemple.Wizard;
+		}
+		public static void AddBossValkyrie()
+		{
+			List<CardMetaCategory> list = new List<CardMetaCategory>();
+			List<GemType> gemCost = new List<GemType> { GemType.Blue };
+			CardInfo myCard = CardManager.New("mag", "mag_BOSSvalkyrie", "Valkyrie Thief", 1, 2, "liar liar chicken friar.")
+
+					.SetPortrait(Tools.GetTexture("valkyriethief.png"))
+					.SetCost(bloodCost: 0, gemsCost: gemCost)
+					.AddAbilities(Ability.Flying);
+			myCard.metaCategories = list;
+			myCard.temple = CardTemple.Wizard;
+		}
+
 		public static void AddEmeraldFiend()
 		{
 			List<CardMetaCategory> list = new List<CardMetaCategory> { CardMetaCategory.ChoiceNode };
@@ -1705,7 +1730,7 @@ namespace MagnificusMod
 
 			List<Ability> list2 = new List<Ability>();
 			list2.Add(SigilCode.MagDropEmeraldOnDeath.ability);
-			CardInfo myCard = CardManager.New("mag", "mag_skelejrsage", "Skelesage", 3, 2, "One of my own Junior Sages, lost and revived.")
+			CardInfo myCard = CardManager.New("mag", "mag_skelejrsage", "Skelesage", 2, 3, "One of my own Junior Sages, lost and revived.")
 
 							.SetCost(bloodCost: 2)
 							.SetPortrait(Tools.GetTexture("mag_skelejrsage.png"))
@@ -1931,6 +1956,7 @@ namespace MagnificusMod
 					.SetPortrait(Tools.GetTexture("mag_chimemage.png"))
 					.AddSpecialAbilities(list4[0])
 					.AddAbilities(list6[0], Ability.BuffNeighbours)
+					.AddAppearances(CardAppearanceBehaviour.Appearance.RareCardBackground)
 					.AddMetaCategories(list[0]);
 			myCard.metaCategories = list;
 			myCard.temple = CardTemple.Wizard;
@@ -2073,6 +2099,8 @@ namespace MagnificusMod
 			myCard.temple = CardTemple.Wizard;
 			myCard.metaCategories = new List<CardMetaCategory>();
 		}
+	
+
 
 		[HarmonyPatch(typeof(DrawRabbits), "CardToDraw", MethodType.Getter)]
 		public class RabbitFix
@@ -3107,7 +3135,6 @@ namespace MagnificusMod
 
 			myCard.metaCategories = new List<CardMetaCategory>();
 		}
-
 		public static void AddDeathCard()
 		{
 			
@@ -3472,7 +3499,7 @@ namespace MagnificusMod
 			List<CardMetaCategory> list = new List<CardMetaCategory> { Plugin.SpellPool };
 			List<CardAppearanceBehaviour.Appearance> appearanceBehaviours = new List<CardAppearanceBehaviour.Appearance> { CardAppearanceBehaviour.Appearance.TerrainLayout };
 			List<Trait> traits = new List<Trait> { Trait.EatsWarrens };
-
+			
 			List<Ability> list5 = new List<Ability>();
 			list5.Add(SigilCode.BleeneCalculus.ability);
 

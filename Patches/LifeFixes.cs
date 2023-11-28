@@ -42,13 +42,13 @@ namespace MagnificusMod
 				__state.opponentLife = 10;
 				__state.playerLifeCounter.ShowValue(10);
 				__state.opponentLifeCounter.ShowValue(10);
-				if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("MoreHpOpponent"))
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("MoreHpOpponent"))
 				{
 					ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.MoreHpOpponent);
 					__state.opponentLife = 15;
 					__state.opponentLifeCounter.ShowValue(15);
 				}
-				if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("FadingMox"))
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("FadingMox"))
                 {
 					ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.FadingMox);
 					__state.playerLife = KayceeStorage.FleetingLife;
@@ -64,7 +64,7 @@ namespace MagnificusMod
 				Tween.Shake(__state.opponentLifeCounter.transform, __state.opponentLifeCounter.transform.localPosition, Vector3.one * 0.05f, 5f, 0f, Tween.LoopType.None, null, null, true);
 				yield return new WaitForSeconds(3.5f);
 				bool learned = SavedVars.LearnedMechanics.Contains("liferace;");
-				if (!learned && !KayceeStorage.IsKaycee)
+				if (!learned && !SaveManager.saveFile.ascensionActive)
 				{
 					SavedVars.LearnedMechanics += "liferace;";
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You are a simpleton for expecting scales.", -1f, 0.6f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);

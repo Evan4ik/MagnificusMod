@@ -1405,8 +1405,8 @@ namespace MagnificusMod
                     }
                     break;
                 case "lonely":
-                    limit = Random.Range(-1, 2);
-                    for (int y = 0; y < 6 + limit; y++)
+                    limit = Random.Range(-1, 1);
+                    for (int y = 0; y < 5 + limit; y++)
                     {
                         for (int x = 0; x < 5 + Random.Range(-1, 2); x++)
                         {
@@ -1524,7 +1524,7 @@ namespace MagnificusMod
                 }
             }
 
-            if (room == "goobert" && SavedVars.LearnedMechanics.Contains("died") && !KayceeStorage.IsKaycee || room == "espeara" && hasEdaxio || room == "lonely" && hasEdaxio)//add edaxio
+            if (room == "goobert" && SavedVars.LearnedMechanics.Contains("died") && !SaveManager.saveFile.ascensionActive || room == "espeara" && hasEdaxio || room == "lonely" && hasEdaxio)//add edaxio
             {
                 int row = Random.RandomRangeInt(0, id2.Count - 1);
                 List<string> edaxioRow = id2[row];

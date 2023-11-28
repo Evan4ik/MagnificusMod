@@ -23,7 +23,7 @@ namespace MagnificusMod
 {
 	[BepInPlugin(PluginGuid, PluginName, PluginVersion)]
 	[BepInDependency("cyantist.inscryption.api", BepInDependency.DependencyFlags.HardDependency)]
-	[BepInIncompatibility("zorro.inscryption.infiniscryption.p03kayceerun")]
+	[BepInDependency("zorro.inscryption.infiniscryption.achievements")]
 	public class Plugin : BaseUnityPlugin
 	{
 
@@ -45,6 +45,7 @@ namespace MagnificusMod
 
 		private void Awake()
 		{
+			Achievements.addAchievements();
 			WallTextures.GetTextures();
 			base.Logger.LogInfo("Loaded MagnificusMod!");
 			Plugin.Directory = base.Info.Location.Replace("MagnificusMod.dll", "");
@@ -88,6 +89,7 @@ namespace MagnificusMod
 			Sigils.MoxStrf();
 			Sigils.PlatingWork();
 			Sigils.Animator();
+			Sigils.AddLifeSteal();
 
 			SigilCode.CounterBatteryPower.InitStatIconAndAbility();
 			SigilCode.SpellPower.InitStatIconAndAbility();
@@ -171,6 +173,7 @@ namespace MagnificusMod
 			Cards.ChangePackrat();
 			//Cards.ChangeAmalgam();
 			Cards.AddBossExclusive();
+			Cards.AddBossValkyrie();
 			Sigils.ChangeMox();
 			Sigils.DropRuby();
 			Sigils.DropEmerald();
@@ -199,6 +202,7 @@ namespace MagnificusMod
 			Cards.AddGemboundRipper();
 			Cards.AddMoxMage();
 			Cards.AddErraticScholar();
+			Cards.AddValkyrie();
 
 			/*
 			ChangeStump();

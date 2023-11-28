@@ -112,7 +112,7 @@ namespace MagnificusMod
 
 					if (battleRoom)
 					{
-						if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("FadingMox"))
+						if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("FadingMox"))
 						{
 							KayceeStorage.FleetingLife = Singleton<MagnificusLifeManager>.Instance.playerLife;
 						}
@@ -220,7 +220,7 @@ namespace MagnificusMod
 						File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(false, false)));
 						SaveManager.SaveToFile();
 					}
-					if (RunState.Run.regionTier == 0 && MagSave.layout.Contains("3") && !SavedVars.LearnedMechanics.Contains("druid;") && !KayceeStorage.IsKaycee)
+					if (RunState.Run.regionTier == 0 && MagSave.layout.Contains("3") && !SavedVars.LearnedMechanics.Contains("druid;") && !SaveManager.saveFile.ascensionActive)
 					{
 						if (Singleton<ViewManager>.Instance.CurrentView != View.Candles)
 						{

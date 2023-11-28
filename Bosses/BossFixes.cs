@@ -299,13 +299,18 @@ namespace MagnificusMod
 					Singleton<TurnManager>.Instance.PostBattleSpecialNode = new ChooseRareCardNodeData();
 					yield break;
 				}
-				if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("FadingMox"))
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("FadingMox"))
 				{
 					KayceeStorage.FleetingLife = Singleton<MagnificusLifeManager>.Instance.playerLife;
 				}
 				AudioController.Instance.FadeOutLoop(0.5f);
 				yield return new WaitForSeconds(0.75f);
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
+				if (RunState.Run.regionTier == 1 && Generation.challenges.Contains("MasterBosses"))
+                {
+					Singleton<BossOpponents.GoranjSequencer>.Instance.CleanupTargetIcons();
+					yield return new WaitForSeconds(0.25f);
+                }
 				GameObject portraitSlots = GameObject.Find("OpponentSlots");
 				GameObject.Find("CombatBell_Magnificus").transform.Find("Anim").localPosition = new Vector3(0, 0, 0);
 				for (int i = 0; i < portraitSlots.transform.childCount; i++)
@@ -329,53 +334,101 @@ namespace MagnificusMod
 				switch (RunState.Run.regionTier)
 				{
 					case 1:
-						if (!SavedVars.LearnedMechanics.Contains("beatgoobert;"))
-						{
-							SavedVars.LearnedMechanics += "beatgoobert;";
-						}
-						npc = GameObject.Find("Goober");
-						Tween.Rotation(npc.transform, Quaternion.Euler(0, 0, 0), 5f, 0);
-						Vector3 npcPos = npc.transform.localPosition;
-						npcPos.y = -8f;
-						Tween.LocalPosition(npc.transform, npcPos, 5f, 0);
-						Tween.LocalPosition(GameObject.Find("bgStarParent").transform, new Vector3(0, 0, 0), 5f, 0);
-						yield return new WaitForSeconds(4.5f);
 						int rand = Random.RandomRangeInt(0, 100);
-						if (rand <= 33)
+						if (!Generation.challenges.Contains("MasterBosses") || !SaveManager.saveFile.ascensionActive)
 						{
-							yield return Singleton<TextDisplayer>.Instance.ShowMessage("My [c:g1]Goo Mage[c:] falls by your hands.. I expected more from him..");
-						}
-						else if (rand <= 66)
-						{
-							yield return Singleton<TextDisplayer>.Instance.ShowMessage("Hmph.. My [c:g1]Goo Mage[c:] dissapoints me again..");
-						}
-						else if (rand <= 101)
-						{
-							yield return Singleton<TextDisplayer>.Instance.ShowMessage("Yet again, my pathetic [c:g1]Goo Mage[c:] falls..");
+							if (!SavedVars.LearnedMechanics.Contains("beatgoobert;"))
+							{
+								SavedVars.LearnedMechanics += "beatgoobert;";
+							}
+							npc = GameObject.Find("Goober");
+							Tween.Rotation(npc.transform, Quaternion.Euler(0, 0, 0), 5f, 0);
+							Vector3 npcPos = npc.transform.localPosition;
+							npcPos.y = -8f;
+							Tween.LocalPosition(npc.transform, npcPos, 5f, 0);
+							Tween.LocalPosition(GameObject.Find("bgStarParent").transform, new Vector3(0, 0, 0), 5f, 0);
+							yield return new WaitForSeconds(4.5f);
+							if (rand <= 33)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("My [c:g1]Goo Mage[c:] falls by your hands.. I expected more from him..");
+							}
+							else if (rand <= 66)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("Hmph.. My [c:g1]Goo Mage[c:] dissapoints me again..");
+							}
+							else if (rand <= 101)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("Yet again, my pathetic [c:g1]Goo Mage[c:] falls..");
+							}
+						} else
+                        {
+							npc = GameObject.Find("goranjPainting");
+							Vector3 npcPos = npc.transform.localPosition;
+							npc.GetComponent<SineWaveMovement>().enabled = false;
+							Tween.LocalPosition(GameObject.Find("bgStarParent").transform, new Vector3(0, 0, 0), 5f, 0);
+							if (rand <= 33)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g1]What..?[c:] [c:g2]Me,[c:] [c:g1]defeated..?[c:]", Emotion.Anger, TextDisplayer.LetterAnimation.WavyJitter);
+							}
+							else if (rand <= 66)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g1]Blargh..[c:] [c:g2]I've[c:] [c:g1]been[c:] [c:g2]taken[c:] [c:g1]out[c:] [c:g2]by[c:] [c:g1]you??[c:] ", Emotion.Anger, TextDisplayer.LetterAnimation.WavyJitter);
+							}
+							else if (rand <= 101)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g1]Impossible..[c:] [c:g2]I've[c:] [c:g1]been[c:] [c:g2]defeated..[c:]", Emotion.Anger, TextDisplayer.LetterAnimation.WavyJitter);
+							}
+							Tween.LocalPosition(npc.transform, new Vector3(0, 7f, 13.5f), 3.75f, 0);
+							Tween.LocalPosition(npc.transform, new Vector3(0, -6.5f, 13.5f), 0.25f, 4.25f);
+							yield return new WaitForSeconds(4.75f);
 						}
 						break;
 					case 2:
-						if (!SavedVars.LearnedMechanics.Contains("beatamber;"))
+						if (!Generation.challenges.Contains("MasterBosses") || !SaveManager.saveFile.ascensionActive)
 						{
-							SavedVars.LearnedMechanics += "beatamber;";
-						}
-						npc = GameObject.Find("Espeara");
-						Tween.LocalPosition(npc.transform, new Vector3(0, -35f, 36f), 4f, 0.375f);
-						Tween.Rotation(npc.transform, Quaternion.Euler(0, 0, 0), 4f, 0.375f);
-						yield return new WaitForSeconds(4.5f);
-						GameObject.Destroy(GameObject.Find("ceiling"));
-						rand = Random.RandomRangeInt(0, 100);
-						if (rand <= 33)
-						{
-							yield return Singleton<TextDisplayer>.Instance.ShowMessage("Ahh.. I see you've defeated my [c:g2]Pike Mage[c:]..");
-						}
-						else if (rand <= 66)
-						{
-							yield return Singleton<TextDisplayer>.Instance.ShowMessage("My [c:g2]Pike Mage[c:] falls.. Dissapointing.");
-						}
-						else if (rand <= 101)
-						{
-							yield return Singleton<TextDisplayer>.Instance.ShowMessage("I'll admit challenger.. You've gotten farther than most.");
+							if (!SavedVars.LearnedMechanics.Contains("beatamber;"))
+							{
+								SavedVars.LearnedMechanics += "beatamber;";
+							}
+							npc = GameObject.Find("Espeara");
+							Tween.LocalPosition(npc.transform, new Vector3(0, -35f, 36f), 4f, 0.375f);
+							Tween.Rotation(npc.transform, Quaternion.Euler(0, 0, 0), 4f, 0.375f);
+							yield return new WaitForSeconds(4.5f);
+							GameObject.Destroy(GameObject.Find("ceiling"));
+							rand = Random.RandomRangeInt(0, 100);
+							if (rand <= 33)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("Ahh.. I see you've defeated my [c:g2]Pike Mage[c:]..");
+							}
+							else if (rand <= 66)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("My [c:g2]Pike Mage[c:] falls.. Dissapointing.");
+							}
+							else if (rand <= 101)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("I'll admit challenger.. You've gotten farther than most.");
+							}
+						} else
+                        {
+							rand = Random.RandomRangeInt(0, 100);
+							npc = GameObject.Find("orluPainting");
+							Vector3 npcPos = npc.transform.localPosition;
+							npc.GetComponent<SineWaveMovement>().enabled = false;
+							if (rand <= 33)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g2]A[c:] [c:g3]fantastic[c:] [c:g2]duel[c:] [c:g3]we[c:] [c:g2]had![c:]", Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter);
+							}
+							else if (rand <= 66)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g2]'Twas[c:] [c:g3]an[c:] [c:g2]excellent[c:] [c:g3]battle.[c:]", Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter);
+							}
+							else if (rand <= 101)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g2]Great[c:] [c:g3]fighting,[c:] [c:g2]young[c:] [c:g3]mage.[c:]", Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter);
+							}
+							Tween.LocalPosition(npc.transform, new Vector3(0, 4.5f, 13.5f), 3.75f, 0);
+							Tween.LocalPosition(npc.transform, new Vector3(0, 15.5f, 13.5f), 0.25f, 4.25f);
+							yield return new WaitForSeconds(4.75f);
 						}
 						break;
 					case 3:
@@ -690,7 +743,7 @@ namespace MagnificusMod
 				}
 				else
 				{
-					if (!SavedVars.LearnedMechanics.Contains("beatbosswithdamage;") && !KayceeStorage.IsKaycee)
+					if (!SavedVars.LearnedMechanics.Contains("beatbosswithdamage;") && !SaveManager.saveFile.ascensionActive)
 					{
 						SavedVars.LearnedMechanics += "beatbosswithdamage;";
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hmm?", 0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
