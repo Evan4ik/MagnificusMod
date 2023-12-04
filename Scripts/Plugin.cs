@@ -148,6 +148,7 @@ namespace MagnificusMod
 			Cards.AddMasterMagnus2();
 			Cards.AddMasterMagnus3();
 			Cards.AddFinalMagnus();
+			Cards.AddHydras();
 
 			Cards.AddRubyMox();
 			Cards.AddSapphireMox();
@@ -174,6 +175,7 @@ namespace MagnificusMod
 			//Cards.ChangeAmalgam();
 			Cards.AddBossExclusive();
 			Cards.AddBossValkyrie();
+			Cards.AddBleeneBooks();
 			Sigils.ChangeMox();
 			Sigils.DropRuby();
 			Sigils.DropEmerald();
@@ -1231,10 +1233,16 @@ namespace MagnificusMod
 		public static IEnumerator fixTheTringleByForce()
 		{
 			yield return new WaitForSeconds(1f);
-			GameObject.Find("PerspectiveUICamera").transform.Find("TextDisplayer_Magnificus").gameObject.GetComponent<TextDisplayer>().baseTrianglePos = new Vector2(0, 4.9f);
 			GameObject.Find("PerspectiveUICamera").transform.Find("TextDisplayer").gameObject.GetComponent<TextDisplayer>().baseTrianglePos = new Vector2(0, 5.1f);
-			GameObject.Find("PerspectiveUICamera").transform.Find("TextDisplayer_Magnificus").Find("TextCanvas").Find("DialogueTriangle").transform.localPosition = new Vector3(0, 4.9f, 0);
-			GameObject.Find("PerspectiveUICamera").transform.Find("TextDisplayer_Magnificus").Find("TextCanvas").Find("DialogueTriangle").gameObject.SetActive(false);
+			try
+			{
+				GameObject.Find("PerspectiveUICamera").transform.Find("TextDisplayer_Magnificus").gameObject.GetComponent<TextDisplayer>().baseTrianglePos = new Vector2(0, 4.9f);
+				GameObject.Find("PerspectiveUICamera").transform.Find("TextDisplayer_Magnificus").Find("TextCanvas").Find("DialogueTriangle").transform.localPosition = new Vector3(0, 4.9f, 0);
+				GameObject.Find("PerspectiveUICamera").transform.Find("TextDisplayer_Magnificus").Find("TextCanvas").Find("DialogueTriangle").gameObject.SetActive(false);
+            }
+            catch {
+				Singleton<TextDisplayer>.Instance.gameObject.GetComponent<TextDisplayer>().baseTrianglePos = new Vector2(0, 5.3f);
+			}
 			yield break;
 		}
 		public static void setBaseTextDisplayerOn(bool on)

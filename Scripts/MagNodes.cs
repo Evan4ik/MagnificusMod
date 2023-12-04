@@ -2567,7 +2567,7 @@ namespace MagnificusMod
 
 			public static bool upgraded = false;
 
-			public static List<string> upgradedDescs = new List<string> { "mag_tarfrostspell", "Now, the freezing effect shouldn't increase the health of the cards.", "mag_goldspell", "Oops.. Looks like the upgrade backfired...", "mag_windspell", "Hmm, now instead of creating an updraft, it will create a horizontal one, pushing every card clockwise.", "mag_waterspell", "This one should only affect the opponent. Neat", "mag_tarflamespell", "This one shouldn't buff the opponent. Cool", "mag_magnusspell", "It will only be removed from your deck at the end of battle.. Great.",
+			public static List<string> upgradedDescs = new List<string> { "mag_frostspell", "Now, the freezing effect shouldn't increase the health of the cards.", "mag_goldspell", "Oops.. Looks like the upgrade backfired...", "mag_windspell", "Hmm, now instead of creating an updraft, it will create a horizontal one, pushing every card clockwise.", "mag_waterspell", "This one should only affect the opponent. Neat", "mag_tarflamespell", "This one shouldn't buff the opponent. Cool", "mag_magnusspell", "It will only be removed from your deck at the end of battle.. Great.",
 			"mag_vaseofgreed", "With it you draw 2 more cards..", "mag_gnomespell", "Now the little gnome should have scuba gear.. What for? I dont know.", "mag_cursedskull", "Ah! Now it should warp to the opponent's side of the board when placed.", "mag_hpspell", "Now it will heal more. Cool", "mag_atkspell", "Now it empowers more..", "mag_potion", "Giving it to a card will also boost it's stats now.", "mag_orluinspiration", "The effect now lasts for the whole battle.", "mag_goranjrage", "Seems a bit more unstable.. All incoming damage is doubled..", "mag_bleenecalculus", "Now, if a card were to die from the effect, it gains 1 more health..", "mag_fireball", "It's more deadly now. 1 damage, 4 times.." };
 
 			public static IEnumerator tutorialtext(SelectableCard component, bool onlyUpgrade)
@@ -4216,6 +4216,7 @@ namespace MagnificusMod
 							base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("But a tiny larva had emerged from the carcass.. You may keep it and add it to your deck..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
 							component.SetInfo(CardLoader.GetCardByName("mag_moxlarva"));
 							component.Anim.SetFaceDown(false, false);
+
 							RunState.Run.playerDeck.AddCard(component.Info);
 						}
 					}
@@ -4563,6 +4564,7 @@ namespace MagnificusMod
 						fireSlot.GetComponent<Light>().color = new Color(0f, 1, 1, 1);
 						break;
 				}
+				List<CardModificationInfo> mods = component.Info.mods;
 				RunState.Run.playerDeck.RemoveCard(component.Info);
 				if (component.Info.name == "mag_crystalworm")
 				{
@@ -4572,6 +4574,7 @@ namespace MagnificusMod
 					component.SetInfo(CardLoader.GetCardByName("mag_moxlarva"));
 					component.Anim.SetFaceDown(false, false);
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("But a tiny larva had emerged from the carcass.. You may keep it and add it to your deck..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+					component.Info.mods = mods;
 					RunState.Run.playerDeck.AddCard(component.Info);
 				}
 				else if (!component.Info.HasTrait(Trait.EatsWarrens))

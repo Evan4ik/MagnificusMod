@@ -334,9 +334,18 @@ namespace MagnificusMod
 				switch (RunState.Run.regionTier)
 				{
 					case 1:
+						Debug.Log(SavedVars.NodesCleared);
+						if (SaveManager.saveFile.ascensionActive && SavedVars.NodesCleared <= 3)
+                        {
+							AchievementManager.Unlock(MagnificusMod.Achievements.RushRecklessly);
+						}
 						int rand = Random.RandomRangeInt(0, 100);
 						if (!Generation.challenges.Contains("MasterBosses") || !SaveManager.saveFile.ascensionActive)
 						{
+							if (Singleton<BossOpponents.GoobertOpponnent>.Instance.NumLives == 0 && SaveManager.saveFile.ascensionActive && !Singleton<BossOpponents.GoobertOpponnent>.Instance.gooedCards)
+							{
+								AchievementManager.Unlock(MagnificusMod.Achievements.HumanoidSlime);
+							}
 							if (!SavedVars.LearnedMechanics.Contains("beatgoobert;"))
 							{
 								SavedVars.LearnedMechanics += "beatgoobert;";
@@ -386,6 +395,10 @@ namespace MagnificusMod
 					case 2:
 						if (!Generation.challenges.Contains("MasterBosses") || !SaveManager.saveFile.ascensionActive)
 						{
+							if (Singleton<BossOpponents.EspeararaOpponnent>.Instance.NumLives == 0 && SaveManager.saveFile.ascensionActive && !Singleton<BossOpponents.EspeararaOpponnent>.Instance.triggeredEnchantedSpear)
+							{
+								AchievementManager.Unlock(MagnificusMod.Achievements.HeadlessKnight);
+							}
 							if (!SavedVars.LearnedMechanics.Contains("beatamber;"))
 							{
 								SavedVars.LearnedMechanics += "beatamber;";
@@ -432,71 +445,101 @@ namespace MagnificusMod
 						}
 						break;
 					case 3:
-
-						if (!SavedVars.LearnedMechanics.Contains("beatlonely;"))
+						if (!Generation.challenges.Contains("MasterBosses") || !SaveManager.saveFile.ascensionActive)
 						{
-							SavedVars.LearnedMechanics += "beatlonely;";
-						}
-						if (!SavedVars.LearnedMechanics.Contains("hushlonely;"))
-                        {
-							Plugin.switchToSpeakerStyle(2);
-							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("WHAT? BUT DON'T I GET TO LEAVE?", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I STILL HAVE SO MUCH STIMULATION TO GET!!", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-							yield return Singleton<TextDisplayer>.Instance.ShowThenClear("[c:g2]PLEASE, CHALLENGER,[c:] YOU HAVE TO GET ME-", 1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-							Plugin.switchToSpeakerStyle(0);
-							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hush.", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-							SavedVars.LearnedMechanics += "hushlonely;";
-						}
-						/*
-						if (!SavedVars.LearnedMechanics.Contains("died"))//THIS IS PART OF THE ITS OVER THING
-						{
-							SavedVars.LearnedMechanics += "died;";
-						}
-						if (!KayceeStorage.IsKaycee)
-						{
-							Singleton<TextDisplayer>.Instance.ShowMessage("its over!!");
-						}
-						else
-						{
-							yield return new WaitForSeconds(1f);
-							if (MagnificusMod.Generation.minimap)
+							if (Singleton<BossOpponents.LonelyMageOpponnent>.Instance.NumLives == 0 && SaveManager.saveFile.ascensionActive && Singleton<BossOpponents.LonelyMageOpponnent>.Instance.TurnTimerTriggered <= 0)
 							{
-								MagnificusMod.Generation.minimap = false;
-								MagnificusMod.SaveVariables.HasMap = false;
-								GameObject.Destroy(GameObject.Find("MapParent"));
+								AchievementManager.Unlock(MagnificusMod.Achievements.QuickSummon);
+							} else if (Singleton<BossOpponents.LonelyMageOpponnent>.Instance.NumLives == 0 && SaveManager.saveFile.ascensionActive && Singleton<BossOpponents.LonelyMageOpponnent>.Instance.TurnTimerTriggered >= 5)
+							{
+								AchievementManager.Unlock(MagnificusMod.Achievements.MischiefOfTheTimeGoddess);
 							}
-							Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetColor(GameColors.Instance.nearBlack);
-							Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(1f, float.MaxValue);
-							AudioController.Instance.StopAllLoops();
-							Singleton<InteractionCursor>.Instance.SetHidden(true);
-							yield return new WaitForSeconds(3f);
-							SceneLoader.Load("Ascension_Configure");
-							yield break;
-						}
-						yield break;*/
-						npc = GameObject.Find("LonelyMage");
-						Tween.LocalScale(npc.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(1).Find("LeftEye"), new Vector3(1, 1, 0), 3, 1f);
-						Tween.LocalScale(npc.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(2).Find("RightEye"), new Vector3(-1, 0, -1), 3, 1f);
-						Tween.LocalPosition(npc.transform, new Vector3(0, -7, 15), 1, 4);
+							if (!SavedVars.LearnedMechanics.Contains("beatlonely;"))
+							{
+								SavedVars.LearnedMechanics += "beatlonely;";
+							}
+							if (!SavedVars.LearnedMechanics.Contains("hushlonely;"))
+							{
+								Plugin.switchToSpeakerStyle(2);
+								yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("WHAT? BUT DON'T I GET TO LEAVE?", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+								yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I STILL HAVE SO MUCH STIMULATION TO GET!!", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+								yield return Singleton<TextDisplayer>.Instance.ShowThenClear("[c:g2]PLEASE, CHALLENGER,[c:] YOU HAVE TO GET ME-", 1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+								Plugin.switchToSpeakerStyle(0);
+								yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hush.", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+								SavedVars.LearnedMechanics += "hushlonely;";
+							}
+							/*
+							if (!SavedVars.LearnedMechanics.Contains("died"))//THIS IS PART OF THE ITS OVER THING
+							{
+								SavedVars.LearnedMechanics += "died;";
+							}
+							if (!KayceeStorage.IsKaycee)
+							{
+								Singleton<TextDisplayer>.Instance.ShowMessage("its over!!");
+							}
+							else
+							{
+								yield return new WaitForSeconds(1f);
+								if (MagnificusMod.Generation.minimap)
+								{
+									MagnificusMod.Generation.minimap = false;
+									MagnificusMod.SaveVariables.HasMap = false;
+									GameObject.Destroy(GameObject.Find("MapParent"));
+								}
+								Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetColor(GameColors.Instance.nearBlack);
+								Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(1f, float.MaxValue);
+								AudioController.Instance.StopAllLoops();
+								Singleton<InteractionCursor>.Instance.SetHidden(true);
+								yield return new WaitForSeconds(3f);
+								SceneLoader.Load("Ascension_Configure");
+								yield break;
+							}
+							yield break;*/
+							npc = GameObject.Find("LonelyMage");
+							Tween.LocalScale(npc.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(1).Find("LeftEye"), new Vector3(1, 1, 0), 3, 1f);
+							Tween.LocalScale(npc.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(2).Find("RightEye"), new Vector3(-1, 0, -1), 3, 1f);
+							Tween.LocalPosition(npc.transform, new Vector3(0, -7, 15), 1, 4);
 
-						for (int i = 0; i < 100; i++)
-                        {
-							npc.GetComponent<Animator>().speed = 1 - (i / 100f);
-							yield return new WaitForSeconds(0.01f);
-						}
-						yield return new WaitForSeconds(3f);
-						rand = Random.RandomRangeInt(0, 100);
-						if (rand <= 33)
+							for (int i = 0; i < 100; i++)
+							{
+								npc.GetComponent<Animator>().speed = 1 - (i / 100f);
+								yield return new WaitForSeconds(0.01f);
+							}
+							yield return new WaitForSeconds(3f);
+							rand = Random.RandomRangeInt(0, 100);
+							if (rand <= 33)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("Well challenger.. Now that you have defeated the [c:g3]Lonely Mage[c:]. You may now face me.");
+							}
+							else if (rand <= 66)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("You've defeated all my students.. I will await your arrival.");
+							}
+							else if (rand <= 101)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("My [c:g3]Lonely Mage[c:] falls.. this is unexpected.. But now, I await your arrival.");
+							}
+						} else
 						{
-							yield return Singleton<TextDisplayer>.Instance.ShowMessage("Well challenger.. Now that you have defeated the [c:g3]Lonely Mage[c:]. You may now face me.");
-						}
-						else if (rand <= 66)
-						{
-							yield return Singleton<TextDisplayer>.Instance.ShowMessage("You've defeated all my students.. I will await your arrival.");
-						}
-						else if (rand <= 101)
-						{
-							yield return Singleton<TextDisplayer>.Instance.ShowMessage("My [c:g3]Lonely Mage[c:] falls.. this is unexpected.. But now, I await your arrival.");
+							npc = GameObject.Find("bleenePainting");
+							Vector3 npcPos = npc.transform.localPosition;
+							npc.GetComponent<SineWaveMovement>().enabled = false;
+							rand = Random.RandomRangeInt(0, 100);
+							if (rand <= 33)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g3]An[c:] [c:g1]excellent[c:] [c:g3]fight![c:]", Emotion.Anger, TextDisplayer.LetterAnimation.WavyJitter);
+							}
+							else if (rand <= 66)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g3]Despite[c:] [c:g1]my[c:] [c:g3]deadliest[c:] [c:g1]books,[c:] [c:g3]you[c:] [c:g1]still[c:] [c:g3]won![c:]", Emotion.Anger, TextDisplayer.LetterAnimation.WavyJitter);
+							}
+							else if (rand <= 101)
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g3]You[c:] [c:g1]managed[c:] [c:g3]to[c:] [c:g1]overcome[c:] [c:g3]my[c:] [c:g1]deadliest[c:] [c:g3]tomes,[c:] [c:g1]impressive![c:]", Emotion.Anger, TextDisplayer.LetterAnimation.WavyJitter);
+							}
+							Tween.LocalPosition(npc.transform, new Vector3(0, 7f, 13.5f), 3.75f, 0);
+							Tween.LocalPosition(npc.transform, new Vector3(0, -6.5f, 13.5f), 0.25f, 4.25f);
+							yield return new WaitForSeconds(4.75f);
 						}
 						break;
 				}

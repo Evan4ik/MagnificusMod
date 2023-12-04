@@ -1355,7 +1355,7 @@ namespace MagnificusMod
                             }
                             lastChar = room2add.ToString();
                             string room2add2 = room2add.ToString();
-                            if (Random.RandomRangeInt(0, 100) > 78)
+                            if (Random.RandomRangeInt(0, 100) > 82)
                             {
                                 room2add2 += "bl";
                             }
@@ -1406,7 +1406,7 @@ namespace MagnificusMod
                     break;
                 case "lonely":
                     limit = Random.Range(-1, 1);
-                    for (int y = 0; y < 5 + limit; y++)
+                    for (int y = 0; y < 6 + limit; y++)
                     {
                         for (int x = 0; x < 5 + Random.Range(-1, 2); x++)
                         {

@@ -57,6 +57,12 @@ namespace MagnificusMod
             set { ModdedSaveManager.SaveData.SetValue(PluginGuid, "KilledCards", value); }
         }
 
+        public static int NodesCleared
+        {
+            get { return ModdedSaveManager.SaveData.GetValueAsInt(PluginGuid, "NodesCleared"); }
+            set { ModdedSaveManager.SaveData.SetValue(PluginGuid, "NodesCleared", value); }
+        }
+
         public static string GeneratedEvents
         {
             get { return ModdedSaveManager.SaveData.GetValue(PluginGuid, "GeneratedEvents"); }

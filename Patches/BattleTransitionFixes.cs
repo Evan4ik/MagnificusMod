@@ -142,6 +142,7 @@ namespace MagnificusMod
 					Tween.Position(GameObject.Find("GameTable").transform, new Vector3(GameObject.Find("GameTable").transform.position.x, -20f, GameObject.Find("GameTable").transform.position.z), 0.6f, 1.21f, null, Tween.LoopType.None, null, null, true);
 					Tween.LocalPosition(GameObject.Find("tbPillar").transform, new Vector3(0, -5.01f, 0), 0.6f, 0.2f, null, Tween.LoopType.None, null, null, true);
 
+					if (RunState.Run.regionTier != 0) { SavedVars.NodesCleared++; }
 					MagSave.ClearNode(name);
 
 					if (GameObject.Find(name).transform.childCount > 0 && GameObject.Find(name).transform.GetChild(0).gameObject.name.Contains("nodeIconBL"))

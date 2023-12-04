@@ -315,7 +315,7 @@ namespace MagnificusMod
                 {
 					return;
                 }
-				bool boss = (GameObject.Find("GameTable").transform.Find("Goober").gameObject.activeSelf || GameObject.Find("GameTable").transform.Find("Espeara").gameObject.activeSelf || GameObject.Find("GameTable").transform.Find("LonelyMage").gameObject.activeSelf);
+				bool boss = (GameObject.Find("GameTable").transform.Find("Goober").gameObject.activeSelf || GameObject.Find("GameTable").transform.Find("Espeara").gameObject.activeSelf || GameObject.Find("GameTable").transform.Find("LonelyMage").gameObject.activeSelf || RunState.Run.regionTier == 4 || GameObject.Find("goranjPainting") != null || GameObject.Find("orluPainting") != null || GameObject.Find("bleenePainting") != null);
 				int turns = boss ? 12 : 6;
 				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("TurnWipeout") && __instance.TurnNumber > turns)
 				{
@@ -456,6 +456,10 @@ namespace MagnificusMod
 							{
 								excessDamage = Singleton<MagnificusLifeManager>.Instance.opponentLife - MagnificusMod.Generation.damageDoneThisTurn;
 								excessDamage = -excessDamage;
+								if (MagnificusMod.Generation.damageDoneThisTurn >= 10 && SaveManager.saveFile.ascensionActive)
+								{
+									AchievementManager.Unlock(MagnificusMod.Achievements.BlueEyesWhiteDragon);
+								}
 							}
 							else
 
@@ -468,8 +472,8 @@ namespace MagnificusMod
 							}
 							excessDamage = Mathf.Max(0, excessDamage);
 						}
-
 						int damage = MagnificusMod.Generation.damageDoneThisTurn - excessDamage;
+						
 						if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("ShieldedMox") && damage > 4 && playerIsAttacker && SceneLoader.ActiveSceneName == "finale_magnificus")
 						{
 							excessDamage = Singleton<MagnificusLifeManager>.Instance.opponentLife - 4;

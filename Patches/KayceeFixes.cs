@@ -425,7 +425,7 @@ namespace MagnificusMod
 				{
 					challengeType = ChallengeManagement.FadingMox,
 					title = "Fleeting Life",
-					description = "You have 50 health, but it does not replenish inbetween battles.",
+					description = "You have 66 health, but it does not replenish inbetween battles.",
 					iconSprite = Tools.getSprite("challenge_fadingmox.png"),
 					activatedSprite = Tools.getSprite("challenge_fadingmox_active.png"),
 					pointValue = 30
@@ -686,6 +686,13 @@ namespace MagnificusMod
 					SavedVars.LearnedMechanics += "wrongdimension;";
 					Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetColor(GameColors.Instance.nearBlack);
 					Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(1f, float.MaxValue);
+					foreach (CardInfo card in CardLoader.allData)
+					{
+						if (card.name.Contains("mag_"))
+						{
+							card.temple = CardTemple.Wizard;
+						}
+					}
 					SaveManager.SaveToFile(false);
 					LoadingScreenManager.LoadScene("finale_magnificus");
 				}
@@ -695,6 +702,13 @@ namespace MagnificusMod
 					KayceeStorage.IsKaycee = true;
 					Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetColor(GameColors.Instance.nearBlack);
 					Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(1f, float.MaxValue);
+					foreach (CardInfo card in CardLoader.allData)
+					{
+						if (card.name.Contains("mag_"))
+						{
+							card.temple = CardTemple.Wizard;
+						}
+					}
 					SaveManager.SaveToFile(false);
 					LoadingScreenManager.LoadScene("finale_magnificus");
 				}

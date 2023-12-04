@@ -326,6 +326,20 @@ namespace MagnificusMod
 					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<CardDrawPiles3D>.Instance.sidePile.SpawnCards(__instance.sideDeckList.Count, 0.5f));
 				}
 				catch { }
+				for (int i = 0; i < Singleton<BoardManager>.Instance.gameObject.transform.Find("PlayerSlots").childCount; i++)
+                {
+					if (Singleton<BoardManager>.Instance.gameObject.transform.Find("PlayerSlots").GetChild(i).childCount > 2)
+                    {
+						GameObject.Destroy(Singleton<BoardManager>.Instance.gameObject.transform.Find("PlayerSlots").GetChild(i).GetChild(1).gameObject);
+					}
+                }
+				for (int i = 0; i < 3; i++)
+				{
+					if (Singleton<BoardManager>.Instance.gameObject.transform.Find("OpponentSlots").GetChild(i).childCount > 2)
+					{
+						GameObject.Destroy(Singleton<BoardManager>.Instance.gameObject.transform.Find("OpponentSlots").GetChild(i).GetChild(1).gameObject);
+					}
+				}
 				//spellPile.gameObject.SetActive(false);
 				return false;
 			}
@@ -366,19 +380,30 @@ namespace MagnificusMod
 								__state.pile.gameObject.transform.GetChild(i).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0);
 							}
 						}
-						if (__state.pile.gameObject.transform.childCount > 2 && Singleton<Deck>.Instance.Cards.Count < 1)
+						if (__state.pile.gameObject.transform.childCount > 1 && __state.Deck.CardsInDeck <= 0)
                         {
-							for (int i = 2; i < __state.pile.gameObject.transform.childCount; i++)
+							__state.pile.gameObject.transform.GetChild(1).gameObject.SetActive(false);
+							for (int i = 1; i < __state.pile.gameObject.transform.childCount; i++)
 							{
 								__state.pile.gameObject.transform.GetChild(i).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0);
 							}
+						} else if (__state.Deck.CardsInDeck > 0)
+                        {
+							__state.pile.gameObject.transform.GetChild(1).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("magcardback.png");
+							__state.pile.gameObject.transform.GetChild(1).gameObject.SetActive(true);
 						}
-						if (__state.sidePile.gameObject.transform.childCount > 2 && __state.SideDeck.Cards.Count < 1)
+						if (__state.sidePile.gameObject.transform.childCount > 1 && __state.SideDeck.CardsInDeck < 1)
 						{
-							for (int i = 2; i < __state.sidePile.gameObject.transform.childCount; i++)
+							__state.sidePile.gameObject.transform.GetChild(1).gameObject.SetActive(false);
+							for (int i = 1; i < __state.sidePile.gameObject.transform.childCount; i++)
 							{
 								__state.sidePile.gameObject.transform.GetChild(i).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0);
 							}
+						}
+						else if (__state.Deck.CardsInDeck > 0)
+						{
+							__state.sidePile.gameObject.transform.GetChild(1).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("magcardback.png");
+							__state.sidePile.gameObject.transform.GetChild(1).gameObject.SetActive(true);
 						}
 					}
 					catch { }

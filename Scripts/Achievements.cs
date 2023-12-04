@@ -26,10 +26,13 @@ namespace MagnificusMod
         internal static Achievement HumanoidSlime { get; private set; }
         internal static Achievement HeadlessKnight { get; private set; }
         internal static Achievement QuickSummon { get; private set; }
+        internal static Achievement MischiefOfTheTimeGoddess { get; private set; }
         internal static Achievement CrowningOfTheEmperor { get; private set; }
+        internal static Achievement BlueEyesWhiteDragon { get; private set; }
+        internal static Achievement CardofSacrifice { get; private set; }
+        internal static Achievement OwloftheBlackForest { get; private set; }
         public static void addAchievements()
         {
-            Debug.Log("added achievements");
             var groupId = ModdedAchievementManager.NewGroup(
                 "silenceman.inscryption.magnificusmod",       // plugin guid
                 "Magnificus Mod Achievements", // achievement group name
@@ -50,19 +53,19 @@ namespace MagnificusMod
             BlackSkullDragon = ModdedAchievementManager.New(
                 PluginGuid,
                 "Crystal Skull",
-                "Complete a run with every challenge active.",
+                "Complete a run with every challenge active, and no anti challenges. (You may use the map)",
                 false,
                 groupId,
-                Tools.getImage("achievement_locked.png")
+                Tools.getImage("achievement_crystalskull.png")
             ).ID;
 
             HumanoidSlime = ModdedAchievementManager.New(
                 PluginGuid,
                 "Humanoid Slime",
-                "Defeat the first boss using only the cards that had their power reduced at the start of phase 2.",
+                "Defeat the first boss without having any cards get their power reduced at the start of phase 2.",
                 false,
                 groupId,
-                Tools.getImage("achievement_locked.png")
+                Tools.getImage("achievement_goobert.png")
             ).ID;
 
             HeadlessKnight = ModdedAchievementManager.New(
@@ -71,7 +74,7 @@ namespace MagnificusMod
                 "Defeat the second boss without triggering any Enchanted Spears.",
                 false,
                 groupId,
-                Tools.getImage("achievement_locked.png")
+                Tools.getImage("achievement_amber.png")
             ).ID;
 
             QuickSummon = ModdedAchievementManager.New(
@@ -80,7 +83,16 @@ namespace MagnificusMod
                 "Defeat the third boss without letting the turn timer expire once.",
                 false,
                 groupId,
-                Tools.getImage("achievement_locked.png")
+                Tools.getImage("achievement_lonely.png")
+            ).ID;
+
+            MischiefOfTheTimeGoddess = ModdedAchievementManager.New(
+                PluginGuid,
+                "Mischief of the Time Goddess",
+                "Let the third boss's timer run out 5 times, and still win the fight.",
+                false,
+                groupId,
+                Tools.getImage("achievement_timegoddess.png")
             ).ID;
 
             RushRecklessly = ModdedAchievementManager.New(
@@ -89,7 +101,7 @@ namespace MagnificusMod
                 "Defeat the first boss after using only 3 or less events.",
                 false,
                 groupId,
-                Tools.getImage("achievement_locked.png")
+                Tools.getImage("achievement_rush.png")
             ).ID;
 
             CrowningOfTheEmperor = ModdedAchievementManager.New(
@@ -100,7 +112,33 @@ namespace MagnificusMod
                 groupId,
                 Tools.getImage("achievement_gnome.png")
             ).ID;
-            Debug.Log(MagicalLabyrinth);
+
+            BlueEyesWhiteDragon = ModdedAchievementManager.New(
+                PluginGuid,
+                "Blue Eyes White Dragon",
+                "Deal 10 damage in a single turn.",
+                false,
+                groupId,
+                Tools.getImage("achievement_dragon.png")
+            ).ID;
+
+            CardofSacrifice = ModdedAchievementManager.New(
+               PluginGuid,
+               "Card of Sacrifice",
+               "Have 10 or less cards by the time you reach the final boss.",
+               false,
+               groupId,
+               Tools.getImage("achievement_sacrifice.png")
+           ).ID;
+
+            OwloftheBlackForest = ModdedAchievementManager.New(
+                PluginGuid,
+                "Owl of the Black Forest",
+                "Banish the Ficticious Master Magnus.",
+                true,
+                groupId,
+                Tools.getImage("achievement_magnus.png")
+            ).ID;
         }
     }
 }

@@ -2209,7 +2209,8 @@ namespace MagnificusMod
 				return true;
 			}
 		}
-		
+
+
 		[HarmonyAfter(new string[]{"cyantist.inscryption.api"})]
 		[HarmonyPatch(typeof(MagnificusGameFlowManager), "Awake")]
 		public class cabinZonething2
@@ -3804,8 +3805,11 @@ namespace MagnificusMod
 
 						BossBattleNodeData bossBattleNodeData = new BossBattleNodeData();
 						bossBattleNodeData.specialBattleId = "LonelyMageSequencer";
+						if (SaveManager.saveFile.ascensionActive && challenges.Contains("MasterBosses"))
+						{
+							bossBattleNodeData.specialBattleId = "BleeneSequencer";
+						}
 
-						
 						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, true);
 						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = false;
 						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, true);
@@ -4568,6 +4572,7 @@ namespace MagnificusMod
 			}
 			if (RunState.Run.regionTier == 0 && MagSave.layout.Contains("1") && !SaveManager.saveFile.ascensionActive)
             {
+				SavedVars.NodesCleared = 0;
 				SaveManager.saveFile.part3Data.deck.cardIdModInfos = new Dictionary<string, List<CardModificationInfo>>();
 				SavedVars.KilledCards = "";
 				SavedVars.HasMap = false;
@@ -4599,7 +4604,8 @@ namespace MagnificusMod
 				Singleton<FirstPersonController>.Instance.enabled = true;
 			} else if (RunState.Run.regionTier == 0 && SaveManager.saveFile.ascensionActive && MagSave.layout.Contains("1"))
             {
-				KayceeStorage.FleetingLife = 50;
+				SavedVars.NodesCleared = 0;
+				KayceeStorage.FleetingLife = 66;
 				SavedVars.HasMap = false;
 				SavedVars.HasMapIcons = false;
 				if (SaveManager.saveFile.ascensionActive && challenges.Contains("FadingMox"))
@@ -4802,10 +4808,51 @@ namespace MagnificusMod
 		private static IEnumerator FinalBossTime()
 		{
 			yield return new WaitForSeconds(0.25f);
-			yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("So you finally arrive..", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-			yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hopefully you have prepared yourself well enough to face the Scrybe of Magicks.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-			yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("This will be your final exam.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-			yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Let us dance.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+			bool isPainting = false;
+			if (!SaveManager.saveFile.ascensionActive || SaveManager.saveFile.ascensionActive && !Generation.challenges.Contains("MasterBosses"))
+			{
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("So you finally arrive..", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hopefully you have prepared yourself well enough to face the Scrybe of Magicks.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("This will be your final exam.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Let us dance.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+			}
+			else if (Generation.challenges.Contains("MasterBosses"))
+			{
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g2]You[c:] are finally here.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I hope you realise that this is truly it.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You may have removed my student's battles,", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You may have tampered with my entire game..", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				Singleton<ViewManager>.Instance.OffsetFOV(-1.5f, 0.15f, true);
+				Singleton<UIManager>.Instance.Effects.GetEffect<EyelidMaskEffect>().SetIntensity(0.5f, 0.15f);
+				yield return Singleton<TextDisplayer>.Instance.ShowThenClear("But you'll [c:g2]NEVER[c:] delete me, the Scrybe of Magicks!", 1f, 0f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				Singleton<ViewManager>.Instance.OffsetFOV(0f, 0.15f, true);
+				Singleton<UIManager>.Instance.Effects.GetEffect<EyelidMaskEffect>().SetIntensity(0f, 0.15f);
+				GlitchOutAssetEffect.GlitchModel(GameObject.Find("MagnificusAnim").transform, false, true);
+				ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.MasterBosses);
+				Plugin.setBaseTextDisplayerOn(true);
+				GameObject.DestroyImmediate(Singleton<TextDisplayer>.Instance.gameObject);
+				GameObject.Find("TextDisplayer").GetComponent<TextDisplayer>().alternateSpeakerStyles[1].color = new Color(1, 1, 1, 1);
+				GameObject.Find("TextDisplayer").GetComponent<TextDisplayer>().alternateSpeakerStyles[1].voiceSoundIdPrefix = "bonelord";
+				GameObject.Find("TextDisplayer").GetComponent<TextDisplayer>().defaultStyle = GameObject.Find("TextDisplayer").GetComponent<TextDisplayer>().alternateSpeakerStyles[1];
+				yield return new WaitForSeconds(2.5f);
+				GameObject bossPainting = GameObject.Instantiate(GameObject.Find("GameTable").transform.Find("LifePainting").gameObject);
+				bossPainting.name = "MagnificusAnim";
+				bossPainting.SetActive(true);
+				bossPainting.transform.position = new Vector3(80.3f, 35, 0);
+				bossPainting.transform.localRotation = Quaternion.Euler(0, 0, 0);
+				bossPainting.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+				bossPainting.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("magnusboss.png");
+				bossPainting.transform.Find("Frame").Find("Glow_Edge_Right").gameObject.SetActive(true);
+				bossPainting.transform.Find("Frame").Find("Glow_Edge_Left").gameObject.SetActive(true);
+				bossPainting.transform.Find("Frame").Find("Glow_Edge_Right").gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 1f);
+				bossPainting.transform.Find("Frame").Find("Glow_Edge_Left").gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 1f);
+				bossPainting.GetComponent<SineWaveMovement>().originalPosition = new Vector3(0f, 5.5f, 13.5f);
+				bossPainting.GetComponent<SineWaveMovement>().enabled = false;
+				Tween.Position(bossPainting.transform, new Vector3(80.3f, 17f, 0f), 3.5f, 0f);
+				yield return new WaitForSeconds(3.5f);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("It is time.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.PirateSkull, null);
+				isPainting = true;
+			}
 			yield return new WaitForSeconds(0.15f);
 			GameObject PlayerColum = GameObject.Find("MarbleColumn_Player");
 			PlayerColum.transform.position = new Vector3(80, 15.5f, -25);
@@ -4817,9 +4864,17 @@ namespace MagnificusMod
 
 			Tween.Position(MagnificusColum.transform, new Vector3(80.5f, 25, 0), 6, 0);
 			MagnificusColum.transform.Find("Smoke").gameObject.SetActive(true);
-			Tween.Position(GameObject.Find("MagnificusAnim").transform, new Vector3(80.575f, 19, 0), 6, 0);
-			Tween.Position(MagnificusColum.transform, new Vector3(80.5f, 31, 12), 6, 6);
-			Tween.Position(GameObject.Find("MagnificusAnim").transform, new Vector3(80.575f, 25, 12), 6, 6);
+			if (!isPainting)
+			{
+				Tween.Position(GameObject.Find("MagnificusAnim").transform, new Vector3(80.575f, 19, 0), 6, 0);
+				Tween.Position(MagnificusColum.transform, new Vector3(80.5f, 31, 12), 6, 6);
+				Tween.Position(GameObject.Find("MagnificusAnim").transform, new Vector3(80.575f, 25, 12), 6, 6);
+			} else
+            {
+				Tween.Position(GameObject.Find("MagnificusAnim").transform, new Vector3(80.3f, 23, 0), 6, 0);
+				Tween.Position(MagnificusColum.transform, new Vector3(80.5f, 31, 12), 6, 6);
+				Tween.Position(GameObject.Find("MagnificusAnim").transform, new Vector3(80.3f, 28, 12), 6, 6);
+			}
 
 			Tween.Position(PlayerColum.transform, new Vector3(80f, 25f, -25f), 6, 0);
 			Tween.Position(GameObject.Find("Player").transform, new Vector3(80f, 15.9f, -20f), 6, 0);
@@ -4853,6 +4908,7 @@ namespace MagnificusMod
 			//Tween.LocalPosition(GameObject.Find("Hand").transform, new Vector3(4.3555f, -11.0099f, 2.0401f), 0f, 0f);
 			BossBattleNodeData bossBattleNodeData = new BossBattleNodeData();
 			bossBattleNodeData.specialBattleId = "MagnificusSequencer";
+			if (isPainting) { bossBattleNodeData.specialBattleId = "MagnusSequencer"; }
 			Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<MagnificusGameFlowManager>.Instance.TransitionTo(GameState.CardBattle, bossBattleNodeData, true, true));
 
 			GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.Default, true, false);
@@ -4927,14 +4983,24 @@ namespace MagnificusMod
 
 		private static IEnumerator magnificusPreFinalDialogue()
 		{
+			Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North);
 			Singleton<FirstPersonController>.Instance.enabled = false;
 			yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Ah.. Finally, you arrive.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 			Tween.LocalRotation(GameObject.Find("MagnificusAnim").transform, new Vector3(0, 180, 0), 1f, 0);
 			yield return new WaitForSeconds(1f);
-			yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I've been watching you from up here, for your entire journey.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-			yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You've come a long way, challenger.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-			yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Unfortunately, that will all come to an end here.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-			yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("One last duel, to decide your fate..", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+			if (!SaveManager.saveFile.ascensionActive || !MagnificusMod.Generation.challenges.Contains("MasterBosses") && SaveManager.saveFile.ascensionActive)
+			{
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I've been watching you from up here, for your entire journey.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You've come a long way, challenger.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Unfortunately, that will all come to an end here.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("One last duel, to decide your fate..", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+			} else if (MagnificusMod.Generation.challenges.Contains("MasterBosses"))
+            {
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("It is time to put an end to this.. [c:g1]foolery[c:] of yours.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("If you consider these cheats fair, then I might as well use some cheats of my own.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Normally, I would have you expelled right on the spot.. But I'm feeling generous.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Let us duel.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+			}
 			yield return  transition("finale", "spin");
 			yield break;
 			
@@ -5075,8 +5141,8 @@ namespace MagnificusMod
 					floor.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTextureOffset = new Vector2(0, 0);
 					floor.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("temple_floor.png");
 					floor.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().lightmapIndex = 0;
-					floor.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.shaderKeywords = new string[0];
-					//floor.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.SetTexture("_BumpMap", Tools.getImage("temple_floor_nrm.png"));
+					//floor.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.shaderKeywords = new string[0];
+					floor.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.SetTexture("_BumpMap", Tools.getImage("temple_floor_nrm.png"));
 					floor.transform.localScale = new Vector3(350, 250, 1);
 				
 					GameObject roof = GameObject.Instantiate(GameObject.Find("wall"));
@@ -5087,8 +5153,8 @@ namespace MagnificusMod
 					roof.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(1, 1);
 					roof.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTextureOffset = new Vector2(0, 0);
 					roof.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("temple_floor.png");
-					//roof.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.SetTexture("_BumpMap", Tools.getImage("temple_floor_nrm.png"));
-					roof.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.shaderKeywords = new string[0];
+					roof.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.SetTexture("_BumpMap", Tools.getImage("temple_floor_nrm.png"));
+					//roof.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.shaderKeywords = new string[0];
 					roof.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().lightmapIndex = 0;
 					roof.transform.localScale = new Vector3(350, 250, 1);
 	
@@ -5111,23 +5177,29 @@ namespace MagnificusMod
 						tWalls4.transform.position = new Vector3(80f, 13.5f, -80f);
 						tWalls4.transform.localScale = new Vector3(13f, 8.85f, 13f);
 						tWalls4.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.mainTexture = (Resources.Load("art/generictexture3d/brick/Pavement_Brick_002_COLOR") as Texture2D);
+						tWalls4.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().lightmapIndex = 1;
 						tWalls4.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.SetTexture("_BumpMap", Resources.Load("art/generictexture3d/brick/Pavement_Brick_002_NRM") as Texture);
 						tWalls4.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.7642f, 0.5087f, 0.3641f, 1);
 						tWalls4.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(2.5f, 2.5f);
 						floor.transform.localScale = new Vector3(300, 200, 1);
 						floor.transform.rotation = Quaternion.Euler(90, 0, 0);
 						floor.transform.position = new Vector3(80, 0, -80);
-						floor.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().lightmapIndex = -1;
+						//floor.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().lightmapIndex = -1;
 						roof.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().lightmapIndex = -1;
 						roof.transform.localScale = new Vector3(180, 185, 1);
 
-						towerLight.GetComponent<Light>().intensity = 0.6f;
-
+						towerLight.GetComponent<Light>().intensity = 1.5f;
+						towerLight.transform.position = new Vector3(80f, 100f, -20);
+						towerLight.transform.localRotation = Quaternion.Euler(40, 180, 0);
+						towerLight.GetComponent<Light>().color = new Color(0.66f, 0, 0.66f, 1f);
+						towerLight.GetComponent<Light>().range = 2000;
+						towerLight.GetComponent<Light>().type = LightType.Point;
+						/*
 						GameObject towerLightPart2 = GameObject.Instantiate(towerLight);
 						towerLightPart2.transform.parent = environment.transform;
 						towerLightPart2.transform.position = new Vector3(80, 20, -80);
 						towerLightPart2.transform.rotation = Quaternion.Euler(270, 0, 0);
-						towerLightPart2.GetComponent<Light>().intensity = 0.4f;
+						towerLightPart2.GetComponent<Light>().intensity = 0.4f;*/
 
 						Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().farClipPlane = 900f;
 						Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().backgroundColor = new Color(0, 0, 0, 1f);
@@ -5172,6 +5244,7 @@ namespace MagnificusMod
 						}
 
 						floor.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("temple_topfloor.png");
+						floor.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.SetTexture("_BumpMap", Tools.getImage("temple_topfloor_nrm.png"));
 					}
 					else if (!towerLevel.Contains("3") || SavedVars.LearnedMechanics.Contains("druid;"))
 					{
@@ -5264,7 +5337,6 @@ namespace MagnificusMod
 					}
 					if (towerLevel.Contains("4") || towerLevel.Contains("5"))
                     {
-						GameObject.Find("Player").transform.Find("Directional Light").gameObject.GetComponent<Light>().intensity = 1.15f;
 						Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().backgroundColor = new Color(0, 0, 0, 1f);
 					}
 
@@ -6095,6 +6167,7 @@ namespace MagnificusMod
 			else if (location == "finale")
 			{
 				Singleton<TextDisplayer>.Instance.ShowMessage("~ ??? ~");
+				if (SaveManager.saveFile.CurrentDeck.Cards.Count <= 10) { AchievementManager.Unlock(Achievements.CardofSacrifice); }
 			}
 			else if (location == "tower")
 			{
@@ -6786,6 +6859,7 @@ namespace MagnificusMod
 		public static IEnumerator FlashCard(GameObject card, float wait, GemType color = GemType.Orange, bool mana = true)
 		{
 			yield return new WaitForSeconds(wait);
+			if (card == null) { yield break; }
 			if (card.GetComponent<Card>() == null)
             {
 				card = card.transform.parent.GetChild(6).gameObject;

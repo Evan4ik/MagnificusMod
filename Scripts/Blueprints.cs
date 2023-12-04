@@ -1676,10 +1676,6 @@ namespace MagnificusMod
 				new EncounterBlueprintData.CardBlueprint
 				{
 					card = CardLoader.GetCardByName("mag_rubygolem")
-				},
-				new EncounterBlueprintData.CardBlueprint
-				{
-					card = CardLoader.GetCardByName("mag_rubymox")
 				}
 			});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>

@@ -256,8 +256,11 @@ namespace MagnificusMod
 
 			public static IEnumerator Postfix(IEnumerator enumerator, GuardDog __state, PlayableCard otherCard)
 			{
-				Singleton<ViewManager>.Instance.SwitchToView(View.Board, false, false);
-				yield return new WaitForSeconds(0.15f);
+				if (SceneLoader.ActiveSceneName != "finale_magnificus")
+				{
+					Singleton<ViewManager>.Instance.SwitchToView(View.Board, false, false);
+					yield return new WaitForSeconds(0.15f);
+				}
 				CardSlot targetSlot = otherCard.Slot.opposingSlot;
 				if (targetSlot.Card != null)
 				{

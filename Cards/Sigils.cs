@@ -361,6 +361,7 @@ namespace MagnificusMod
 		{
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Spell Book", "When a card bearing this sigil is played, draw a random spell card.", typeof(SigilCode.DrawSpell), Tools.GetTexture("spellbooksigil.png"))
 				.SetDefaultPart1Ability()
+				.SetPixelAbilityIcon(Tools.GetTexture("pixelability_spellbook.png"))
 				.SetIcon(Tools.GetTexture("spellbooksigil.png"));
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.DrawSpell.ability = newAbility.ability;

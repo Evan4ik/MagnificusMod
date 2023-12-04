@@ -1209,9 +1209,21 @@ namespace MagnificusMod
 				}
 			}
 
+			public bool HasGems(bool onResolve)
+			{
+				if (onResolve && base.Card.OpponentCard)
+				{
+					if (Singleton<TurnManager>.Instance.Opponent.Queue.Exists((PlayableCard x) => x != null && x.Info.HasTrait(Trait.Gem) && x.Slot.Card == null))
+					{
+						return true;
+					}
+				}
+				return (base.Card.OpponentCard ? Singleton<BoardManager>.Instance.OpponentSlotsCopy : Singleton<BoardManager>.Instance.PlayerSlotsCopy).Exists((CardSlot x) => x.Card != null && x.Card.Info.HasTrait(Trait.Gem));
+			}
+
 			public override bool RespondsToOtherCardDie(PlayableCard card, CardSlot deathSlot, bool fromCombat, PlayableCard killer)
 			{
-				return base.Card.OnBoard && deathSlot.Card != null && deathSlot.Card.OpponentCard == base.Card.OpponentCard && deathSlot.Card != base.Card && !this.currentlyResurrectingCards.Contains(deathSlot.Card.Info) && deathSlot.Card == card;
+				return base.Card.OnBoard && deathSlot.Card != null && deathSlot.Card.OpponentCard == base.Card.OpponentCard && deathSlot.Card != base.Card && !this.currentlyResurrectingCards.Contains(deathSlot.Card.Info) && deathSlot.Card == card && !(card.HasAbility(Ability.GemDependant) && !HasGems(false)) && !card.HasTrait(Trait.EatsWarrens);
 			}
 
 			public override IEnumerator OnOtherCardDie(PlayableCard card, CardSlot deathSlot, bool fromCombat, PlayableCard killer)
@@ -1291,9 +1303,18 @@ namespace MagnificusMod
 						negative = 0 - baseAttack;
 						for (int i = 0; i < baseAttack + 1; i++)
 						{
+							if (i == 0 && baseAttack == 0)
+							{
+								attackRange.Add(1);
+							}
 							attackRange.Add(i);
 						}
 						selectedAttack = attackRange[Random.RandomRangeInt(0, attackRange.Count)];
+						if (selectedAttack == Card.Attack)
+						{
+							attackRange.Remove(selectedAttack);
+							selectedAttack = attackRange[Random.RandomRangeInt(0, attackRange.Count)];
+						}
 						negative += selectedAttack;
 						mod.attackAdjustment = negative;
 					}
@@ -1302,9 +1323,18 @@ namespace MagnificusMod
 				if (alreadyMod) { yield break; }
 				for (int i = 0; i < baseAttack + 1; i++)
 				{
+					if (i == 0 && baseAttack == 0)
+                    {
+						attackRange.Add(1);
+                    }
 					attackRange.Add(i);
 				}
 				selectedAttack = attackRange[Random.RandomRangeInt(0, attackRange.Count)];
+				if (selectedAttack == Card.Attack)
+                {
+					attackRange.Remove(selectedAttack);
+					selectedAttack = attackRange[Random.RandomRangeInt(0, attackRange.Count)];
+				}
 				negative += selectedAttack;
 				CardModificationInfo cardModificationInfo = new CardModificationInfo();
 				cardModificationInfo.nonCopyable = true;
@@ -1499,7 +1529,7 @@ namespace MagnificusMod
 				mod.singletonId = "puppet";
 				foreach (CardSlot slot in list)
 				{
-					if (slot.Card != null && slot.Card.Attack == 0 && !slot.Card.HasTrait(Trait.Gem))
+					if (slot.Card != null && slot.Card.Attack == 0 && !slot.Card.HasTrait(Trait.Gem) && slot.Card != base.Card)
 					{
 						slot.Card.AddTemporaryMod(mod);
 					}

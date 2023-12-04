@@ -28,9 +28,18 @@
     <None Remove="Resources\ability_tripleblood_scratched.png" />
     <None Remove="Resources\ability_tutor_scratched.png" />
     <None Remove="Resources\ability_whackamole_scratched.png" />
+    <None Remove="Resources\achievement_amber.png" />
+    <None Remove="Resources\achievement_crystalskull.png" />
+    <None Remove="Resources\achievement_dragon.png" />
     <None Remove="Resources\achievement_gnome.png" />
+    <None Remove="Resources\achievement_goobert.png" />
     <None Remove="Resources\achievement_locked.png" />
+    <None Remove="Resources\achievement_lonely.png" />
     <None Remove="Resources\achievement_magnificus.png" />
+    <None Remove="Resources\achievement_magnus.png" />
+    <None Remove="Resources\achievement_rush.png" />
+    <None Remove="Resources\achievement_sacrifice.png" />
+    <None Remove="Resources\achievement_timegoddess.png" />
     <None Remove="Resources\algae.png" />
     <None Remove="Resources\animator.png" />
     <None Remove="Resources\antichallenge_mana.png" />
@@ -46,6 +55,20 @@
     <None Remove="Resources\batterypower.png" />
     <None Remove="Resources\bigpausemenu.png" />
     <None Remove="Resources\blackbrush.png" />
+    <None Remove="Resources\bleenebook_alchemy.png" />
+    <None Remove="Resources\bleenebook_animator.png" />
+    <None Remove="Resources\bleenebook_buffgems.png" />
+    <None Remove="Resources\bleenebook_familiar.png" />
+    <None Remove="Resources\bleenebook_gold.png" />
+    <None Remove="Resources\bleenebook_impaled.png" />
+    <None Remove="Resources\bleenebook_repulsive.png" />
+    <None Remove="Resources\bleenebook_revivor.png" />
+    <None Remove="Resources\bleenebook_runes.png" />
+    <None Remove="Resources\bleenebook_sharp.png" />
+    <None Remove="Resources\bleenebook_skelemage.png" />
+    <None Remove="Resources\bleenebook_slime.png" />
+    <None Remove="Resources\bleenebook_stinky.png" />
+    <None Remove="Resources\bleeneboss.png" />
     <None Remove="Resources\bleenehound.png" />
     <None Remove="Resources\bnuymage.png" />
     <None Remove="Resources\Bookshelf.png" />
@@ -177,6 +200,10 @@
     <None Remove="Resources\him.png" />
     <None Remove="Resources\homunculus.png" />
     <None Remove="Resources\hubertpicnic" />
+    <None Remove="Resources\hydrablack.png" />
+    <None Remove="Resources\hydrablue.png" />
+    <None Remove="Resources\hydragreen.png" />
+    <None Remove="Resources\hydraorange.png" />
     <None Remove="Resources\igniteability.png" />
     <None Remove="Resources\jester.png" />
     <None Remove="Resources\jupiter.png" />
@@ -200,6 +227,8 @@
     <None Remove="Resources\magnificus1life.png" />
     <None Remove="Resources\magnificus2life.png" />
     <None Remove="Resources\magnificus3life.png" />
+    <None Remove="Resources\magnusboss.png" />
+    <None Remove="Resources\magnusstars.png" />
     <None Remove="Resources\magvoiceclips" />
     <None Remove="Resources\mag_enchspear.png" />
     <None Remove="Resources\mag_oroborous.png" />
@@ -263,11 +292,19 @@
     <None Remove="Resources\pixelability_absorbgems.png" />
     <None Remove="Resources\pixelability_familiar.png" />
     <None Remove="Resources\pixelability_moxstrafe.png" />
+    <None Remove="Resources\pixelability_spellbook.png" />
     <None Remove="Resources\pixelability_trasgnomification.png" />
     <None Remove="Resources\pixelportrait_alchemist.png" />
+    <None Remove="Resources\pixelportrait_erraticscholar.png" />
+    <None Remove="Resources\pixelportrait_gemabsorber.png" />
+    <None Remove="Resources\pixelportrait_gemboundripper.png" />
+    <None Remove="Resources\pixelportrait_gemlarva.png" />
+    <None Remove="Resources\pixelportrait_gemworm.png" />
     <None Remove="Resources\pixelportrait_gnome.png" />
+    <None Remove="Resources\pixelportrait_homonculus.png" />
     <None Remove="Resources\pixelportrait_magimorph.png" />
     <None Remove="Resources\pixelportrait_rascal.png" />
+    <None Remove="Resources\pixelportrait_spellcaster.png" />
     <None Remove="Resources\potion_blue.png" />
     <None Remove="Resources\potion_green.png" />
     <None Remove="Resources\potion_mana.png" />
@@ -373,6 +410,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\achievement_crystalskull.png" />
+    <EmbeddedResource Include="Resources\achievement_dragon.png" />
+    <EmbeddedResource Include="Resources\achievement_magnus.png" />
+    <EmbeddedResource Include="Resources\achievement_sacrifice.png" />
+    <EmbeddedResource Include="Resources\achievement_timegoddess.png" />
+    <EmbeddedResource Include="Resources\hydrablack.png" />
+    <EmbeddedResource Include="Resources\hydrablue.png" />
+    <EmbeddedResource Include="Resources\hydragreen.png" />
+    <EmbeddedResource Include="Resources\hydraorange.png" />
+    <EmbeddedResource Include="Resources\magnusboss.png" />
+    <EmbeddedResource Include="Resources\magnusstars.png" />
+    <EmbeddedResource Include="Resources\pixelability_spellbook.png" />
+    <EmbeddedResource Include="Resources\pixelportrait_erraticscholar.png" />
+    <EmbeddedResource Include="Resources\pixelportrait_gemabsorber.png" />
+    <EmbeddedResource Include="Resources\pixelportrait_gemboundripper.png" />
+    <EmbeddedResource Include="Resources\pixelportrait_homonculus.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="Resources\1atkslot.png" />
     <EmbeddedResource Include="Resources\2hpslot.png" />
     <EmbeddedResource Include="Resources\ability_corpseeater_scratched.png" />
@@ -391,9 +447,13 @@
     <EmbeddedResource Include="Resources\ability_tripleblood_scratched.png" />
     <EmbeddedResource Include="Resources\ability_tutor_scratched.png" />
     <EmbeddedResource Include="Resources\ability_whackamole_scratched.png" />
+    <EmbeddedResource Include="Resources\achievement_amber.png" />
     <EmbeddedResource Include="Resources\achievement_gnome.png" />
+    <EmbeddedResource Include="Resources\achievement_goobert.png" />
     <EmbeddedResource Include="Resources\achievement_locked.png" />
+    <EmbeddedResource Include="Resources\achievement_lonely.png" />
     <EmbeddedResource Include="Resources\achievement_magnificus.png" />
+    <EmbeddedResource Include="Resources\achievement_rush.png" />
     <EmbeddedResource Include="Resources\animator.png" />
     <EmbeddedResource Include="Resources\antichallenge_mana.png" />
     <EmbeddedResource Include="Resources\antichallenge_map.png" />
@@ -404,6 +464,20 @@
     <EmbeddedResource Include="Resources\batterypower.png" />
     <EmbeddedResource Include="Resources\bigpausemenu.png" />
     <EmbeddedResource Include="Resources\blackbrush.png" />
+    <EmbeddedResource Include="Resources\bleenebook_alchemy.png" />
+    <EmbeddedResource Include="Resources\bleenebook_animator.png" />
+    <EmbeddedResource Include="Resources\bleenebook_buffgems.png" />
+    <EmbeddedResource Include="Resources\bleenebook_familiar.png" />
+    <EmbeddedResource Include="Resources\bleenebook_gold.png" />
+    <EmbeddedResource Include="Resources\bleenebook_impaled.png" />
+    <EmbeddedResource Include="Resources\bleenebook_repulsive.png" />
+    <EmbeddedResource Include="Resources\bleenebook_revivor.png" />
+    <EmbeddedResource Include="Resources\bleenebook_runes.png" />
+    <EmbeddedResource Include="Resources\bleenebook_sharp.png" />
+    <EmbeddedResource Include="Resources\bleenebook_skelemage.png" />
+    <EmbeddedResource Include="Resources\bleenebook_slime.png" />
+    <EmbeddedResource Include="Resources\bleenebook_stinky.png" />
+    <EmbeddedResource Include="Resources\bleeneboss.png" />
     <EmbeddedResource Include="Resources\Bookshelf.png" />
     <EmbeddedResource Include="Resources\boss stim.png" />
     <EmbeddedResource Include="Resources\boss stim_icon.png" />
@@ -682,9 +756,12 @@
     <EmbeddedResource Include="Resources\pixelability_moxstrafe.png" />
     <EmbeddedResource Include="Resources\pixelability_trasgnomification.png" />
     <EmbeddedResource Include="Resources\pixelportrait_alchemist.png" />
+    <EmbeddedResource Include="Resources\pixelportrait_gemlarva.png" />
+    <EmbeddedResource Include="Resources\pixelportrait_gemworm.png" />
     <EmbeddedResource Include="Resources\pixelportrait_gnome.png" />
     <EmbeddedResource Include="Resources\pixelportrait_magimorph.png" />
     <EmbeddedResource Include="Resources\pixelportrait_rascal.png" />
+    <EmbeddedResource Include="Resources\pixelportrait_spellcaster.png" />
     <EmbeddedResource Include="Resources\potion_blue.png" />
     <EmbeddedResource Include="Resources\potion_green.png" />
     <EmbeddedResource Include="Resources\potion_mana.png" />

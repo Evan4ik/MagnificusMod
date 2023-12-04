@@ -275,12 +275,12 @@ namespace MagnificusMod
 					}
 				}
 				float j = 0;
-				bool strongPull = Singleton<BoardManager>.Instance.GetSlots(false).Find((CardSlot x) => x.Card != null && x.Card.Info.HasAbility(SigilCode.StrongPull.ability)) != null;
+				bool strongPull = Singleton<BoardManager>.Instance.GetSlots(false).Find((CardSlot x) => x.Card != null && x.Card.HasAbility(SigilCode.StrongPull.ability)) != null;
 				foreach (CardSlot opposingSlot in opposingSlots)
 				{
 					if (strongPull && slot.IsPlayerSlot) {
 						Singleton<ViewManager>.Instance.SwitchToView(Singleton<BoardManager>.Instance.CombatView, false, false);
-						yield return __state.SlotAttackSlot(slot, Singleton<BoardManager>.Instance.GetSlots(false).Find((CardSlot x) => x.Card != null && x.Card.Info.HasAbility(SigilCode.StrongPull.ability)), j);
+						yield return __state.SlotAttackSlot(slot, Singleton<BoardManager>.Instance.GetSlots(false).Find((CardSlot x) => x.Card != null && x.Card.HasAbility(SigilCode.StrongPull.ability)), j);
 						j += 0.01f;
 						continue;
 					}
@@ -313,12 +313,12 @@ namespace MagnificusMod
 					bool flightBlocker = false;
 					if (opponentSlot.transform.childCount > 5 && opposingSlot.Card != null)
 					{
-						if (opposingSlot.Card.Info.HasAbility(Ability.Reach) || attacker.Info.ModAbilities.Contains(Ability.Reach))
+						if (opposingSlot.Card.HasAbility(Ability.Reach) || attacker.Info.ModAbilities.Contains(Ability.Reach))
 						{
 							flightBlocker = true;
 						}
 					}
-					bool flyer = attacker.Info.HasAbility(Ability.Flying) || attacker.Info.ModAbilities.Contains(Ability.Flying);
+					bool flyer = attacker.HasAbility(Ability.Flying) || attacker.Info.ModAbilities.Contains(Ability.Flying);
 					if (attacker.temporaryMods.Count > 0)
 					{
 						foreach (CardModificationInfo mod in attacker.temporaryMods)
@@ -348,7 +348,7 @@ namespace MagnificusMod
 								mox = GameObject.Instantiate(GameObject.Find("sapphireMoxPref"));
 								break;
 						}
-						if (opponentSlot.transform.childCount > 5 && opposingSlot.Card != null && !flyer && !opposingSlot.Card.Info.HasAbility(Ability.Submerge) && !opposingSlot.Card.Info.HasAbility(MagnificusMod.SigilCode.submergekraken.ability))
+						if (opponentSlot.transform.childCount > 5 && opposingSlot.Card != null && !flyer && !opposingSlot.Card.HasAbility(Ability.Submerge) && !opposingSlot.Card.HasAbility(MagnificusMod.SigilCode.submergekraken.ability))
 						{
 							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.FlashCard(opponentSlot.transform.GetChild(5).gameObject, 0.4f, attacker.Info.gemsCost[0], false));
 
@@ -369,16 +369,16 @@ namespace MagnificusMod
 					else if (attacker.Info.HasTrait(Trait.Gem))
 					{
 						GemType hello = GemType.Green;
-						if (attacker.Info.HasAbility(Ability.GainGemGreen))
+						if (attacker.HasAbility(Ability.GainGemGreen))
 						{
 							mox = GameObject.Instantiate(GameObject.Find("emeraldMoxPref"));
 						}
-						else if (attacker.Info.HasAbility(Ability.GainGemOrange))
+						else if (attacker.HasAbility(Ability.GainGemOrange))
 						{
 							hello = GemType.Orange;
 							mox = GameObject.Instantiate(GameObject.Find("rubyMoxPref"));
 						}
-						else if (attacker.Info.HasAbility(Ability.GainGemBlue))
+						else if (attacker.HasAbility(Ability.GainGemBlue))
 						{
 							hello = GemType.Blue;
 							mox = GameObject.Instantiate(GameObject.Find("sapphireMoxPref"));

@@ -841,6 +841,7 @@ namespace MagnificusMod
 			List<GemType> gemCost = new List<GemType> { GemType.Orange };
 			CardInfo myCard = CardManager.New("mag", "mag_crystalworm", "Crystal Worm", 0, 3, "Its body is made out of pure mox.")
 					.SetPortrait(Tools.GetTexture("GemWorm.png"))
+					.SetPixelPortrait(Tools.getSprite("pixelportrait_gemworm.png"))
 					.SetCost(bloodCost: 0, gemsCost: gemCost)
 					.AddAbilities(list2[0]);
 			myCard.metaCategories = list;
@@ -872,6 +873,7 @@ namespace MagnificusMod
 
 					.SetCost()
 					.SetPortrait(Tools.GetTexture("GemLarva.png"))
+					.SetPixelPortrait(Tools.getSprite("pixelportrait_gemlarva.png"))
 					.AddAbilities(list2[0], list2[1])
 					.AddMetaCategories();
 			myCard.metaCategories = new List<CardMetaCategory>();
@@ -1094,6 +1096,7 @@ namespace MagnificusMod
 			List<GemType> gemCost = new List<GemType> { GemType.Blue };
 			CardInfo myCard = CardManager.New("mag", "mag_spellcaster", "Spellcaster", 1, 3, "It reads out spells from its book and casts them directly to your hand.")
 					.AddAppearances(CardAppearanceBehaviour.Appearance.RareCardBackground)
+					.SetPixelPortrait(Tools.getSprite("pixelportrait_spellcaster.png"))
 					.SetPortrait(Tools.GetTexture("pack mage.png"))
 					.SetCost(bloodCost: 0, gemsCost: gemCost)
 					.AddAbilities(list2[0]);
@@ -1168,6 +1171,7 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", "mag_homunculus", "Homunculus", 1, 1, "A strange, to say the least creature.")
 
 					.SetPortrait(Tools.GetTexture("homunculus.png"))
+					.SetPixelPortrait(Tools.getSprite("pixelportrait_homonculus.png"))
 					.AddAbilities(list2[0]);
 			myCard.metaCategories = list;
 			myCard.temple = CardTemple.Wizard;
@@ -1389,7 +1393,7 @@ namespace MagnificusMod
 			List<CardMetaCategory> list = new List<CardMetaCategory> { CardMetaCategory.ChoiceNode };
 			List<Ability> list2 = new List<Ability> { SigilCode.GoobertDebuff.ability, SigilCode.GoobertDebuff.ability };
 			List<GemType> gemCost = new List<GemType> { GemType.Green, GemType.Green };
-			CardInfo myCard = CardManager.New("mag", "mag_sodamage", "Soda Mage", 1, 4, "This pathetic mage melted away from drinking too much carbonated water.")
+			CardInfo myCard = CardManager.New("mag", "mag_sodamage", "Soda Mage", 1, 3, "This pathetic mage melted away from drinking too much carbonated water.")
 
 					.SetPortrait(Tools.GetTexture("sodermage.png"))
 					.SetCost(bloodCost: 0, gemsCost: gemCost)
@@ -1673,6 +1677,7 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", "mag_gemboundripper", "Gembound Ripper", 4, 1, "It is unstable, but such is the price for unending power.")
 
 						.SetCost(bloodCost: 2)
+						.SetPixelPortrait(Tools.getSprite("pixelportrait_gemboundripper.png"))
 						.SetPortrait(Tools.GetTexture("gemboundripper.png"))
 						.AddAbilities(Ability.GemDependant);
 			myCard.SetExtendedProperty("ManaCost", true);
@@ -1693,7 +1698,7 @@ namespace MagnificusMod
 
 						.SetCost(bloodCost: 1)
 						.SetPortrait(Tools.GetTexture("mag_gemabsorber.png"))
-						.SetPixelPortrait(pixelTex)
+						.SetPixelPortrait(Tools.getSprite("pixelportrait_gemabsorber.png"))
 						.AddAbilities(list2[0]);
 			myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
@@ -1750,6 +1755,7 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", "mag_erraticscholar", "Erratic Scholar", 1, 1, "A panicked scholar.. Always running.")
 
 							.SetCost(bloodCost: 1)
+							.SetPixelPortrait(Tools.getSprite("pixelportrait_erraticscholar.png"))
 							.SetPortrait(Tools.GetTexture("erraticscholar.png"))
 							.AddAbilities(list2[0])
 							.AddMetaCategories(list[0]);
@@ -2346,6 +2352,90 @@ namespace MagnificusMod
 			myCard.temple = CardTemple.Wizard;
 		}
 
+		public static void AddBleeneBooks()
+		{
+			List<CardMetaCategory> list = new List<CardMetaCategory>();
+
+			CardInfo alchemy = CardManager.New("mag", "mag_bleenebookalchemy", "Alchemy 101", 0, 2, "[c:g2]Alchemy 101[c:]\n[c:g3]I[c:] [c:g1]never[c:] [c:g3]was[c:] [c:g1]that[c:] [c:g3]great[c:] [c:g1]at[c:] [c:g3]alchemy..[c:]")
+
+					.SetPortrait(Tools.GetTexture("bleenebook_alchemy.png"))
+					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Green })
+					.AddAbilities(Ability.BuffNeighbours);
+			alchemy.metaCategories = list;
+			CardInfo buffgems = CardManager.New("mag", "mag_bleenebookbuffgems", "Guide to Attack", 1, 1, "[c:g2]Guide to Attack[c:]\n[c:g3]One[c:] [c:g1]of[c:] [c:g3]the[c:] [c:g1]first[c:] [c:g3]books[c:] [c:g1]I[c:] [c:g3]ever[c:] [c:g1]read.[c:]")
+
+					.SetPortrait(Tools.GetTexture("bleenebook_buffgems.png"))
+					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Orange })
+					.AddAbilities(Ability.BuffGems);
+			buffgems.metaCategories = list;
+			CardInfo impaled = CardManager.New("mag", "mag_bleenebookimpaled", "The art of Surprise", 1, 1, "[c:g2]The art of Surprise[c:]\n[c:g3]Looks[c:] [c:g1]like[c:] [c:g3]a[c:] [c:g1]frustrated[c:] [c:g3]mage[c:] [c:g1]stabbed[c:] [c:g3]it.[c:]")
+
+					.SetPortrait(Tools.GetTexture("bleenebook_impaled.png"))
+					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Orange })
+					.AddAbilities(SigilCode.MagDropSpear.ability);
+			impaled.metaCategories = list;
+			CardInfo repulsive = CardManager.New("mag", "mag_bleenebookrepulsive", "Tome of Forbidden Secrets", 0, 1, "[c:g2]The Tome of Forbidden Secrets[c:]\n[c:g3]Quite[c:] [c:g1]tough[c:] [c:g3]to[c:] [c:g1]open.[c:]")
+
+					.SetPortrait(Tools.GetTexture("bleenebook_repulsive.png"))
+					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Blue })
+					.AddAbilities(Ability.PreventAttack, Ability.GemDependant);
+			repulsive.metaCategories = list;
+			CardInfo revivor = CardManager.New("mag", "mag_bleenebookrevivor", "Secrets of Life and Death", 0, 3, "[c:g2]The Secrets of Life and Death[c:]\n[c:g3]A[c:] [c:g1]forbidden[c:] [c:g3]book,[c:] [c:g1]I[c:] [c:g3]had[c:] [c:g1]to[c:] [c:g3]read[c:] [c:g1]it[c:] [c:g3]in[c:] [c:g1]secret![c:]")
+
+					.SetPortrait(Tools.GetTexture("bleenebook_revivor.png"))
+					.SetCost(bloodCost: 1)
+					.AddAbilities(SigilCode.LifeUpOmega.ability);
+			revivor.metaCategories = list;
+			CardInfo sharp = CardManager.New("mag", "mag_bleenebooksharp", "Book of War", 1, 2, "[c:g2]Book of War[c:]\n[c:g3]A[c:] [c:g1]painful,[c:] [c:g3]yet[c:] [c:g1]informative[c:] [c:g3]read.[c:]")
+
+					.SetPortrait(Tools.GetTexture("bleenebook_sharp.png"))
+					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Orange })
+					.AddAbilities(Ability.Sharp);
+			sharp.metaCategories = list;
+			CardInfo gold = CardManager.New("mag", "mag_bleenebookgold", "Gold-Encrusted Codex", 0, 4, "[c:g2]Gold-Encrusted Codex[c:]\n[c:g3]Possibly[c:] [c:g1]the[c:] [c:g3]most[c:] [c:g1]valueable[c:] [c:g3]book[c:] [c:g1]I[c:] [c:g3]own.[c:]")
+
+					.SetPortrait(Tools.GetTexture("bleenebook_gold.png"))
+					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Orange })
+					.AddAbilities(SigilCode.DropMana.ability);
+			gold.metaCategories = list;
+			CardInfo runes = CardManager.New("mag", "mag_bleenebookrunes", "Introduction to Runes", 0, 1, "[c:g2]Introduction to Runes[c:]\n[c:g3]'Twas[c:] [c:g1]an[c:] [c:g3]absolute[c:] [c:g1]nightmare[c:] [c:g3]learning[c:] [c:g1]all[c:] [c:g3]those[c:] [c:g1]runes.[c:]")
+
+					.SetPortrait(Tools.GetTexture("bleenebook_runes.png"))
+					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Blue })
+					.AddAbilities(Ability.ExplodeOnDeath);
+			runes.metaCategories = list;
+			CardInfo slime = CardManager.New("mag", "mag_bleenebookslime", "Goo Covered Book", 0, 2, "[c:g2]A Brief Hist-[c:] [c:g3]Wait[c:] [c:g1]a[c:] [c:g3]minute..[c:] [c:g1]Some[c:] [c:g3]vandal[c:] [c:g1]ruined[c:] [c:g3]this[c:] [c:g1]one![c:]")
+
+					.SetPortrait(Tools.GetTexture("bleenebook_slime.png"))
+					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Green })
+					.AddAbilities(SigilCode.GoobertDebuff.ability);
+			slime.metaCategories = list;
+			CardInfo stinky = CardManager.New("mag", "mag_bleenebookstinky", "Bogbound Spells", 1, 2, "[c:g2]Bogbound Spells[c:]\n[c:g3]Eurgh,[c:] [c:g1]it's[c:] [c:g3]in[c:] [c:g1]way[c:] [c:g3]worse[c:] [c:g1]condition[c:] [c:g3]than[c:] [c:g1]I[c:] [c:g3]remember.[c:]")
+
+					.SetPortrait(Tools.GetTexture("bleenebook_stinky.png"))
+					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Green })
+					.AddAbilities(Ability.DebuffEnemy);
+			stinky.metaCategories = list;
+			CardInfo familiar = CardManager.New("mag", "mag_bleenebookfamiliar", "Taming Familiars", 0, 5, "[c:g2]Guide to Taming Familiars[c:]\n[c:g3]Borrowed[c:] [c:g1]this[c:] [c:g3]one[c:] [c:g1]from[c:] [c:g3]a[c:] [c:g1]friend[c:] [c:g3]in[c:] [c:g1]the[c:] [c:g3]wood.[c:]")
+
+					.SetPortrait(Tools.GetTexture("bleenebook_familiar.png"))
+					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Blue });
+			familiar.metaCategories = list;
+			CardInfo horde = CardManager.New("mag", "mag_bleenebookhorde", "Raising the Horde", 0, 4, "[c:g2]Raising the Horde[c:]\n[c:g3]I[c:] [c:g1]had[c:] [c:g3]to[c:] [c:g1]sneak[c:] [c:g3]into[c:] [c:g1]a[c:] [c:g3]crypt[c:] [c:g1]to[c:] [c:g3]get[c:] [c:g1]this[c:] [c:g3]one![c:]")
+
+					.SetPortrait(Tools.GetTexture("bleenebook_skelemage.png"))
+					.SetCost(bloodCost: 0)
+					.AddTraits(Trait.Gem)
+					.AddAbilities(Ability.GainGemTriple, SigilCode.LifeUpOmega.ability);
+			horde.metaCategories = list;
+			CardInfo animator = CardManager.New("mag", "mag_bleenebookanimator", "The Art of Possesion", 0, 5, "[c:g2]The Art of Possesion[c:]\n[c:g3]Animating[c:] [c:g1]other[c:] [c:g3]mages[c:] [c:g1]was[c:] [c:g3]considered[c:] [c:g1]taboo[c:] [c:g3]back[c:] [c:g1]when[c:] [c:g3]I[c:] [c:g1]was[c:] [c:g3]around.[c:]")
+
+					.SetPortrait(Tools.GetTexture("bleenebook_animator.png"))
+					.AddAbilities(SigilCode.Animator.ability)
+					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Blue });
+			animator.metaCategories = list;
+		}
+
 		public static void AddDrake()
 		{
 			List<CardMetaCategory> list = new List<CardMetaCategory> { CardMetaCategory.Rare };
@@ -2402,7 +2492,7 @@ namespace MagnificusMod
 		{
 			List<CardMetaCategory> list = new List<CardMetaCategory>();
 			List<Ability> list2 = new List<Ability>();
-			CardInfo myCard = CardManager.New("mag", "mag_giantmagnus", "Master Magnus", 3, 40, "Cause we are the aqua teens, make the homies say ho and the girlies wanna scream")
+			CardInfo myCard = CardManager.New("mag", "mag_giantmagnus", "Master Magnus", 1, 10, "Cause we are the aqua teens, make the homies say ho and the girlies wanna scream")
 
 					.SetPortrait(Tools.GetTexture("MasterMagnus_4.png"))
 					.SetCost(bloodCost: 1)
@@ -2412,6 +2502,36 @@ namespace MagnificusMod
 
 			myCard.metaCategories = list;
 			myCard.temple = CardTemple.Wizard;
+		}
+
+		public static void AddHydras()
+		{
+			List<CardMetaCategory> list = new List<CardMetaCategory>();
+			CardInfo green = CardManager.New("mag", "mag_hydragreen", "Head of Emerald", 0, 5, "trogdor")
+
+					.SetPortrait(Tools.GetTexture("hydragreen.png"))
+					.SetCost(gemsCost: new List<GemType> { GemType.Green })
+					.AddAbilities(Ability.Reach, Ability.DebuffEnemy, Ability.WhackAMole);
+			green.metaCategories = list;
+			CardInfo orange = CardManager.New("mag", "mag_hydraorange", "Head of Ruby", 2, 5, "haha goarnj")
+
+					.SetPortrait(Tools.GetTexture("hydraorange.png"))
+					.SetCost(gemsCost: new List<GemType> { GemType.Orange })
+					.AddAbilities(Ability.Reach, Ability.GuardDog, Ability.BuffGems);
+			orange.metaCategories = list;
+			CardInfo blue = CardManager.New("mag", "mag_hydrablue", "Head of Sapphire", 1, 7, "mind gaames")
+
+					.SetPortrait(Tools.GetTexture("hydrablue.png"))
+					.SetCost(gemsCost: new List<GemType> { GemType.Blue })
+					.AddAbilities(Ability.Reach, Ability.AllStrike, Ability.MadeOfStone);
+			blue.metaCategories = list;
+			CardInfo black = CardManager.New("mag", "mag_hydrablack", "Heads of Void", 0, 10, "evil")
+
+					.SetPortrait(Tools.GetTexture("hydrablack.png"))
+					.SetCost(bloodCost: 1)
+					.AddTraits(Trait.Gem)
+					.AddAbilities(Ability.Reach, Ability.Sharp, Ability.MadeOfStone, Ability.SplitStrike);
+			black.metaCategories = list;
 		}
 
 		public static void AddMoonShards()
@@ -3193,7 +3313,7 @@ namespace MagnificusMod
 
 		public static void AddFrostspell()
 		{
-			List<CardMetaCategory> list = new List<CardMetaCategory> ();
+			List<CardMetaCategory> list = new List<CardMetaCategory> { Plugin.SpellPool };
 			List<CardAppearanceBehaviour.Appearance> appearanceBehaviours = new List<CardAppearanceBehaviour.Appearance> { CardAppearanceBehaviour.Appearance.TerrainLayout };
 
 			List<Trait> traits = new List<Trait> { Trait.EatsWarrens };
@@ -3216,7 +3336,7 @@ namespace MagnificusMod
 
 		public static void AddTargetFrostSpell()
 		{
-			List<CardMetaCategory> list = new List<CardMetaCategory> { Plugin.SpellPool };
+			List<CardMetaCategory> list = new List<CardMetaCategory>();
 			List<CardAppearanceBehaviour.Appearance> appearanceBehaviours = new List<CardAppearanceBehaviour.Appearance> { CardAppearanceBehaviour.Appearance.TerrainLayout };
 			List<Trait> traits = new List<Trait> { Trait.EatsWarrens };
 
