@@ -89,13 +89,29 @@ namespace MagnificusMod
 				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Unlocked;
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
 				yield return new WaitForSeconds(0.1f);
-				if (RunState.Run.regionTier == 4)
+				if (SceneLoader.ActiveSceneName == "finale_magnificus")
                 {
-					if (Singleton<MagnificusMod.BossOpponents.MagnificusOpponnent>.Instance.NumLives < 2 && !Singleton<MagnificusMod.BossOpponents.MagnificusOpponnent>.Instance.outOfCardsLine)
+					Singleton<CardDrawPiles3D>.Instance.sidePile.gameObject.transform.GetChild(1).gameObject.SetActive(false);
+					Singleton<CardDrawPiles3D>.Instance.pile.gameObject.transform.GetChild(1).gameObject.SetActive(false);
+				}
+				if (RunState.Run.regionTier == 4 && SceneLoader.ActiveSceneName == "finale_magnificus")
+                {
+					if (!Generation.challenges.Contains("MasterBosses"))
+					{
+						if (Singleton<MagnificusMod.BossOpponents.MagnificusOpponnent>.Instance.NumLives < 2 && !Singleton<MagnificusMod.BossOpponents.MagnificusOpponnent>.Instance.outOfCardsLine)
+						{
+							Singleton<MagnificusMod.BossOpponents.MagnificusOpponnent>.Instance.outOfCardsLine = true;
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Out of cards..", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Dissapointing. I had high hopes for you.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						}
+					} else
                     {
-						Singleton<MagnificusMod.BossOpponents.MagnificusOpponnent>.Instance.outOfCardsLine = true;
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Out of cards..", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Dissapointing. I had high hopes for you.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						if (Singleton<MagnificusMod.BossOpponents.MagnusOpponent>.Instance.NumLives < 2 && !Singleton<MagnificusMod.BossOpponents.MagnusOpponent>.Instance.outOfCardsLine)
+						{
+							Singleton<MagnificusMod.BossOpponents.MagnusOpponent>.Instance.outOfCardsLine = true;
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Such a tiny collection of cards..", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I highly doubt you will win.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						}
 					}
 					yield break;
 				}
@@ -117,6 +133,9 @@ namespace MagnificusMod
 				if (__state.turnsSinceExhausted >= 8 && SceneLoader.ActiveSceneName == "finale_magnificus")
 				{
 					yield return Singleton<MagnificusLifeManager>.Instance.ShowLifeLoss(true, 1);
+				} else if (__state.turnsSinceExhausted >= 8)
+                {
+					yield return Singleton<LifeManager>.Instance.ShowDamageSequence(1, 1, true, 0.125f, null, 0f, true);
 				}
 				cardInfo.Mods.Add(mod);
 				yield return Singleton<BoardManager>.Instance.CreateCardInSlot(cardInfo, moonCardSlot, 0.1f);

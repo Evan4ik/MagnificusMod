@@ -6167,7 +6167,7 @@ namespace MagnificusMod
 			else if (location == "finale")
 			{
 				Singleton<TextDisplayer>.Instance.ShowMessage("~ ??? ~");
-				if (SaveManager.saveFile.CurrentDeck.Cards.Count <= 10) { AchievementManager.Unlock(Achievements.CardofSacrifice); }
+				if (SaveManager.saveFile.CurrentDeck.Cards.Count <= 10 && SaveManager.saveFile.ascensionActive) { AchievementManager.Unlock(Achievements.CardofSacrifice); }
 			}
 			else if (location == "tower")
 			{

@@ -1977,6 +1977,8 @@ namespace MagnificusMod
 				}
 			}
 
+			public bool outOfCardsLine = false;
+
 			public override IEnumerator IntroSequence(EncounterData encounter)
 			{
 				AudioController.Instance.FadeOutLoop(0.75f, Array.Empty<int>());
