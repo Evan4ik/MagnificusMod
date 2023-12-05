@@ -590,10 +590,6 @@ namespace MagnificusMod
 					component10.Initialize(CardLoader.GetCardByName("mag_jrsage"));
 					component10.ExitBoard(1.25f, new Vector3(0f, 0.5f, 2.5f));
 					CardInfo selected = Singleton<Deck>.Instance.cards[UnityEngine.Random.RandomRangeInt(0, Singleton<Deck>.Instance.cards.Count)];
-					foreach(CardInfo card in Singleton<Deck>.Instance.cards)
-                    {
-						Debug.Log(card.name);
-                    }
 					Singleton<Deck>.Instance.cards.Remove(selected);
 					yield break;
 				}

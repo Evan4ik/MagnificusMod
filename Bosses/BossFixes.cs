@@ -334,7 +334,6 @@ namespace MagnificusMod
 				switch (RunState.Run.regionTier)
 				{
 					case 1:
-						Debug.Log(SavedVars.NodesCleared);
 						if (SaveManager.saveFile.ascensionActive && SavedVars.NodesCleared <= 3)
                         {
 							AchievementManager.Unlock(MagnificusMod.Achievements.RushRecklessly);

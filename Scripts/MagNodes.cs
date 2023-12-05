@@ -961,7 +961,6 @@ namespace MagnificusMod
 					component8.SetEnabled(false);
 					Singleton<SelectableCardArray>.Instance.displayedCards.Add(component8);
 					float x8 = -1.85f;
-					Debug.Log(RunState.Run.regionTier > 0 && RunState.Run.regionTier != 4 && SavedVars.HasMap == true && SavedVars.HasMapIcons == false);
 					if (RunState.Run.regionTier > 0 && RunState.Run.regionTier != 4 && !MagModGeneration.minimap || RunState.Run.regionTier > 0 && RunState.Run.regionTier != 4 && SavedVars.HasMap == true && SavedVars.HasMapIcons == false) { x8 = -1f; }
 					Singleton<SelectableCardArray>.Instance.TweenInCard(component8.transform, new Vector3(x8, 5.01f, -1.5f), 0f, false);
 					component8.Anim.PlayQuickRiffleSound();
@@ -1520,7 +1519,6 @@ namespace MagnificusMod
 					Singleton<ViewManager>.Instance.Controller.LockState = (true ? ViewLockState.Locked : ViewLockState.Unlocked);
 				}, null));
 				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Unlocked;
-				Debug.Log(SaveManager.saveFile.CurrentDeck.Cards.Count);
 				float pauseTime = CardPile.GetPauseBetweenCardTime(SaveManager.saveFile.CurrentDeck.Cards.Count);
 				pauseTime *= SaveManager.saveFile.CurrentDeck.Cards.Count;
 				yield return new WaitForSeconds(pauseTime + 1.25f);
@@ -3659,14 +3657,6 @@ namespace MagnificusMod
 							cardMount++;
 						}
 					}
-
-					foreach(List<CardInfo> list in colours)
-                    {
-						foreach(CardInfo info in list)
-                        {
-							Debug.Log(info.name);
-                        }
-                    }
 
 					createdGroups = new List<GameObject>();
 
