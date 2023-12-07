@@ -37,6 +37,11 @@ namespace MagnificusMod
 					foreach (GameObject gameObject in MagnificusMod.Generation.nodes)
 					{
 						if (gameObject == null) { return; }
+						if (gameObject.name.Contains("nodeIcon") && config.isometricMode == true)
+						{
+							gameObject.transform.localRotation = Quaternion.Euler(30, 45, 0);
+							continue;
+						}
 						float oldRot = gameObject.transform.eulerAngles.y;
 						float xRot = gameObject.transform.eulerAngles.x;
 						float zRot = gameObject.transform.eulerAngles.z;
@@ -70,6 +75,11 @@ namespace MagnificusMod
 								break;
 
 						}
+						if (config.isometricMode == true)
+                        {
+							rotation = Singleton<FirstPersonController>.Instance.gameObject.transform.Find("figure").localRotation.eulerAngles.y;
+
+						}
 						GameObject playerIcon = GameObject.Find("playerMapNode");
 						Tween.Rotation(playerIcon.transform.Find("Header").Find("IconSprite"), Quaternion.Euler(0, 0, rotation), 0.25f, 0);
 					}
@@ -87,6 +97,11 @@ namespace MagnificusMod
 					foreach (GameObject gameObject in MagnificusMod.Generation.nodes)
 					{
 						if (gameObject == null) { return; }
+						if (gameObject.name.Contains("nodeIcon") && config.isometricMode == true)
+						{
+							gameObject.transform.localRotation = Quaternion.Euler(30, 45, 0);
+							continue;
+						}
 						float oldRot = gameObject.transform.eulerAngles.y;
 						float xRot = gameObject.transform.eulerAngles.x;
 						float zRot = gameObject.transform.eulerAngles.z;

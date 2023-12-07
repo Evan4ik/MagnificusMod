@@ -112,7 +112,7 @@ namespace MagnificusMod
 						}
 						continue;
 					}
-					if (!cardSlot.Card.HasTrait(Trait.Gem)) { continue; }
+					if (!cardSlot.Card.HasTrait(Trait.Gem) && !isManaHeart) { continue; }
 					if (cardSlot.Card.Info.HasAbility(Ability.GainGemBlue) && cardSlot.Card.Info.HasAbility(Ability.GainGemGreen) || cardSlot.Card.Info.HasAbility(Ability.GainGemGreen) && cardSlot.Card.Info.HasAbility(Ability.GainGemOrange) || cardSlot.Card.Info.HasAbility(Ability.GainGemOrange) && cardSlot.Card.Info.HasAbility(Ability.GainGemBlue))
 					{
 						num += 2;
@@ -172,7 +172,7 @@ namespace MagnificusMod
 					if (Singleton<BoardManager>.Instance.ChoosingSacrifices && MagCanBeSacrificed(__instance.Card, isMana))
 					{
 						__instance.Card.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").gameObject.SetActive(true);
-						if (!__instance.Card.HasTrait(Trait.Gem) && !isMana) {
+						if (!__instance.Card.HasTrait(Trait.Gem) && !isMana || !__instance.Card.HasTrait(Trait.Gem) && isMana && Generation.challenges.Contains("AllMana")) {
 							__instance.Card.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.4f, 0, 0, 0);
 							__instance.Card.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").GetChild(1).gameObject.GetComponent<ParticleSystem>().startColor = new Color(0.3961f, 0.1098f, 0.2275f, 1);//this is just a lie
 							__instance.Card.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").gameObject.GetComponent<LerpAlpha>().intendedAlpha = 1;
@@ -265,7 +265,7 @@ namespace MagnificusMod
 				if (marked)
 				{
 					bool isMana = Singleton<PlayerHand>.Instance.ChoosingSlotCard != null ? Singleton<PlayerHand>.Instance.ChoosingSlotCard.Info.GetExtendedPropertyAsBool("ManaCost") == true : false;
-					if (__instance.Card.Info.HasTrait(Trait.Gem) && !isMana || !__instance.Card.Info.HasTrait(Trait.Gem) && isMana)
+					if (__instance.Card.Info.HasTrait(Trait.Gem) && !isMana || !__instance.Card.Info.HasTrait(Trait.Gem) && isMana && !Generation.challenges.Contains("AllMana"))
                     {
 						HintsHandler.OnNonsacrificableCardClicked(__instance.PlayableCard);
 						return false;
@@ -448,7 +448,7 @@ namespace MagnificusMod
 					{
 						if (cardSlot5.Card != null && !cardSlot5.Card.Dead)
 						{
-							if (isMana && !cardSlot5.Card.Info.HasTrait(Trait.Gem) || !isMana && cardSlot5.Card.Info.HasTrait(Trait.Gem)) { continue; }
+							if (isMana && !cardSlot5.Card.Info.HasTrait(Trait.Gem) && !Generation.challenges.Contains("AllMana") || !isMana && cardSlot5.Card.Info.HasTrait(Trait.Gem)) { continue; }
 							int sacrificesMade__stateTurn = __state.SacrificesMadeThisTurn;
 							__state.SacrificesMadeThisTurn = sacrificesMade__stateTurn + 1;
 							yield return cardSlot5.Card.Sacrifice();

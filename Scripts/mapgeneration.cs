@@ -526,7 +526,7 @@ namespace MagnificusMod
 									{
 										stupidJ = 10;
 									}
-									else if (map[y][x][2] == 'K')
+									else if (map[y][x][2] == 'K' || map[y][x][2] == 'H')
 									{
 										stupiderK = 10;
 									}
@@ -744,6 +744,56 @@ namespace MagnificusMod
 								case 'S':
 									gameObject.transform.position += new Vector3(0, 0, 20);
 									break;
+							}
+						}
+						if (config.isometricMode == true && map[y][x][2] != 'F' && map[y][x][2] != 'D') {
+							GameObject wallcover = GameObject.Instantiate(gameObject);
+							wallcover.name = "x" + x.ToString() + " y" + y.ToString() + " cover";
+							wallcover.transform.parent = GameObject.Find("walls").transform;
+							wallcover.transform.Find("BrickGround").localPosition = new Vector3(0, 0, 0);
+							Vector3 offset = new Vector3(0, 0, 0);
+							if (map[y][x][2] == 'N') { offset = new Vector3(0, 0, 10); } else if (map[y][x][2] == 'E') { offset = new Vector3(-10, 0, 0); } else if (map[y][x][2] == 'S') { offset = new Vector3(0, 0, -10); } else if (map[y][x][2] == 'W') { offset = new Vector3(10, 0, 0); } else if (map[y][x][2] == 'J') { offset = new Vector3(0, 0, 10); }
+							float yOffset = UnityEngine.Random.Range(0, 10);
+							yOffset /= 100;
+							wallcover.transform.position = new Vector3(gameObject.transform.position.x, 31f + yOffset, gameObject.transform.position.z) + offset;
+							wallcover.transform.localScale = new Vector3(20, 20, 1);
+							wallcover.transform.localRotation = Quaternion.Euler(90, 0, 0);
+							wallcover.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(1, 1);
+							if (wallcover.transform.childCount >= 4)
+                            {
+								GameObject.Destroy(wallcover.transform.GetChild(3).gameObject);
+                            }
+							if (map[y][x][2] == 'S')
+                            {
+								GameObject gameObject2 = GameObject.Instantiate(gameObject);
+								gameObject2.name = "x" + x.ToString() + " y" + y.ToString();
+								gameObject2.transform.parent = GameObject.Find("walls").transform;
+								gameObject2.transform.Find("BrickGround").localPosition = new Vector3(0, 0, 0);
+								gameObject2.transform.position = gameObject.transform.position + new Vector3(0, 0, -20);
+								gameObject2.transform.rotation = Quaternion.Euler(0, 0, 0);
+							} else if (map[y][x][2] == 'E')
+							{
+								GameObject gameObject2 = GameObject.Instantiate(gameObject);
+								gameObject2.name = "x" + x.ToString() + " y" + y.ToString();
+								gameObject2.transform.parent = GameObject.Find("walls").transform;
+								gameObject2.transform.Find("BrickGround").localPosition = new Vector3(0, 0, 0);
+								gameObject2.transform.position = gameObject.transform.position + new Vector3(-20, 0, 0);
+								gameObject2.transform.rotation = Quaternion.Euler(0, 90, 0);
+							}
+							else if ((map[y][x][2] == 'J' || map[y][x][2] == 'H') && map[y][x + 1][0] == 'W')
+							{
+								if (map[y][x + 1][2] != 'D') { continue; }
+								GameObject cover2 = GameObject.Instantiate(wallcover);
+								cover2.name = "x" + x.ToString() + " y" + y.ToString() + " cover2";
+								cover2.transform.parent = GameObject.Find("walls").transform;
+								cover2.transform.Find("BrickGround").localPosition = new Vector3(0, 0, 0);
+								yOffset = UnityEngine.Random.Range(0, 10);
+								yOffset /= 100;
+								cover2.transform.position = wallcover.transform.position + new Vector3(20, 0, 0);
+								if (cover2.transform.childCount >= 4)
+								{
+									GameObject.Destroy(cover2.transform.GetChild(3).gameObject);
+								}
 							}
 						}
 						continue;
@@ -2210,6 +2260,18 @@ namespace MagnificusMod
 			}
 		}
 
+		[HarmonyAfter(new string[] { "community.inscryption.patch" })]
+		[HarmonyPatch(typeof(InscryptionCommunityPatch.ResourceManagers.EnergyDrone), "CurrentSceneCanHaveEnergyDrone", MethodType.Getter)]
+		public class fixmoreapibullshit
+		{
+			public static bool Prefix(ref bool __result)
+			{
+				if (SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
+				__result = false;
+				return false;
+			}
+		}
+
 
 		[HarmonyAfter(new string[]{"cyantist.inscryption.api"})]
 		[HarmonyPatch(typeof(MagnificusGameFlowManager), "Awake")]
@@ -3456,6 +3518,7 @@ namespace MagnificusMod
 							item.transform.position = new Vector3(GameObject.Find("tbPillar").transform.position.x, -20f, GameObject.Find("tbPillar").transform.position.z);
 						}*/
 						//Tween.LocalPosition(GameObject.Find("Hand").transform, new Vector3(4.3555f, -11.0099f, 2.0401f), 0f, 0f);
+						GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.Default, true, false);
 						instance.StartCoroutine(instance.TransitionTo(GameState.CardBattle, cardBattleNodeData, true, true));
 						List<string> list6 = new List<string>
 						{
@@ -3495,7 +3558,6 @@ namespace MagnificusMod
 							GameObject.Find(list6[index7]).transform.position = new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x, 9.72f, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z + 16);
 						}
 
-						GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.Default, true, false);
 						NavigationZone3D currentZone2 = GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone;
 						string name2 = currentZone2.name;
 						bool flag120 = GameObject.Find(name2).transform.Find("nodeIcon") != null;
@@ -3517,8 +3579,6 @@ namespace MagnificusMod
                         }
 
 
-
-						GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.Default, true, false);
 						/*
 						                                                                                                         * 
 						                                                                                                         * 
@@ -4186,7 +4246,6 @@ namespace MagnificusMod
 
 				Singleton<ViewManager>.Instance.SwitchToView(View.FirstPerson, false, true);
 				string coords = MagSave.GetCoords();
-
 				string y = coords.Split('y')[1];
 				if (int.Parse(y) < 7 && RunState.Run.regionTier == 3)
 				{
@@ -4196,11 +4255,31 @@ namespace MagnificusMod
 				}
 				Singleton<FirstPersonController>.Instance.currentZone = GameObject.Find(coords).GetComponent<NavigationZone3D>();
 				GameObject.Find("Player").transform.position = new Vector3(GameObject.Find(coords).transform.position.x, 9.5f, GameObject.Find(coords).transform.position.z);
-				float x = GameObject.Find("PixelCameraParent").transform.position.x;
-				float z = GameObject.Find("PixelCameraParent").transform.position.z;
-				GameObject.Find("PixelCameraParent").transform.position = new Vector3(x, 16.5f, z);
-				Tween.Position(GameObject.Find("PixelCameraParent").transform, new Vector3(x, 16.5f, z), 0.1f, 0.5f);
-				Tween.Rotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(0, 0, 0), 0.1f, 0.5f);
+				if (config.isometricMode == true)
+				{
+					Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(-40f, 47.5f, -40), 1.7f, 0.5f);
+					Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30f, 45f, 0), 1.5f, 0.5f);
+					GameObject figure = GameObject.Instantiate(Resources.Load("prefabs/map/CompositeFigurine") as GameObject);
+					figure.transform.parent = GameObject.Find("GameEnvironment").transform;
+					figure.name = "figure";
+					figure.GetComponent<CompositeFigurine>().Generate(RunState.Run.playerAvatarHead, RunState.Run.playerAvatarArms, RunState.Run.playerAvatarBody);
+					figure.transform.localScale = new Vector3(20, 20, 20);
+					figure.transform.rotation = Quaternion.Euler(0, 0, 0);
+					figure.transform.parent = Singleton<FirstPersonController>.Instance.gameObject.transform;
+					figure.transform.localPosition = new Vector3(0, -10, 0);
+					GameObject transitionIcon = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
+					transitionIcon.name = "transitionIcon";
+					transitionIcon.transform.parent = GameObject.Find("PixelCameraParent").transform;
+					transitionIcon.transform.localPosition = new Vector3(2, 13, 2);
+				}
+				else
+				{
+					float x = GameObject.Find("PixelCameraParent").transform.position.x;
+					float z = GameObject.Find("PixelCameraParent").transform.position.z;
+					GameObject.Find("PixelCameraParent").transform.position = new Vector3(x, 16.5f, z);
+					Tween.Position(GameObject.Find("PixelCameraParent").transform, new Vector3(x, 16.5f, z), 0.1f, 0.5f);
+					Tween.Rotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(0, 0, 0), 0.1f, 0.5f);
+				}
 				instance.StartCoroutine(WAKEUP());
 				GameObject.Find("GameTable").transform.position = new Vector3(0, -900, 0);
 				GameObject.Find("DeckReviewCardArray").transform.parent = GameObject.Find("GameTable").transform;
@@ -4552,8 +4631,17 @@ namespace MagnificusMod
 			}
 			float x = GameObject.Find("PixelCameraParent").transform.position.x;
 			float z = GameObject.Find("PixelCameraParent").transform.position.z;
-			Tween.Position(GameObject.Find("PixelCameraParent").transform, new Vector3(x, 16.5f, z), 1.7f, 0.5f);
-			Tween.Rotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(0, 0, 0), 1.5f, 0.5f);
+			//Tween.Position(GameObject.Find("PixelCameraParent").transform, new Vector3(x, 16.5f, z), 1.7f, 0.5f);
+			//Tween.Rotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(0, 0, 0), 1.5f, 0.5f);
+			if (config.isometricMode == true)
+            {
+				Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(-40f, 47.5f, -40), 1.7f, 0.5f);
+				Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30f, 45f, 0), 1.5f, 0.5f);
+			} else
+            {
+				Tween.Position(GameObject.Find("PixelCameraParent").transform, new Vector3(x, 16.5f, z), 1.7f, 0.5f);
+				Tween.Rotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(0, 0, 0), 1.5f, 0.5f);
+			}
 			yield return new WaitForSeconds(1.5f);
 			Singleton<FirstPersonController>.Instance.enabled = true;
 			if (RunState.Run.regionTier < 4 && RunState.Run.regionTier > 0 || RunState.Run.regionTier == 0 && !MagSave.layout.Contains("4") && !MagSave.layout.Contains("5"))
@@ -4717,6 +4805,22 @@ namespace MagnificusMod
 			yield return new WaitForSeconds(0.5f);
 			ResetMagRun();
 		}
+
+		public static IEnumerator isometricTransition(Texture icon)
+        {
+			
+			GameObject.Find("transitionIcon").transform.localPosition = new Vector3(0, 5f, 2.55f);
+			GameObject.Find("transitionIcon").transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = icon;
+			GameObject.Find("transitionIcon").transform.localRotation = Quaternion.Euler(0, 0, 0);
+			Tween.LocalPosition(GameObject.Find("transitionIcon").transform, new Vector3(0, -16f, 2f), 3.75f, 0);
+			Singleton<ViewController>.Instance.LockState = ViewLockState.Locked;
+			yield return new WaitForSeconds(0.15f);
+			GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(false);
+			yield return new WaitForSeconds(1f);
+			Singleton<ViewManager>.Instance.SwitchToView(View.Default);
+			Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
+			yield break;
+        }
 
 		public static void ResetMagRun()
         {
