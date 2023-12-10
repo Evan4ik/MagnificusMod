@@ -25,6 +25,8 @@ namespace MagnificusMod
 	class IsometricStuff
 	{
 
+		public static bool moveDisabled = false;
+
 		[HarmonyPatch(typeof(FirstPersonController), "LookAtDirection")]
 		public class fixLook
 		{
@@ -41,29 +43,66 @@ namespace MagnificusMod
 			}
 		}
 
-		[HarmonyPatch(typeof(NavigationZone3D), "OnEnter")]
+		[HarmonyPatch(typeof(FirstPersonController), "SetZone")]
+		public class playMoveAnim
+		{
+			public static void Prefix(ref FirstPersonController __instance, NavigationZone3D zone, bool immediate = false)
+			{
+				if (config.isometricMode && zone != null)
+                {
+					Tween.LocalPosition(GameObject.Find("Player").transform.Find("figure"), new Vector3(0, -6.5f + UnityEngine.Random.Range(-0.50f, 0.50f), 0), 0.1f, 0);
+					Tween.LocalPosition(GameObject.Find("Player").transform.Find("figure"), new Vector3(0, -10f, 0), 0.1f, 0.1f);
+					GameObject uiFigure = GameObject.Find("WallFigure").transform.Find("VisibleParent").gameObject;
+					if (Physics.Raycast(zone.gameObject.transform.position, new Vector3(-1, 1, -0.5f), 15))
+					{ 
+						if (GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition == new Vector3(0, 0, -1)){__instance.StartCoroutine(showUiFigure(uiFigure.transform.Find("Header").Find("IconSprite").gameObject, true)); }
+					} else 
+					{
+						if (GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition == new Vector3(0, 0, 1)) {__instance.StartCoroutine(showUiFigure(uiFigure.transform.Find("Header").Find("IconSprite").gameObject, false));}
+					}
+				}
+			}
+		}
+
+		public static IEnumerator showUiFigure(GameObject uiFigure, bool enable)
+        {
+			yield return new WaitForSeconds(0.1f);
+			if (enable) { 
+				GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition = new Vector3(0, 0, 1);
+				uiFigure.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
+			} else
+            {
+				GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition = new Vector3(0, 0, -1);
+				uiFigure.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+			}
+			yield break;
+		}
+
+        [HarmonyPatch(typeof(NavigationZone3D), "OnEnter")]
 		public class playTransition
 		{
 			public static bool Prefix(ref NavigationZone3D __instance)
 			{
 				if (config.isometricMode == false || SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
+				bool delete = false;
 				foreach (NavigationEvent navigationEvent in __instance.events)
 				{
 					if (__instance.ValidEvent(navigationEvent) && navigationEvent.triggerOnEnter)
 					{
 						float delay = 0;
-						if (navigationEvent == Generation.cardBattle)
+						if (Generation.nodeEvents.Contains(navigationEvent))
                         {
 							Texture nodeIcon = Generation.battleTex;
-							Debug.Log(__instance.gameObject);
-							if (GameObject.Find(__instance.gameObject.name).transform.Find("nodeIcon") != null)
+							if (GameObject.Find(__instance.gameObject.name).transform.childCount >= 1)
 							{
-								nodeIcon = GameObject.Find(__instance.gameObject.name).transform.Find("nodeIcon").Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture;
+								nodeIcon = GameObject.Find(__instance.gameObject.name).transform.GetChild(0).Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture;
+								Tween.LocalPosition(GameObject.Find(__instance.gameObject.name).transform.GetChild(0), new Vector3(1, 90, 0), 0.65f, 0);
 
 							}
-							Tween.LocalPosition(GameObject.Find(__instance.gameObject.name).transform.Find("nodeIcon"), new Vector3(1, 90, 0), 0.65f, 0);
 							delay = 1f;
 							__instance.StartCoroutine(Generation.isometricTransition(nodeIcon));
+							IsometricStuff.moveDisabled = true;
+							delete = true;
 						}
 						__instance.StartCoroutine(delayTrigger(navigationEvent, delay));
 						if (navigationEvent.forceLookInDirection)
@@ -72,6 +111,10 @@ namespace MagnificusMod
 						}
 					}
 				}
+				if (delete)
+                {
+					__instance.events = new List<NavigationEvent>();
+                }
 				Action entered = __instance.Entered;
 				if (entered == null)
 				{
@@ -157,6 +200,7 @@ namespace MagnificusMod
 			public static bool Prefix(ref FirstPersonController __instance, ref NavigationZone3D __result)
 			{
 				if (config.isometricMode == false || SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
+				if (moveDisabled) { return false; }
 				if (InputButtons.GetButtonDown(Button.LookUp))
 				{
 					__result = NavigationGrid.instance.GetZoneInDirection(__instance.LookDirection, __instance.currentZone) as NavigationZone3D;

@@ -42,7 +42,7 @@ namespace MagnificusMod
 			}
 		}
 
-		public static void Kill(CardTemple temple)
+		/*public static void Kill(CardTemple temple)
 		{
 			if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("zorro.inscryption.infiniscryption.packmanager"))
 			{
@@ -81,7 +81,7 @@ namespace MagnificusMod
 					cardInfo.temple = temple;
 				}
 			}
-		}
+		}*/
 
 		public static IEnumerator magChallengePos0()
 		{
@@ -621,7 +621,7 @@ namespace MagnificusMod
 			{
 				setUpMagPos = false;
 				KayceeStorage.IsKaycee = true;
-				Kill(CardTemple.Undead);
+				//Kill(CardTemple.Undead);
 			}
 		}
 
@@ -659,20 +659,25 @@ namespace MagnificusMod
 			}
 		}
 
-		[HarmonyPatch(typeof(MenuController), "OnCardReachedSlot")]
-		public class UnKill
-		{
-			public static void Prefix()
-			{
-				Kill(CardTemple.Wizard);
-			}
-		}
-
 		public static IEnumerator leshyInterveneDialogue()
         {
 			Debug.Log("forkload");
 			if (SceneLoader.ActiveSceneName != "finale_magnificus")
 			{
+				foreach (CardInfo card in CardLoader.allData)
+				{
+					if (card.name.Contains("mag_"))
+					{
+						card.temple = CardTemple.Wizard;
+					}
+					if (card.appearanceBehaviour.Contains(CardAppearanceBehaviour.Appearance.RareCardBackground))
+                    {
+						card.metaCategories.Add(CardMetaCategory.Rare);
+                    } else if (card.HasTrait(Trait.EatsWarrens))
+                    {
+						card.metaCategories.Add(Plugin.SpellPool);
+                    } 
+				}
 				if (!SavedVars.LearnedMechanics.Contains("wrongdimension;"))
 				{
 					yield return new WaitForSeconds(1f);
@@ -686,13 +691,6 @@ namespace MagnificusMod
 					SavedVars.LearnedMechanics += "wrongdimension;";
 					Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetColor(GameColors.Instance.nearBlack);
 					Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(1f, float.MaxValue);
-					foreach (CardInfo card in CardLoader.allData)
-					{
-						if (card.name.Contains("mag_"))
-						{
-							card.temple = CardTemple.Wizard;
-						}
-					}
 					SaveManager.SaveToFile(false);
 					LoadingScreenManager.LoadScene("finale_magnificus");
 				}
@@ -702,13 +700,6 @@ namespace MagnificusMod
 					KayceeStorage.IsKaycee = true;
 					Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetColor(GameColors.Instance.nearBlack);
 					Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(1f, float.MaxValue);
-					foreach (CardInfo card in CardLoader.allData)
-					{
-						if (card.name.Contains("mag_"))
-						{
-							card.temple = CardTemple.Wizard;
-						}
-					}
 					SaveManager.SaveToFile(false);
 					LoadingScreenManager.LoadScene("finale_magnificus");
 				}
@@ -840,7 +831,6 @@ namespace MagnificusMod
 			public static void Prefix(ref AscensionMenuScreens __instance)
 			{
 				KayceeStorage.IsKaycee = true;
-				Kill(CardTemple.Undead);
 				AdjustAscensionMenuItemsSpacing adjustAscensionMenuItemsSpacing = GameObject.FindObjectOfType<AdjustAscensionMenuItemsSpacing>();
 				AscensionMenuInteractable menuText = adjustAscensionMenuItemsSpacing.menuItems[0].GetComponent<AscensionMenuInteractable>();
 				AscensionMenuScreenTransition component = Singleton<AscensionMenuScreens>.Instance.startScreen.GetComponent<AscensionMenuScreenTransition>();
@@ -1258,7 +1248,7 @@ namespace MagnificusMod
 			public static void Prefix()
 			{
 				KayceeStorage.IsKaycee = false;
-				Kill(CardTemple.Wizard);
+				//Kill(CardTemple.Wizard);
 			}
 		}
 

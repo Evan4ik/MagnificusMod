@@ -1909,7 +1909,7 @@ namespace MagnificusMod
 
 				string selectedBook = bigBooks[UnityEngine.Random.RandomRangeInt(0, bigBooks.Count)];
 				int summonSlot = selectedBook == "mag_bleenebookanimator" ? UnityEngine.Random.RandomRangeInt(0, 3) : 0;
-				int summon = selectedBook == "mag_bleenebookfamiliar" ? 2 : 3;
+				int summon = selectedBook == "mag_bleenebookanimator" ? 3 : 2;
 				int summoned = 0;
 				CardInfo book = CardLoader.GetCardByName(selectedBook);
 				foreach (CardSlot slot in Singleton<BoardManager>.Instance.OpponentSlotsCopy)
@@ -2094,15 +2094,11 @@ namespace MagnificusMod
 					Singleton<MagnificusLifeManager>.Instance.opponentLife = 15;
 					Singleton<MagnificusLifeManager>.Instance.opponentLifeCounter.ShowValue(15);
 				}
-				if (Singleton<MagnificusLifeManager>.Instance.playerLife < 6 && base.NumLives == 2)
+				if (Singleton<MagnificusLifeManager>.Instance.playerLife < 6)
 				{
 					Singleton<MagnificusLifeManager>.Instance.playerLife = 6;
 					Singleton<MagnificusLifeManager>.Instance.playerLifeCounter.ShowValue(6);
-				} else if (Singleton<MagnificusLifeManager>.Instance.playerLife < 5 && base.NumLives == 1)
-				{
-					Singleton<MagnificusLifeManager>.Instance.playerLife = 5;
-					Singleton<MagnificusLifeManager>.Instance.playerLifeCounter.ShowValue(5);
-				}
+				} 
 				int numLives = base.NumLives;
 				if (numLives >= 2)
 				{
@@ -3241,11 +3237,17 @@ namespace MagnificusMod
 					int slot = isDeckCard ? 3 : 0;
 					yield return Singleton<BoardManager>.Instance.opponentSlots[slot].Card.Die(false);
 					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(urCard, Singleton<BoardManager>.Instance.OpponentSlotsCopy[slot], 0.1f, true);
-					Singleton<BoardManager>.Instance.OpponentSlotsCopy[slot].Card.AddTemporaryMod(tempMod);
+					if (Singleton<BoardManager>.Instance.OpponentSlotsCopy[slot].Card != null)
+					{
+						Singleton<BoardManager>.Instance.OpponentSlotsCopy[slot].Card.AddTemporaryMod(tempMod);
+					}
 				} else
                 {
 					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(urCard, Singleton<BoardManager>.Instance.OpponentSlotsCopy[emptySlot], 0.1f, true);
-					Singleton<BoardManager>.Instance.OpponentSlotsCopy[emptySlot].Card.AddTemporaryMod(tempMod);
+					if (Singleton<BoardManager>.Instance.OpponentSlotsCopy[emptySlot].Card != null)
+					{
+						Singleton<BoardManager>.Instance.OpponentSlotsCopy[emptySlot].Card.AddTemporaryMod(tempMod);
+					}
 				}
 				if ((Singleton<CardDrawPiles>.Instance as CardDrawPiles3D).Pile != null)
 				{

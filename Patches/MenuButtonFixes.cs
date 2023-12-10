@@ -254,6 +254,12 @@ namespace MagnificusMod
 				Tween.Position(GameObject.Find("GameTable").transform, new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x, 9.72f, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z), 0.5f, 0.1f, null, Tween.LoopType.None, null, null, true);
 				Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<MagnificusGameFlowManager>.Instance.TransitionTo(GameState.SpecialCardSequence, triggeringNodeData2, true, true));
 				NavigationZone3D currentZone2 = GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone;
+				if (config.isometricMode == true)
+				{
+					IsometricStuff.moveDisabled = false;
+					GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(false);
+					GameObject.Find("WallFigure").transform.Find("VisibleParent").Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
+				}
 			}
 			else if (Singleton<ViewManager>.Instance.CurrentView == View.MapDeckReview && GameObject.Find("GameTable").transform.position.y > 0)
 			{
@@ -267,7 +273,7 @@ namespace MagnificusMod
 				float z = GameObject.Find("PixelCameraParent").transform.position.z;
 				GameObject.Find("Player").transform.Find("PixelCameraParent").transform.localPosition = new Vector3(0, 7, -6.86f);
 				Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(0, 7, -6.86f), 0f, 0f, null, Tween.LoopType.None, null, null, true);
-
+				Tween.FieldOfView(GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>(), 65f, 0.5f, 0);
 				Tween.Position(GameObject.Find("GameTable").transform, new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x, -20f, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z), 0.2f, 0.2f, null, Tween.LoopType.None, null, null, true);
 				Tween.LocalPosition(GameObject.Find("tbPillar").transform, new Vector3(0, -5.01f, 0), 0.4f, 0.25f, null, Tween.LoopType.None, null, null, true);
 				Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(enablePlayer());
@@ -281,6 +287,11 @@ namespace MagnificusMod
 			GameObject.Find("Player").GetComponentInChildren<ViewController>().allowedViews = new List<View>();
 			Singleton<FirstPersonController>.Instance.LookAtDirection(MagnificusMod.Generation.lastView, false); MagnificusMod.Generation.lastView = LookDirection.North;
 			GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = true;
+			if (config.isometricMode == true)
+			{
+				IsometricStuff.moveDisabled = false;
+				GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(true);
+			}
 			yield break;
         }
 

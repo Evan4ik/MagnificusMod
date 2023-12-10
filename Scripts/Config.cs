@@ -21,7 +21,14 @@ namespace MagnificusMod
         private static ConfigEntry<bool> _configUnlockAllKaycee;
         private static ConfigEntry<bool> _isometricMode;
         public static bool unlockAllKaycee => _configUnlockAllKaycee.Value;
-        public static bool isometricMode = false;//=> _isometricMode.Value;
+        public static bool isometricActive => _isometricMode.Value;
+        public static bool isometricMode
+        {
+            get
+            {
+                return SceneLoader.ActiveSceneName == "finale_magnificus" && isometricActive && RunState.Run.regionTier > 0 && RunState.Run.regionTier < 4;
+            }
+        }
 
         private static readonly ConfigFile magConfig = new ConfigFile(Path.Combine(Paths.ConfigPath, "magnificus_mod_config.cfg"), true);
         public static void bindConfig()
@@ -31,11 +38,10 @@ namespace MagnificusMod
                 "UnlockAllKaycee",
                 false,
                 "Automatically unlocks every challenge and starter deck in Magnificus' Kaycees Mod. This does NOT change your magnificus challenge point value. If you have a change of heart and decide to unlock the challenges fairly, your challenge points will remain the same.");
-            //_isometricMode = magConfig.Bind("Isometric",
-             // "IsometricMode",
-              //false,
-              //"new experimental isometric mode");
-              //disabled for this patch, will be reneabled later
+            _isometricMode = magConfig.Bind("Isometric",
+              "IsometricMode",
+              false,
+              "new experimental isometric mode");
         }
     }
 }

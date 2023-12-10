@@ -241,6 +241,12 @@ namespace MagnificusMod
 					else
 					{
 						yield return new WaitForSeconds(1f);
+						if (!SavedVars.LearnedMechanics.Contains("nopelts;"))
+                        {
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Curious. You enter a trading depot without any obelisks to trade in.", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("What do you expect to gain from this?", -0.5f, 0.5f, Emotion.Curious, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							SavedVars.LearnedMechanics += "nopelts;";
+						}
 					}
 					Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
 					bool flag3 = Singleton<GameFlowManager>.Instance != null;

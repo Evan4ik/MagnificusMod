@@ -789,6 +789,12 @@ namespace MagnificusMod
 				GameObject sideDeckObject;
 				public IEnumerator sequencer(CustomNode2 tradeCardsData)
 				{
+					if (config.isometricMode == true)
+					{
+						Singleton<FirstPersonController>.Instance.enabled = false;
+						GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(0f, 18.25f, -1.36f);
+						Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(0f, 18.25f, -1.36f), 5, 0);
+					}
 					GameObject shopObjects = GameObject.Instantiate<GameObject>(new GameObject());
 					shopObjects.transform.parent = base.transform;
 					shopObjects.name = "shopObjects";
@@ -822,6 +828,10 @@ namespace MagnificusMod
 					CurrencyBowlWeight[] array = null;
 					*/
 					yield return new WaitForSeconds(1f);
+					if (config.isometricMode == true)
+					{
+						GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(0f, 18.25f, -1.36f);
+					}
 					CardInfo dinfo = CardLoader.GetCardByName("mag_bluemox");
 					dinfo.displayedName = "Cardpack sapphire";
 					Singleton<ViewManager>.Instance.SwitchToView(View.BoardCentered, false, true);
@@ -1027,11 +1037,16 @@ namespace MagnificusMod
 					component10.GetComponent<Collider>().enabled = true;
 					component10.name = "sidedeckBack";
 					this.created.Add(component10);
-					dinfo10 = null;
-					gameObject10 = null;
-					component10 = null;
+					if (config.isometricMode == true)
+					{
+						GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(0f, 17.25f, -1.36f);
+					}
 					yield return new WaitForSeconds(0.25f);
 					shopObjects.transform.localPosition = new Vector3(0, 0, 0);
+					if (config.isometricMode == true)
+					{
+						GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(0f, 17.25f, -1.36f);
+					}
 					yield break;
 				}
 
@@ -1341,8 +1356,7 @@ namespace MagnificusMod
 					}
 					else if (component.Info.displayedName == "Exit")
 					{
-						bool flag38 = Singleton<GameFlowManager>.Instance != null;
-						if (flag38)
+						if (Singleton<GameFlowManager>.Instance != null)
 						{
 							GameObject.Find("Player").GetComponentInChildren<ViewManager>().CurrentView = View.FirstPerson;
 							foreach (SelectableCard selectableCard3 in this.created)
@@ -1351,6 +1365,7 @@ namespace MagnificusMod
 							}
 							GameObject gameObject3 = GameObject.Find("Player");
 							bool flag42 = GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.Find("nodeIcon") != null;
+							NavigationZone3D shopZone = GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone;
 							if (flag42)
 							{
 								GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.Find("nodeIcon").transform.position = new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x, 13f, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z);
@@ -1379,7 +1394,14 @@ namespace MagnificusMod
 							GameObject.Destroy(GameObject.Find("shopObjects"));
 							SaveManager.SaveToFile(false);
 							Singleton<ViewManager>.Instance.SwitchToView(View.FirstPerson, false, true);
-							GameObject.Find("Player").transform.Find("PixelCameraParent").transform.localPosition = new Vector3(0, 7, -6.86f);
+							if (config.isometricMode == false)
+							{
+								Tween.FieldOfView(GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>(), 65f, 0.5f, 0);
+								GameObject.Find("Player").transform.Find("PixelCameraParent").transform.localPosition = new Vector3(0, 7, -6.86f);
+							} else {
+								shopZone.events.Add(Generation.shop);
+								base.StartCoroutine(Generation.unIsometricTransition());
+							}
 							File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagCurrentNode.GetNodeStuff(false, true)));
 							if (RunState.Run.regionTier == 2)
 							{

@@ -1160,6 +1160,45 @@ namespace MagnificusMod
 				for (int i = 0; i < base.Card.Info.mods[0].decalIds.Count; i++)
 				{
 					string[] splotchData = base.Card.Info.mods[0].decalIds[i].Split(',');
+					Debug.Log(splotchData.Length);
+					if (splotchData.Length == 5)
+                    {
+						string[] newSplotchData = new string[4];
+						newSplotchData[0] = splotchData[0];
+						newSplotchData[1] = Convert.ToString(float.Parse(splotchData[1]) + (float.Parse(splotchData[2]) / 100f));
+						if (splotchData[1][0] == '-') { newSplotchData[1] = Convert.ToString(-float.Parse(newSplotchData[1])); }
+						newSplotchData[2] = splotchData[3];
+						newSplotchData[3] = splotchData[4];
+						int yDecimalIdx = 2;
+						if (float.Parse(newSplotchData[1]) > 8)
+						{ 
+							newSplotchData[0] = Convert.ToString(float.Parse(splotchData[0]) + (float.Parse(splotchData[1]) / 100f));
+							newSplotchData[1] = splotchData[2];
+							yDecimalIdx = 1;
+						}
+						if (splotchData[yDecimalIdx].Length < 2)
+                        {
+							string newDecimal = splotchData[yDecimalIdx] + '0';
+							if (yDecimalIdx == 2) { newSplotchData[1] = Convert.ToString(float.Parse(splotchData[1]) + (float.Parse(newDecimal) / 100f)); }
+							else { Convert.ToString(float.Parse(splotchData[0]) + (float.Parse(newDecimal) / 100f)); }
+						}
+						splotchData = newSplotchData;
+					} else if (splotchData.Length == 6)
+					{
+						string[] newSplotchData = new string[4];
+						newSplotchData[0] = Convert.ToString(float.Parse(splotchData[0]) + (float.Parse(splotchData[1]) / 100f));
+						if (splotchData[0][0] == '-') { newSplotchData[0] = Convert.ToString(-float.Parse(newSplotchData[0])); }
+						newSplotchData[1] = Convert.ToString(float.Parse(splotchData[2]) + (float.Parse(splotchData[3]) / 100f));
+						if (splotchData[2][0] == '-') { newSplotchData[1] = Convert.ToString(-float.Parse(newSplotchData[1])); }
+						newSplotchData[2] = splotchData[4];
+						newSplotchData[3] = splotchData[5];
+						if (splotchData[3].Length < 2)
+						{
+							string newDecimal = splotchData[3] + '0';
+							newSplotchData[1] = Convert.ToString(float.Parse(splotchData[2]) + (float.Parse(newDecimal) / 100f));
+						}
+						splotchData = newSplotchData;
+					}
 					paintSplotch.transform.localScale = new Vector3(Convert.ToInt32(splotchData[2]) * 0.1f, Convert.ToInt32(splotchData[2]) * 0.1f, Convert.ToInt32(splotchData[2]) * 0.1f);
 					if (Convert.ToInt32(splotchData[2]) > 2)
 					{

@@ -404,6 +404,7 @@
     <None Remove="Resources\vase of greed_ability.png" />
     <None Remove="Resources\venus.png" />
     <None Remove="Resources\visiinvisimage.png" />
+    <None Remove="Resources\walloverlay.png" />
     <None Remove="Resources\whitesmith.png" />
     <None Remove="Resources\whitesmith_A.png" />
     <None Remove="Resources\wizardcardpack.png" />
@@ -865,6 +866,7 @@
     <EmbeddedResource Include="Resources\vase of greed_ability.png" />
     <EmbeddedResource Include="Resources\venus.png" />
     <EmbeddedResource Include="Resources\visiinvisimage.png" />
+    <EmbeddedResource Include="Resources\walloverlay.png" />
     <EmbeddedResource Include="Resources\whitesmith.png" />
     <EmbeddedResource Include="Resources\whitesmith_A.png" />
     <EmbeddedResource Include="Resources\WizAntEmmission.png" />

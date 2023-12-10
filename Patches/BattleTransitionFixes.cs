@@ -49,8 +49,7 @@ namespace MagnificusMod
 				{
 					return true;
 				}
-				bool flag = gameState == GameState.Map;
-				if (flag)
+				if (gameState == GameState.Map)
 				{
 					SaveManager.saveFile.randomSeed += 3;
 					MagSave.GetSideDeck();
@@ -109,7 +108,13 @@ namespace MagnificusMod
 						}
 					}
 					catch { }
-
+					if (config.isometricMode == true)
+					{
+						GameObject.Find("PixelCameraParent").AddComponent<SineWaveMovement>().originalPosition = GameObject.Find("PixelCameraParent").transform.localPosition;
+						GameObject.Find("PixelCameraParent").AddComponent<SineWaveRotation>().originalRotation = GameObject.Find("PixelCameraParent").transform.localRotation.eulerAngles;
+						float delay = battleRoom ? 1.25f : 0.4f;
+						__instance.StartCoroutine(Generation.unIsometricTransition(delay));
+					}
 					if (battleRoom)
 					{
 						if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("FadingMox"))

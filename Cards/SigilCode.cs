@@ -1997,6 +1997,10 @@ namespace MagnificusMod
                     {
 						modList.Add(baseMod);
                     }
+					foreach (CardModificationInfo tempMod in base.Card.temporaryMods)
+					{
+						modList.Add(tempMod);
+					}
 					yield return base.PreSuccessfulTriggerSequence();
 					yield return Singleton<CardSpawner>.Instance.SpawnCardToHand(info, modList, 0.25f, null);
 				}
@@ -2013,7 +2017,6 @@ namespace MagnificusMod
 					{
 						modList.Add(tempMod);
 					}
-					Debug.Log(base.Card.Info.GetExtendedProperty("ManaCost") == null);
 					if (base.Card.Info.GetExtendedProperty("ManaCost") == null)
 					{
 						info.SetExtendedProperty("ManaCost", base.Card.Info.GetExtendedProperty("ManaCost") == null);

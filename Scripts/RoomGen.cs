@@ -528,12 +528,12 @@ namespace MagnificusMod
         {
         new List<List<string>>
         {
-            new List<string> { "W4C", "W5N", "W4J","W4D","W4J","W4N","W4C", "W4N", "W4N","W4S","W4N","W5N","W4C" },
-            new List<string> { "W4E", "-",   "-",  "-",  "-",  "-", "W4W", " ",   " ",  " ",  " ",  " ", "W4W" },
-            new List<string> { "W4K",  "-",   "PK",  "-",  "PK",  "-", "W5K", " ",   "PK",  " ",  "PK",  " ", "W4W" },
+            new List<string> { "W4C", "W5N", "W4J","W4D","W4J","W4N","W4C", "W4N", "W4N","W4C","W4N","W5N","W4C" },
+            new List<string> { "W4E", "MR1",   "MR1",  "MR1",  "MR1",  "MR1", "MRR", " ",   " ",  " ",  " ",  " ", "W4W" },
+            new List<string> { "W4K",  "MR1",   "PK",  "MR1",  "PK",  "MR1", "W5K", " ",   "PK",  " ",  "PK",  " ", "W4W" },
             new List<string> { "W4d",  "-",   "-", "SPWN","-",  "-", "W4W", " ",   " ", " "," ",  "-", "W4W" },
-            new List<string> { "W4H",  "MR1",   "PK",  "MR1",  "PK",  "MR1", "W4W",  " ",   "PK",  " ",  "PK",  " ", "W4W" },
-            new List<string> { "W4E",  "MR1",   "MR1",  "MR1",  "MR1",  "MR1", "MRR", " ",   " ",  " ",  " ",  " ", "W4W" },
+            new List<string> { "W4H",  "-",   "PK",  "-",  "PK",  "-", "W4W",  " ",   "PK",  " ",  "PK",  " ", "W4W" },
+            new List<string> { "W4E",  "-",   "-",  "-",  "-",  "-", "W4W", " ",   " ",  " ",  " ",  " ", "W4W" },
             new List<string> { "W4C", "W4S","W4S", "W4S","W4S","W4S", "W4S", "W4S","W4S", "W4S","W4S","W4S", "W4S" }
         },
          new List<List<string>>
@@ -896,14 +896,14 @@ namespace MagnificusMod
             new List<string> { "W4E",  "-",   "CRT",  "-",  "PK",  "PK", "W4W" },
             new List<string> { "W5K",  "-",   "-",  "-",  "-",  "PK", "W5K" },
             new List<string> { "W4d",  "-",   "-",   "CR", "-",  "-", "W4d" },
-            new List<string> { "W4H",  "PK",   "-",  "-",  "-",  "-", "W4K" },
+            new List<string> { "W4H",  "PK",   "-",  "-",  "-",  "-", "W7K" },
             new List<string> { "W4E",  "PK",   "PK",  "-",  "CRT",  "-", "W4W" },
-            new List<string> { "W4C", "W4S","W5H", "W4D","W4H","W7S", "W4C" }
+            new List<string> { "W4C", "W4S","W5H", "W4D","W4H","W4S", "W4C" }
         },
             new List<List<string>>
         {
             new List<string> { "W4C", "W5N", "W4J","W4D","W4J","W4N","W4C" },
-            new List<string> { "W7E",  "-",   "-",  "-",  "-",  "-", "W4W" },
+            new List<string> { "W4E",  "-",   "-",  "-",  "-",  "-", "W7W" },
             new List<string> { "W5K",  "-",   "PK",  "-",  "-",  "-", "W5K" },
             new List<string> { "W4d",  "-",   "-", "CR","-",  "-", "W4d" },
             new List<string> { "W4H",  "-",   "-",  "-",  "PK",  "-", "W4K" },
@@ -1262,8 +1262,8 @@ namespace MagnificusMod
         {
             new List<string> { "W8C", "W8N", "W8J","W8D","W8J","W8N","W8C" },
             new List<string> { "W8E", "-",   "RUNE",  "-",  "-",  "P2", "W8W" },
-            new List<string> { "W8K",  "RUNEH",   "-",  "-",  "-",  "-", "W8K" },
-            new List<string> { "W8d",  "-",   "-", "-",  "RUNE",  "-", "W8d" },
+            new List<string> { "W8K",  "RUNE",   "-",  "-",  "-",  "-", "W8K" },
+            new List<string> { "W8d",  "-",   "-", "-", "RUNEH",  "-", "W8d" },
             new List<string> { "W8H",  "-",   "RUNE",  "-",  "-",  "TO2", "W8K" },
             new List<string> { "W8E",  "EVN",   "-",  "-",  "RUNE",  "-", "W8W" },
             new List<string> { "W8C", "W8S","W8H", "W8D","W8H","W8S", "W8C" }
@@ -1291,30 +1291,30 @@ namespace MagnificusMod
          new List<List<string>>
         {
             new List<string> { "W8C", "W8N", "W8J","W8D","W8J","W8N","W8C" },
-            new List<string> { "W8E",  "RUNEH",   "W2F",  "-",  "W2F",  "-", "W8W" },
+            new List<string> { "W8E",  "-",   "W2F",  "-",  "W2F", "RUNEH", "W8W" },
             new List<string> { "W8K",  "W1F",   "TO3",  "-",  "W1F",  "W1F", "W8K" },
             new List<string> { "W8d",  "-",   "-",  "CR",  "-",  "-", "W8d" },
             new List<string> { "W8H",  "TO2",   "W1F",  "-",  "W1F",  "W1F", "W8K" },
-            new List<string> { "W8E",  "-",   "W1F",  "-",  "TO3",  "RUNE", "W8W" },
+            new List<string> { "W8E",  "RUNE",   "W1F",  "-",  "TO3",  "-", "W8W" },
             new List<string> { "W8C", "W8S","W8H", "W8D","W8H","W8S", "W8C" }
         },
           new List<List<string>>
         {
             new List<string> { "W8C", "W8N", "W8J","W8D","W8J","W8N","W8C" },
-            new List<string> { "W8E",  "RUNE",   "-",  "-",  "-",  "RUNE", "W8W" },
+            new List<string> { "W8E",  "RUNE",   "-",  "-",  "-",  "RUNEH", "W8W" },
             new List<string> { "W8K",  "-",   "-",  "-",  "-",  "-", "W8K" },
             new List<string> { "W8d",  "-",   "-",  "TO3",  "-",  "-", "W8d" },
             new List<string> { "W8H",  "-",   "-",  "-",  "-",  "-", "W8K" },
-            new List<string> { "W8E",  "RUNEH",   "-",  "-",  "-",  "RUNE", "W8W" },
+            new List<string> { "W8E",  "RUNE",   "-",  "-",  "-",  "RUNE", "W8W" },
             new List<string> { "W8C", "W8S","W8H", "W8D","W8H","W8S", "W8C" }
         },
           new List<List<string>>
         {
             new List<string> { "W8C", "W8N", "W8J","W8D","W8J","W8N","W8C" },
             new List<string> { "W8E",  "RUNE",   "-",  "-",  "-",  "RUNE", "W8W" },
-            new List<string> { "W8K",  "CS",   "RUNE",  "-",  "RUNE",  "-", "W8K" },
+            new List<string> { "W8K",  "CS",   "RUNE",  "-",  "RUNEH",  "-", "W8K" },
             new List<string> { "W8d",  "-",   "-",  "B",  "-",  "-", "W8d" },
-            new List<string> { "W8H",  "-",   "RUNEH",  "-",  "RUNE",  "-", "W8K" },
+            new List<string> { "W8H",  "-",   "RUNE",  "-",  "RUNE",  "-", "W8K" },
             new List<string> { "W8E",  "RUNE",   "-",  "-",  "EVN",  "RUNE", "W8W" },
             new List<string> { "W8C", "W8S","W8H", "W8D","W8H","W8S", "W8C" }
         },
