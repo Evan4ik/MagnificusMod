@@ -792,8 +792,8 @@ namespace MagnificusMod
 					if (config.isometricMode == true)
 					{
 						Singleton<FirstPersonController>.Instance.enabled = false;
-						GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(0f, 18.25f, -1.36f);
-						Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(0f, 18.25f, -1.36f), 5, 0);
+						Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(0f, 16.35f, -1f), 0.25f, 0.1f);
+						Tween.Rotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(83.25f, 0, 0), 0.25f, 0);
 					}
 					GameObject shopObjects = GameObject.Instantiate<GameObject>(new GameObject());
 					shopObjects.transform.parent = base.transform;
@@ -812,29 +812,17 @@ namespace MagnificusMod
 					sideDeckObject.name = "ShopDeck1";
 					deckObject.name = "ShopDeck2";
 					base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("You arrive at a humble storefront. \nYou gaze at what you can buy with " + RunState.Run.currency.ToString() + " Mana Crystals.", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-					int teeth = 0;
-					/*
-					CurrencyBowlWeight[] list2 = GameObject.FindObjectsOfType<CurrencyBowlWeight>();
-					foreach (CurrencyBowlWeight rigidbody in list2)
-					{
-						bool flag = teeth != RunState.Run.currency;
-						if (flag)
-						{
-							GameObject.Destroy(rigidbody.gameObject);
-							int num = teeth;
-							teeth = num + 1;
-						}
-					}
-					CurrencyBowlWeight[] array = null;
-					*/
+
 					yield return new WaitForSeconds(1f);
 					if (config.isometricMode == true)
 					{
-						GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(0f, 18.25f, -1.36f);
-					}
+						GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(0f, 16.35f, -1f);
+						GameObject.Find("PixelCameraParent").AddComponent<SineWaveRotation>().originalRotation = new Vector3(83.25f, 0, 0);
+						GameObject.Find("PixelCameraParent").GetComponent<SineWaveRotation>().zMagnitude = 0.1f;
+						GameObject.Find("PixelCameraParent").AddComponent<SineWaveMovement>().originalPosition = new Vector3(0f, 16.35f, -1f);
+					} else { Singleton<ViewManager>.Instance.SwitchToView(View.BoardCentered, false, true); }
 					CardInfo dinfo = CardLoader.GetCardByName("mag_bluemox");
 					dinfo.displayedName = "Cardpack sapphire";
-					Singleton<ViewManager>.Instance.SwitchToView(View.BoardCentered, false, true);
 					GameObject gameObject = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
 					gameObject.transform.SetParent(shopObjects.transform);
 					SelectableCard component = gameObject.GetComponent<SelectableCard>();
@@ -849,12 +837,8 @@ namespace MagnificusMod
 					this.created.Add(component);
 					this.AddPricetag(component, 5, 0.25f);
 					component.Anim.SetFaceDown(true, true);
-					dinfo = null;
-					gameObject = null;
-					component = null;
 					CardInfo dinfo2 = CardLoader.GetCardByName("mag_rubymox");
 					dinfo2.displayedName = "Cardpack ruby";
-					Singleton<ViewManager>.Instance.SwitchToView(View.BoardCentered, false, true);
 					GameObject gameObject2 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
 					gameObject2.transform.SetParent(shopObjects.transform);
 					SelectableCard component2 = gameObject2.GetComponent<SelectableCard>();
@@ -870,13 +854,9 @@ namespace MagnificusMod
 					this.created.Add(component2);
 					this.AddPricetag(component2, 5, 0.25f);
 					component2.Anim.SetFaceDown(true, true);
-					dinfo2 = null;
-					gameObject2 = null;
-					component2 = null;
 					CardInfo dinfo3 = CardLoader.GetCardByName("mag_greenmox");
 					dinfo3.displayedName = "Cardpack emerald";
 					dinfo3.hideAttackAndHealth = true;
-					Singleton<ViewManager>.Instance.SwitchToView(View.BoardCentered, false, true);
 					GameObject gameObject3 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
 					gameObject3.transform.SetParent(shopObjects.transform);
 					SelectableCard component3 = gameObject3.GetComponent<SelectableCard>();
@@ -891,9 +871,6 @@ namespace MagnificusMod
 					this.created.Add(component3);
 					this.AddPricetag(component3, 5, 0.25f);
 					component3.Anim.SetFaceDown(true, true);
-					dinfo3 = null;
-					gameObject3 = null;
-					component3 = null;
 					List<string> masterMox = new List<string>
 					{
 						"mag_goranjmox",
@@ -901,7 +878,6 @@ namespace MagnificusMod
 						"mag_orlumox"
 					};
 					CardInfo dinfo4 = CardLoader.GetCardByName(masterMox[UnityEngine.Random.Range(0, masterMox.Count)]);
-					Singleton<ViewManager>.Instance.SwitchToView(View.BoardCentered, false, true);
 					GameObject gameObject4 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
 					gameObject4.transform.SetParent(shopObjects.transform);
 					SelectableCard component4 = gameObject4.GetComponent<SelectableCard>();
@@ -921,7 +897,6 @@ namespace MagnificusMod
 					dinfo5.displayedName = "Exit";
 					//dinfo5.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainLayout);
 					dinfo5.SetPortrait(Tools.getImage("exitshop.png"));
-					Singleton<ViewManager>.Instance.SwitchToView(View.BoardCentered, false, true);
 					GameObject gameObject5 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
 					gameObject5.transform.SetParent(shopObjects.transform);
 					SelectableCard component5 = gameObject5.GetComponent<SelectableCard>();
@@ -963,7 +938,6 @@ namespace MagnificusMod
 
 					CardInfo dinfo8 = CardLoader.GetCardByName("mag_magnusspell");
 					dinfo8.displayedName = "Magnus Mox Spell";
-					Singleton<ViewManager>.Instance.SwitchToView(View.BoardCentered, false, true);
 					GameObject gameObject8 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
 					gameObject8.transform.SetParent(shopObjects.transform);
 					SelectableCard component8 = gameObject8.GetComponent<SelectableCard>();
@@ -984,7 +958,6 @@ namespace MagnificusMod
 						dinfo9.displayedName = "Buy Minimap";
 						dinfo9.hideAttackAndHealth = true;
 						dinfo9.portraitTex = Tools.getPortraitSprite("minimap.png");
-						Singleton<ViewManager>.Instance.SwitchToView(View.BoardCentered, false, true);
 						GameObject gameObject9 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
 						gameObject9.transform.SetParent(shopObjects.transform);
 						SelectableCard component9 = gameObject9.GetComponent<SelectableCard>();
@@ -1005,7 +978,6 @@ namespace MagnificusMod
 						dinfo9.displayedName = "Fill In Minimap";
 						dinfo9.hideAttackAndHealth = true;
 						dinfo9.portraitTex = Tools.getPortraitSprite("minimap.png");
-						Singleton<ViewManager>.Instance.SwitchToView(View.BoardCentered, false, true);
 						GameObject gameObject9 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
 						gameObject9.transform.SetParent(shopObjects.transform);
 						SelectableCard component9 = gameObject9.GetComponent<SelectableCard>();
@@ -1024,7 +996,6 @@ namespace MagnificusMod
 					dinfo10.displayedName = "Back";
 					//dinfo10.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainLayout);
 					dinfo10.SetPortrait(Tools.getImage("backarrow.png"));
-					Singleton<ViewManager>.Instance.SwitchToView(View.BoardCentered, false, true);
 					GameObject gameObject10 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
 					gameObject10.transform.SetParent(GameObject.Find("GameTable").transform);
 					SelectableCard component10 = gameObject10.GetComponent<SelectableCard>();
@@ -1037,16 +1008,8 @@ namespace MagnificusMod
 					component10.GetComponent<Collider>().enabled = true;
 					component10.name = "sidedeckBack";
 					this.created.Add(component10);
-					if (config.isometricMode == true)
-					{
-						GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(0f, 17.25f, -1.36f);
-					}
 					yield return new WaitForSeconds(0.25f);
 					shopObjects.transform.localPosition = new Vector3(0, 0, 0);
-					if (config.isometricMode == true)
-					{
-						GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(0f, 17.25f, -1.36f);
-					}
 					yield break;
 				}
 
@@ -1364,14 +1327,13 @@ namespace MagnificusMod
 								selectableCard3.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
 							}
 							GameObject gameObject3 = GameObject.Find("Player");
-							bool flag42 = GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.Find("nodeIcon") != null;
 							NavigationZone3D shopZone = GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone;
-							if (flag42)
+							if (GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.Find("nodeIcon") != null)
 							{
-								GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.Find("nodeIcon").transform.position = new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x, 13f, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z);
+								float nodeDelay = config.isometricMode ? 0.75f : 0f;
+								base.StartCoroutine(showNodeIcon(nodeDelay, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone));
 							}
-							bool flag43 = RunState.Run.regionTier == 0;
-							if (flag43)
+							if (RunState.Run.regionTier == 0)
 							{
 								GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone = GameObject.Find("x4 y7").GetComponent<NavigationZone3D>();
 								MagCurrentNode.SaveNode("x4 y7");
@@ -1387,20 +1349,25 @@ namespace MagnificusMod
 								GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone = GameObject.Find(newCords).GetComponent<NavigationZone3D>();
 								MagCurrentNode.SaveNode(newCords);
 							}
-							GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, false);
-							GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = true;
-							GameObject.Find("Player").GetComponentInChildren<ViewController>().allowedViews = new List<View>();
-							Tween.Position(GameObject.Find("GameTable").transform, new Vector3(GameObject.Find("GameTable").transform.position.x, -110f, GameObject.Find("GameTable").transform.position.z), 0.15f, 0.1f, null, Tween.LoopType.None, null, null, true);
+							float delay = config.isometricMode ? 0.4f : 0.1f;
+							Tween.Position(GameObject.Find("GameTable").transform, new Vector3(GameObject.Find("GameTable").transform.position.x, -110f, GameObject.Find("GameTable").transform.position.z), 0.15f, delay, null, Tween.LoopType.None, null, null, true);
 							GameObject.Destroy(GameObject.Find("shopObjects"));
 							SaveManager.SaveToFile(false);
+							GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, false);
 							Singleton<ViewManager>.Instance.SwitchToView(View.FirstPerson, false, true);
 							if (config.isometricMode == false)
 							{
+								GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, false);
+								GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = true;
+								GameObject.Find("Player").GetComponentInChildren<ViewController>().allowedViews = new List<View>();
 								Tween.FieldOfView(GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>(), 65f, 0.5f, 0);
 								GameObject.Find("Player").transform.Find("PixelCameraParent").transform.localPosition = new Vector3(0, 7, -6.86f);
 							} else {
 								shopZone.events.Add(Generation.shop);
 								base.StartCoroutine(Generation.unIsometricTransition());
+								GameObject.Find("Player").transform.Find("PixelCameraParent").gameObject.GetComponent<SineWaveMovement>().originalPosition = new Vector3(0f, 9f, -22.5f);
+								GameObject.Find("Player").transform.Find("PixelCameraParent").gameObject.GetComponent<SineWaveMovement>().zMagnitude = 0.1f;
+								GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = true;
 							}
 							File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagCurrentNode.GetNodeStuff(false, true)));
 							if (RunState.Run.regionTier == 2)
@@ -1411,6 +1378,12 @@ namespace MagnificusMod
 
 					}
 
+				}
+
+				public IEnumerator showNodeIcon(float delay, NavigationZone3D currentZone)
+                {
+					yield return new WaitForSeconds(delay);
+					currentZone.transform.Find("nodeIcon").transform.position = new Vector3(currentZone.transform.position.x, 13f, currentZone.transform.position.z);
 				}
 				public void deckAction(bool side)
 				{
