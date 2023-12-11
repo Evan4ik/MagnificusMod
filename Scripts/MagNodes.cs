@@ -2185,7 +2185,10 @@ namespace MagnificusMod
 			}
 			public IEnumerator sequencer(EdaxioNode tradeCardsData)
 			{
+				yield return new WaitForSeconds(0.5f);
+				Tween.Position(GameObject.Find("Player").transform, new Vector3(GameObject.Find("Player").transform.position.x, 9.5f, GameObject.Find("Player").transform.position.z), 0.15f, 0);
 				took = false;
+				GameObject.Find("GameTable").transform.Find("light").gameObject.SetActive(false);
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
 				yield return new WaitForSeconds(0.75f);
 				GameObject gameObject = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);

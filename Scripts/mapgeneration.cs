@@ -4133,7 +4133,7 @@ namespace MagnificusMod
 					bool hasEdaxio = false;
 					foreach (CardInfo card in RunState.Run.playerDeck.Cards)
 					{
-						if (RunState.Run.regionTier == 1 && card.name == "mag_edaxiolegs" || RunState.Run.regionTier == 2 && card.name == "mag_edaxiotorso")
+						if (RunState.Run.regionTier == 1 && card.name == "mag_edaxiolegs" || RunState.Run.regionTier == 2 && card.name == "mag_edaxiotorso" || RunState.Run.regionTier == 3 && card.name == "mag_edaxioarms")
 						{
 							hasEdaxio = true;
 						}
@@ -4145,7 +4145,7 @@ namespace MagnificusMod
 						string[] x2 = x1[1].Split(' ');
 						int x = int.Parse(x2[0]);
 						string[] y = x2[1].Split('y');
-						x += 8;
+						x += 18;
 						instance.StartCoroutine(warp("x" + x + " y" + y[1], "blackout"));
 					}
 				};
@@ -4352,7 +4352,7 @@ namespace MagnificusMod
 					transitionIcon.transform.Find("Frame").Find("CanvasQuad").localPosition = new Vector3(-0.321f, 0f, -0.013f);
 					transitionIcon.transform.localScale = new Vector3(0.13f, 0.13f, 0.13f);
 					GameObject figureThruWalls = GameObject.Instantiate(GameObject.Find("ChallengeActivationUI"));
-					figureThruWalls.transform.SetParent(GameObject.Find("PerspectiveUICamera").transform);
+					figureThruWalls.transform.SetParent(GameObject.Find("OrthographicUICamera").transform);
 					GameObject.Destroy(figureThruWalls.GetComponentByName("DiskCardGame.ChallengeActivationUI"));
 					figureThruWalls.name = "WallFigure";
 					GameObject uiFigure = GameObject.Find("WallFigure").transform.Find("VisibleParent").gameObject;
@@ -4364,7 +4364,9 @@ namespace MagnificusMod
 					uiFigure.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
 					uiFigure.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("walloverlay.png");
 					uiFigure.transform.Find("Header").Find("IconSprite").localScale = new Vector3(0.24f, 0.2f, 1);
-					uiFigure.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(2.15f, -1.575f, 0);
+					GameObject.Destroy(uiFigure.transform.Find("Header").gameObject.GetComponent<ViewportRelativePosition>());
+					uiFigure.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(1.79f, -1.36f, 0);
+					//setUpClickToMove();
 					uiFigure.transform.position = new Vector3(0, 0, 0);
 				}
 				else
@@ -4394,6 +4396,63 @@ namespace MagnificusMod
 			}
 		}
 			
+		public static void setUpClickToMove()
+        {
+			GameObject clickToMove = new GameObject("clickToMove");
+			clickToMove.transform.parent = GameObject.Find("Player").transform;
+			clickToMove.transform.localPosition = new Vector3(0, 10, 0);
+			List<string> directionsToCreate = new List<string> { "North", "South", "East", "West" };
+			for (int i = 0; i < directionsToCreate.Count; i++)
+			{
+				GameObject dir = new GameObject("click" + directionsToCreate[i]);
+				dir.transform.parent = clickToMove.transform;
+				dir.AddComponent<MainInputInteractable>();
+				dir.GetComponent<MainInputInteractable>().CursorEntered = (Action<MainInputInteractable>)Delegate.Combine(dir.GetComponent<MainInputInteractable>().CursorEntered, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
+				{
+					Singleton<InteractionCursor>.Instance.ForceCursorType(CursorType.Point);
+				}));
+				dir.GetComponent<MainInputInteractable>().CursorExited = (Action<MainInputInteractable>)Delegate.Combine(dir.GetComponent<MainInputInteractable>().CursorExited, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
+				{
+					Singleton<InteractionCursor>.Instance.ClearForcedCursorType();
+				}));
+				dir.layer = 30;
+				dir.AddComponent<BoxCollider>().size = new Vector3(9, 9, 9);
+			}
+			GameObject northMove = GameObject.Find("clickNorth");
+			northMove.GetComponent<MainInputInteractable>().CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(northMove.GetComponent<MainInputInteractable>().CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
+			{
+				Singleton<FirstPersonController>.Instance.SetZone(NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.LookDirection, Singleton<FirstPersonController>.Instance.currentZone) as NavigationZone3D, false);
+				Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 0, 0), 0.15f, 0);
+				if (MagnificusMod.Generation.minimap && RunState.Run.regionTier > 0)
+				{
+					GameObject playerIcon = GameObject.Find("playerMapNode");
+					Tween.Rotation(playerIcon.transform.Find("Header").Find("IconSprite"), Quaternion.Euler(0, 0, 0), 0.25f, 0);
+				}
+			}));
+			northMove.transform.localPosition = new Vector3(-11f, 0f, 2f);
+			GameObject southMove = GameObject.Find("clickSouth");
+			southMove.transform.localPosition = new Vector3(-15f, 0, -23f);
+			southMove.GetComponent<MainInputInteractable>().CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(southMove.GetComponent<MainInputInteractable>().CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
+			{
+				Singleton<FirstPersonController>.Instance.SetZone(NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.GetOppositeDirection(Singleton<FirstPersonController>.Instance.LookDirection), Singleton<FirstPersonController>.Instance.currentZone) as NavigationZone3D, false);
+				Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 180, 0), 0.15f, 0);
+			}));
+			GameObject westMove = GameObject.Find("clickWest");
+			westMove.transform.localPosition = new Vector3(-23f, 0, -15f);
+			westMove.GetComponent<MainInputInteractable>().CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(westMove.GetComponent<MainInputInteractable>().CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
+			{
+				Singleton<FirstPersonController>.Instance.SetZone(NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.GetLeftOfDirection(Singleton<FirstPersonController>.Instance.LookDirection), Singleton<FirstPersonController>.Instance.currentZone) as NavigationZone3D, false);
+				Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 270, 0), 0.15f, 0);
+			}));
+			GameObject eastMove = GameObject.Find("clickEast");
+			eastMove.transform.localPosition = new Vector3(1f, 0f, -15f);
+			eastMove.GetComponent<MainInputInteractable>().CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(eastMove.GetComponent<MainInputInteractable>().CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
+			{
+				Singleton<FirstPersonController>.Instance.SetZone(NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.GetRightOfDirection(Singleton<FirstPersonController>.Instance.LookDirection), Singleton<FirstPersonController>.Instance.currentZone) as NavigationZone3D, false);
+				Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 90, 0), 0.15f, 0);
+			}));
+		}
+
 		public static void SetBigOpponentSlotHitboxes(bool set, GameObject boardManager, bool setPlayer = false)
         {
 			float y = set ? 47f : 1f;
@@ -6332,6 +6391,7 @@ namespace MagnificusMod
 				figureThruWalls.transform.SetParent(GameObject.Find("PerspectiveUICamera").transform);
 				GameObject.Destroy(figureThruWalls.GetComponentByName("DiskCardGame.ChallengeActivationUI"));
 				figureThruWalls.name = "WallFigure";
+				figureThruWalls.name = "WallFigure";
 				GameObject uiFigure = GameObject.Find("WallFigure").transform.Find("VisibleParent").gameObject;
 				uiFigure.SetActive(true);
 				uiFigure.transform.Find("Footer").gameObject.SetActive(false);
@@ -6341,7 +6401,9 @@ namespace MagnificusMod
 				uiFigure.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
 				uiFigure.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("walloverlay.png");
 				uiFigure.transform.Find("Header").Find("IconSprite").localScale = new Vector3(0.24f, 0.2f, 1);
-				uiFigure.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(2.15f, -1.575f, 0);
+				GameObject.Destroy(uiFigure.transform.Find("Header").gameObject.GetComponent<ViewportRelativePosition>());
+				//setUpClickToMove();
+				uiFigure.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(1.79f, -1.36f, 0);
 				uiFigure.transform.position = new Vector3(0, 0, 0);
 				GameObject.Find("Player").transform.localRotation = Quaternion.Euler(0, 0, 0);
 				Singleton<FirstPersonController>.Instance.LookDirection = LookDirection.North;
@@ -6596,6 +6658,7 @@ namespace MagnificusMod
 								GameObject.Find("Player").transform.Find("Directional Light").gameObject.SetActive(true);
 								Singleton<FirstPersonController>.Instance.footstepSound = FirstPersonController.FootstepSound.Goo;
 								GameObject.Find("Player").transform.Find("bgStarParent").gameObject.SetActive(true);
+								GameObject.Find("GameTable").transform.Find("light").gameObject.SetActive(true);
 							}
 							else if (RunState.Run.regionTier == 2)
                             {
@@ -6632,7 +6695,8 @@ namespace MagnificusMod
 						float modify = 0.03f * i;
 						Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetColor(GameColors.Instance.nearBlack);
 						Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(modify, float.MaxValue);
-						GameObject.Find("Player").transform.position = new Vector3(GameObject.Find("Player").transform.position.x, 9.5f - modify, GameObject.Find("Player").transform.position.z);
+						float posModify = config.isometricMode ? modify * 10 : modify;
+						GameObject.Find("Player").transform.position = new Vector3(GameObject.Find("Player").transform.position.x, 9.5f - posModify, GameObject.Find("Player").transform.position.z);
 						if (i == 50)
                         {
 							GameObject.Find("walls").transform.position = new Vector3(0, -90, 9);
@@ -6723,6 +6787,7 @@ namespace MagnificusMod
 					}
 					break;
 				case "blackout":
+					if (config.isometricMode) { GameObject.Find("WallFigure").transform.Find("VisibleParent").Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f); }
 					for (int i = 0; i < 101; i++)
 					{
 						float modify = 0.01f * i;

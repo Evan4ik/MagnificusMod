@@ -224,7 +224,7 @@ namespace MagnificusMod
 						string[] x2 = x1[1].Split(' ');
 						int x = int.Parse(x2[0]);
 						string[] y = x2[1].Split('y');
-						x -= 13;
+						x -= 21;
 						Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.warp("x" + x + " y" + y[1], "whiteout"));
 						MagSave.SaveNode("x" + x + " y" + y[1]);
 						File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(false, false)));

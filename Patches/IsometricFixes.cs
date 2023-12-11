@@ -60,9 +60,15 @@ namespace MagnificusMod
 					Tween.LocalPosition(GameObject.Find("Player").transform.Find("figure"), new Vector3(0, -6.5f + UnityEngine.Random.Range(-0.50f, 0.50f), 0), 0.1f, 0);
 					Tween.LocalPosition(GameObject.Find("Player").transform.Find("figure"), new Vector3(0, -10f, 0), 0.1f, 0.1f);
 					GameObject uiFigure = GameObject.Find("WallFigure").transform.Find("VisibleParent").gameObject;
-					if (Physics.Raycast(zone.gameObject.transform.position, new Vector3(-1, 1, -1f), 45))
+					if (Physics.Raycast(zone.gameObject.transform.position, new Vector3(-1, 1, -1f), 45, 1))
 					{
-						if (GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition == new Vector3(0, 0, -1)){__instance.StartCoroutine(showUiFigure(uiFigure.transform.Find("Header").Find("IconSprite").gameObject, true)); }
+						RaycastHit rays;
+						Physics.Raycast(zone.gameObject.transform.position, new Vector3(-1, 1, -1f), out rays);
+						if (rays.collider != null)
+						{
+							Debug.Log(rays.collider.gameObject.name);
+						}
+                            if (GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition == new Vector3(0, 0, -1)){__instance.StartCoroutine(showUiFigure(uiFigure.transform.Find("Header").Find("IconSprite").gameObject, true)); }
 					} else 
 					{
 						if (GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition == new Vector3(0, 0, 1)) {__instance.StartCoroutine(showUiFigure(uiFigure.transform.Find("Header").Find("IconSprite").gameObject, false));}
@@ -229,7 +235,7 @@ namespace MagnificusMod
 			{
 				if (config.isometricMode == false || SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
 				if (moveDisabled) { return false; }
-				if (InputButtons.GetButtonDown(Button.LookUp))
+				if (InputButtons.GetButtonDown(Button.LookUp) || InputButtons.GetButtonDown(Button.DirUp))
 				{
 					__result = NavigationGrid.instance.GetZoneInDirection(__instance.LookDirection, __instance.currentZone) as NavigationZone3D;
 					Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 0, 0), 0.15f, 0);
@@ -240,51 +246,22 @@ namespace MagnificusMod
 					}
 					return false;
 				}
-				if (InputButtons.GetButtonDown(Button.LookDown))
+				if (InputButtons.GetButtonDown(Button.LookDown) || InputButtons.GetButtonDown(Button.DirDown))
 				{
 					__result = NavigationGrid.instance.GetZoneInDirection(__instance.GetOppositeDirection(__instance.LookDirection), __instance.currentZone) as NavigationZone3D;
 					Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 180, 0), 0.15f, 0);
 					return false;
 				}
-				if (InputButtons.GetButtonDown(Button.DirUp))
-				{
-					__result = NavigationGrid.instance.GetZoneInDirection(__instance.LookDirection, __instance.currentZone) as NavigationZone3D;
-					Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 0, 0), 0.15f, 0);
-					if (MagnificusMod.Generation.minimap && RunState.Run.regionTier > 0)
-					{
-						GameObject playerIcon = GameObject.Find("playerMapNode");
-						Tween.Rotation(playerIcon.transform.Find("Header").Find("IconSprite"), Quaternion.Euler(0, 0, 0), 0.25f, 0);
-					}
-					return false;
-				}
-				if (InputButtons.GetButtonDown(Button.DirRight))
+				if (InputButtons.GetButtonDown(Button.DirRight) || InputButtons.GetButtonDown(Button.LookRight))
 				{
 					__result = NavigationGrid.instance.GetZoneInDirection(__instance.GetRightOfDirection(__instance.LookDirection), __instance.currentZone) as NavigationZone3D;
 					Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 90, 0), 0.15f, 0);
 					return false;
 				}
-				if (InputButtons.GetButtonDown(Button.DirLeft))
+				if (InputButtons.GetButtonDown(Button.DirLeft) || InputButtons.GetButtonDown(Button.LookLeft))
 				{
 					__result = NavigationGrid.instance.GetZoneInDirection(__instance.GetLeftOfDirection(__instance.LookDirection), __instance.currentZone) as NavigationZone3D;
 					Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 270, 0), 0.15f, 0);
-					return false;
-				}
-				if (InputButtons.GetButtonDown(Button.LookRight))
-				{
-					__result = NavigationGrid.instance.GetZoneInDirection(__instance.GetRightOfDirection(__instance.LookDirection), __instance.currentZone) as NavigationZone3D;
-					Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 90, 0), 0.15f, 0);
-					return false;
-				}
-				if (InputButtons.GetButtonDown(Button.LookLeft))
-				{
-					__result = NavigationGrid.instance.GetZoneInDirection(__instance.GetLeftOfDirection(__instance.LookDirection), __instance.currentZone) as NavigationZone3D;
-					Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 270, 0), 0.15f, 0);
-					return false;
-				}
-				if (InputButtons.GetButtonDown(Button.DirDown))
-				{
-					__result = NavigationGrid.instance.GetZoneInDirection(__instance.GetOppositeDirection(__instance.LookDirection), __instance.currentZone) as NavigationZone3D;
-					Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 180, 0), 0.15f, 0);
 					return false;
 				}
 				__result = null;
