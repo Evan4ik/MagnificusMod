@@ -2312,6 +2312,13 @@ namespace MagnificusMod
 					gameObject.transform.localPosition = new Vector3(gameObject.transform.localPosition.x, 5, gameObject.transform.localPosition.z);
 					gameObject.transform.localScale = new Vector3(15, 10f, 15);
 					gameObject.transform.localRotation = Quaternion.identity;
+					if (slot.IsPlayerSlot)
+                    {
+						gameObject.transform.Find("Icon").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0f, 1f, 0.22f, 1);
+                    } else
+                    {
+						gameObject.transform.Find("Icon").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.85f, 0.5f, 0f, 1);
+					}
 					this.targetIcons.Add(gameObject);
 				}
 				yield return new WaitForSeconds(0.3f);
@@ -2934,6 +2941,14 @@ namespace MagnificusMod
 					gameObject.transform.localPosition = new Vector3(gameObject.transform.localPosition.x, 5, gameObject.transform.localPosition.z);
 					gameObject.transform.localScale = new Vector3(15, 10f, 15);
 					gameObject.transform.localRotation = Quaternion.identity;
+					if (slot.IsPlayerSlot)
+					{
+						gameObject.transform.Find("Icon").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0f, 1f, 0.22f, 1);
+					}
+					else
+					{
+						gameObject.transform.Find("Icon").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.85f, 0.5f, 0f, 1);
+					}
 					this.targetIcons.Add(gameObject);
 				}
 				yield break;
@@ -3187,8 +3202,18 @@ namespace MagnificusMod
 			public IEnumerator shuffleBoard(bool firstTime = true)
 			{
 				turnsSinceDeckKill = 0;
-				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
 				SelectableCard selectedCard = null;
+				if (Singleton<Deck>.Instance.CardsInDeck <= 0)
+                {
+					if (firstTime)
+					{
+						Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("HEY.. YOU DON'T HAVE ANY CARDS LEFT?", 0f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("BORING!", 0f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					}
+					yield break;
+				}
+				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
 				float yPos = firstTime ? 2.5f : 75f;
 				GameObject.Find("SelectableCardArray").transform.localPosition = new Vector3(-0.72f, 6.685f, 4.059f);
 				GameObject.Find("SelectableCardArray").transform.localRotation = Quaternion.Euler(0, 180, 0);

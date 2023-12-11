@@ -44,6 +44,7 @@ namespace MagnificusMod
 				__state.zoomInteractable.enabled = false;
 				__state.zoomInteractable.SetEnabled(false);
 				Singleton<CameraEffects>.Instance.Shake(0.05f, 0.3f);
+				GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(false);
 				AudioController.Instance.PlaySound3D("giant_stones_falling", MixerGroup.ExplorationSFX, __state.transform.position, 0.75f, 0f, null, null, null, null, false);
 				yield return new WaitForSeconds(0.5f);
 				__state.zoomInteractable.SetZoomed(false, false, 0.2f);
@@ -66,17 +67,26 @@ namespace MagnificusMod
 					GameObject.Find("Player").transform.Find("Directional Light").gameObject.GetComponent<Light>().intensity = 0;
 				}
 				yield return new WaitForSeconds(0.25f);
-				float x = GameObject.Find("PixelCameraParent").transform.position.x;
-				float z = GameObject.Find("PixelCameraParent").transform.position.z;
-				GameObject.Find("PixelCameraParent").transform.position = new Vector3(x, 7f, z);
-				Tween.Position(GameObject.Find("PixelCameraParent").transform, new Vector3(x, 7f, z), 0.1f, 0.5f);
-				Tween.Rotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(0, 0, 0), 0.1f, 0.5f);
+				GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(true);
+				if (!config.isometricMode)
+				{
+					Singleton<FirstPersonController>.Instance.MoveLocked = (Singleton<FirstPersonController>.Instance.LookLocked = false);
+					float x = GameObject.Find("PixelCameraParent").transform.position.x;
+					float z = GameObject.Find("PixelCameraParent").transform.position.z;
+					GameObject.Find("PixelCameraParent").transform.position = new Vector3(x, 7f, z);
+					Tween.Position(GameObject.Find("PixelCameraParent").transform, new Vector3(x, 7f, z), 0.1f, 0.5f);
+					Tween.Rotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(0, 0, 0), 0.1f, 0.5f);
+				} else
+                {
+					Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(-40, 47.5f, -40), 0.25f, 0);
+					Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30, 45, 0), 0.25f, 0);
+					Singleton<FirstPersonController>.Instance.MoveLocked = (Singleton<FirstPersonController>.Instance.LookLocked = false);
+				}
 				//__state.gooRoom.SetActive(true);
 				Singleton<FirstPersonController>.Instance.SetZone(__state.teleportTarget, true);
 				MagSave.SaveNode(__state.teleportTarget.gameObject.name);
 				File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(false, false)));
 				SaveManager.SaveToFile();
-				Singleton<FirstPersonController>.Instance.MoveLocked = (Singleton<FirstPersonController>.Instance.LookLocked = false);
 				Singleton<InteractionCursor>.Instance.InteractionDisabled = false;
 				AudioController.Instance.SetLoopVolumeImmediate(0f, 0);
 				__state.gemAnim.Play("idle", 0, 0f);

@@ -30,6 +30,7 @@ namespace MagnificusMod
 			public static bool Prefix(ref GameFlowManager __instance, ref GameState gameState)
 			{
 				if (SceneLoader.ActiveSceneName == "finale_magnificus" && RunState.Run.regionTier == 2) {GameObject.Find("lanterns").transform.position = new Vector3(0, 35, 0); }
+				if (SceneLoader.ActiveSceneName == "finale_magnificus" && RunState.Run.regionTier == 3) { GameObject.Find("GameTable").transform.Find("light").Find("floorLight").gameObject.SetActive(true); }
 				if (gameState == GameState.Map && SceneLoader.ActiveSceneName == "finale_magnificus")
 				{
 					__instance.SceneSpecificTransitionTo(GameState.Map, false);
@@ -143,6 +144,9 @@ namespace MagnificusMod
 					else if (RunState.Run.regionTier == 1)
 					{
 						Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().farClipPlane = 320f - Generation.getClippingPlaneQualityAdjustment();
+					} else if (RunState.Run.regionTier == 3) 
+					{ 
+						GameObject.Find("GameTable").transform.Find("light").Find("floorLight").gameObject.SetActive(false); 
 					}
 					Tween.Position(GameObject.Find("GameTable").transform, new Vector3(GameObject.Find("GameTable").transform.position.x, -20f, GameObject.Find("GameTable").transform.position.z), 0.6f, 1.21f, null, Tween.LoopType.None, null, null, true);
 					Tween.LocalPosition(GameObject.Find("tbPillar").transform, new Vector3(0, -5.01f, 0), 0.6f, 0.2f, null, Tween.LoopType.None, null, null, true);

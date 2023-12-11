@@ -50,11 +50,18 @@ namespace MagnificusMod
 			{
 				if (config.isometricMode && zone != null)
                 {
+					if (zone.events != null && zone.events.Contains(Generation.mirrorClose))
+					{
+						string[] coords = zone.gameObject.name.Split(' ');
+						string x = coords[0].Split('x')[1];
+						string y = coords[1].Split('y')[1];
+						if (GameObject.Find("NavigationGrid").GetComponent<NavigationGrid>().GetAdjacentZones(Convert.ToInt32(x), Convert.ToInt32(y))[0].gameObject.name == "mirror" && GameObject.Find("Player").transform.Find("figure").transform.localEulerAngles.y == 270){return;}
+					} else if (zone.events != null && zone.events.Contains(Generation.mirrorIn)) { return; }
 					Tween.LocalPosition(GameObject.Find("Player").transform.Find("figure"), new Vector3(0, -6.5f + UnityEngine.Random.Range(-0.50f, 0.50f), 0), 0.1f, 0);
 					Tween.LocalPosition(GameObject.Find("Player").transform.Find("figure"), new Vector3(0, -10f, 0), 0.1f, 0.1f);
 					GameObject uiFigure = GameObject.Find("WallFigure").transform.Find("VisibleParent").gameObject;
-					if (Physics.Raycast(zone.gameObject.transform.position, new Vector3(-1, 1, -0.5f), 15))
-					{ 
+					if (Physics.Raycast(zone.gameObject.transform.position, new Vector3(-1, 1, -1f), 45))
+					{
 						if (GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition == new Vector3(0, 0, -1)){__instance.StartCoroutine(showUiFigure(uiFigure.transform.Find("Header").Find("IconSprite").gameObject, true)); }
 					} else 
 					{
@@ -99,7 +106,7 @@ namespace MagnificusMod
 								Tween.LocalPosition(GameObject.Find(__instance.gameObject.name).transform.GetChild(0), new Vector3(1, 90, 0), 0.65f, 0);
 
 							}
-							delay = 1f;
+							delay = 0.25f;
 							__instance.StartCoroutine(Generation.isometricTransition(nodeIcon));
 							IsometricStuff.moveDisabled = true;
 							delete = true;
@@ -140,6 +147,27 @@ namespace MagnificusMod
 				if (config.isometricMode == false || SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
 				GameObject.Find("PixelCameraParent").transform.localRotation = Quaternion.Euler(30f, 45f, 0);
 				GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(-40, 47.5f, -40);
+				return false;
+			}
+		}
+
+
+		[HarmonyPatch(typeof(ZoomInteractable), "ManagedUpdate")]
+		public class fixZoomInteractable
+		{
+			public static bool Prefix(ref ZoomInteractable __instance)
+			{
+				if (config.isometricMode == false || SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
+				if (__instance.Zoomed && (__instance.discoverableObjectChild == null || !__instance.discoverableObjectChild.Discovering))
+				{
+					if (InputButtons.GetButtonUp(Button.LookDown) || InputButtons.GetButtonUp(Button.LookLeft) || InputButtons.GetButtonUp(Button.LookRight))
+					{
+						__instance.SetZoomed(false, false, 0.2f);
+						Singleton<FirstPersonController>.Instance.LookLocked = true;
+						Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(-40, 47.5f, -40), 0.25f, 0);
+						Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30, 45, 0), 0.25f, 0);
+					}
+				}
 				return false;
 			}
 		}

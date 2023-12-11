@@ -1933,27 +1933,14 @@ namespace MagnificusMod
 			list3.Add(CardAppearanceBehaviour.Appearance.RareCardBackground);
 			List<SpecialTriggeredAbility> list4 = new List<SpecialTriggeredAbility>();
 			list4.Add(SpecialTriggeredAbility.Daus);
-			List<Texture> list5 = new List<Texture>();
 			List<Ability> list6 = new List<Ability>();
 			list6.Add(Ability.CreateBells);
 
 			string text = "mag_BellMage";
 			string text2 = "Chime Mage";
 			int num = 1;
-			int num2 = 3;
-			List<CardMetaCategory> list7 = list;
-			CardComplexity cardComplexity = CardComplexity.Simple;
-			CardTemple cardTemple = CardTemple.Nature;
+			int num2 = 2;
 			string text3 = "Its chime can prove to be quite annoying..";
-			bool flag = false;
-			int num3 = 0;
-			int num4 = 0;
-			int num5 = 0;
-			List<GemType> list8 = list2;
-			SpecialStatIcon specialStatIcon = SpecialStatIcon.None;
-			List<Tribe> list9 = null;
-			List<Trait> list10 = null;
-			List<Texture> list11 = list5;
 			List<Ability> list12 = list6;
 			List<CardAppearanceBehaviour.Appearance> list13 = list3;
 			CardInfo myCard = CardManager.New("mag", text, text2, num, num2, text3)
@@ -1966,6 +1953,9 @@ namespace MagnificusMod
 					.AddMetaCategories(list[0]);
 			myCard.metaCategories = list;
 			myCard.temple = CardTemple.Wizard;
+
+			CardInfo customCard = InscryptionAPI.Card.CardManager.BaseGameCards.CardByName("DausBell");
+			customCard.appearanceBehaviour = new List<CardAppearanceBehaviour.Appearance> { CardAppearanceBehaviour.Appearance.TerrainBackground };
 		}
 
 		public static void AddAlmondCookie()

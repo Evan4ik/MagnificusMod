@@ -529,11 +529,11 @@ namespace MagnificusMod
         new List<List<string>>
         {
             new List<string> { "W4C", "W5N", "W4J","W4D","W4J","W4N","W4C", "W4N", "W4N","W4C","W4N","W5N","W4C" },
-            new List<string> { "W4E", "MR1",   "MR1",  "MR1",  "MR1",  "MR1", "MRR", " ",   " ",  " ",  " ",  " ", "W4W" },
+            new List<string> { "W4E", "MR1",   "MR1",  "MR2",  "MR1",  "MR1", "MRR", " ",   " ",  " ",  " ",  " ", "W4W" },
             new List<string> { "W4K",  "MR1",   "PK",  "MR1",  "PK",  "MR1", "W5K", " ",   "PK",  " ",  "PK",  " ", "W4W" },
-            new List<string> { "W4d",  "-",   "-", "SPWN","-",  "-", "W4W", " ",   " ", " "," ",  "-", "W4W" },
-            new List<string> { "W4H",  "-",   "PK",  "-",  "PK",  "-", "W4W",  " ",   "PK",  " ",  "PK",  " ", "W4W" },
-            new List<string> { "W4E",  "-",   "-",  "-",  "-",  "-", "W4W", " ",   " ",  " ",  " ",  " ", "W4W" },
+            new List<string> { "W4d",  "MR2",   "-", "SPWN","MR1",  "MR1", "W4W", " ",   " ", " "," ",  "-", "W4W" },
+            new List<string> { "W4H",  "-",   "PK",  "-",  "PK",  "MR1", "W4W",  " ",   "PK",  " ",  "PK",  " ", "W4W" },
+            new List<string> { "W4E",  "-",   "-",  "-",  "MR1",  "MR1", "W4W", " ",   " ",  " ",  " ",  " ", "W4W" },
             new List<string> { "W4C", "W4S","W4S", "W4S","W4S","W4S", "W4S", "W4S","W4S", "W4S","W4S","W4S", "W4S" }
         },
          new List<List<string>>
@@ -579,11 +579,11 @@ namespace MagnificusMod
        new List<List<string>>//troll room p2
         {
             new List<string> { "W4C", "W5N", "W4J","W4D","W4J","W4N","W4C" },
-            new List<string> { "W5E",  "-",   "-",  "-",  "-",  "-", "W5W" },
+            new List<string> { "W5E",  "htr",   "-",  "-",  "-",  "-", "W5W" },
             new List<string> { "W5K",  "-", "-", "W1F", "-",  "-", "W5K" },
             new List<string> { "W4d",  "-",   "W1F", "EVN", "W1F",  "-", "W4d" },
             new List<string> { "W4H",  "-", "-", "W1F", "-",  "-", "W4K" },
-            new List<string> { "W4E",  "htr",   "-",  "-",  "-",  "-", "W4W" },
+            new List<string> { "W4E",  "-",   "-",  "-",  "-",  "-", "W4W" },
             new List<string> { "W4C", "W5S","W5H", "W4D","W4H","W5S", "W4C" }
         },
        new List<List<string>>
