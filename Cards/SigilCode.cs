@@ -898,9 +898,16 @@ namespace MagnificusMod
 				return array;
 			}
 
+			public static AbilityInfo MoxPowerBypass;
 
 			public static StatIconManager.FullStatIcon InitStatIconAndAbility()
 			{
+				MoxPowerBypass = AbilityManager.New(Plugin.PluginGuid, "Mox Power", "The value represented with this sigil will be equal to the number of Mox Cards that the owner has on their side of the table.", typeof(SigilCode.HealthForAnts), Tools.GetTexture("mox empowered.png"))
+				.SetDefaultPart1Ability()
+				.SetIcon(Tools.GetTexture("mox empowered.png"));
+				MoxPowerBypass.powerLevel = 10;
+				HealthForAnts.ability = MoxPowerBypass;
+
 				StatIconInfo info = ScriptableObject.CreateInstance<StatIconInfo>();
 				info.appliesToAttack = true;
 				info.appliesToHealth = false;
@@ -908,6 +915,10 @@ namespace MagnificusMod
 				info.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 				info.rulebookDescription =
 					"The value represented with this sigil will be equal to the number of Mox Cards that the owner has on their side of the table.";
+				info.gbcDescription = MoxPowerBypass.ability.ToString();
+				Debug.Log("mox power");
+				Debug.Log(info.rulebookName.ToString());
+				Debug.Log(info.name.ToString());
 
 
 				info.iconGraphic = Tools.GetTexture("mox empowered.png");
@@ -915,11 +926,6 @@ namespace MagnificusMod
 
 				FullStatIcon = StatIconManager.Add(Plugin.PluginGuid, info, typeof(HealthForAnts));
 				FullSpecial = SpecialTriggeredAbilityManager.Add(Plugin.PluginGuid, info.rulebookName, typeof(HealthForAnts));
-				AbilityInfo MoxPowerBypass = AbilityManager.New(Plugin.PluginGuid, "Mox Power", "The value represented with this sigil will be equal to the number of Mox Cards that the owner has on their side of the table.", typeof(SigilCode.HealthForAnts), Tools.GetTexture("mox empowered.png"))
-					.SetDefaultPart1Ability()
-					.SetIcon(Tools.GetTexture("mox empowered.png"));
-				MoxPowerBypass.powerLevel = 10;
-				HealthForAnts.ability = MoxPowerBypass;
 				return FullStatIcon;
 			}
 
@@ -955,6 +961,13 @@ namespace MagnificusMod
 
 			public static StatIconManager.FullStatIcon InitStatIconAndAbility()
 			{
+
+
+				AbilityInfo MoxHealthBypass = AbilityManager.New(Plugin.PluginGuid, "Mox Power", "The value represented with this sigil will be equal to the number of Mox Cards that the owner has on their side of the table.", typeof(SigilCode.MoxHp), Tools.GetTexture("mox empowered.png"))
+					.SetDefaultPart1Ability()
+					.SetIcon(Tools.GetTexture("mox empowered.png"));
+				MoxHp.ability = MoxHealthBypass;
+
 				StatIconInfo info = ScriptableObject.CreateInstance<StatIconInfo>();
 				info.appliesToAttack = false;
 				info.appliesToHealth = true;
@@ -962,18 +975,13 @@ namespace MagnificusMod
 				info.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 				info.rulebookDescription =
 					"The value represented with this sigil will be equal to the number of Mox Cards that the owner has on their side of the table.";
-
-
+				info.gbcDescription = SigilCode.HealthForAnts.MoxPowerBypass.ability.ToString();
+				Debug.Log(MoxHealthBypass.ToString());
 				info.iconGraphic = Tools.GetTexture("mox empowered.png");
 				info.pixelIconGraphic = Tools.getSprite("moxempowered_pixel.png");
 
 				FullStatIcon = StatIconManager.Add(Plugin.PluginGuid, info, typeof(MoxHp));
 				FullSpecial = SpecialTriggeredAbilityManager.Add(Plugin.PluginGuid, info.rulebookName, typeof(MoxHp));
-
-				AbilityInfo MoxHealthBypass = AbilityManager.New(Plugin.PluginGuid, "Mox Power", "The value represented with this sigil will be equal to the number of Mox Cards that the owner has on their side of the table.", typeof(SigilCode.MoxHp), Tools.GetTexture("mox empowered.png"))
-					.SetDefaultPart1Ability()
-					.SetIcon(Tools.GetTexture("mox empowered.png"));
-				MoxHp.ability = MoxHealthBypass;
 				return FullStatIcon;
 			}
 
@@ -1086,6 +1094,12 @@ namespace MagnificusMod
 
 			public static StatIconManager.FullStatIcon InitStatIconAndAbility()
 			{
+				AbilityInfo KillSquide = AbilityManager.New(Plugin.PluginGuid, "Murder Power", "The value represented with this sigil will be equal to half the total amount of power on your board.", typeof(SigilCode.KillSquid), Tools.GetTexture("killsquid_icon.png"))
+					.SetDefaultPart1Ability()
+					.SetIcon(Tools.GetTexture("killsquid_icon.png"));
+				KillSquide.powerLevel = 10;
+				KillSquid.ability = KillSquide;
+
 				StatIconInfo info = ScriptableObject.CreateInstance<StatIconInfo>();
 				info.appliesToAttack = true;
 				info.appliesToHealth = false;
@@ -1093,16 +1107,12 @@ namespace MagnificusMod
 				info.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.Part1Rulebook };
 				info.rulebookDescription =
 					"The value represented with this sigil will be equal to half the total amount of power on your board.";
+				info.gbcDescription = KillSquide.ability.ToString();
 
 				info.iconGraphic = Tools.GetTexture("killsquid_icon.png");
 
 				FullStatIcon = StatIconManager.Add(Plugin.PluginGuid, info, typeof(KillSquid));
 				FullSpecial = SpecialTriggeredAbilityManager.Add(Plugin.PluginGuid, info.rulebookName, typeof(KillSquid));
-				AbilityInfo KillSquide = AbilityManager.New(Plugin.PluginGuid, "Murder Power", "The value represented with this sigil will be equal to half the total amount of power on your board.", typeof(SigilCode.KillSquid), Tools.GetTexture("killsquid_icon.png"))
-					.SetDefaultPart1Ability()
-					.SetIcon(Tools.GetTexture("killsquid_icon.png"));
-				KillSquide.powerLevel = 10;
-				KillSquid.ability = KillSquide;
 				return FullStatIcon;
 			}
 
@@ -1126,6 +1136,11 @@ namespace MagnificusMod
 
 			public static StatIconManager.FullStatIcon InitStatIconAndAbility()
 			{
+				AbilityInfo SpellPowere = AbilityManager.New(Plugin.PluginGuid, "Spell Power", "The value represented with this sigil will be equal to total amount of spells played during the battles, times 1.5.", typeof(SigilCode.SpellPower), Tools.GetTexture("spellpower.png"))
+				.SetDefaultPart1Ability()
+				.SetIcon(Tools.GetTexture("spellpower.png"));
+				SpellPowere.powerLevel = 10;
+				SpellPower.ability = SpellPowere;
 				StatIconInfo info = ScriptableObject.CreateInstance<StatIconInfo>();
 				info.appliesToAttack = true;
 				info.appliesToHealth = false;
@@ -1133,16 +1148,13 @@ namespace MagnificusMod
 				info.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.Part1Rulebook };
 				info.rulebookDescription =
 					"The value represented with this sigil will be equal to total amount of spells played during the battle, times 1.5.";
+				info.gbcDescription = SpellPowere.ability.ToString();
 
 				info.iconGraphic = Tools.GetTexture("spellpower.png");
 
 				FullStatIcon = StatIconManager.Add(Plugin.PluginGuid, info, typeof(SpellPower));
 				FullSpecial = SpecialTriggeredAbilityManager.Add(Plugin.PluginGuid, info.rulebookName, typeof(SpellPower));
-				AbilityInfo SpellPowere = AbilityManager.New(Plugin.PluginGuid, "Spell Power", "The value represented with this sigil will be equal to total amount of spells played during the battles, times 1.5.", typeof(SigilCode.SpellPower), Tools.GetTexture("spellpower.png"))
-					.SetDefaultPart1Ability()
-					.SetIcon(Tools.GetTexture("spellpower.png"));
-				SpellPowere.powerLevel = 10;
-				SpellPower.ability = SpellPowere;
+
 				return FullStatIcon;
 			}
 
@@ -1172,6 +1184,12 @@ namespace MagnificusMod
 
 			public static StatIconManager.FullStatIcon InitStatIconAndAbility()
 			{
+				AbilityInfo BPowere = AbilityManager.New(Plugin.PluginGuid, "Counterbattery Power", "The value represented with this sigil will be equal to the amount of damage taken by you this battle, divided by two.", typeof(SigilCode.CounterBatteryPower), Tools.GetTexture("spellpower.png"))
+				.SetDefaultPart1Ability()
+				.SetIcon(Tools.GetTexture("batterypower.png"));
+				BPowere.powerLevel = 10;
+				CounterBatteryPower.ability = BPowere;
+
 				StatIconInfo info = ScriptableObject.CreateInstance<StatIconInfo>();
 				info.appliesToAttack = true;
 				info.appliesToHealth = false;
@@ -1179,20 +1197,28 @@ namespace MagnificusMod
 				info.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.Part1Rulebook };
 				info.rulebookDescription =
 					"The value represented with this sigil will be equal to the amount of damage taken by you this battle, divided by two.";
+				info.gbcDescription = BPowere.ability.ToString();
 
 				info.iconGraphic = Tools.GetTexture("batterypower.png");
 
 				FullStatIcon = StatIconManager.Add(Plugin.PluginGuid, info, typeof(CounterBatteryPower));
 				FullSpecial = SpecialTriggeredAbilityManager.Add(Plugin.PluginGuid, info.rulebookName, typeof(CounterBatteryPower));
-				AbilityInfo BPowere = AbilityManager.New(Plugin.PluginGuid, "Counterbattery Power", "The value represented with this sigil will be equal to the amount of damage taken by you this battle, divided by two.", typeof(SigilCode.CounterBatteryPower), Tools.GetTexture("spellpower.png"))
-					.SetDefaultPart1Ability()
-					.SetIcon(Tools.GetTexture("batterypower.png"));
-				BPowere.powerLevel = 10;
-				CounterBatteryPower.ability = BPowere;
+				
 				return FullStatIcon;
 			}
 
 			private static SpecialStatIcon specialStatIcon;
+		}
+
+		[HarmonyPatch(typeof(StatIconInteractable), "OnAlternateSelectStarted")]
+		public class finallyMakeStatIconsRuleBookWork
+		{
+			public static bool Prefix(ref StatIconInteractable __instance)
+			{
+				if (SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
+				Singleton<RuleBookController>.Instance.OpenToAbilityPage(StatIconInfo.GetIconInfo(__instance.statIcon).gbcDescription, __instance.card);
+				return false;
+			}
 		}
 
 		public class LifeUpOmega : AbilityBehaviour
