@@ -40,8 +40,8 @@ namespace MagnificusMod
                 "Automatically unlocks every challenge and starter deck in Magnificus' Kaycees Mod. This does NOT change your magnificus challenge point value. If you have a change of heart and decide to unlock the challenges fairly, your challenge points will remain the same.");
             _isometricMode = magConfig.Bind("Isometric",
               "IsometricMode",
-              false,
-              "new experimental isometric mode");
+              true,
+              "Isometric third person perspective for magnificus' game. Disable if you want the classic first person experience.");
         }
     }
 }

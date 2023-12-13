@@ -5026,6 +5026,7 @@ namespace MagnificusMod
 			yield return new WaitForSeconds(0.15f);
 			GameObject.Find("WallFigure").transform.Find("VisibleParent").Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
 			GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(false);
+			GameObject.Find("Player").transform.Find("clickToMove").gameObject.SetActive(false);
 			yield return new WaitForSeconds(0.75f);
 			foreach (GameObject gameObject in MagnificusMod.Generation.nodes)
 			{
@@ -5083,6 +5084,7 @@ namespace MagnificusMod
 			if (doPainting) 
 				yield return new WaitForSeconds(0.45f);
 			GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(true);
+			GameObject.Find("Player").transform.Find("clickToMove").gameObject.SetActive(true);
 			yield break;
 		}
 
@@ -6452,6 +6454,7 @@ namespace MagnificusMod
 				GameObject.Destroy(uiFigure.transform.Find("Header").gameObject.GetComponent<ViewportRelativePosition>());
 				setUpClickToMove();
 				uiFigure.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(1.79f, -1.36f, 0);
+				uiFigure.transform.Find("Header").localPosition = new Vector3(-3.5356f, 1.77f, 0);
 				uiFigure.transform.position = new Vector3(0, 0, 0);
 				GameObject.Find("Player").transform.localRotation = Quaternion.Euler(0, 0, 0);
 				Singleton<FirstPersonController>.Instance.LookDirection = LookDirection.North;
@@ -6561,6 +6564,7 @@ namespace MagnificusMod
 					','
 			});
 			yield return new WaitForSeconds(0.2f);
+			if (config.isometricActive) { GameObject.Find("Player").transform.Find("clickToMove").localRotation = Quaternion.Euler(0, 0, 0); }
 			if (location == "goobert")
 			{
 				Singleton<TextDisplayer>.Instance.ShowMessage("~ Goo Dungeon ~");
