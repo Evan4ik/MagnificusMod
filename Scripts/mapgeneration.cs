@@ -788,46 +788,54 @@ namespace MagnificusMod
 							}
 							else if ((map[y][x][2] == 'J' || map[y][x][2] == 'H') && map[y][x + 1][0] == 'W')
 							{
-								if (map[y][x + 1][2] != 'D' && map[y][x + 1][2] != 'L') { continue; }
-
-								GameObject cover2 = GameObject.Instantiate(wallcover);
-								cover2.name = "x" + x.ToString() + " y" + y.ToString() + " cover2";
-								cover2.transform.parent = GameObject.Find("walls").transform;
-								cover2.transform.Find("BrickGround").localPosition = new Vector3(0, 0, 0);
-								yOffset = UnityEngine.Random.Range(0, 10);
-								yOffset /= 100;
-								cover2.transform.position = wallcover.transform.position + new Vector3(20, 0, 0);
-								if (cover2.transform.childCount >= 4)
+								bool ignore = false;
+								if (map[y][x + 1][2] != 'D' && map[y][x + 1][2] != 'L') { ignore = true; }
+								if (!ignore)
 								{
-									GameObject.Destroy(cover2.transform.GetChild(3).gameObject);
-								}
-								if  (map[y][x][2] == 'H')
-                                {
-									GameObject wall = GameObject.Instantiate(gameObject);
-									wall.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
-									wall.transform.parent = GameObject.Find("walls").transform;
-									wall.transform.position = new Vector3((float)(x * 20), 6f, (float)(y * -20 + -9));
-									wall.transform.position += new Vector3(20, 0, -10f);
-									wall.name = "x" + x.ToString() + " y" + y.ToString() + " doorcover";
+									GameObject cover2 = GameObject.Instantiate(wallcover);
+									cover2.name = "x" + x.ToString() + " y" + y.ToString() + " cover2";
+									cover2.transform.parent = GameObject.Find("walls").transform;
+									cover2.transform.Find("BrickGround").localPosition = new Vector3(0, 0, 0);
+									yOffset = UnityEngine.Random.Range(0, 10);
+									yOffset /= 100;
+									cover2.transform.position = wallcover.transform.position + new Vector3(20, 0, 0);
+									if (cover2.transform.childCount >= 4)
+									{
+										GameObject.Destroy(cover2.transform.GetChild(3).gameObject);
+									}
+									if (map[y][x][2] == 'H')
+									{
+										GameObject wall = GameObject.Instantiate(gameObject);
+										wall.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+										wall.transform.parent = GameObject.Find("walls").transform;
+										wall.transform.position = new Vector3((float)(x * 20), 6f, (float)(y * -20 + -9));
+										wall.transform.position += new Vector3(20, 0, -10f);
+										wall.name = "x" + x.ToString() + " y" + y.ToString() + " doorcover";
+									}
 								}
 							}
 							else if (map[y][x][2] == 'C')
 							{
 								bool checkRight = true;
+								bool dontCheck = false;
 								if (map[y].Count <= x + 1 || map[y][x + 1][0] != 'W' || map[y][x + 1][2] == 'C')
 								{
 									checkRight = false;
-									if (map[y][x - 1][0] != 'W') { continue; }
+									if (map[y][x - 1][0] != 'W') { dontCheck = true;  }
 								}
-								int checkX = checkRight ? x + 1 : x - 1;
-								if (map[y][checkX][2] == 'N')
-                                {
-									wallcover.transform.position += new Vector3(0, 0, 5);
-									wallcover.transform.localScale = new Vector3(20, 30, 1);
-									wallcover.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(1, 2);
+								if (!dontCheck)
+								{
+									int checkX = checkRight ? x + 1 : x - 1;
+									if (map[y][checkX][2] == 'N')
+									{
+										wallcover.transform.position += new Vector3(0, 0, 5);
+										wallcover.transform.localScale = new Vector3(20, 30, 1);
+										wallcover.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(1, 2);
+									}
 								}
 							}
 							gameObject.AddComponent<BoxCollider>().size = new Vector3(1, 1f, 1f);
+							gameObject.GetComponent<BoxCollider>().center = new Vector3(0, -0.65f, 0);
 						}
 						continue;
 					}
@@ -4366,7 +4374,7 @@ namespace MagnificusMod
 					uiFigure.transform.Find("Header").Find("IconSprite").localScale = new Vector3(0.24f, 0.2f, 1);
 					GameObject.Destroy(uiFigure.transform.Find("Header").gameObject.GetComponent<ViewportRelativePosition>());
 					uiFigure.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(1.79f, -1.36f, 0);
-					//setUpClickToMove();
+					setUpClickToMove();
 					uiFigure.transform.position = new Vector3(0, 0, 0);
 				}
 				else
@@ -4400,58 +4408,98 @@ namespace MagnificusMod
         {
 			GameObject clickToMove = new GameObject("clickToMove");
 			clickToMove.transform.parent = GameObject.Find("Player").transform;
-			clickToMove.transform.localPosition = new Vector3(0, 10, 0);
+			clickToMove.transform.localPosition = new Vector3(0, 0, 0);
 			List<string> directionsToCreate = new List<string> { "North", "South", "East", "West" };
 			for (int i = 0; i < directionsToCreate.Count; i++)
 			{
 				GameObject dir = new GameObject("click" + directionsToCreate[i]);
 				dir.transform.parent = clickToMove.transform;
 				dir.AddComponent<MainInputInteractable>();
-				dir.GetComponent<MainInputInteractable>().CursorEntered = (Action<MainInputInteractable>)Delegate.Combine(dir.GetComponent<MainInputInteractable>().CursorEntered, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
+				dir.GetComponent<MainInputInteractable>().CursorEntered = (Action<MainInputInteractable>)Delegate.Combine(dir.GetComponent<MainInputInteractable>().CursorEntered, new Action<MainInputInteractable>(delegate (MainInputInteractable j)
 				{
-					Singleton<InteractionCursor>.Instance.ForceCursorType(CursorType.Point);
+					IsometricStuff.lastDir = j.gameObject.name.Split('k')[1];
+					if (checkIfShouldDisplayPointIcon(j.gameObject.name.Split('k')[1])) { Singleton<InteractionCursor>.Instance.ForceCursorType(CursorType.Point); }
 				}));
-				dir.GetComponent<MainInputInteractable>().CursorExited = (Action<MainInputInteractable>)Delegate.Combine(dir.GetComponent<MainInputInteractable>().CursorExited, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
+				dir.GetComponent<MainInputInteractable>().CursorExited = (Action<MainInputInteractable>)Delegate.Combine(dir.GetComponent<MainInputInteractable>().CursorExited, new Action<MainInputInteractable>(delegate (MainInputInteractable j)
 				{
+					IsometricStuff.lastDir = "none";
 					Singleton<InteractionCursor>.Instance.ClearForcedCursorType();
 				}));
-				dir.layer = 30;
+				dir.layer = 2;
 				dir.AddComponent<BoxCollider>().size = new Vector3(9, 9, 9);
 			}
+			Singleton<InteractionCursor>.Instance.ClearForcedCursorType();
 			GameObject northMove = GameObject.Find("clickNorth");
 			northMove.GetComponent<MainInputInteractable>().CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(northMove.GetComponent<MainInputInteractable>().CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
 			{
-				Singleton<FirstPersonController>.Instance.SetZone(NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.LookDirection, Singleton<FirstPersonController>.Instance.currentZone) as NavigationZone3D, false);
-				Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 0, 0), 0.15f, 0);
-				if (MagnificusMod.Generation.minimap && RunState.Run.regionTier > 0)
+				if (GameObject.Find("Player").transform.Find("figure").gameObject.activeSelf)
 				{
-					GameObject playerIcon = GameObject.Find("playerMapNode");
-					Tween.Rotation(playerIcon.transform.Find("Header").Find("IconSprite"), Quaternion.Euler(0, 0, 0), 0.25f, 0);
+					Singleton<FirstPersonController>.Instance.SetZone(NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.LookDirection, Singleton<FirstPersonController>.Instance.currentZone) as NavigationZone3D, false);
+					Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 0, 0), 0.15f, 0);
+					if (MagnificusMod.Generation.minimap && RunState.Run.regionTier > 0)
+					{
+						GameObject playerIcon = GameObject.Find("playerMapNode");
+						Tween.Rotation(playerIcon.transform.Find("Header").Find("IconSprite"), Quaternion.Euler(0, 0, 0), 0.25f, 0);
+					}
 				}
 			}));
-			northMove.transform.localPosition = new Vector3(-11f, 0f, 2f);
+			northMove.transform.localScale = new Vector3(0.75f, 1, 0.85f);
+			northMove.transform.localPosition = new Vector3(-5f, 0, 5f);
 			GameObject southMove = GameObject.Find("clickSouth");
-			southMove.transform.localPosition = new Vector3(-15f, 0, -23f);
+			southMove.transform.localPosition = new Vector3(-5f, 0f, -13);
+			southMove.transform.localScale = new Vector3(0.75f, 1f, 0.65f);
 			southMove.GetComponent<MainInputInteractable>().CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(southMove.GetComponent<MainInputInteractable>().CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
 			{
-				Singleton<FirstPersonController>.Instance.SetZone(NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.GetOppositeDirection(Singleton<FirstPersonController>.Instance.LookDirection), Singleton<FirstPersonController>.Instance.currentZone) as NavigationZone3D, false);
-				Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 180, 0), 0.15f, 0);
+				if (GameObject.Find("Player").transform.Find("figure").gameObject.activeSelf) 
+				{
+					Singleton<FirstPersonController>.Instance.SetZone(NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.GetOppositeDirection(Singleton<FirstPersonController>.Instance.LookDirection), Singleton<FirstPersonController>.Instance.currentZone) as NavigationZone3D, false);
+					Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 180, 0), 0.15f, 0);
+				}
 			}));
 			GameObject westMove = GameObject.Find("clickWest");
-			westMove.transform.localPosition = new Vector3(-23f, 0, -15f);
+			westMove.transform.localPosition = new Vector3(-14f, 0, -8f);
+			westMove.transform.localScale = new Vector3(0.65f, 1f, 1);
 			westMove.GetComponent<MainInputInteractable>().CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(westMove.GetComponent<MainInputInteractable>().CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
 			{
-				Singleton<FirstPersonController>.Instance.SetZone(NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.GetLeftOfDirection(Singleton<FirstPersonController>.Instance.LookDirection), Singleton<FirstPersonController>.Instance.currentZone) as NavigationZone3D, false);
-				Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 270, 0), 0.15f, 0);
+				if (GameObject.Find("Player").transform.Find("figure").gameObject.activeSelf)
+				{
+					Singleton<FirstPersonController>.Instance.SetZone(NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.GetLeftOfDirection(Singleton<FirstPersonController>.Instance.LookDirection), Singleton<FirstPersonController>.Instance.currentZone) as NavigationZone3D, false);
+					Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 270, 0), 0.15f, 0);
+				}
 			}));
 			GameObject eastMove = GameObject.Find("clickEast");
-			eastMove.transform.localPosition = new Vector3(1f, 0f, -15f);
+			eastMove.transform.localPosition = new Vector3(3f, 0, -4.5f);
+			eastMove.transform.localScale = new Vector3(0.35f, 1f, 1f);
 			eastMove.GetComponent<MainInputInteractable>().CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(eastMove.GetComponent<MainInputInteractable>().CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
 			{
-				Singleton<FirstPersonController>.Instance.SetZone(NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.GetRightOfDirection(Singleton<FirstPersonController>.Instance.LookDirection), Singleton<FirstPersonController>.Instance.currentZone) as NavigationZone3D, false);
-				Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 90, 0), 0.15f, 0);
+				if (GameObject.Find("Player").transform.Find("figure").gameObject.activeSelf)
+				{
+					Singleton<FirstPersonController>.Instance.SetZone(NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.GetRightOfDirection(Singleton<FirstPersonController>.Instance.LookDirection), Singleton<FirstPersonController>.Instance.currentZone) as NavigationZone3D, false);
+					Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 90, 0), 0.15f, 0);
+				}
 			}));
 		}
+
+		public static bool checkIfShouldDisplayPointIcon(string direction, NavigationZone3D overridezone = null)
+        {
+			bool nodeInDirectionExists = false;
+			NavigationZone3D zone = overridezone != null ? overridezone : Singleton<FirstPersonController>.Instance.currentZone;
+			switch (direction) {
+				case "North":
+					if (NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.LookDirection, zone) != null) { nodeInDirectionExists = true; }
+					break;
+				case "South":
+					if (NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.GetOppositeDirection(Singleton<FirstPersonController>.Instance.LookDirection), zone) != null) { nodeInDirectionExists = true; }
+					break;
+				case "East":
+					if (NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.GetRightOfDirection(Singleton<FirstPersonController>.Instance.LookDirection), zone) != null) { nodeInDirectionExists = true; }
+					break;
+				case "West":
+					if (NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.GetLeftOfDirection(Singleton<FirstPersonController>.Instance.LookDirection), zone) != null) { nodeInDirectionExists = true; }
+					break;
+			}
+			return nodeInDirectionExists && GameObject.Find("Player").transform.Find("figure").gameObject.activeSelf;
+        }
 
 		public static void SetBigOpponentSlotHitboxes(bool set, GameObject boardManager, bool setPlayer = false)
         {
@@ -6402,7 +6450,7 @@ namespace MagnificusMod
 				uiFigure.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("walloverlay.png");
 				uiFigure.transform.Find("Header").Find("IconSprite").localScale = new Vector3(0.24f, 0.2f, 1);
 				GameObject.Destroy(uiFigure.transform.Find("Header").gameObject.GetComponent<ViewportRelativePosition>());
-				//setUpClickToMove();
+				setUpClickToMove();
 				uiFigure.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(1.79f, -1.36f, 0);
 				uiFigure.transform.position = new Vector3(0, 0, 0);
 				GameObject.Find("Player").transform.localRotation = Quaternion.Euler(0, 0, 0);

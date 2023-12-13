@@ -916,10 +916,6 @@ namespace MagnificusMod
 				info.rulebookDescription =
 					"The value represented with this sigil will be equal to the number of Mox Cards that the owner has on their side of the table.";
 				info.gbcDescription = MoxPowerBypass.ability.ToString();
-				Debug.Log("mox power");
-				Debug.Log(info.rulebookName.ToString());
-				Debug.Log(info.name.ToString());
-
 
 				info.iconGraphic = Tools.GetTexture("mox empowered.png");
 				info.pixelIconGraphic = Tools.getSprite("moxempowered_pixel.png");
@@ -976,7 +972,7 @@ namespace MagnificusMod
 				info.rulebookDescription =
 					"The value represented with this sigil will be equal to the number of Mox Cards that the owner has on their side of the table.";
 				info.gbcDescription = SigilCode.HealthForAnts.MoxPowerBypass.ability.ToString();
-				Debug.Log(MoxHealthBypass.ToString());
+
 				info.iconGraphic = Tools.GetTexture("mox empowered.png");
 				info.pixelIconGraphic = Tools.getSprite("moxempowered_pixel.png");
 

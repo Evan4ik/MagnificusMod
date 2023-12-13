@@ -24,6 +24,7 @@ namespace MagnificusMod
 {
 	class IsometricStuff
 	{
+		public static string lastDir = "none";
 
 		public static bool moveDisabled = false;
 
@@ -60,18 +61,17 @@ namespace MagnificusMod
 					Tween.LocalPosition(GameObject.Find("Player").transform.Find("figure"), new Vector3(0, -6.5f + UnityEngine.Random.Range(-0.50f, 0.50f), 0), 0.1f, 0);
 					Tween.LocalPosition(GameObject.Find("Player").transform.Find("figure"), new Vector3(0, -10f, 0), 0.1f, 0.1f);
 					GameObject uiFigure = GameObject.Find("WallFigure").transform.Find("VisibleParent").gameObject;
-					if (Physics.Raycast(zone.gameObject.transform.position, new Vector3(-1, 1, -1f), 45, 1))
+					if (Physics.Raycast(zone.gameObject.transform.position + new Vector3(0, -20, 0), new Vector3(-1, 1f, -1f), 45, 1))
 					{
-						RaycastHit rays;
-						Physics.Raycast(zone.gameObject.transform.position, new Vector3(-1, 1, -1f), out rays);
-						if (rays.collider != null)
-						{
-							Debug.Log(rays.collider.gameObject.name);
-						}
-                            if (GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition == new Vector3(0, 0, -1)){__instance.StartCoroutine(showUiFigure(uiFigure.transform.Find("Header").Find("IconSprite").gameObject, true)); }
+                           if (GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition == new Vector3(0, 0, -1)){__instance.StartCoroutine(showUiFigure(uiFigure.transform.Find("Header").Find("IconSprite").gameObject, true)); }
 					} else 
 					{
 						if (GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition == new Vector3(0, 0, 1)) {__instance.StartCoroutine(showUiFigure(uiFigure.transform.Find("Header").Find("IconSprite").gameObject, false));}
+					}
+					if (lastDir != "none")
+                    {
+						if (Generation.checkIfShouldDisplayPointIcon(lastDir, zone)) { Singleton<InteractionCursor>.Instance.ForceCursorType(CursorType.Point); }
+						else if (!Generation.checkIfShouldDisplayPointIcon(lastDir, zone)) { Singleton<InteractionCursor>.Instance.ClearForcedCursorType(); }
 					}
 				}
 			}
