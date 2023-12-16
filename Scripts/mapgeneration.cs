@@ -5063,7 +5063,7 @@ namespace MagnificusMod
 		public static IEnumerator unIsometricTransition(float delay = 0f, bool doPainting = true)
 		{
 			yield return new WaitForSeconds(delay);
-			bool doCandles = (Singleton<ViewManager>.Instance.CurrentView == View.Candles);
+			if(Singleton<ViewManager>.Instance.CurrentView == View.Candles) { yield break; }
 			if (doPainting)
 			{
 				GameObject.Find("transitionIcon").transform.localPosition = new Vector3(-0.25f, -12.5f, 2.55f);
@@ -5080,19 +5080,8 @@ namespace MagnificusMod
 				Tween.FieldOfView(GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>(), 65f, 0.25f, 0.5f);
 			}
 			Singleton<ViewController>.Instance.LockState = ViewLockState.Locked;
-			if (doCandles)
-            {
-				Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(5.45f, 8.75f, 1.25f), 0.25f, 0f);
-				Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(15, 45, 0), 0.25f, 0f);
-			}
 			yield return new WaitForSeconds(0.3f);
-			if (doCandles)
-            {
-				GameObject.Find("PixelCameraParent").GetComponent<SineWaveMovement>().originalPosition = new Vector3(5.45f, 8.75f, 1.25f);
-				GameObject.Find("PixelCameraParent").GetComponent<SineWaveRotation>().originalRotation = new Vector3(15, 45, 0);
-				GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(5.45f, 8.75f, 1.25f);
-				yield break;
-			}
+			if (Singleton<ViewManager>.Instance.CurrentView == View.Candles) { yield break; }
 			GameObject.Find("PixelCameraParent").GetComponent<SineWaveMovement>().originalPosition = new Vector3(-40, 47.5f, -40);
 			GameObject.Find("PixelCameraParent").GetComponent<SineWaveRotation>().originalRotation = new Vector3(30, 45, 0);
 			foreach (GameObject gameObject in MagnificusMod.Generation.nodes)

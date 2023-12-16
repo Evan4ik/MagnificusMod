@@ -123,9 +123,10 @@ namespace MagnificusMod
 				Singleton<ViewManager>.Instance.SwitchToView(View.Candles);
 			}
 			yield return new WaitForSeconds(1f);
-			if (instance.SpecialSequencer != null)
+			if (config.isometricMode)
 			{
-				//yield return instance.SpecialSequencer.CandleBlownOut();
+				GameObject.Destroy(GameObject.Find("PixelCameraParent").GetComponent<SineWaveMovement>());
+				GameObject.Destroy(GameObject.Find("PixelCameraParent").GetComponent<SineWaveRotation>());
 			}
 			if (RunState.Run.playerLives > 0 && Singleton<TextDisplayer>.Instance != null)
 			{
@@ -142,7 +143,7 @@ namespace MagnificusMod
 				{
 					Singleton<ViewManager>.Instance.SwitchToView(View.Candles);
 					yield return new WaitForSeconds(1.49f);
-					Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North);
+					if (!config.isometricMode) { Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North); }
 					lifeCounter.GetComponent<SineWaveMovement>().originalPosition = lifeCounter.transform.localPosition;
 					lifeCounter.GetComponent<SineWaveMovement>().enabled = true;
 					yield return new WaitForSeconds(0.5f);//It seems that you lost.
@@ -166,7 +167,7 @@ namespace MagnificusMod
 				{
 					Singleton<ViewManager>.Instance.SwitchToView(View.Candles);
 					yield return new WaitForSeconds(1.49f);
-					Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North);
+					if (!config.isometricMode) { Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North); }
 					lifeCounter.GetComponent<SineWaveMovement>().originalPosition = lifeCounter.transform.localPosition;
 					lifeCounter.GetComponent<SineWaveMovement>().enabled = true;
 					if (RunState.Run.regionTier == 0)
@@ -222,6 +223,7 @@ namespace MagnificusMod
 				yield return new WaitForSeconds(1.51f);
 				lifeCounter.SetActive(false);
 			}
+			GameObject.Find("transitionIcon").transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("lifepainting" + displayedLives + ".png");
 			if (RunState.Run.playerLives <= 0)
 			{
 				if (RunState.Run.currentNodeId < 101)
@@ -237,9 +239,19 @@ namespace MagnificusMod
 				yield break;
 			}
 			Singleton<InteractionCursor>.Instance.InteractionDisabled = false;
-			Singleton<ViewManager>.Instance.SwitchToView(View.FirstPerson, false, false);
-			yield return MagnificusMod.Generation.WaitThenEnablePlayer(0.5f);
 			SaveManager.SaveToFile();
+			if (!config.isometricMode)
+			{
+				Singleton<ViewManager>.Instance.SwitchToView(View.FirstPerson, false, false);
+				yield return MagnificusMod.Generation.WaitThenEnablePlayer(0.5f);
+			} else { 
+				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
+				yield return new WaitForSeconds(0.25f);
+				Singleton<GameFlowManager>.Instance.StartCoroutine(Generation.WaitThenEnablePlayer(1f));
+				GameObject.Find("PixelCameraParent").AddComponent<SineWaveMovement>().originalPosition = GameObject.Find("PixelCameraParent").transform.localPosition;
+				GameObject.Find("PixelCameraParent").AddComponent<SineWaveRotation>().originalRotation = GameObject.Find("PixelCameraParent").transform.localRotation.eulerAngles;
+				yield return Generation.unIsometricTransition(0.15f); 
+			}
 			yield break;
 		}
 
