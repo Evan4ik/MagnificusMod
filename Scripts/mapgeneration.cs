@@ -503,6 +503,7 @@ namespace MagnificusMod
 						{
 							case 'N':
 								gameObject.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
+								gameObject.transform.position -= new Vector3(0, 0, 10);
 								break;
 							case 'S':
 								gameObject.transform.rotation = Quaternion.Euler(new Vector3(0, 180, 0));
@@ -525,18 +526,7 @@ namespace MagnificusMod
 							case 'l':
 								for (int i = 0; i < 4; i++)
 								{
-									
-									int stupidJ = 0;
-									int stupiderK = 0;
-									if (map[y][x][2] == 'J')
-									{
-										stupidJ = 10;
-									}
-									else if (map[y][x][2] == 'K' || map[y][x][2] == 'H')
-									{
-										stupiderK = 10;
-									}
-									if (map[y][x][2] == 'D' && i == 1 || map[y][x][2] == 'D' && i == 0 || map[y][x][2] == 'D' && i == 3 || map[y][x][2] == 'L' && i == 1 || map[y][x][2] == 'L' && i == 0 || map[y][x][2] == 'L' && i == 3)
+									if (map[y][x][2] == 'D' && i == 1 || map[y][x][2] == 'D' && i == 3 || map[y][x][2] == 'L' && i == 1 || map[y][x][2] == 'L' && i == 3)
 									{
 										continue;
 									}
@@ -544,7 +534,10 @@ namespace MagnificusMod
 									{
 										continue;
 									}
-									if (map[y][x][2] == 'J' && i == 0) { continue; }
+									if (map[y][x][2] == 'J' && i == 0) {
+										gameObject.transform.position -= new Vector3(0, 0, 10);
+										continue; 
+									}
 
 									GameObject wall = GameObject.Instantiate(gameObject);
 									wall.transform.rotation = Quaternion.Euler(new Vector3(0, 90 * i, 0));
@@ -554,13 +547,13 @@ namespace MagnificusMod
 									{
 										float xOffset = UnityEngine.Random.RandomRangeInt(-10, 10);
 										xOffset /= 100;
-										wall.transform.position += new Vector3(9.998f + xOffset, 0, stupidJ);
+										wall.transform.position += new Vector3(9.998f + xOffset, 0, 0);
 									}
 									else if (i == 1)
 									{
 										float xOffset = UnityEngine.Random.RandomRangeInt(-10, 10);
 										xOffset /= 100;
-										wall.transform.position -= new Vector3(9.99f + xOffset, 0, -stupidJ);
+										wall.transform.position -= new Vector3(9.99f + xOffset, 0, -0);
 									}
 									else if (i == 2)
 									{
@@ -568,7 +561,7 @@ namespace MagnificusMod
 									}
 									else if (i == 0)
 									{
-										wall.transform.position += new Vector3(0, 0, -stupiderK);
+										wall.transform.position += new Vector3(0, 0, -10);
 									}
 									if (map[y][x][1] == '2')
 									{
@@ -814,6 +807,7 @@ namespace MagnificusMod
 									}
 								}
 							}
+							/*
 							else if (map[y][x][2] == 'C')
 							{
 								bool checkRight = true;
@@ -833,7 +827,7 @@ namespace MagnificusMod
 										wallcover.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(1, 2);
 									}
 								}
-							}
+							}*/
 							gameObject.AddComponent<BoxCollider>().size = new Vector3(1, 1f, 1f);
 							gameObject.GetComponent<BoxCollider>().center = new Vector3(0, -0.65f, 0);
 						}
@@ -1277,6 +1271,28 @@ namespace MagnificusMod
 						{
 							node.GetComponent<NavigationZone3D>().events = new List<NavigationEvent>();
 						}
+						/*
+						if (config.isometricMode)
+						{
+							GameObject gameObject = GameObject.Instantiate(GameObject.Find("wall"));
+							gameObject.name = "x" + x.ToString() + " y" + y.ToString();
+							gameObject.transform.parent = node.transform;
+							gameObject.transform.Find("BrickGround").localPosition = new Vector3(0, 0, 0);
+							gameObject.transform.position = new Vector3((float)(x * 20), 6f, (float)(y * -20));
+							gameObject.transform.rotation = Quaternion.Euler(new Vector3(90, 0, 0));
+							gameObject.transform.localScale = new Vector3(8.25f, 8.25f, 1);
+							float offset = Random.RandomRangeInt(1, 25);
+							offset /= 100;
+							gameObject.transform.position = new Vector3(gameObject.transform.position.x, offset, gameObject.transform.position.z);
+							GameObject gridTile = new GameObject("gridTile");
+							GameObject.Destroy(gameObject.transform.Find("BrickGround").gameObject);
+							gridTile.transform.parent = gameObject.transform;
+							gridTile.AddComponent<SpriteRenderer>();
+							gridTile.GetComponent<SpriteRenderer>().sprite = WallTextures.gridTile;
+							gridTile.transform.localPosition = new Vector3(0, -0.1f, 0);
+							gridTile.transform.localRotation = Quaternion.Euler(0, 0, 0);
+							gridTile.transform.localScale = new Vector3(1, 1, 1);
+						}*/
 						if (map[y][x] == "MCL")
 						{
 							GameObject monocle = new GameObject("Monocle");
@@ -5047,6 +5063,7 @@ namespace MagnificusMod
 		public static IEnumerator unIsometricTransition(float delay = 0f, bool doPainting = true)
 		{
 			yield return new WaitForSeconds(delay);
+			bool doCandles = (Singleton<ViewManager>.Instance.CurrentView == View.Candles);
 			if (doPainting)
 			{
 				GameObject.Find("transitionIcon").transform.localPosition = new Vector3(-0.25f, -12.5f, 2.55f);
@@ -5063,7 +5080,19 @@ namespace MagnificusMod
 				Tween.FieldOfView(GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>(), 65f, 0.25f, 0.5f);
 			}
 			Singleton<ViewController>.Instance.LockState = ViewLockState.Locked;
+			if (doCandles)
+            {
+				Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(5.45f, 8.75f, 1.25f), 0.25f, 0f);
+				Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(15, 45, 0), 0.25f, 0f);
+			}
 			yield return new WaitForSeconds(0.3f);
+			if (doCandles)
+            {
+				GameObject.Find("PixelCameraParent").GetComponent<SineWaveMovement>().originalPosition = new Vector3(5.45f, 8.75f, 1.25f);
+				GameObject.Find("PixelCameraParent").GetComponent<SineWaveRotation>().originalRotation = new Vector3(15, 45, 0);
+				GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(5.45f, 8.75f, 1.25f);
+				yield break;
+			}
 			GameObject.Find("PixelCameraParent").GetComponent<SineWaveMovement>().originalPosition = new Vector3(-40, 47.5f, -40);
 			GameObject.Find("PixelCameraParent").GetComponent<SineWaveRotation>().originalRotation = new Vector3(30, 45, 0);
 			foreach (GameObject gameObject in MagnificusMod.Generation.nodes)
@@ -6472,7 +6501,7 @@ namespace MagnificusMod
 						for (int i = 0; i < 11; i++)
 						{
 							float modify = 0.1f * i;
-							if (!config.isometricActive)
+							if (!(config.isometricActive && (location == "goobert" || location == "espeara" || location == "lonely")))
 							{
 								switch (Singleton<FirstPersonController>.Instance.LookDirection)
 								{

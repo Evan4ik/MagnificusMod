@@ -115,8 +115,8 @@ namespace MagnificusMod
 						GameObject.Find("PixelCameraParent").AddComponent<SineWaveRotation>().originalRotation = GameObject.Find("PixelCameraParent").transform.localRotation.eulerAngles;
 						float delay = battleRoom ? 1.25f : 0.4f;
 						__instance.StartCoroutine(Generation.unIsometricTransition(delay));
-					}
-					if (battleRoom)
+                        }
+                        if (battleRoom)
 					{
 						if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("FadingMox"))
 						{

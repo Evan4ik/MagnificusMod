@@ -22,6 +22,7 @@ namespace MagnificusMod
         public static Texture2D trapdoor;
         public static List<Sprite> runes = new List<Sprite>();
         public static Sprite minimapNode;
+        public static Sprite gridTile;
 
         public static void GetTextures()
         {
@@ -47,6 +48,7 @@ namespace MagnificusMod
             manhole = Tools.getSprite("manhole.png");
             trapdoor = Tools.getImage("trapdoor.png");
             minimapNode = Tools.getSprite("node.png");
+            gridTile = Tools.getSprite("gridtile.png");
         }
     }
 }

@@ -118,7 +118,7 @@ namespace MagnificusMod
 			{
 				yield return Singleton<CandleHolder>.Instance.BlowOutCandleSequence(false);
 			}
-			if (RunState.Run.regionTier == 0)
+			if (RunState.Run.regionTier == 0 || config.isometricMode)
 			{
 				Singleton<ViewManager>.Instance.SwitchToView(View.Candles);
 			}
