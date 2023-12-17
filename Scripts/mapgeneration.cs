@@ -2325,28 +2325,6 @@ namespace MagnificusMod
 			}
 		}
 		
-		[HarmonyAfter(new string[] { "community.inscryption.patch" })]
-		[HarmonyPatch(typeof(InscryptionCommunityPatch.Card.ActivatedAbilityIconFix), "FixActivatedAbilitiesOnAnyChange")]
-		public class activatedCrashFix
-		{
-			public static bool Prefix()
-			{
-				if (SceneLoader.ActiveSceneName == "finale_magnificus") { return false; }
-				return true;
-			}
-		}
-
-		[HarmonyAfter(new string[] { "community.inscryption.patch" })]
-		[HarmonyPatch(typeof(InscryptionCommunityPatch.ResourceManagers.EnergyDrone), "CurrentSceneCanHaveEnergyDrone", MethodType.Getter)]
-		public class fixmoreapibullshit
-		{
-			public static bool Prefix(ref bool __result)
-			{
-				if (SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
-				__result = false;
-				return false;
-			}
-		}
 
 
 		[HarmonyAfter(new string[]{"cyantist.inscryption.api"})]
