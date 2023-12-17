@@ -115,6 +115,7 @@ namespace MagnificusMod
 
 		public static List<AudioClip> addedSfx = new List<AudioClip>();
 		public static List<AudioClip> voiceClips = new List<AudioClip>();
+		public static bool setupSfx = false;
 
 		public static string[] challenges { get; set; }
 
@@ -176,7 +177,7 @@ namespace MagnificusMod
 		public static void GetResources()
 		{
 
-
+			
 			using (Stream manifestResourceStream = Tools.CurrentAssembly.GetManifestResourceStream("MagnificusMod.Resources.magmodmusic"))
 			{
 				assetBundle = AssetBundle.LoadFromStream(manifestResourceStream);
@@ -184,8 +185,7 @@ namespace MagnificusMod
 				{
 					assetBundle.LoadAsset<AudioClip>("School_of_Magicks"),
 					assetBundle.LoadAsset<AudioClip>("Goo_Mage"),
-					assetBundle.LoadAsset<AudioClip>("TheArtOfMagicks"),
-					assetBundle.LoadAsset<AudioClip>("RapSong")
+					assetBundle.LoadAsset<AudioClip>("TheArtOfMagicks")
 				};
 			}
 
@@ -194,16 +194,13 @@ namespace MagnificusMod
 				assetBundle = AssetBundle.LoadFromStream(manifestResourceStream);
 				voiceClips = new List<AudioClip>
 				{
-					assetBundle.LoadAsset<AudioClip>("pikevoice_calm#1"),
-					assetBundle.LoadAsset<AudioClip>("pikevoice_calm#2"),
-					assetBundle.LoadAsset<AudioClip>("pikevoice_calm#3"),
-					assetBundle.LoadAsset<AudioClip>("shadyvoice_calm#1"),
-					assetBundle.LoadAsset<AudioClip>("shadyvoice_calm#2"),
-					assetBundle.LoadAsset<AudioClip>("shadyvoice_calm#3"),
 					assetBundle.LoadAsset<AudioClip>("hoo"),
 					assetBundle.LoadAsset<AudioClip>("stimmyvoice_calm#1"),
 					assetBundle.LoadAsset<AudioClip>("stimmyvoice_calm#2"),
 					assetBundle.LoadAsset<AudioClip>("stimmyvoice_calm#3"),
+					assetBundle.LoadAsset<AudioClip>("ambervoice_calm#1"),
+					assetBundle.LoadAsset<AudioClip>("ambervoice_calm#2"),
+					assetBundle.LoadAsset<AudioClip>("ambervoice_calm#3"),
 				};
 			}
 
@@ -2361,13 +2358,17 @@ namespace MagnificusMod
 				IsometricStuff.moveDisabled = false;
 				CardPileFixes.setUpSacrificeMarker = false;
 				if (SaveManager.saveFile.currentScene == "Part1_Cabin") { return false; }
-				foreach (AudioClip clip in addedSfx)
+				if (!setupSfx)
 				{
-					AudioController.Instance.Loops.Add(clip);
-				}
-				foreach (AudioClip clip in voiceClips)
-				{
-					AudioController.Instance.SFX.Add(clip);
+					foreach (AudioClip clip in addedSfx)
+					{
+						AudioController.Instance.Loops.Add(clip);
+					}
+					foreach (AudioClip clip in voiceClips)
+					{
+						AudioController.Instance.SFX.Add(clip);
+					}
+					setupSfx = true;
 				}
 				allcardssummoned = false;
 				__instance.startInFirstPerson = false;

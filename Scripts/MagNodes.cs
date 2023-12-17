@@ -2139,7 +2139,7 @@ namespace MagnificusMod
 
 			public int selectedCard = -1;
 
-			public List<CardInfo> presetCards = new List<CardInfo> { CardLoader.GetCardByName("mag_wolf"), CardLoader.GetCardByName("mag_hovermage"), CardLoader.GetCardByName("mag_BOSSstimmage"), CardLoader.GetCardByName("mag_rubyfiend"), CardLoader.GetCardByName("mag_scarecrow") };
+			public List<CardInfo> presetCards = new List<CardInfo> { CardLoader.GetCardByName("mag_musclemage"), CardLoader.GetCardByName("mag_hovermage"), CardLoader.GetCardByName("mag_BOSSstimmage"), CardLoader.GetCardByName("mag_rubygolem"), CardLoader.GetCardByName("mag_scarecrow") };
 
 			public bool canTakeIt = false;
 
@@ -2890,7 +2890,7 @@ namespace MagnificusMod
 					choice1.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
 					choice2.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
 
-					//Destroy(GameObject.Find("TESTSTONE"));
+					Destroy(GameObject.Find("TESTSTONE"));
 
 					int num = RunState.Run.playerDeck.Cards.Count;
 					Singleton<ViewManager>.Instance.SwitchToView(View.MapDefault, false, true);

@@ -1311,7 +1311,8 @@ namespace MagnificusMod
 					break;
 				case 1:
 					style = new TextDisplayer.SpeakerTextStyle();
-					style.voiceSoundIdPrefix = "pike";
+					style.voiceSoundIdPrefix = "amber";
+					style.voiceSoundVolume = 1f;
 					style.color = new Color(1, 0.6f, 0.23f);
 					style.font = GameObject.Find("AmberFont").GetComponent<UnityEngine.UI.Text>().font;
 					style.fontSizeChange = 10;
@@ -1321,6 +1322,7 @@ namespace MagnificusMod
 				case 2:
 					style = new TextDisplayer.SpeakerTextStyle();
 					style.voiceSoundIdPrefix = "stimmy";
+					style.voiceSoundVolume = 1f;
 					style.color = new Color(0, 0.7f, 1f);
 					style.font = GameObject.Find("StimmyFont").GetComponent<UnityEngine.UI.Text>().font;
 					style.fontSizeChange = 10;
