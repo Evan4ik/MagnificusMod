@@ -3261,6 +3261,7 @@ namespace MagnificusMod
 					}
 					int slot = isDeckCard ? 3 : 0;
 					yield return Singleton<BoardManager>.Instance.opponentSlots[slot].Card.Die(false);
+					yield return new WaitForSeconds(0.2f);
 					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(urCard, Singleton<BoardManager>.Instance.OpponentSlotsCopy[slot], 0.1f, true);
 					if (Singleton<BoardManager>.Instance.OpponentSlotsCopy[slot].Card != null)
 					{

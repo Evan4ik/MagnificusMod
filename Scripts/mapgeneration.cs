@@ -695,15 +695,14 @@ namespace MagnificusMod
 								break;
 							case 'F':
 								gameObject.transform.rotation = Quaternion.Euler(new Vector3(90, 0, 0));
-								gameObject.transform.localScale = new Vector3(25f, 25f, 1);
+								gameObject.transform.localScale = new Vector3(20f, 20f, 1);
 								if (map[y][x][1] == '2')
 								{
-									gameObject.transform.localScale = new Vector3(25f, 35f, 1);
+									//gameObject.transform.localScale = new Vector3(20f, 25f, 1);
 									GameObject.Destroy(gameObject.transform.Find("GooWall").gameObject);
 								}
-								gameObject.transform.position += new Vector3(-2.5f, 0, 2.5f);
-								float offset = Random.RandomRangeInt(1, 25);
-								offset /= 100;
+								gameObject.transform.position += new Vector3(0f, 0, 0.5f);
+								float offset = UnityEngine.Random.Range(0.001f, .0150f);
 								gameObject.transform.position = new Vector3(gameObject.transform.position.x, offset, gameObject.transform.position.z);
 								if (map[y][x][1] != '3')
 								{
@@ -1187,10 +1186,9 @@ namespace MagnificusMod
 									flyingbooks.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material.color = colors[Random.RandomRangeInt(0, colors.Count)];
 								}
 								gameObject.transform.rotation = Quaternion.Euler(new Vector3(90, 0, 0));
-								gameObject.transform.localScale = new Vector3(25f, 25f, 1);
-								gameObject.transform.position += new Vector3(-2.5f, 0, 2.5f);
-								float offset = Random.RandomRangeInt(1, 25);
-								offset /= 100;
+								gameObject.transform.localScale = new Vector3(20f, 20f, 1);
+								gameObject.transform.position += new Vector3(0f, 0, 0.5f);
+								float offset = UnityEngine.Random.Range(0.001f, .0150f);
 								gameObject.transform.position = new Vector3(gameObject.transform.position.x, offset, gameObject.transform.position.z);
 								gameObject.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0, 0, 0, 1);
 								gameObject.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTexture = WallTextures.none;
@@ -1268,28 +1266,7 @@ namespace MagnificusMod
 						{
 							node.GetComponent<NavigationZone3D>().events = new List<NavigationEvent>();
 						}
-						/*
-						if (config.isometricMode)
-						{
-							GameObject gameObject = GameObject.Instantiate(GameObject.Find("wall"));
-							gameObject.name = "x" + x.ToString() + " y" + y.ToString();
-							gameObject.transform.parent = node.transform;
-							gameObject.transform.Find("BrickGround").localPosition = new Vector3(0, 0, 0);
-							gameObject.transform.position = new Vector3((float)(x * 20), 6f, (float)(y * -20));
-							gameObject.transform.rotation = Quaternion.Euler(new Vector3(90, 0, 0));
-							gameObject.transform.localScale = new Vector3(8.25f, 8.25f, 1);
-							float offset = Random.RandomRangeInt(1, 25);
-							offset /= 100;
-							gameObject.transform.position = new Vector3(gameObject.transform.position.x, offset, gameObject.transform.position.z);
-							GameObject gridTile = new GameObject("gridTile");
-							GameObject.Destroy(gameObject.transform.Find("BrickGround").gameObject);
-							gridTile.transform.parent = gameObject.transform;
-							gridTile.AddComponent<SpriteRenderer>();
-							gridTile.GetComponent<SpriteRenderer>().sprite = WallTextures.gridTile;
-							gridTile.transform.localPosition = new Vector3(0, -0.1f, 0);
-							gridTile.transform.localRotation = Quaternion.Euler(0, 0, 0);
-							gridTile.transform.localScale = new Vector3(1, 1, 1);
-						}*/
+
 						if (map[y][x] == "MCL")
 						{
 							GameObject monocle = new GameObject("Monocle");
@@ -4403,7 +4380,7 @@ namespace MagnificusMod
         {
 			GameObject clickToMove = new GameObject("clickToMove");
 			clickToMove.transform.parent = GameObject.Find("Player").transform;
-			clickToMove.transform.localPosition = new Vector3(0, 0, 0);
+			clickToMove.transform.localPosition = new Vector3(0, 0, 1);
 			List<string> directionsToCreate = new List<string> { "North", "South", "East", "West" };
 			for (int i = 0; i < directionsToCreate.Count; i++)
 			{
@@ -4413,7 +4390,7 @@ namespace MagnificusMod
 				dir.GetComponent<MainInputInteractable>().CursorEntered = (Action<MainInputInteractable>)Delegate.Combine(dir.GetComponent<MainInputInteractable>().CursorEntered, new Action<MainInputInteractable>(delegate (MainInputInteractable j)
 				{
 					IsometricStuff.lastDir = j.gameObject.name.Split('k')[1];
-					if (checkIfShouldDisplayPointIcon(j.gameObject.name.Split('k')[1])) { Singleton<InteractionCursor>.Instance.ForceCursorType(CursorType.Point); }
+					if (checkIfShouldDisplayPointIcon(j.gameObject.name.Split('k')[1])) {Singleton<InteractionCursor>.Instance.ForceCursorType(CursorType.Point); }
 				}));
 				dir.GetComponent<MainInputInteractable>().CursorExited = (Action<MainInputInteractable>)Delegate.Combine(dir.GetComponent<MainInputInteractable>().CursorExited, new Action<MainInputInteractable>(delegate (MainInputInteractable j)
 				{
@@ -4422,6 +4399,80 @@ namespace MagnificusMod
 				}));
 				dir.layer = 2;
 				dir.AddComponent<BoxCollider>().size = new Vector3(9, 9, 9);
+			}
+			List<Vector3> directionPos = new List<Vector3> { new Vector3(0f, -9.3f, 20), new Vector3(20f, -9.3f, 0f), new Vector3(0f, -9.3f, -20), new Vector3(-20f, -9.3f, 0f) };
+			if (config.gridActive)
+			{
+				GameObject clickGrid = new GameObject("clickGrid");
+				clickGrid.transform.parent = GameObject.Find("Player").transform;
+				clickGrid.transform.localPosition = new Vector3(0, 0, 0);
+				IsometricStuff.gridTileObj = new List<GameObject>();
+				IsometricStuff.gridMove = 0;
+				for (int i = -1; i < 8; i++)
+				{
+					GameObject gameObject = new GameObject("gridtile" + i);
+					gameObject.transform.parent = clickGrid.transform;
+					gameObject.transform.localScale = new Vector3(7.5f, 7.5f, 1);
+					if (i < directionPos.Count && i >= 0)
+					{
+						gameObject.transform.localPosition = directionPos[i];
+						gameObject.AddComponent<GridTile>().direction = LookDirection.North + i;
+					}
+					else if (i >= 0)
+					{
+						int j = i - 4;
+						int jPos = j % 2 == 0 ? 3 : 1;
+						if (j <= 1)
+						{
+							gameObject.transform.localPosition = new Vector3(directionPos[jPos].x, -9.3f, directionPos[0].z);
+							gameObject.AddComponent<GridTile>().checkFrom = new List<LookDirection> { LookDirection.North, LookDirection.North + jPos };
+							gameObject.GetComponent<GridTile>().checkOffset = true;
+						}
+						else
+						{
+							gameObject.transform.localPosition = new Vector3(directionPos[jPos].x, -9.3f, directionPos[2].z);
+							gameObject.AddComponent<GridTile>().checkFrom = new List<LookDirection> { LookDirection.South, LookDirection.North + jPos };
+							gameObject.GetComponent<GridTile>().checkOffset = true;
+						}
+					}
+					else
+					{
+						gameObject.transform.localPosition = new Vector3(0, -9.3f, 0);
+						gameObject.AddComponent<GridTile>().direction = LookDirection.North;
+					}
+					gameObject.transform.rotation = Quaternion.Euler(new Vector3(90, 0, 0));
+					GameObject gridTile = new GameObject("gridTile");
+					gridTile.transform.parent = gameObject.transform;
+					gridTile.AddComponent<SpriteRenderer>();
+					gridTile.GetComponent<SpriteRenderer>().sprite = WallTextures.gridTiles[1];
+					gridTile.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
+					if (i >= directionPos.Count) { gridTile.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.25f); }
+					gridTile.transform.localPosition = new Vector3(0, -0.1f, 0);
+					gridTile.transform.localRotation = Quaternion.Euler(0, 0, 0);
+					gridTile.transform.localScale = new Vector3(1, 1, 1);
+					IsometricStuff.gridTileObj.Add(gameObject);
+				}
+				for (int i = 8; i < 12; i++)
+				{
+					GameObject gameObject = new GameObject("gridtile" + i);
+					gameObject.transform.parent = clickGrid.transform;
+					gameObject.transform.localScale = new Vector3(7.5f, 7.5f, 1);
+					int j = i - 8;
+					gameObject.transform.localPosition = new Vector3(directionPos[j].x * 2, -9.3f, directionPos[j].z * 2);
+					gameObject.AddComponent<GridTile>().direction = LookDirection.North + j;
+					gameObject.GetComponent<GridTile>().checkFrom = new List<LookDirection> { LookDirection.North + j, LookDirection.North + j };
+					gameObject.GetComponent<GridTile>().checkOffset = true;
+					gameObject.transform.rotation = Quaternion.Euler(new Vector3(90, 0, 0));
+					GameObject gridTile = new GameObject("gridTile");
+					gridTile.transform.parent = gameObject.transform;
+					gridTile.AddComponent<SpriteRenderer>();
+					gridTile.GetComponent<SpriteRenderer>().sprite = WallTextures.gridTiles[1];
+					gridTile.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.25f);
+					gridTile.transform.localPosition = new Vector3(0, -0.1f, 0);
+					gridTile.transform.localRotation = Quaternion.Euler(0, 0, 0);
+					gridTile.transform.localScale = new Vector3(1, 1, 1);
+					IsometricStuff.gridTileObj.Add(gameObject);
+				}
 			}
 			Singleton<InteractionCursor>.Instance.ClearForcedCursorType();
 			GameObject northMove = GameObject.Find("clickNorth");
@@ -4438,11 +4489,11 @@ namespace MagnificusMod
 					}
 				}
 			}));
-			northMove.transform.localScale = new Vector3(0.75f, 1, 0.85f);
-			northMove.transform.localPosition = new Vector3(-5f, 0, 5f);
+			northMove.transform.localScale = new Vector3(0.75f, 1, 1.35f);
+			northMove.transform.localPosition = new Vector3(-5f, 0, 9f);
 			GameObject southMove = GameObject.Find("clickSouth");
-			southMove.transform.localPosition = new Vector3(-5f, 0f, -13);
-			southMove.transform.localScale = new Vector3(0.75f, 1f, 0.65f);
+			southMove.transform.localPosition = new Vector3(-5f, 0f, -22.5f);
+			southMove.transform.localScale = new Vector3(0.75f, 1f, 1.3f);
 			southMove.GetComponent<MainInputInteractable>().CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(southMove.GetComponent<MainInputInteractable>().CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
 			{
 				if (GameObject.Find("Player").transform.Find("figure").gameObject.activeSelf) 
@@ -4452,8 +4503,8 @@ namespace MagnificusMod
 				}
 			}));
 			GameObject westMove = GameObject.Find("clickWest");
-			westMove.transform.localPosition = new Vector3(-14f, 0, -8f);
-			westMove.transform.localScale = new Vector3(0.65f, 1f, 1);
+			westMove.transform.localPosition = new Vector3(-23f, 0, -8f);
+			westMove.transform.localScale = new Vector3(1.35f, 1f, 1);
 			westMove.GetComponent<MainInputInteractable>().CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(westMove.GetComponent<MainInputInteractable>().CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
 			{
 				if (GameObject.Find("Player").transform.Find("figure").gameObject.activeSelf)
@@ -4463,8 +4514,8 @@ namespace MagnificusMod
 				}
 			}));
 			GameObject eastMove = GameObject.Find("clickEast");
-			eastMove.transform.localPosition = new Vector3(3f, 0, -4.5f);
-			eastMove.transform.localScale = new Vector3(0.35f, 1f, 1f);
+			eastMove.transform.localPosition = new Vector3(9.5f, 0, -4.5f);
+			eastMove.transform.localScale = new Vector3(1.1f, 1f, 1f);
 			eastMove.GetComponent<MainInputInteractable>().CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(eastMove.GetComponent<MainInputInteractable>().CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
 			{
 				if (GameObject.Find("Player").transform.Find("figure").gameObject.activeSelf)
@@ -4475,24 +4526,17 @@ namespace MagnificusMod
 			}));
 		}
 
+		public static int getRotationFromDirection(string direction)
+		{
+			List<string> directionsToCreate = new List<string> { "North", "East", "South", "West" };
+			return directionsToCreate.IndexOf(direction) * 90;
+		}
 		public static bool checkIfShouldDisplayPointIcon(string direction, NavigationZone3D overridezone = null)
         {
 			bool nodeInDirectionExists = false;
+			List<string> directions = new List<string> { "North", "East", "South", "West" };
 			NavigationZone3D zone = overridezone != null ? overridezone : Singleton<FirstPersonController>.Instance.currentZone;
-			switch (direction) {
-				case "North":
-					if (NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.LookDirection, zone) != null) { nodeInDirectionExists = true; }
-					break;
-				case "South":
-					if (NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.GetOppositeDirection(Singleton<FirstPersonController>.Instance.LookDirection), zone) != null) { nodeInDirectionExists = true; }
-					break;
-				case "East":
-					if (NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.GetRightOfDirection(Singleton<FirstPersonController>.Instance.LookDirection), zone) != null) { nodeInDirectionExists = true; }
-					break;
-				case "West":
-					if (NavigationGrid.instance.GetZoneInDirection(Singleton<FirstPersonController>.Instance.GetLeftOfDirection(Singleton<FirstPersonController>.Instance.LookDirection), zone) != null) { nodeInDirectionExists = true; }
-					break;
-			}
+			if (NavigationGrid.instance.GetZoneInDirection(LookDirection.North + directions.IndexOf(direction), zone) != null) { nodeInDirectionExists = true; }
 			return nodeInDirectionExists && GameObject.Find("Player").transform.Find("figure").gameObject.activeSelf;
         }
 
@@ -5022,6 +5066,7 @@ namespace MagnificusMod
 			GameObject.Find("WallFigure").transform.Find("VisibleParent").Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
 			GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(false);
 			GameObject.Find("Player").transform.Find("clickToMove").gameObject.SetActive(false);
+			if (config.gridActive) { GameObject.Find("Player").transform.Find("clickGrid").gameObject.SetActive(false); }
 			yield return new WaitForSeconds(0.75f);
 			foreach (GameObject gameObject in MagnificusMod.Generation.nodes)
 			{
@@ -5082,6 +5127,7 @@ namespace MagnificusMod
 				yield return new WaitForSeconds(0.45f);
 			GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(true);
 			GameObject.Find("Player").transform.Find("clickToMove").gameObject.SetActive(true);
+			if (config.gridActive) { GameObject.Find("Player").transform.Find("clickGrid").gameObject.SetActive(true); }
 			yield break;
 		}
 
@@ -6013,6 +6059,7 @@ namespace MagnificusMod
 					fade.transform.rotation = Quaternion.Euler(0, 0, 0);
 					fade.transform.localScale = new Vector3(200, 150, 1);
 
+
 					GameObject voidStars = GameObject.Instantiate(GameObject.Find("wall"));
 					voidStars.transform.parent = voidParent.transform;
 					voidStars.name = "bgStars";
@@ -6023,6 +6070,11 @@ namespace MagnificusMod
 					voidStars.transform.localPosition = new Vector3(0f, 52f, 25f);
 					voidStars.transform.rotation = Quaternion.Euler(325, 0, 0);
 					voidStars.transform.localScale = new Vector3(200, 150, 1);
+					if (config.isometricActive)
+                    {
+						voidParent.transform.localPosition = new Vector3(50, 0, 50);
+						voidParent.transform.localRotation = Quaternion.Euler(0, 45, 0);
+                    }
 
 					GameObject.Find("deckLight").transform.localPosition = new Vector3(0, 0, -10f);
 					GameObject.Find("deckLight").transform.parent.localPosition = new Vector3(0, 10, 0f);
@@ -6565,18 +6617,27 @@ namespace MagnificusMod
 			if (location == "goobert")
 			{
 				Singleton<TextDisplayer>.Instance.ShowMessage("~ Goo Dungeon ~");
-				Tween.LocalRotation(GameObject.Find("bgStarParent").transform, Quaternion.Euler(0, 0, 0), 0.5f, 0);
+				if (!config.isometricActive)
+				{ Tween.LocalRotation(GameObject.Find("bgStarParent").transform, Quaternion.Euler(0, 0, 0), 0.5f, 0); } else
+				{ Tween.LocalRotation(GameObject.Find("bgStarParent").transform, Quaternion.Euler(0, 45, 0), 0.5f, 0); }
 			} else if (location == "espeara")
 			{
 				Singleton<TextDisplayer>.Instance.ShowMessage("~ Lava Dungeon ~");
 			}
-			 else if (location == "lonely")
+			else if (location == "lonely")
 			{
 				Singleton<TextDisplayer>.Instance.ShowMessage("~ Void Dungeon ~");
 				GameObject.Find("bgStarParent").transform.localPosition = new Vector3(0, 500, 125);
-				Tween.LocalRotation(GameObject.Find("bgStarParent").transform, Quaternion.Euler(0, 0, 0), 0.5f, 0);
-				Tween.LocalPosition(GameObject.Find("bgStarParent").transform,new Vector3(0, 0, 125), 0.5f, 0);
-				Tween.LocalPosition(GameObject.Find("starFade").transform, new Vector3(0, 0, 0), 0.5f, 0);
+				if (!config.isometricActive) { 
+					Tween.LocalRotation(GameObject.Find("bgStarParent").transform, Quaternion.Euler(0, 0, 0), 0.5f, 0);
+					Tween.LocalPosition(GameObject.Find("bgStarParent").transform, new Vector3(0, 0, 125), 0.5f, 0);
+					Tween.LocalPosition(GameObject.Find("starFade").transform, new Vector3(0, 0, 0), 0.5f, 0);
+				} else
+                {
+					Tween.LocalRotation(GameObject.Find("bgStarParent").transform, Quaternion.Euler(0, 45, 0), 0.5f, 0);
+					Tween.LocalPosition(GameObject.Find("bgStarParent").transform, new Vector3(50, 0, 50), 0.5f, 0);
+					Tween.LocalPosition(GameObject.Find("starFade").transform, new Vector3(0, 0, 0), 0.5f, 0);
+				}
 			}
 			else if (location == "finale")
 			{

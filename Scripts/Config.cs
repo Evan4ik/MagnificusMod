@@ -20,8 +20,10 @@ namespace MagnificusMod
 
         private static ConfigEntry<bool> _configUnlockAllKaycee;
         private static ConfigEntry<bool> _isometricMode;
+        private static ConfigEntry<bool> _visibleGrid;
         public static bool unlockAllKaycee => _configUnlockAllKaycee.Value;
         public static bool isometricActive => _isometricMode.Value;
+        public static bool gridActive => _visibleGrid.Value;
         public static bool isometricMode
         {
             get
@@ -42,6 +44,10 @@ namespace MagnificusMod
               "IsometricMode",
               true,
               "Isometric third person perspective for magnificus' game. Disable if you want the classic first person experience.");
+            _visibleGrid = magConfig.Bind("Isometric",
+              "VisibleGrid",
+              true,
+              "Show a grid around the player in isometric mode.");
         }
     }
 }

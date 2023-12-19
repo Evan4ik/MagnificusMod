@@ -100,6 +100,19 @@ namespace MagnificusMod
 						if (gameObject.name.Contains("nodeIcon") && config.isometricMode == true)
 						{
 							gameObject.transform.localRotation = Quaternion.Euler(30, 45, 0);
+							if (NavigationGrid.instance.GetZoneInDirection(LookDirection.South, gameObject.transform.GetParent().gameObject.GetComponent<NavigationZone>()) == null)
+                            {
+								string[] pos = gameObject.transform.GetParent().gameObject.name.Split('y');
+								int yPos = Convert.ToInt32(pos[1]) + 1;
+								try
+                                {
+									if (GameObject.Find(pos[0] + "y" + yPos + " cover") != null)
+                                    {
+										gameObject.transform.localPosition = new Vector3(1f, 30.72f, 0);
+                                    }
+                                }
+                                catch { }
+							}
 							continue;
 						}
 						float oldRot = gameObject.transform.eulerAngles.y;

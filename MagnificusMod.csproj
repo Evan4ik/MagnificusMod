@@ -197,6 +197,7 @@
     <None Remove="Resources\goranjboss.png" />
     <None Remove="Resources\goranjdrake.png" />
     <None Remove="Resources\gridtile.png" />
+    <None Remove="Resources\gridtile1.png" />
     <None Remove="Resources\health_spellbuff.png" />
     <None Remove="Resources\him.png" />
     <None Remove="Resources\homunculus.png" />
@@ -418,6 +419,7 @@
     <EmbeddedResource Include="Resources\achievement_sacrifice.png" />
     <EmbeddedResource Include="Resources\achievement_timegoddess.png" />
     <EmbeddedResource Include="Resources\gridtile.png" />
+    <EmbeddedResource Include="Resources\gridtile1.png" />
     <EmbeddedResource Include="Resources\hydrablack.png" />
     <EmbeddedResource Include="Resources\hydrablue.png" />
     <EmbeddedResource Include="Resources\hydragreen.png" />

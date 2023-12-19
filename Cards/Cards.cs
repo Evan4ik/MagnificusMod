@@ -1938,7 +1938,7 @@ namespace MagnificusMod
 
 			string text = "mag_BellMage";
 			string text2 = "Chime Mage";
-			int num = 1;
+			int num = 0;
 			int num2 = 2;
 			string text3 = "Its chime can prove to be quite annoying..";
 			List<Ability> list12 = list6;

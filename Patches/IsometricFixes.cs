@@ -73,8 +73,54 @@ namespace MagnificusMod
 						if (Generation.checkIfShouldDisplayPointIcon(lastDir, zone)) { Singleton<InteractionCursor>.Instance.ForceCursorType(CursorType.Point); }
 						else if (!Generation.checkIfShouldDisplayPointIcon(lastDir, zone)) { Singleton<InteractionCursor>.Instance.ClearForcedCursorType(); }
 					}
+					if (config.gridActive) { __instance.StartCoroutine(gridTiles(zone)); }
 				}
 			}
+		}
+
+		public static List<GameObject> gridTileObj = new List<GameObject>();
+		public static int gridMove = 0;
+		public static IEnumerator gridTiles(NavigationZone zone)
+        {
+			for (float j = 0f; j <= 10f; j++)
+			{
+				foreach (GameObject gridTile in gridTileObj)
+				{
+					float modify = (j / 10) * 7.5f;
+					if (gridMove > 0) { 
+						gridMove = 2;
+						gridTile.transform.localScale = new Vector3(0, 0, 1);
+						continue;
+					}
+					gridTile.transform.localScale = new Vector3(7.5f - modify, 7.5f - modify, 1);
+				}
+				yield return new WaitForSeconds(0.01f);
+			}
+			foreach (GameObject gridTile in gridTileObj)
+			{
+				if (gridTile.name == "gridtile-1") { continue; }
+				GridTile gridComp = gridTile.GetComponent<GridTile>();
+				NavigationZone check = gridComp.getZoneToCheckFrom(zone);
+				gridTile.SetActive(NavigationGrid.instance.GetZoneInDirection(gridComp.direction, check) != null);
+			}
+			if (gridMove < 1){gridMove = 1;}
+			for (float j = 0f; j < 10f; j++)
+			{
+				foreach(GameObject gridTile in gridTileObj)
+				{
+					if (gridMove > 1) {
+						gridTile.transform.localScale = new Vector3(0, 0, 1);
+						gridMove = 0;
+						yield return new WaitForSeconds(0.20f);
+						yield break;
+					}
+					float modify = (j / 10) * 7.5f;
+					gridTile.transform.localScale = new Vector3(modify, modify, 1);
+				}
+				yield return new WaitForSeconds(0.01f);
+			}
+			gridMove = 0;
+			GameObject.Find("clickGrid").transform.Find("gridtile-1").gameObject.SetActive(true);
 		}
 
 		public static IEnumerator showUiFigure(GameObject uiFigure, bool enable)

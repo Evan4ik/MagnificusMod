@@ -175,11 +175,11 @@ namespace MagnificusMod
         new List<List<string>>
         {
             new List<string> { "W1C", "W2N", "W1J","W1D","W1J","W1N","W1C" },
-            new List<string> { "W1E", "W2F", "W2F",  "-", "W2F", "W2F", "W1W" },
+            new List<string> { "W1E", "W1F", "W1F",  "-", "W1F", "W1F", "W1W" },
             new List<string> { "W1K", "W1F",   "W1F",  "-", "W1F", "W1F", "W2K" },
             new List<string> { "W1d",  "-",   "-",  "-",  "-",  "-", "W1d" },
             new List<string> { "W1H", "W1F", "W1F",  "-", "W1F", "W1F", "W1K" },
-            new List<string> { "W1E", "W2F", "W2F",  "-", "W2F", "W2F", "W1W" },
+            new List<string> { "W1E", "W1F", "W1F",  "-", "W1F", "W1F", "W1W" },
             new List<string> { "W1C", "W1S","W1H", "W1D","W1H","W1S", "W1C" }
         },
         new List<List<string>>
@@ -285,21 +285,21 @@ namespace MagnificusMod
        new List<List<string>>
         {
             new List<string> { "W1C", "W2N", "W1J","W1D","W1J","W1N","W1C" },
-            new List<string> { "W1E", "W2F", "W2F",  "-", "W2F", "W2F", "W1W" },
+            new List<string> { "W1E", "W1F", "W1F",  "-", "W1F", "W1F", "W1W" },
             new List<string> { "W1K", "W1F",   "W1F",  "-", "W1F", "W1F", "W2K" },
             new List<string> { "W1d",  "-",   "-",  "EVN",  "-",  "-", "W1d" },
             new List<string> { "W1H", "W1F", "W1F",  "-", "W1F", "W1F", "W1K" },
-            new List<string> { "W1E", "W2F", "W2F",  "-", "W2F", "W2F", "W1W" },
+            new List<string> { "W1E", "W1F", "W1F",  "-", "W1F", "W1F", "W1W" },
             new List<string> { "W1C", "W1S","W1H", "W1D","W1H","W1S", "W1C" }
         },
               new List<List<string>>
         {
             new List<string> { "W1C", "W2N", "W1J","W1D","W1J","W1N","W1C" },
-            new List<string> { "W1E",  "W2F",   "-",  "-",  "-",  "W2F", "W1W" },
+            new List<string> { "W1E",  "W1F",   "-",  "-",  "-",  "W1F", "W1W" },
             new List<string> { "W1K",  "-",   "C",  "-",  "-",  "-", "W2K" },
             new List<string> { "W1d",  "-",   "-", "P3","-",  "-", "W1d" },
             new List<string> { "W1H",  "-",   "-",  "-",  "EN",  "-", "W1K" },
-            new List<string> { "W1E",  "W2F",   "-",  "-",  "-",  "W2F", "W1W" },
+            new List<string> { "W1E",  "W1F",   "-",  "-",  "-",  "W1F", "W1W" },
             new List<string> { "W1C", "W1S","W1H", "W1D","W1H","W1S", "W1C" }
         },
         new List<List<string>>
@@ -475,7 +475,7 @@ namespace MagnificusMod
         new List<List<string>>
         {
             new List<string> { "W2C", "W2N", "W2J","W1D","W1J","W1N","W1C" },
-            new List<string> { "W2E",  "W2P", "-",  "-",  "-",  "W2F", "W1W" },
+            new List<string> { "W2E",  "W2P", "-",  "-",  "-",  "W1F", "W1W" },
             new List<string> { "W2K",  "-",   "B",  "-",  "W1F",  "CS", "W1K" },
             new List<string> { "W1d",  "-",   "-", "-","-",  "-", "W1d" },
             new List<string> { "W1H",  "CR",   "W1F","-",  "B",  "-", "W2K" },
@@ -515,7 +515,7 @@ namespace MagnificusMod
          new List<List<string>>
         {
             new List<string> { "W1C", "W1N", "W1J","W1D","W1J","W1N","W1C" },
-            new List<string> { "W1E",  "W2F",   "-",  "-",  "W2F",  "W2F", "W1W" },
+            new List<string> { "W1E",  "W1F",   "-",  "-",  "W1F",  "W1F", "W1W" },
             new List<string> { "W1K",  "W1F",   "EVN",  "W1F",  "W1F",  "W1F", "W1K" },
             new List<string> { "W1d",  "-",   "-",  "-",  "-",  "CR", "W1d" },
             new List<string> { "W1H",  "W1F",   "W1F",  "W1F",  "-",  "W1F", "W1K" },
@@ -569,7 +569,7 @@ namespace MagnificusMod
        new List<List<string>>
         {
             new List<string> { "W4C", "W5N", "W4J","W4D","W4J","W4N","W4C" },
-            new List<string> { "W5E",  "-",   "W2F",  "-",  "W2F",  "-", "W5W" },
+            new List<string> { "W5E",  "-",   "W1F",  "-",  "W1F",  "-", "W5W" },
             new List<string> { "W5K",  "W1F",   "SWR",  "-",  "PK",  "W1F", "W5K" },
             new List<string> { "W4d",  "-",   "-", "B","-",  "-", "W4d" },
             new List<string> { "W4H",  "W1F",   "PK",  "-",  "SWR",  "W1F", "W4K" },
@@ -649,7 +649,7 @@ namespace MagnificusMod
        new List<List<string>>
         {
             new List<string> { "W4C", "W5N", "W4J","W4D","W4J","W4N","W4C" },
-            new List<string> { "W4E",  "-",   "W2F",  "-",  "-",  "EVN", "W4W" },
+            new List<string> { "W4E",  "-",   "W1F",  "-",  "-",  "EVN", "W4W" },
             new List<string> { "W5K",  "-",   "W1F",  "-",  "W1F",  "-", "W5K" },
             new List<string> { "W4d",  "-",   "W1F", "-","W1F",  "-", "W4d" },
             new List<string> { "W4H",  "-",   "W1F",  "-",  "W1F",  "-", "W4K" },
@@ -719,7 +719,7 @@ namespace MagnificusMod
           new List<List<string>>
         {
             new List<string> { "W4C", "W4N", "W5J","W5D","W5J","W4N","W4C" },
-            new List<string> { "W4E",  "-",   "W2F",  "-",  "CR",  "-", "W4W" },
+            new List<string> { "W4E",  "-",   "W1F",  "-",  "CR",  "-", "W4W" },
             new List<string> { "W5K",  "-",   "W1F",  "-",  "W1F",  "-", "W5K" },
             new List<string> { "W5d",  "-",   "W1F",  "-",  "W1F",  "-", "W5d" },
             new List<string> { "W5H",  "-",   "W1F",  "-",  "W1F",  "-", "W5K" },
@@ -759,7 +759,7 @@ namespace MagnificusMod
           new List<List<string>>
         {
             new List<string> { "W4C", "W5N", "W6J","W4D","W6J","W4N","W4C" },
-            new List<string> { "W4E",  "W2F",   "-",  "-",  "-",  "W2F", "W4W" },
+            new List<string> { "W4E",  "W1F",   "-",  "-",  "-",  "W1F", "W4W" },
             new List<string> { "W6K",  "-",   "-",  "SWR",  "-",  "-", "W6K" },
             new List<string> { "W4d",  "-",   "B", "EVN","B",  "-", "W4d" },
             new List<string> { "W6H",  "-",   "-",  "PK",  "-",  "-", "W6K" },
@@ -779,7 +779,7 @@ namespace MagnificusMod
          new List<List<string>>
         {
             new List<string> { "W4C", "W5N", "W4J","W4D","W4J","W4N","W4C" },
-            new List<string> { "W4E",  "-",   "W2F",  "-",  "W2F",  "PK", "W4W" },
+            new List<string> { "W4E",  "-",   "W1F",  "-",  "W1F",  "PK", "W4W" },
             new List<string> { "W5K",  "-",   "W1F",  "-",  "W1F",  "-", "W5K" },
             new List<string> { "W4d",  "-",   "-",   "EVN","-",  "-", "W4d" },
             new List<string> { "W4H",  "-",   "W1F",  "-",  "W1F",  "-", "W4K" },
@@ -789,7 +789,7 @@ namespace MagnificusMod
          new List<List<string>>
         {
             new List<string> { "W4C", "W5N", "W4J","W6D","W4J","W4N","W4C" },
-            new List<string> { "W4E",  "CS",   "-",  "-",  "W2F",  "CS", "W5W" },
+            new List<string> { "W4E",  "CS",   "-",  "-",  "W1F",  "CS", "W5W" },
             new List<string> { "W4K",  "-",   "-",  "W1F",  "-",  "-", "W4K" },
             new List<string> { "W6d",  "-",   "W1F",  "CS",  "PK",  "-", "W6d" },
             new List<string> { "W4H",  "B",   "SWR",  "-",  "-",  "-", "W4K" },
@@ -977,7 +977,7 @@ namespace MagnificusMod
        new List<List<string>>
         {
             new List<string> { "W8C", "W8N", "W8J","W8D","W8J","W8N","W8C" },
-            new List<string> { "W8E",  "-",   "-",  "-",  "W2F",  "-", "W8W" },
+            new List<string> { "W8E",  "-",   "-",  "-",  "W1F",  "-", "W8W" },
             new List<string> { "W8K",  "-",   "RUNE",  "TO2",  "W1F",  "-", "W8K" },
             new List<string> { "W8d",  "-",   "B",  "EVN",  "RUNE",  "-", "W8d" },
             new List<string> { "W8H",  "-",   "-",  "RUNE",  "-",  "-", "W8K" },
@@ -987,7 +987,7 @@ namespace MagnificusMod
        new List<List<string>>
         {
             new List<string> { "W8C", "W8N", "W8J","W8D","W8J","W8N","W8C" },//EL TROLL ROOM DE FINALE
-            new List<string> { "W8E",  "-",   "-",  "-",  "W2F",  "EVN", "W8W" },
+            new List<string> { "W8E",  "-",   "-",  "-",  "W1F",  "EVN", "W8W" },
             new List<string> { "W8K",  "-",   "-",  "-",  "TO3",  "W1F", "W8K" },
             new List<string> { "W8d",  "-",   "-",  "B",  "-",  "-", "W8d" },
             new List<string> { "W8H",  "W1F",   "TO3",  "-",  "-",  "-", "W8K" },
@@ -1127,7 +1127,7 @@ namespace MagnificusMod
        new List<List<string>>
         {
             new List<string> { "W8C", "W8N", "W8J","W8D","W8J","W8N","W8C" },
-            new List<string> { "W8E",  "RUNE",   "W2F",  "-",  "W2F",  "-", "W8W" },
+            new List<string> { "W8E",  "RUNE",   "W1F",  "-",  "W1F",  "-", "W8W" },
             new List<string> { "W8K",  "W1F",   "TO3",  "-",  "W1F",  "W1F", "W8K" },
             new List<string> { "W8d",  "-",   "-",  "EVN",  "-",  "-", "W8d" },
             new List<string> { "W8H",  "TO3",   "W1F",  "-",  "W1F",  "W1F", "W8K" },
@@ -1291,7 +1291,7 @@ namespace MagnificusMod
          new List<List<string>>
         {
             new List<string> { "W8C", "W8N", "W8J","W8D","W8J","W8N","W8C" },
-            new List<string> { "W8E",  "-",   "W2F",  "-",  "W2F", "RUNEH", "W8W" },
+            new List<string> { "W8E",  "-",   "W1F",  "-",  "W1F", "RUNEH", "W8W" },
             new List<string> { "W8K",  "W1F",   "TO3",  "-",  "W1F",  "W1F", "W8K" },
             new List<string> { "W8d",  "-",   "-",  "CR",  "-",  "-", "W8d" },
             new List<string> { "W8H",  "TO2",   "W1F",  "-",  "W1F",  "W1F", "W8K" },

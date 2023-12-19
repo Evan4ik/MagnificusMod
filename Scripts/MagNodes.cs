@@ -4489,22 +4489,15 @@ namespace MagnificusMod
 				}
 				doneSacrifice = true;
 				sacValue++;
-				if (component.Info.Abilities.Count > 1)
-				{
-					sacValue++;
-				}
-				if (component.Info.Attack > 1 || component.Info.Health > 2)
-				{
-					sacValue++;
-				}
-				if (component.Info.metaCategories.Contains(CardMetaCategory.Rare))
-				{
-					sacValue += 2;
-				}
-				if (component.Info.ModAbilities.Count > 0)
-				{
-					sacValue++;
-				}
+				if (component.Info.Abilities.Count > 1){sacValue++;}
+
+				if (component.Info.Attack > 1 || component.Info.Health > 2){sacValue++;}
+
+				if (component.Info.metaCategories.Contains(CardMetaCategory.Rare)){sacValue += 2;}
+
+				if (component.Info.ModAbilities.Count > 0){sacValue++;}
+
+				if (component.Info.name == "mag_obelisk") { sacValue += 2; }
 
 				GameObject fireSlot = GameObject.Find("enchantmentSlot");
 				if (sacValue > 5)
@@ -4535,8 +4528,8 @@ namespace MagnificusMod
 						break;
 					case 3:
 						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("The Enchanted Grounds dimly light up with sacrifical energy.", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-						fireSlot.transform.Find("Quad").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.55f, 1, 1, 1);
-						fireSlot.transform.Find("FireAnim").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.55f, 1, 1, 1);
+						fireSlot.transform.Find("Quad").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.4f, 1, 1, 1);
+						fireSlot.transform.Find("FireAnim").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.4f, 1, 1, 1);
 						fireSlot.GetComponent<Light>().color = new Color(0.55f, 1, 1, 1);
 						break;
 					case 4:
