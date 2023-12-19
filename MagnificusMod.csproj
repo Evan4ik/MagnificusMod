@@ -305,6 +305,7 @@
     <None Remove="Resources\pixelportrait_gnome.png" />
     <None Remove="Resources\pixelportrait_homonculus.png" />
     <None Remove="Resources\pixelportrait_magimorph.png" />
+    <None Remove="Resources\pixelportrait_obelisk.png" />
     <None Remove="Resources\pixelportrait_rascal.png" />
     <None Remove="Resources\pixelportrait_spellcaster.png" />
     <None Remove="Resources\potion_blue.png" />
@@ -380,6 +381,7 @@
     <None Remove="Resources\starterdeck_icon_emerald.png" />
     <None Remove="Resources\starterdeck_icon_free.png" />
     <None Remove="Resources\starterdeck_icon_mana.png" />
+    <None Remove="Resources\starterdeck_icon_obelisk.png" />
     <None Remove="Resources\starterdeck_icon_ruby.png" />
     <None Remove="Resources\starterdeck_icon_sapphire.png" />
     <None Remove="Resources\starterdeck_icon_spell.png" />
@@ -765,6 +767,7 @@
     <EmbeddedResource Include="Resources\pixelportrait_gemworm.png" />
     <EmbeddedResource Include="Resources\pixelportrait_gnome.png" />
     <EmbeddedResource Include="Resources\pixelportrait_magimorph.png" />
+    <EmbeddedResource Include="Resources\pixelportrait_obelisk.png" />
     <EmbeddedResource Include="Resources\pixelportrait_rascal.png" />
     <EmbeddedResource Include="Resources\pixelportrait_spellcaster.png" />
     <EmbeddedResource Include="Resources\potion_blue.png" />
@@ -843,6 +846,7 @@
     <EmbeddedResource Include="Resources\starterdeck_icon_emerald.png" />
     <EmbeddedResource Include="Resources\starterdeck_icon_free.png" />
     <EmbeddedResource Include="Resources\starterdeck_icon_mana.png" />
+    <EmbeddedResource Include="Resources\starterdeck_icon_obelisk.png" />
     <EmbeddedResource Include="Resources\starterdeck_icon_ruby.png" />
     <EmbeddedResource Include="Resources\starterdeck_icon_sapphire.png" />
     <EmbeddedResource Include="Resources\starterdeck_icon_spell.png" />

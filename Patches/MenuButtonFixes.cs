@@ -276,9 +276,12 @@ namespace MagnificusMod
 				Tween.FieldOfView(GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>(), 65f, 0.5f, 0);
 				Tween.Position(GameObject.Find("GameTable").transform, new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x, -20f, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z), 0.2f, 0.2f, null, Tween.LoopType.None, null, null, true);
 				Tween.LocalPosition(GameObject.Find("tbPillar").transform, new Vector3(0, -5.01f, 0), 0.4f, 0.25f, null, Tween.LoopType.None, null, null, true);
-				Singleton<FirstPersonController>.Instance.LookLocked = true;
-				Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(-40, 47.5f, -40), 0.25f, 0.4f);
-				Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30, 45, 0), 0.25f, 0.4f);
+				if (config.isometricMode)
+				{
+					Singleton<FirstPersonController>.Instance.LookLocked = true;
+					Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(-40, 47.5f, -40), 0.25f, 0.4f);
+					Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30, 45, 0), 0.25f, 0.4f);
+				}
 				Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(enablePlayer());
 				if (RunState.Run.regionTier == 2)
 				{

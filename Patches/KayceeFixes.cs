@@ -257,6 +257,12 @@ namespace MagnificusMod
 					"mag_homunculus",
 					"mag_moxlarva"
 				}), 3);
+				StarterDeckManager.FullStarterDeck obeliskDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Obelisk", "starterdeck_icon_obelisk.png", new string[]
+				{
+					"mag_obelisk",
+					"mag_obelisk",
+					"mag_obelisk"
+				}), 4);
 				StarterDeckManager.ModifyDeckList += delegate (List<StarterDeckManager.FullStarterDeck> decks)
 				{
 					CardTemple acceptableTemple = KayceeStorage.ScreenState;

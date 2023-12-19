@@ -5865,6 +5865,11 @@ namespace MagnificusMod
 					GameObject starParent = new GameObject("bgStarParent");
 					starParent.transform.parent = GameObject.Find("Player").transform;
 					starParent.transform.localPosition = new Vector3(0, 0, 0);
+					if (config.isometricMode)
+                    {
+						starParent.transform.localPosition = new Vector3(0, 0, -100);
+						starParent.transform.localRotation = Quaternion.Euler(0, 45, 0);
+					}
 					GameObject bgStars = GameObject.Instantiate(GameObject.Find("wall"));
 					bgStars.transform.parent = starParent.transform;
 					bgStars.name = "bgStars";
@@ -6613,13 +6618,20 @@ namespace MagnificusMod
 					','
 			});
 			yield return new WaitForSeconds(0.2f);
-			if (config.isometricActive) { GameObject.Find("Player").transform.Find("clickToMove").localRotation = Quaternion.Euler(0, 0, 0); }
+			if (config.isometricActive) { 
+				GameObject.Find("Player").transform.Find("clickToMove").localRotation = Quaternion.Euler(0, 0, 0);
+				if (config.gridActive) { GameObject.Find("Player").transform.Find("clickGrid").localRotation = Quaternion.Euler(0, 0, 0); }
+			}
 			if (location == "goobert")
 			{
 				Singleton<TextDisplayer>.Instance.ShowMessage("~ Goo Dungeon ~");
 				if (!config.isometricActive)
-				{ Tween.LocalRotation(GameObject.Find("bgStarParent").transform, Quaternion.Euler(0, 0, 0), 0.5f, 0); } else
-				{ Tween.LocalRotation(GameObject.Find("bgStarParent").transform, Quaternion.Euler(0, 45, 0), 0.5f, 0); }
+				{ Tween.LocalRotation(GameObject.Find("bgStarParent").transform, Quaternion.Euler(0, 0, 0), 0.5f, 0); } 
+				else
+				{ 
+					Tween.LocalRotation(GameObject.Find("bgStarParent").transform, Quaternion.Euler(0, 45, 0), 0.5f, 0);
+					Tween.LocalPosition(GameObject.Find("bgStarParent").transform, new Vector3(0, 0, -100), 0.5f, 0);
+				}
 			} else if (location == "espeara")
 			{
 				Singleton<TextDisplayer>.Instance.ShowMessage("~ Lava Dungeon ~");

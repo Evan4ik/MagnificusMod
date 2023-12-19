@@ -827,7 +827,8 @@ namespace MagnificusMod
 
 			CardInfo myCard = CardManager.New("mag", "mag_obelisk", "Trading Obelisk", 0, 1, "draft token aka pelt no way jose")
 					.SetPortrait(Tools.GetTexture("obelisk.png"))
-					.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground, CardAppearanceBehaviour.Appearance.TerrainLayout);
+					.SetPixelPortrait(Tools.GetTexture("pixelportrait_obelisk.png"))
+					.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground);
 			myCard.temple = CardTemple.Wizard;
 			myCard.metaCategories = list;
 		}

@@ -2639,7 +2639,7 @@ namespace MagnificusMod
 				return (card.Info.name == "mag_BOSStrapspear" && (deathSlot.Card == null || deathSlot.Card.Dead)) || isDeckCard && (deathSlot.Card == null || deathSlot.Card.Dead) || (card.Info.name == "mag_giantmagnus" && (deathSlot.Card == null || deathSlot.Card.Dead));
 			}
 
-
+			public static bool removePlanetMods = false;
 			public override IEnumerator OnOtherCardDie(PlayableCard card, CardSlot deathSlot, bool fromCombat, PlayableCard killer)
 			{
 				if (card.Info.name == "mag_BOSStrapspear")
@@ -2654,6 +2654,14 @@ namespace MagnificusMod
 					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName("mag_hydraorange"), Singleton<BoardManager>.Instance.OpponentSlotsCopy[2], 0.1f, true);
 					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName("mag_hydrablack"), Singleton<BoardManager>.Instance.OpponentSlotsCopy[3], 0.1f, true);
 					yield return new WaitForSeconds(0.25f);
+					for (int i = 0; i < 3; i++)
+					{
+						CardModificationInfo tempMod = new CardModificationInfo();
+						tempMod.singletonId = "planetMod";
+						tempMod.attackAdjustment = -Singleton<BoardManager>.Instance.opponentSlots[i].Card.Attack;
+						Singleton<BoardManager>.Instance.opponentSlots[i].Card.AddTemporaryMod(tempMod);
+					}
+					removePlanetMods = true;
 					Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
 					AudioController.Instance.PlaySound2D("ghosty_fade", MixerGroup.None, 1.5f, 0f, null, null, null, null, false);
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g1]We[c:] [c:g2]have[c:] [c:g3]become[c:] four!", -0.5f, 1.75f, Emotion.Neutral, TextDisplayer.LetterAnimation.WavyJitter);
@@ -2672,13 +2680,31 @@ namespace MagnificusMod
 
 			public override bool RespondsToUpkeep(bool playerUpkeep)
 			{
-				return playerUpkeep && Singleton<TurnManager>.Instance.TurnNumber > 1 && Singleton<MagnusOpponent>.Instance.NumLives > 1;
+				return playerUpkeep && Singleton<TurnManager>.Instance.TurnNumber > 1 && Singleton<MagnusOpponent>.Instance.NumLives > 1 || Singleton<MagnusOpponent>.Instance.NumLives == 1 && removePlanetMods;
 			}
 
 			public List<Texture2D> textures = new List<Texture2D> { WallTextures.goo, WallTextures.lava, Tools.getImage("magnusstars.png"), WallTextures.goo, Tools.getImage("cloudfloor.png"), Tools.getImage("magnusstars.png") };
 
 			public override IEnumerator OnUpkeep(bool playerUpkeep)
 			{
+				if (Singleton<MagnusOpponent>.Instance.NumLives == 1 && removePlanetMods)
+                {
+					removePlanetMods = false;
+					for (int j = 0; j < 3; j++)
+					{
+						for (int i = 0; i < Singleton<BoardManager>.Instance.opponentSlots[j].Card.temporaryMods.Count; i++)
+						{
+							if (Singleton<BoardManager>.Instance.opponentSlots[j].Card == null) { continue; }
+							Debug.Log(Singleton<BoardManager>.Instance.opponentSlots[j].Card.name);
+							if (Singleton<BoardManager>.Instance.opponentSlots[j].Card.temporaryMods[i].singletonId == "planetMod")
+							{
+								Singleton<BoardManager>.Instance.opponentSlots[j].Card.temporaryMods[i].attackAdjustment = 0;
+
+							}
+						}
+					}
+					yield break;
+                }
 				if (eventState == 0)
 				{
 					eventState = 1;
@@ -3676,6 +3702,7 @@ namespace MagnificusMod
 
 			public static List<string> planets = new List<string> { "mag_neptune", "mag_mercury" };
 			public int killedPlanets = -1;
+			public static bool removePlanetMods = false;
 
 			public override IEnumerator OnOtherCardDie(PlayableCard card, CardSlot deathSlot, bool fromCombat, PlayableCard killer)
 			{
@@ -3691,6 +3718,15 @@ namespace MagnificusMod
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I could never allow myself to go down that easily.", 1.5f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName("mag_venus"), Singleton<BoardManager>.Instance.OpponentSlotsCopy[1], 0.1f, true);
 					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName("mag_mars"), Singleton<BoardManager>.Instance.OpponentSlotsCopy[2], 0.1f, true);
+					CardModificationInfo tempMod = new CardModificationInfo();
+					tempMod.singletonId = "planetMod";
+					tempMod.attackAdjustment = -Singleton<BoardManager>.Instance.opponentSlots[1].Card.Attack;
+					Singleton<BoardManager>.Instance.opponentSlots[1].Card.AddTemporaryMod(tempMod);
+					CardModificationInfo tempMod2 = new CardModificationInfo();
+					tempMod2.singletonId = "planetMod";
+					tempMod2.attackAdjustment = -Singleton<BoardManager>.Instance.opponentSlots[2].Card.Attack;
+					Singleton<BoardManager>.Instance.opponentSlots[2].Card.AddTemporaryMod(tempMod);
+					removePlanetMods = true;
 					yield return new WaitForSeconds(1.5f);
 					Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
 					Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
@@ -3776,7 +3812,28 @@ namespace MagnificusMod
 				}
 				yield break;
 			}
+			public override bool RespondsToUpkeep(bool playerUpkeep)
+			{
+				return playerUpkeep && removePlanetMods;
+			}
 
+			public override IEnumerator OnUpkeep(bool playerUpkeep)
+			{
+				removePlanetMods = false;
+				for (int j = 1; j < 3; j++)
+				{
+					for (int i = 0; i < Singleton<BoardManager>.Instance.opponentSlots[j].Card.temporaryMods.Count; i++)
+					{
+						if (Singleton<BoardManager>.Instance.opponentSlots[j].Card == null) { continue; }
+						if (Singleton<BoardManager>.Instance.opponentSlots[j].Card.temporaryMods[i].singletonId == "planetMod")
+						{
+							Singleton<BoardManager>.Instance.opponentSlots[j].Card.temporaryMods[i].attackAdjustment = 0;
+
+						}
+					}
+				}
+				yield break;
+			}
 			public override EncounterData BuildCustomEncounter(CardBattleNodeData nodeData)
 			{
 				EncounterData encounterData = base.BuildCustomEncounter(nodeData);

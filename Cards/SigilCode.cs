@@ -1916,7 +1916,10 @@ namespace MagnificusMod
 					if (cardLol.name == "mag_giantmoon" || cardLol.name == "mag_giantearth")
                     {
 						base.Card.SetInfo(CardLoader.GetCardByName("mag_giantmoonshards"));
-                    }
+                    } else if (cardLol.name == "mag_giantmagnus")
+					{
+						base.Card.SetInfo(CardLoader.GetCardByName("mag_mastertriple3"));
+					}
 					foreach (CardModificationInfo mod in base.Card.slot.opposingSlot.Card.Info.Mods)
 					{
 						base.Card.AddTemporaryMod(mod);
