@@ -229,15 +229,19 @@ namespace MagnificusMod
 			}
 		}
 
-		public static IEnumerator ViewDeckbutton(MenuCard optionsCard)
+
+		public static IEnumerator ViewDeckbutton(MenuCard optionsCard, bool ignoreCard = false)
 		{
-			Singleton<MenuController>.Instance.DoingCardTransition = true;
-			float cardPos = SaveManager.saveFile.ascensionActive ? -1.268f : -1.038f;
-			yield return Singleton<MenuController>.Instance.TransitionToSlottedState(optionsCard, cardPos, false);
-			Singleton<MenuController>.Instance.DoingCardTransition = false;
-			Singleton<MenuController>.Instance.DisplayMenuCardTitle(optionsCard);
-			Singleton<MenuController>.Instance.ResetToDefaultState();
-			GameObject.Find("PauseMenu").GetComponent<PauseMenu3D>().SetPaused(false);
+			if (!ignoreCard)
+			{
+				Singleton<MenuController>.Instance.DoingCardTransition = true;
+				float cardPos = SaveManager.saveFile.ascensionActive ? -1.268f : -1.038f;
+				yield return Singleton<MenuController>.Instance.TransitionToSlottedState(optionsCard, cardPos, false);
+				Singleton<MenuController>.Instance.DoingCardTransition = false;
+				Singleton<MenuController>.Instance.DisplayMenuCardTitle(optionsCard);
+				Singleton<MenuController>.Instance.ResetToDefaultState();
+				GameObject.Find("PauseMenu").GetComponent<PauseMenu3D>().SetPaused(false);
+			} else { PauseMenu.pausingDisabled = true; }
 			if (Singleton<ViewManager>.Instance.CurrentView == View.FirstPerson && RunState.Run.regionTier < 5 && GameObject.Find("GameTable").transform.position.y < 1 && Singleton<FirstPersonController>.Instance.enabled)
 			{
 				Singleton<ViewManager>.Instance.SwitchToView(View.MapDeckReview);
@@ -288,6 +292,8 @@ namespace MagnificusMod
 					GameObject.Find("lanterns").transform.position = new Vector3(0, 0, 0);
 				}
 			}
+			yield return new WaitForSeconds(1f);
+			PauseMenu.pausingDisabled = false;
 			yield break;
         }
 
@@ -305,7 +311,44 @@ namespace MagnificusMod
 			yield break;
         }
 
-		[HarmonyPatch(typeof(DeckInfo), "InitializeAsPlayerDeck")]
+		[HarmonyPatch(typeof(PauseMenu), "LateUpdate")]
+		public class ViewDeckKeybind
+		{
+			public static bool Prefix(ref PauseMenu __instance)
+			{
+				if (SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
+				if (!PauseMenu.pausingDisabled && !(Singleton<InteractionCursor>.Instance && !Singleton<InteractionCursor>.Instance.gameObject.activeSelf))
+				{
+					if (!__instance.Paused)
+					{
+						if (InputButtons.GetButtonDown(Button.Menu))
+						{
+							__instance.SetPaused(true);
+							return false;
+						} else if (InputButtons.GetButtonDown(Button.AltMenu))
+                        {
+							__instance.StartCoroutine(ViewDeckbutton(null, true));
+							return false;
+                        }
+					}
+					else if (!__instance.Unpausing && !__instance.menuController.TransitioningToScene)
+					{
+						if (InputButtons.GetButtonDown(Button.Menu) || InputButtons.GetButtonDown(Button.AltMenu) || InputButtons.GetButtonDown(Button.Cancel))
+						{
+							__instance.UnPause();
+						}
+						__instance.closeMenuInteractable.gameObject.SetActive(!__instance.menuController.CardInSlot);
+						if (InputButtons.GetButtonDown(Button.Select) && __instance.ActivePauseCursor.CurrentInteractable == __instance.closeMenuInteractable)
+						{
+							__instance.UnPause();
+						}
+					}
+				}
+				return false;
+			}
+		}
+
+			[HarmonyPatch(typeof(DeckInfo), "InitializeAsPlayerDeck")]
 		public class InitializeDeck
 		{
 			public static bool Prefix(ref DeckInfo __instance)

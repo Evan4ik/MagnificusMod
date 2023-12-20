@@ -5086,6 +5086,7 @@ namespace MagnificusMod
         }
 		public static IEnumerator unIsometricTransition(float delay = 0f, bool doPainting = true)
 		{
+			GameObject.Find("Player").GetComponentInChildren<ViewController>().allowedViews = new List<View>();
 			yield return new WaitForSeconds(delay);
 			if(Singleton<ViewManager>.Instance.CurrentView == View.Candles) { yield break; }
 			if (doPainting)
@@ -5106,6 +5107,8 @@ namespace MagnificusMod
 			Singleton<ViewController>.Instance.LockState = ViewLockState.Locked;
 			yield return new WaitForSeconds(0.3f);
 			if (Singleton<ViewManager>.Instance.CurrentView == View.Candles) { yield break; }
+			GameObject.Find("Player").GetComponentInChildren<ViewController>().allowedViews = new List<View>();
+			GameObject.Find("Player").GetComponentInChildren<ViewManager>().CurrentView = View.FirstPerson;
 			GameObject.Find("PixelCameraParent").GetComponent<SineWaveMovement>().originalPosition = new Vector3(-40, 47.5f, -40);
 			GameObject.Find("PixelCameraParent").GetComponent<SineWaveRotation>().originalRotation = new Vector3(30, 45, 0);
 			foreach (GameObject gameObject in MagnificusMod.Generation.nodes)
@@ -5122,11 +5125,11 @@ namespace MagnificusMod
 			GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(-40, 47.5f, -40);
 			GameObject.Find("PixelCameraParent").transform.localRotation = Quaternion.Euler(30, 45, 0);
 			IsometricStuff.moveDisabled = false;
-			Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
 			if (doPainting) 
 				yield return new WaitForSeconds(0.45f);
 			GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(true);
 			GameObject.Find("Player").transform.Find("clickToMove").gameObject.SetActive(true);
+			Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
 			if (config.gridActive) { GameObject.Find("Player").transform.Find("clickGrid").gameObject.SetActive(true); }
 			yield break;
 		}
