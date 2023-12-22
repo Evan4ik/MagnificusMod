@@ -792,15 +792,6 @@ namespace MagnificusMod
 									{
 										GameObject.Destroy(cover2.transform.GetChild(3).gameObject);
 									}
-									if (map[y][x][2] == 'H')
-									{
-										GameObject wall = GameObject.Instantiate(gameObject);
-										wall.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 0));
-										wall.transform.parent = GameObject.Find("walls").transform;
-										wall.transform.position = new Vector3((float)(x * 20), 6f, (float)(y * -20 + -9));
-										wall.transform.position += new Vector3(20, 0, -10f);
-										wall.name = "x" + x.ToString() + " y" + y.ToString() + " doorcover";
-									}
 								}
 							}
 							/*
@@ -5050,7 +5041,8 @@ namespace MagnificusMod
 
 		public static IEnumerator isometricTransition(Texture icon, bool doPainting = true)
         {
-			IsometricStuff.moveDisabled = true;
+			GameObject.Find("deckLight").GetComponent<Light>().enabled = false;
+			GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(true);
 			GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition = new Vector3(0, 0, -1);
 			if (doPainting)
 			{
@@ -5081,6 +5073,7 @@ namespace MagnificusMod
 					gameObject.transform.localRotation = Quaternion.Euler(0, newRot, zRot);
 				}
 			}
+			GameObject.Find("deckLight").GetComponent<Light>().enabled = true;
 			Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
 			yield break;
         }
@@ -5104,6 +5097,7 @@ namespace MagnificusMod
 				Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30, 45, 0), 0.25f, 0.5f);
 				Tween.FieldOfView(GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>(), 65f, 0.25f, 0.5f);
 			}
+			GameObject.Find("deckLight").GetComponent<Light>().enabled = false;
 			Singleton<ViewController>.Instance.LockState = ViewLockState.Locked;
 			yield return new WaitForSeconds(0.3f);
 			if (Singleton<ViewManager>.Instance.CurrentView == View.Candles) { yield break; }
@@ -5130,6 +5124,7 @@ namespace MagnificusMod
 			GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(true);
 			GameObject.Find("Player").transform.Find("clickToMove").gameObject.SetActive(true);
 			Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
+			GameObject.Find("deckLight").GetComponent<Light>().enabled = true;
 			if (config.gridActive) { GameObject.Find("Player").transform.Find("clickGrid").gameObject.SetActive(true); }
 			yield break;
 		}

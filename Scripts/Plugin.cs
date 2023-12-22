@@ -194,6 +194,8 @@ namespace MagnificusMod
 			Cards.AddEmeraldFiend();
 			Cards.AddPerformer();
 			Cards.AddMoxRabbit();
+			Cards.AddGreenMoxRabbit();
+			Cards.AddOrangeMoxRabbit();
 			Cards.AddRunes();
 			Cards.AddRuneMage();
 			Cards.AddSnipeSage();

@@ -54,6 +54,16 @@ namespace MagnificusMod
 			set => ModdedSaveManager.SaveData.SetValue(GUID, "MagChallenges", value);
 		}
 
+		public static string draftcards
+		{
+			get
+			{
+				return ModdedSaveManager.SaveData.GetValue(GUID, "DraftCards");
+			}
+			set => ModdedSaveManager.SaveData.SetValue(GUID, "DraftCards", value);
+		}
+
+
 		public static bool DialogueEvent1
 		{
 			get

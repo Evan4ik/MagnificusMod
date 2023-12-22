@@ -180,35 +180,15 @@ namespace MagnificusMod
 							bool hasMergedPelt = __state.peltCards.Exists((SelectableCard x) => x.Info.Mods.Exists((CardModificationInfo m) => m.fromDuplicateMerge));
 							yield return new WaitForSeconds(0.15f);
 
-							List<CardInfo> unlockedCards;
-							int numCards;
-							if (tier != 2)
-							{
-								unlockedCards = CardLoader.GetUnlockedCards(CardMetaCategory.TraderOffer, CardTemple.Nature);
-								if (SceneLoader.ActiveSceneName == "finale_magnificus")
-								{
-									unlockedCards = CardLoader.GetUnlockedCards(CardMetaCategory.ChoiceNode, CardTemple.Wizard);
-								}
-								numCards = 8;
-							}
-							else
-							{
-								unlockedCards = CardLoader.GetUnlockedCards(CardMetaCategory.Rare, CardTemple.Nature);
-								if (SceneLoader.ActiveSceneName == "finale_magnificus")
-								{
-									unlockedCards = CardLoader.GetUnlockedCards(CardMetaCategory.Rare, CardTemple.Wizard);
-								}
-								numCards = 4;
-							}
 							List<CardInfo> list2 = new List<CardInfo>();
-							int seed = Random.RandomRangeInt(0, 10000);
-							while (list2.Count < numCards && unlockedCards.Count > 0)
-							{
-								CardInfo cardInfo = unlockedCards[SeededRandom.Range(0, unlockedCards.Count, seed++)];
-								CardInfo cardInfo2 = CardLoader.Clone(cardInfo);
-								list2.Add(cardInfo2);
-								unlockedCards.Remove(cardInfo);
-							}
+							if (KayceeStorage.draftcards != null)
+                            {
+								string[] draftCards = KayceeStorage.draftcards.Split(';');
+								for (int i = 0; i < draftCards.Length; i++)
+                                {
+									list2.Add(CardLoader.GetCardByName(draftCards[i]));
+                                }
+                            }
 
 							yield return __state.CreateTradeCards(list2, 4, tier == 2);
 							//Singleton<TableRuleBook>.Instance.SetOnBoard(true);
@@ -384,5 +364,6 @@ namespace MagnificusMod
 				yield break;
 			}
 		}
-	}
+
+    }
 }

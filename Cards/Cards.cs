@@ -341,26 +341,10 @@ namespace MagnificusMod
 			List<Ability> list3 = new List<Ability>();
 			list3.Add(SigilCode.BlueMageDraw.ability);
 
-			Texture2D image = Tools.getImage("BlueMageEmmission.png");
-			string text = "mag_bluemage";
-			string text2 = "Blue Mage";
-			int num = 0;
-			int num2 = 1;
-			List<CardMetaCategory> list5 = list;
-			CardComplexity cardComplexity = CardComplexity.Simple;
-			CardTemple cardTemple = CardTemple.Nature;
-			string text3 = "Never doubt its utility.";
-			bool flag = false;
-			int num3 = 0;
-			int num4 = 0;
-			int num5 = 0;
-			List<GemType> list6 = list2;
-			SpecialStatIcon specialStatIcon = SpecialStatIcon.None;
-
-			CardInfo myCard = CardManager.New("mag", text, text2, num, num2, text3)
+			CardInfo myCard = CardManager.New("mag", "mag_bluemage", "Blue Mage", 0, 2, "Never doubt its utility.")
 					.SetPixelPortrait(Tools.convertToSprite(Resources.Load("art/gbc/cards/pixelportraits/pixelportrait_bluemage") as Texture2D))
 					.SetCost(bloodCost: 0, gemsCost: list2)
-					.SetPortrait(Tools.GetTexture("BlueMage.png"), image)
+					.SetPortrait(Tools.GetTexture("BlueMage.png"))
 					.AddAbilities(list3[0])
 					.AddMetaCategories(list[0]);
 
@@ -819,6 +803,7 @@ namespace MagnificusMod
 					.SetCost(bloodCost: 0, gemsCost: gemCost)
 					.AddAbilities(list2[0]);
 			myCard.temple = CardTemple.Wizard;
+			myCard.metaCategories = list;
 		}
 
 		public static void AddObelisk()
@@ -1023,12 +1008,13 @@ namespace MagnificusMod
 			List<Ability> list2 = new List<Ability> { SigilCode.FamiliarA.ability, Ability.Reach };
 
 			List<GemType> gemCost = new List<GemType> { GemType.Blue };
-			CardInfo myCard = CardManager.New("mag", "mag_bullfrog", "GemFrog", 1, 3, "Upward it shoots, blocking any soaring foe.")
+			CardInfo myCard = CardManager.New("mag", "mag_bullfrog", "Gem Frog", 1, 3, "Upward it shoots, blocking any soaring foe.")
 
 					.SetPortrait(Tools.GetTexture("WizFrog.png"))
 					.SetCost(bloodCost: 0, gemsCost: gemCost)
 					.AddAbilities(list2[0], list2[1]);
 			myCard.temple = CardTemple.Wizard;
+			myCard.metaCategories = list;
 		}
 
 		public static void ChangeStoat()
@@ -1183,7 +1169,7 @@ namespace MagnificusMod
 			List<CardMetaCategory> list = new List<CardMetaCategory> { CardMetaCategory.ChoiceNode };
 			List<Ability> list2 = new List<Ability>();
 			list2.Add(SigilCode.Ditto.ability);
-			CardInfo myCard = CardManager.New("mag", "mag_mismagius", "Mismagius", 0, 0, "It distorts itself into the form of the opposing card.")
+			CardInfo myCard = CardManager.New("mag", "mag_mismagius", "Mimagius", 0, 0, "It distorts itself into the form of the opposing card.")
 
 					.SetPortrait(Tools.GetTexture("mismagius.png"))
 					.SetCost(bloodCost: 1)
@@ -1362,7 +1348,7 @@ namespace MagnificusMod
 			List<Ability> list2 = new List<Ability>();
 			list2.Add(SigilCode.NullifySigils.ability);
 			List<GemType> gemCost = new List<GemType> { GemType.Orange, GemType.Orange };
-			CardInfo myCard = CardManager.New("mag", "mag_coffeemage", "Coffee Mage", 2, 3, "She pours scalding hot coffee onto the enemy to make them numb..")
+			CardInfo myCard = CardManager.New("mag", "mag_coffeemage", "Coffee Mage", 2, 2, "She pours scalding hot coffee onto the enemy to make them numb..")
 
 					.SetPortrait(Tools.GetTexture("coffeemage.png"))
 					.AddSpecialAbilities(specialAbilities[0])
@@ -2096,7 +2082,39 @@ namespace MagnificusMod
 			myCard.temple = CardTemple.Wizard;
 			myCard.metaCategories = new List<CardMetaCategory>();
 		}
-	
+
+		public static void AddGreenMoxRabbit()
+		{
+			List<CardMetaCategory> list = new List<CardMetaCategory>();
+			List<Ability> list2 = new List<Ability>();
+			list2.Add(Ability.GainGemGreen);
+
+			CardInfo myCard = CardManager.New("mag", "mag_greenmoxrabbit", "Rabbit", 0, 1, "This is the last call, for booze.")
+								.SetCost(bloodCost: 0)
+								.SetPortrait(Tools.GetTexture("moxrabbitgreen.png"))
+								.AddTraits(Trait.Gem)
+								.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)
+								.AddAbilities(list2[0]);
+			myCard.temple = CardTemple.Wizard;
+			myCard.metaCategories = new List<CardMetaCategory>();
+		}
+
+		public static void AddOrangeMoxRabbit()
+		{
+			List<CardMetaCategory> list = new List<CardMetaCategory>();
+			List<Ability> list2 = new List<Ability>();
+			list2.Add(Ability.GainGemOrange);
+
+			CardInfo myCard = CardManager.New("mag", "mag_orangemoxrabbit", "Rabbit", 0, 1, "This is the last call, for ale.")
+								.SetCost(bloodCost: 0)
+								.SetPortrait(Tools.GetTexture("moxrabbitorange.png"))
+								.AddTraits(Trait.Gem)
+								.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)
+								.AddAbilities(list2[0]);
+			myCard.temple = CardTemple.Wizard;
+			myCard.metaCategories = new List<CardMetaCategory>();
+		}
+
 
 
 		[HarmonyPatch(typeof(DrawRabbits), "CardToDraw", MethodType.Getter)]
@@ -2104,17 +2122,84 @@ namespace MagnificusMod
 		{
 			public static bool Prefix(ref DrawRabbits __instance, ref CardInfo __result)
 			{
-				if (SceneLoader.ActiveSceneName == "finale_magnificus")
+				if (SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
+				List<string> cardToGet = new List<string>();
+				Plugin.MagCurrentNode.GetSideDeck();
+				string text = File.ReadAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave");
+				string[] array3 = text.Split('R');
+				array3 = array3[1].Split(',');
+				for (int j = 0; j < int.Parse(array3[0]); j++)
+				{cardToGet.Add("mag_orangemoxrabbit");}
+				for (int k = 0; k < int.Parse(array3[1]); k++)
+				{cardToGet.Add("mag_greenmoxrabbit");}
+				for (int l = 0; l < int.Parse(array3[2]); l++)
+				{cardToGet.Add("mag_moxrabbit");}
+				CardInfo cardByName = CardLoader.GetCardByName(cardToGet[UnityEngine.Random.RandomRangeInt(0, cardToGet.Count)]);
+				cardByName.Mods.AddRange(__instance.GetNonDefaultModsFromSelf(new Ability[]
 				{
-					CardInfo cardByName = CardLoader.GetCardByName("mag_moxrabbit");
-					cardByName.Mods.AddRange(__instance.GetNonDefaultModsFromSelf(new Ability[]
-					{
-					__instance.Ability
-					}));
-					__result = cardByName;
+				__instance.Ability
+				}));
+				__result = cardByName;
+				return false;
+			}
+		}
+
+		[HarmonyPatch(typeof(AbilityBehaviour), "GetNonDefaultModsFromSelf")]
+		public class RabbitFix2
+		{
+			public static bool Prefix(ref AbilityBehaviour __instance, ref List<CardModificationInfo> __result, params Ability[] exclude)
+			{
+				if (SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
+				List<Ability> abilities = __instance.Card.Info.Abilities;
+				foreach (CardModificationInfo cardModificationInfo in __instance.Card.TemporaryMods)
+				{
+					abilities.AddRange(cardModificationInfo.abilities);
+				}
+				foreach (Ability item in __instance.Card.Info.DefaultAbilities)
+				{
+					abilities.Remove(item);
+				}
+				foreach (Ability item2 in exclude)
+				{
+					abilities.Remove(item2);
+				}
+				if (abilities.Count == 0)
+				{
+					__result = new List<CardModificationInfo>();
 					return false;
 				}
-				return true;
+				CardModificationInfo cardModificationInfo2 = new CardModificationInfo();
+				if (SceneLoader.ActiveSceneName != "finale_magnificus") { cardModificationInfo2.fromCardMerge = true; }
+				cardModificationInfo2.abilities.AddRange(abilities);
+				__result =  new List<CardModificationInfo>
+				{
+					cardModificationInfo2
+				}; 
+				return false;
+			}
+		}
+
+		[HarmonyPatch(typeof(CreateCardsAdjacent), "ModifySpawnedCard")]
+		public class AdjacentCardsFix
+		{
+			public static bool Prefix(ref CreateCardsAdjacent __instance, CardInfo card)
+			{
+				List<Ability> abilities = __instance.Card.Info.Abilities;
+				var instance = __instance;
+				foreach (CardModificationInfo cardModificationInfo in __instance.Card.TemporaryMods)
+				{
+					abilities.AddRange(cardModificationInfo.abilities);
+				}
+				abilities.RemoveAll((Ability x) => x == instance.Ability);
+				if (abilities.Count > 4)
+				{
+					abilities.RemoveRange(3, abilities.Count - 4);
+				}
+				CardModificationInfo cardModificationInfo2 = new CardModificationInfo();
+				if (SceneLoader.ActiveSceneName != "finale_magnificus") { cardModificationInfo2.fromCardMerge = true; }
+				cardModificationInfo2.abilities = abilities;
+				card.Mods.Add(cardModificationInfo2);
+				return false;
 			}
 		}
 

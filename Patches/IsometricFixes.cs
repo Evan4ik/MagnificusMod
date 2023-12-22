@@ -120,7 +120,7 @@ namespace MagnificusMod
 				yield return new WaitForSeconds(0.01f);
 			}
 			gridMove = 0;
-			GameObject.Find("clickGrid").transform.Find("gridtile-1").gameObject.SetActive(true);
+			GameObject.Find("Player").transform.Find("clickGrid").Find("gridtile-1").gameObject.SetActive(true);
 		}
 
 		public static IEnumerator showUiFigure(GameObject uiFigure, bool enable)

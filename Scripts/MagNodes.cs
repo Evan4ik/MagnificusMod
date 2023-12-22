@@ -3221,7 +3221,7 @@ namespace MagnificusMod
 				if (done)
 				{
 					mainComponent.ExitBoard(0.3f, new Vector3(0, 0.5f, 0f));
-					Tween.LocalPosition(copiedCard.transform, new Vector3(7, 6, 0), 0.5f, 0);
+					Tween.LocalPosition(copiedCard.transform, new Vector3(16, 16, 0), 0.3f, 0);
 					this.confirmStone.Exit();
 					Destroy(GameObject.Find("TESTSTONE"));
 

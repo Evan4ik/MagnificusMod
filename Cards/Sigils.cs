@@ -185,7 +185,7 @@ namespace MagnificusMod
 
 		public static void PlatingWork()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Plating Work", "When a card bearing this sigil is played, all gems on the board gain the Sharp sigil, and 2 health.", typeof(SigilCode.PlatingWork), Tools.GetTexture("whitesmith_A.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Plating Work", "While a card bearing this sigil is on the board, all gems on your side of the board gain the Sharp Quills sigil, and 2 health.", typeof(SigilCode.PlatingWork), Tools.GetTexture("whitesmith_A.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.GetTexture("whitesmith_A.png"));
 			SigilCode.PlatingWork.ability = newAbility.ability;
@@ -201,7 +201,7 @@ namespace MagnificusMod
 
 		public static void GemAbsorb()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Gem Absorber", "When a card bearing this sigil is played, all gems on the board will perish. For each gem absorbed, gain 1 power and 2 health.", typeof(SigilCode.GemAbsorber), Tools.GetTexture("ability_absorbgems.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Gem Absorber", "When a card bearing this sigil is played, all gems on your side of the board will perish. For each gem absorbed, gain 1 power and 2 health.", typeof(SigilCode.GemAbsorber), Tools.GetTexture("ability_absorbgems.png"))
 				.SetDefaultPart1Ability()
 				.SetPixelAbilityIcon(Tools.GetTexture("pixelability_absorbgems.png"))
 				.SetIcon(Tools.GetTexture("ability_absorbgems.png"));

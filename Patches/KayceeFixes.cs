@@ -754,6 +754,51 @@ namespace MagnificusMod
 			return true;
 		}
 
+		public static void getDraftPools(string firstCardName)
+        {//gets starter deck based on the first card LOL!
+			switch (firstCardName)
+            {
+				case "mag_jrsage":
+				case "mag_obelisk":
+					List<CardInfo> unlockedCards;
+					unlockedCards = CardLoader.GetUnlockedCards(CardMetaCategory.ChoiceNode, CardTemple.Wizard);
+					List<CardInfo> list2 = new List<CardInfo>();
+					int seed = Random.RandomRangeInt(0, 10000);
+					while (list2.Count < 8 && unlockedCards.Count > 0)
+					{
+						CardInfo cardInfo = unlockedCards[SeededRandom.Range(0, unlockedCards.Count, seed++)];
+						CardInfo cardInfo2 = CardLoader.Clone(cardInfo);
+						list2.Add(cardInfo2);
+						unlockedCards.Remove(cardInfo);
+					}
+					string draftCards = "";
+					for (int i = 0; i < list2.Count; i++) { 
+						draftCards += list2[i].name;
+						if(i < list2.Count - 1) { draftCards += ";"; }
+					}
+					KayceeStorage.draftcards = draftCards;
+					break;
+				case "mag_musclemage":
+					KayceeStorage.draftcards = "mag_greenmage;mag_jrsage;mag_sabesage;mag_magepupil;mag_rubygolem;mag_practicemage;mag_knightmage;mag_moxmage";
+					break;
+				case "mag_rubygolem":
+					KayceeStorage.draftcards = "mag_orangemage;mag_wolf;mag_snipesage;mag_mismagius;mag_magimorph;mag_bluemage;mag_gemfiend;mag_maux";
+					break;
+				case "mag_rascal":
+					KayceeStorage.draftcards = "mag_bunnymage;mag_auspex;mag_hovermage;mag_almondcookie;mag_emeraldfiend;mag_musclemage;mag_jrsage;mag_runemage";
+					break;
+				case "mag_erraticscholar":
+					KayceeStorage.draftcards = "mag_magepupil;mag_runemage;mag_jester;mag_gemdetonator;mag_skelemage;mag_mismagius;mag_skelejrsage;mag_gemshield";
+					break;
+				case "mag_spellcaster":
+					KayceeStorage.draftcards = "mag_knightmage;mag_orangemage;mag_spellsquid;mag_frostspell;mag_alchemist;mag_gemfiend;mag_hovermage;mag_tarflamespell";
+					break;
+				case "mag_magepupil":
+					KayceeStorage.draftcards = "mag_duncemage;mag_stimmage;mag_auspex;mag_maux;mag_bluemage;mag_orangemage;mag_wolf;mag_runemage";
+					break;
+			}
+        }
+
 		[HarmonyPatch(typeof(AscensionSaveData), "NewRun")]
 		public class DraftObeliskFix
 		{
@@ -787,6 +832,7 @@ namespace MagnificusMod
 				{
 					__instance.currentRun.playerDeck.AddCard(CardLoader.GetCardByName("mag_obelisk"));
 					__instance.currentRun.playerDeck.AddCard(CardLoader.GetCardByName("mag_obelisk"));
+					getDraftPools(starterDeck[0].name);
 				}
 				if (KayceeStorage.ScreenState != CardTemple.Wizard)
 				{

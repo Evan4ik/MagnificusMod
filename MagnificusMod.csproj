@@ -276,6 +276,8 @@
     <None Remove="Resources\moxempowered_pixel.png" />
     <None Remove="Resources\moxmage.png" />
     <None Remove="Resources\moxrabbit.png" />
+    <None Remove="Resources\moxrabbitgreen.png" />
+    <None Remove="Resources\moxrabbitorange.png" />
     <None Remove="Resources\moxstrafe.png" />
     <None Remove="Resources\multiply.png" />
     <None Remove="Resources\neptune.png" />
@@ -428,6 +430,8 @@
     <EmbeddedResource Include="Resources\hydraorange.png" />
     <EmbeddedResource Include="Resources\magnusboss.png" />
     <EmbeddedResource Include="Resources\magnusstars.png" />
+    <EmbeddedResource Include="Resources\moxrabbitgreen.png" />
+    <EmbeddedResource Include="Resources\moxrabbitorange.png" />
     <EmbeddedResource Include="Resources\pixelability_spellbook.png" />
     <EmbeddedResource Include="Resources\pixelportrait_erraticscholar.png" />
     <EmbeddedResource Include="Resources\pixelportrait_gemabsorber.png" />
