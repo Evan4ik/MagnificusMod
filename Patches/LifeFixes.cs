@@ -63,19 +63,18 @@ namespace MagnificusMod
 				Tween.Shake(__state.playerLifeCounter.transform, __state.playerLifeCounter.transform.localPosition, Vector3.one * 0.05f, 5f, 0f, Tween.LoopType.None, null, null, true);
 				Tween.Shake(__state.opponentLifeCounter.transform, __state.opponentLifeCounter.transform.localPosition, Vector3.one * 0.05f, 5f, 0f, Tween.LoopType.None, null, null, true);
 				yield return new WaitForSeconds(3.5f);
-				bool learned = SavedVars.LearnedMechanics.Contains("liferace;");
-				if (!learned && !SaveManager.saveFile.ascensionActive)
+				if (!SavedVars.LearnedMechanics.Contains("liferace;") && !SaveManager.saveFile.ascensionActive)
 				{
 					SavedVars.LearnedMechanics += "liferace;";
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You are a simpleton for expecting scales.", -1f, 0.6f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("This is a simple race to 0.", -1f, 0.6f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 					yield return new WaitForSeconds(1.5f);
+					Tween.Position(GameObject.Find("Hand").transform, new Vector3(GameObject.Find("GameTable").transform.position.x + 1f, 12.75f, GameObject.Find("GameTable").transform.position.z - 5.1f), 0.6f, 0f, Tween.EaseInOut, Tween.LoopType.None, null, null, true);
+					Singleton<ViewManager>.Instance.SwitchToView(View.Default);
 				}
 				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Unlocked;
-				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
 				MagnificusMod.Plugin.spellsPlayed = 0;
 				Singleton<ViewController>.Instance.SwitchToControlMode(ViewController.ControlMode.WizardBattleDefault);
-				Tween.Position(GameObject.Find("Hand").transform, new Vector3(GameObject.Find("GameTable").transform.position.x + 1f, 12.75f, GameObject.Find("GameTable").transform.position.z - 5.1f), 0.6f, 0f, Tween.EaseInOut, Tween.LoopType.None, null, null, true);
 				yield break;
 			}
 		}

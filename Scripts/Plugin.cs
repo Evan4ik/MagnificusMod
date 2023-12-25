@@ -1162,7 +1162,6 @@ namespace MagnificusMod
 				for (int i = 0; i < base.Card.Info.mods[0].decalIds.Count; i++)
 				{
 					string[] splotchData = base.Card.Info.mods[0].decalIds[i].Split(',');
-					Debug.Log(splotchData.Length);
 					if (splotchData.Length == 5)
                     {
 						string[] newSplotchData = new string[4];

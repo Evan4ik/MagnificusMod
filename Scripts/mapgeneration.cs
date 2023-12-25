@@ -774,6 +774,23 @@ namespace MagnificusMod
 								gameObject2.transform.Find("BrickGround").localPosition = new Vector3(0, 0, 0);
 								gameObject2.transform.position = gameObject.transform.position + new Vector3(-20, 0, 0);
 								gameObject2.transform.rotation = Quaternion.Euler(0, 90, 0);
+							} else if (map[y][x][2] == 'N')
+							{
+								GameObject gameObject2 = GameObject.Instantiate(gameObject);
+								gameObject2.name = "x" + x.ToString() + " y" + y.ToString();
+								gameObject2.transform.parent = GameObject.Find("walls").transform;
+								gameObject2.transform.Find("BrickGround").localPosition = new Vector3(0, 0, 0);
+								gameObject2.transform.position = gameObject.transform.position + new Vector3(0, 0, 20);
+								gameObject2.transform.rotation = Quaternion.Euler(0, 180, 0);
+							}
+							else if (map[y][x][2] == 'W')
+							{
+								GameObject gameObject2 = GameObject.Instantiate(gameObject);
+								gameObject2.name = "x" + x.ToString() + " y" + y.ToString();
+								gameObject2.transform.parent = GameObject.Find("walls").transform;
+								gameObject2.transform.Find("BrickGround").localPosition = new Vector3(0, 0, 0);
+								gameObject2.transform.position = gameObject.transform.position + new Vector3(20, 0, 0);
+								gameObject2.transform.rotation = Quaternion.Euler(0, 270, 0);
 							}
 							else if ((map[y][x][2] == 'J' || map[y][x][2] == 'H') && map[y][x + 1][0] == 'W')
 							{
@@ -2046,7 +2063,11 @@ namespace MagnificusMod
 				int targetY = int.Parse(namei[1]);
 				newY += 1;
 				targetY -= 5;
-				GameObject.Find("bossTeleporter").transform.Find("Rotators").Find("ZoomInteractable").gameObject.GetComponent<ZoomInteractable>().interactableFromDirections[0] = LookDirection.North;
+				GameObject.Find("bossTeleporter").transform.Find("Rotators").Find("ZoomInteractable").gameObject.GetComponent<ZoomInteractable>().interactableFromDirections = new List<LookDirection> { LookDirection.North };
+				if (config.isometricActive)
+                {
+					GameObject.Find("bossTeleporter").transform.Find("Rotators").Find("ZoomInteractable").gameObject.GetComponent<ZoomInteractable>().interactableFromDirections = new List<LookDirection> { LookDirection.North, LookDirection.East, LookDirection.South, LookDirection.West };
+				}
 				GameObject.Find("bossTeleporter").transform.Find("Rotators").Find("ZoomInteractable").gameObject.GetComponent<ZoomInteractable>().interactableFromZones.Add(GameObject.Find("x" + namei[0] + " y" + newY).GetComponent<NavigationZone3D>());
 				GameObject.Find("bossTeleporter").GetComponent<GemPedestal3D>().teleportTarget = GameObject.Find("x" + namei[0] + " y" + targetY).GetComponent<NavigationZone3D>();
 				GameObject.Find("bossTeleporter").GetComponent<GemPedestal3D>().teleportReturnTarget = GameObject.Find("x" + namei[0] + " y" + newY).GetComponent<NavigationZone3D>();
@@ -3015,6 +3036,9 @@ namespace MagnificusMod
 				spellCardDrawPile.AddComponent<SpellCardDrawPiles>();
 				*/
 
+				if (SavedVars.LearnedMechanics.Contains("liferace;") || SaveManager.saveFile.ascensionActive)
+				{ __instance.duelDiskParent.gameObject.transform.Find("Anim").gameObject.GetComponent<Animator>().speed = 999; }
+
 				//setup life manager
 
 				GameObject lifeCounter = GameObject.Instantiate(GameObject.Find("nodeIconBase"));
@@ -3099,9 +3123,10 @@ namespace MagnificusMod
 				shop.eventToTrigger = delegate ()
 				{
 					MagNodes.CustomNode2 triggeringNodeData2 = new MagNodes.CustomNode2();
-					Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North, true);
+					Generation.lastView = GameObject.Find("Player").GetComponent<FirstPersonController>().LookDirection;
+					if (!config.isometricMode)
+					{Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North);}
 					Singleton<FirstPersonController>.Instance.enabled = false;
-					Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North, true);
 					Singleton<FirstPersonController>.Instance.GetComponentInChildren<ViewManager>().enabled = true;
 					Singleton<FirstPersonController>.Instance.GetComponentInChildren<ViewController>().enabled = true;
 					Singleton<FirstPersonController>.Instance.GetComponentInChildren<ViewManager>().SwitchToView(View.Choices, false, false);
@@ -3546,7 +3571,7 @@ namespace MagnificusMod
 						}*/
 						//Tween.LocalPosition(GameObject.Find("Hand").transform, new Vector3(4.3555f, -11.0099f, 2.0401f), 0f, 0f);
 						GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.Default, true, false);
-						instance.StartCoroutine(instance.TransitionTo(GameState.CardBattle, cardBattleNodeData, true, true));
+						Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<MagnificusGameFlowManager>.Instance.TransitionTo(GameState.CardBattle, cardBattleNodeData, true, true));
 						List<string> list6 = new List<string>
 						{
 							"Wizard3DPortrait_JuniorSage",
@@ -3587,8 +3612,7 @@ namespace MagnificusMod
 
 						NavigationZone3D currentZone2 = GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone;
 						string name2 = currentZone2.name;
-						bool flag120 = GameObject.Find(name2).transform.Find("nodeIcon") != null;
-						if (flag120)
+						if (GameObject.Find(name2).transform.Find("nodeIcon") != null)
 						{
 							nodes.Remove(GameObject.Find(name2).transform.Find("nodeIcon").gameObject);
 							GameObject.Destroy(GameObject.Find(name2).transform.Find("nodeIcon").gameObject);
@@ -3605,22 +3629,6 @@ namespace MagnificusMod
                             }
                         }
 
-
-						/*
-						                                                                                                         * 
-						                                                                                                         * 
-						foreach (GameObject item in kanyeWest)
-						{
-							if (item.name == "Items")
-							{display
-								Tween.LocalPosition(item.transform, new Vector3(4.81f, 5.01f, 0), 0.5f, 0.1f);
-								continue;
-							}
-							Tween.LocalPosition(item.transform, new Vector3(0, 0, 0), 0.5f, 0.1f);
-						}
-						Tween.LocalPosition(GameObject.Find("CombatBell").transform, new Vector3(-3.9f, 0, -1.647f), 0.5f, 0.1f);
-						Tween.LocalPosition(GameObject.Find("Hand").transform, new Vector3(1f, 3.92f, -5.15f), 0.5f, 0.1f);
-						*/
 						Singleton<ViewController>.Instance.SwitchToControlMode(ViewController.ControlMode.WizardBattleDefault);
 						Singleton<ViewManager>.Instance.SwitchToView(View.Default);
 						instance.duelDiskParent.SetActive(true);
@@ -3635,7 +3643,7 @@ namespace MagnificusMod
 						instance.combatBell.transform.localPosition = new Vector3(-7.64f, 9.3f, 6.42f);
 						instance.combatBell.transform.Find("Anim").gameObject.SetActive(true);
 						instance.combatBell.gameObject.SetActive(true);
-						instance.combatBell.SetBesideBoard(false, true);
+						instance.combatBell.SetBesideBoard(false, false);
 
 						Singleton<MagnificusDuelDisk>.Instance.basePosition = new Vector3(0.89f, 4.2424f, -2.8576f);
 						instance.duelDiskParent.transform.localPosition = new Vector3(0.89f, 4.2424f, -2.8576f);
@@ -4299,7 +4307,7 @@ namespace MagnificusMod
 				if (int.Parse(y) < 7 && RunState.Run.regionTier == 3)
 				{
 					GameObject.Find("DungeonFloor").transform.Find("BrickGround").gameObject.SetActive(false);
-					Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().farClipPlane = 75f;
+					if (!config.isometricMode) { Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().farClipPlane = 75f; }
 					GameObject.Find("Player").transform.Find("Directional Light").gameObject.GetComponent<Light>().intensity = 0;
 				}
 				Singleton<FirstPersonController>.Instance.currentZone = GameObject.Find(coords).GetComponent<NavigationZone3D>();
@@ -4527,7 +4535,7 @@ namespace MagnificusMod
 			bool nodeInDirectionExists = false;
 			List<string> directions = new List<string> { "North", "East", "South", "West" };
 			NavigationZone3D zone = overridezone != null ? overridezone : Singleton<FirstPersonController>.Instance.currentZone;
-			if (NavigationGrid.instance.GetZoneInDirection(LookDirection.North + directions.IndexOf(direction), zone) != null) { nodeInDirectionExists = true; }
+			if (NavigationGrid.instance.GetZoneInDirection((LookDirection)((int)(Singleton<FirstPersonController>.Instance.LookDirection + directions.IndexOf(direction)) % 4), zone) != null) { nodeInDirectionExists = true; }
 			return nodeInDirectionExists && GameObject.Find("Player").transform.Find("figure").gameObject.activeSelf;
         }
 
@@ -5041,6 +5049,7 @@ namespace MagnificusMod
 
 		public static IEnumerator isometricTransition(Texture icon, bool doPainting = true)
         {
+			Singleton<InteractionCursor>.Instance.ClearForcedCursorType();
 			GameObject.Find("deckLight").GetComponent<Light>().enabled = false;
 			GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(true);
 			GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition = new Vector3(0, 0, -1);
@@ -5059,7 +5068,9 @@ namespace MagnificusMod
 			GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(false);
 			GameObject.Find("Player").transform.Find("clickToMove").gameObject.SetActive(false);
 			if (config.gridActive) { GameObject.Find("Player").transform.Find("clickGrid").gameObject.SetActive(false); }
-			yield return new WaitForSeconds(0.75f);
+			yield return new WaitForSeconds(0.3f);
+			GameObject.Find("Player").transform.localRotation = Quaternion.Euler(0, 0, 0);
+			yield return new WaitForSeconds(0.45f);
 			foreach (GameObject gameObject in MagnificusMod.Generation.nodes)
 			{
 				if (gameObject == null) { continue; }
@@ -5071,6 +5082,7 @@ namespace MagnificusMod
 					gameObject.transform.LookAt(2f * gameObject.transform.position - GameObject.Find("Player").GetComponent<FirstPersonController>().currentZone.gameObject.transform.position);
 					float newRot = gameObject.transform.eulerAngles.y;
 					gameObject.transform.localRotation = Quaternion.Euler(0, newRot, zRot);
+					//gameObject.transform.localPosition = new Vector3(1f, 22.72f, 0);
 				}
 			}
 			GameObject.Find("deckLight").GetComponent<Light>().enabled = true;
@@ -5110,10 +5122,11 @@ namespace MagnificusMod
 				if (gameObject == null) { continue; }
 				if (gameObject.name.Contains("nodeIcon"))
 				{
-					gameObject.transform.localRotation = Quaternion.Euler(30, 45, 0);
+					gameObject.transform.localRotation = Quaternion.Euler(30, 45 + (float)Singleton<FirstPersonController>.Instance.LookDirection * 90, 0);
 				}
 			}
 			yield return new WaitForSeconds(0.1f);
+			GameObject.Find("Player").transform.localRotation = Quaternion.Euler(0, (float)lastView * 90, 0);
 			GameObject.Destroy(GameObject.Find("PixelCameraParent").GetComponent<SineWaveMovement>());
 			GameObject.Destroy(GameObject.Find("PixelCameraParent").GetComponent<SineWaveRotation>());
 			GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(-40, 47.5f, -40);
@@ -5121,6 +5134,7 @@ namespace MagnificusMod
 			IsometricStuff.moveDisabled = false;
 			if (doPainting) 
 				yield return new WaitForSeconds(0.45f);
+			lastView = LookDirection.North;
 			GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(true);
 			GameObject.Find("Player").transform.Find("clickToMove").gameObject.SetActive(true);
 			Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
@@ -5345,6 +5359,7 @@ namespace MagnificusMod
 			Singleton<MagnificusGameFlowManager>.Instance.combatBell.SetBesideBoard(false, true);
 
 			Singleton<MagnificusDuelDisk>.Instance.basePosition = new Vector3(0.89f, 4.5f, -2.8576f);
+			Singleton<MagnificusDuelDisk>.Instance.gameObject.transform.Find("Anim").gameObject.GetComponent<Animator>().speed = 999;
 			Singleton<MagnificusGameFlowManager>.Instance.duelDiskParent.transform.localPosition = new Vector3(0.89f, 4.5f, -2.8576f);
 			Singleton<MagnificusGameFlowManager>.Instance.playerHand.transform.localPosition = new Vector3(1.42f, 3.12f, -5.47f);
 			GameObject.Find("3DPortraitSlots").transform.localPosition = new Vector3(0f, -2.5f, 18f);
@@ -6475,6 +6490,7 @@ namespace MagnificusMod
 			}
 			if (config.isometricActive && (location == "goobert" || location == "espeara" || location == "lonely"))
 			{
+				IsometricStuff.moveDisabled = true;
 				GameObject figure = GameObject.Instantiate(Resources.Load("prefabs/map/CompositeFigurine") as GameObject);
 				figure.transform.parent = GameObject.Find("GameEnvironment").transform;
 				figure.name = "figure";
@@ -6616,7 +6632,8 @@ namespace MagnificusMod
 					','
 			});
 			yield return new WaitForSeconds(0.2f);
-			if (config.isometricActive) { 
+			if (config.isometricActive) {
+				IsometricStuff.moveDisabled = false;
 				GameObject.Find("Player").transform.Find("clickToMove").localRotation = Quaternion.Euler(0, 0, 0);
 				if (config.gridActive) { GameObject.Find("Player").transform.Find("clickGrid").localRotation = Quaternion.Euler(0, 0, 0); }
 			}
@@ -6973,7 +6990,9 @@ namespace MagnificusMod
 
 		private static IEnumerator startHammer()
 		{
-			yield return new WaitForSeconds(5f);
+			yield return new WaitForSeconds(2f);
+			if (!SavedVars.LearnedMechanics.Contains("liferace;") && !SaveManager.saveFile.ascensionActive)
+            {yield return new WaitForSeconds(3f);}
 			GameObject.Find("WizardBattleDuelDisk").transform.Find("hammerStuff").gameObject.SetActive(true);
 			GameObject.Find("hammerStuff").GetComponent<SineWaveMovement>().originalPosition = new Vector3(3.74f, 0.5f, 5.1599f);
 			GameObject.Find("hammerStuff").GetComponent<SineWaveMovement>().speed = 2;
@@ -7361,7 +7380,7 @@ namespace MagnificusMod
 
 		public static IEnumerator WaitThenEnablePlayer(float wait)
 		{
-			if (config.isometricMode == false){Singleton<FirstPersonController>.Instance.LookAtDirection(Generation.lastView, false);}
+			if (config.isometricMode == false){Singleton<FirstPersonController>.Instance.LookAtDirection(Generation.lastView, false); Generation.lastView = LookDirection.North; }
 			yield return new WaitForSeconds(wait);
 			if (Singleton<ViewManager>.Instance.CurrentView != View.Candles)
 			{
@@ -7372,7 +7391,6 @@ namespace MagnificusMod
 				Tween.Position(GameObject.Find("PixelCameraParent").transform, new Vector3(x, 16.5f, z), 0f, 0f, null, Tween.LoopType.None, null, null, true);
 				GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = true;
 				GameObject.Find("Player").GetComponentInChildren<ViewController>().allowedViews = new List<View>();
-				Generation.lastView = LookDirection.North;
 			}
 			yield break;
 		}

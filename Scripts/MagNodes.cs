@@ -1345,7 +1345,6 @@ namespace MagnificusMod
 								int y1 = int.Parse(y[1]);
 								y1 -= 1;
 								string newCords = y[0] + "y" + y1;
-								Debug.Log(newCords);
 								GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone = GameObject.Find(newCords).GetComponent<NavigationZone3D>();
 								MagCurrentNode.SaveNode(newCords);
 							}
@@ -1381,8 +1380,10 @@ namespace MagnificusMod
 				}
 
 				public IEnumerator showNodeIcon(float delay, NavigationZone3D currentZone)
-                {
+				{ 
+					currentZone.transform.Find("nodeIcon").transform.localScale = new Vector3(0, 0, 0);
 					yield return new WaitForSeconds(delay);
+					currentZone.transform.Find("nodeIcon").transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
 					currentZone.transform.Find("nodeIcon").transform.position = new Vector3(currentZone.transform.position.x, 13f, currentZone.transform.position.z);
 				}
 				public void deckAction(bool side)
@@ -2389,7 +2390,8 @@ namespace MagnificusMod
 				{
 					deck.Add(card);
 				}
-				deck.RemoveAll((CardInfo x) => !x.HasTrait(Trait.EatsWarrens) || x.mods.Count > 0 || x.name == "mag_goldspell" || upgradedDescs.IndexOf(x.name) < 0);
+				int modCount = Generation.challenges.Contains("ItemSpells") ? 1 : 0;
+				deck.RemoveAll((CardInfo x) => !x.HasTrait(Trait.EatsWarrens) || x.mods.Count > modCount || x.name == "mag_goldspell" || upgradedDescs.IndexOf(x.name) < 0);
 				int dength = deck.Count;
 				if (dength > 0)
 				{
@@ -2411,7 +2413,7 @@ namespace MagnificusMod
 					{
 						if (carde.HasTrait(Trait.EatsWarrens) && carde.HasCardMetaCategory(Plugin.SpellPool))
 						{
-							spellCards.Add(carde);
+							spellCards.Add(CardLoader.GetCardByName(carde.name));
 						}
 					}
 					List<CardInfo> selectedCards = new List<CardInfo>();
@@ -5446,7 +5448,7 @@ namespace MagnificusMod
 				{
 					if (carde.HasTrait(Trait.EatsWarrens) && carde.HasCardMetaCategory(Plugin.SpellPool))
 					{
-						spellCards.Add(carde);
+						spellCards.Add(CardLoader.GetCardByName(carde.name));
 					}
 				}
 				List<CardInfo> selectedCards = new List<CardInfo>();

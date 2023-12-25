@@ -260,6 +260,7 @@ namespace MagnificusMod
 				NavigationZone3D currentZone2 = GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone;
 				if (config.isometricMode == true)
 				{
+					Tween.LocalRotation(GameObject.Find("Player").transform, Quaternion.Euler(0, 0, 0), 0.2f, 0);
 					IsometricStuff.moveDisabled = false;
 					GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(false);
 					GameObject.Find("WallFigure").transform.Find("VisibleParent").Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
@@ -285,6 +286,7 @@ namespace MagnificusMod
 					Singleton<FirstPersonController>.Instance.LookLocked = true;
 					Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(-40, 47.5f, -40), 0.25f, 0.4f);
 					Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30, 45, 0), 0.25f, 0.4f);
+					Tween.LocalRotation(GameObject.Find("Player").transform, Quaternion.Euler(0, (float)Generation.lastView * 90, 0), 0.2f, 0);
 				}
 				Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(enablePlayer());
 				if (RunState.Run.regionTier == 2)

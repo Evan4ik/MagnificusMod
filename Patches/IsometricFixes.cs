@@ -61,7 +61,7 @@ namespace MagnificusMod
 					Tween.LocalPosition(GameObject.Find("Player").transform.Find("figure"), new Vector3(0, -6.5f + UnityEngine.Random.Range(-0.50f, 0.50f), 0), 0.1f, 0);
 					Tween.LocalPosition(GameObject.Find("Player").transform.Find("figure"), new Vector3(0, -10f, 0), 0.1f, 0.1f);
 					GameObject uiFigure = GameObject.Find("WallFigure").transform.Find("VisibleParent").gameObject;
-					if (Physics.Raycast(zone.gameObject.transform.position + new Vector3(0, -20, 0), new Vector3(-1, 1f, -1f), 45, 1))
+					if (Physics.Raycast(zone.gameObject.transform.position + new Vector3(0, -20, 0), getRayDirection((float)Singleton<FirstPersonController>.Instance.LookDirection * 90), 45, 1))
 					{
                            if (GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition == new Vector3(0, 0, -1)){__instance.StartCoroutine(showUiFigure(uiFigure.transform.Find("Header").Find("IconSprite").gameObject, true)); }
 					} else 
@@ -77,6 +77,14 @@ namespace MagnificusMod
 				}
 			}
 		}
+
+		public static Vector3 getRayDirection(float dir)
+        {
+			if (dir == 270) { return new Vector3(1, 1, -1f); }
+			else if (dir == 180) { return new Vector3(1, 1, 1); }
+			else if (dir == 90) { return new Vector3(-1, 1, 1); }
+			return new Vector3(-1, 1, -1f);
+        }
 
 		public static List<GameObject> gridTileObj = new List<GameObject>();
 		public static int gridMove = 0;
@@ -203,6 +211,7 @@ namespace MagnificusMod
 			}
 		}
 
+		public static bool enableNorth = false;
 
 		[HarmonyPatch(typeof(ZoomInteractable), "ManagedUpdate")]
 		public class fixZoomInteractable
@@ -220,7 +229,39 @@ namespace MagnificusMod
 						Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30, 45, 0), 0.25f, 0);
 					}
 				}
+				List<string> directions = new List<string> { "North", "East", "South", "West" };
+				if (__instance.PrerequisitesMet)
+				{
+					enableNorth = true;
+					for (int i = 0; i < directions.Count; i++)
+					{GameObject.Find("click" + directions[i]).GetComponent<BoxCollider>().enabled = false;}
+				}
+				if (!__instance.PrerequisitesMet && enableNorth)
+                {
+					enableNorth = false;
+					for (int i = 0; i < directions.Count; i++)
+					{ GameObject.Find("click" + directions[i]).GetComponent<BoxCollider>().enabled = true; }
+				}
 				return false;
+			}
+		}
+
+		[HarmonyPatch(typeof(ZoomInteractable), "SetZoomed")]
+		public class fixZoom
+		{
+			public static void Prefix(ref ZoomInteractable __instance, bool zoomed, bool toAnotherZoom = false, float zoomDuration = 0.2f)
+			{
+				if (config.isometricMode == false || SceneLoader.ActiveSceneName != "finale_magnificus") { return; }
+				if (zoomed)
+				{
+					Generation.lastView = Singleton<FirstPersonController>.Instance.LookDirection;
+					Tween.LocalRotation(GameObject.Find("Player").transform, Quaternion.Euler(0, 0, 0), 0.2f, 0);
+				} else
+                {
+					Tween.LocalRotation(GameObject.Find("Player").transform, Quaternion.Euler(0, (float)Generation.lastView * 90, 0), 0.2f, 0);
+					Generation.lastView = LookDirection.North; 
+
+				}
 			}
 		}
 
@@ -243,7 +284,7 @@ namespace MagnificusMod
 				if (config.isometricMode == true && MagnificusMod.Generation.minimap && RunState.Run.regionTier > 0 && SceneLoader.ActiveSceneName == "finale_magnificus") 
 				{
 					GameObject playerIcon = GameObject.Find("playerMapNode");
-					Tween.Rotation(playerIcon.transform.Find("Header").Find("IconSprite"), Quaternion.Euler(0, 0, 270), 0.25f, 0);
+					Tween.Rotation(playerIcon.transform.Find("Header").Find("IconSprite"), Quaternion.Euler(0, 0, 270 + getMapRotationOffset((float)Singleton<FirstPersonController>.Instance.LookDirection * 90)), 0.25f, 0);
 				}
 			}
 		}
@@ -256,7 +297,7 @@ namespace MagnificusMod
 				if (config.isometricMode == true && MagnificusMod.Generation.minimap && RunState.Run.regionTier > 0 && SceneLoader.ActiveSceneName == "finale_magnificus")
 				{
 					GameObject playerIcon = GameObject.Find("playerMapNode");
-					Tween.Rotation(playerIcon.transform.Find("Header").Find("IconSprite"), Quaternion.Euler(0, 0, 90), 0.25f, 0);
+					Tween.Rotation(playerIcon.transform.Find("Header").Find("IconSprite"), Quaternion.Euler(0, 0, 90 + getMapRotationOffset((float)Singleton<FirstPersonController>.Instance.LookDirection * 90)), 0.25f, 0);
 				}
 			}
 		}
@@ -269,10 +310,20 @@ namespace MagnificusMod
 				if (config.isometricMode == true && MagnificusMod.Generation.minimap && RunState.Run.regionTier > 0 && SceneLoader.ActiveSceneName == "finale_magnificus")
 				{
 					GameObject playerIcon = GameObject.Find("playerMapNode");
-					Tween.Rotation(playerIcon.transform.Find("Header").Find("IconSprite"), Quaternion.Euler(0, 0, 180), 0.25f, 0);
+					Tween.Rotation(playerIcon.transform.Find("Header").Find("IconSprite"), Quaternion.Euler(0, 0, 180 + getMapRotationOffset((float)Singleton<FirstPersonController>.Instance.LookDirection * 90)), 0.25f, 0);
 				}
 			}
 		}
+
+		public static float getMapRotationOffset(float currentRotation)
+		{
+			if (currentRotation == 90) { return -90;}
+			else if (currentRotation == 270) { return 90; }
+			else if (currentRotation == 180){return 180;}
+			return 0;
+		}
+
+		public static bool rotating = false;
 
 		[HarmonyPatch(typeof(FirstPersonController), "GetZoneFromInput")]
 		public class getzone
@@ -288,7 +339,7 @@ namespace MagnificusMod
 					if (MagnificusMod.Generation.minimap && RunState.Run.regionTier > 0)
 					{
 						GameObject playerIcon = GameObject.Find("playerMapNode");
-						Tween.Rotation(playerIcon.transform.Find("Header").Find("IconSprite"), Quaternion.Euler(0, 0, 0), 0.25f, 0);
+						Tween.Rotation(playerIcon.transform.Find("Header").Find("IconSprite"), Quaternion.Euler(0, 0, 0 + getMapRotationOffset((float)Singleton<FirstPersonController>.Instance.LookDirection * 90)), 0.25f, 0);
 					}
 					return false;
 				}
@@ -310,9 +361,77 @@ namespace MagnificusMod
 					Tween.LocalRotation(GameObject.Find("Player").transform.Find("figure").transform, Quaternion.Euler(0, 270, 0), 0.15f, 0);
 					return false;
 				}
+				if (Input.GetKeyDown(KeyCode.Q) && !rotating)
+				{
+					Tween.LocalRotation(GameObject.Find("Player").transform, Quaternion.Euler(0, ((float)Singleton<FirstPersonController>.Instance.LookDirection * 90) - 90, 0), 0.2f, 0);
+					if (config.gridActive) {
+						float gridRot = ((float)Singleton<FirstPersonController>.Instance.LookDirection * 90) + 90;
+						if (((float)Singleton<FirstPersonController>.Instance.LookDirection * 90) - 90 == 0)
+						{ gridRot = 0; }
+						else if (((float)Singleton<FirstPersonController>.Instance.LookDirection * 90) - 90 == 180)
+						{ gridRot = 180; }
+						Tween.LocalRotation(GameObject.Find("clickGrid").transform, Quaternion.Euler(0, gridRot, 0), 0.2f, 0);
+					}
+					Singleton<FirstPersonController>.Instance.LookLeft();
+					__instance.StartCoroutine(rotateNodes());
+				}
+				if (Input.GetKeyDown(KeyCode.E) && !rotating)
+				{
+					Tween.LocalRotation(GameObject.Find("Player").transform, Quaternion.Euler(0, ((float)Singleton<FirstPersonController>.Instance.LookDirection * 90) + 90, 0), 0.2f, 0);
+					if (config.gridActive) {
+						float gridRot = ((float)Singleton<FirstPersonController>.Instance.LookDirection * 90) - 90;
+						if (((float)Singleton<FirstPersonController>.Instance.LookDirection * 90) + 90 == 0 || ((float)Singleton<FirstPersonController>.Instance.LookDirection * 90) + 90 == 360)
+						{ gridRot = 0; } 
+						else if (((float)Singleton<FirstPersonController>.Instance.LookDirection * 90) + 90 == 180) 
+						{gridRot = 180;}
+						Tween.LocalRotation(GameObject.Find("clickGrid").transform, Quaternion.Euler(0, gridRot, 0), 0.2f, 0);
+					}
+					Singleton<FirstPersonController>.Instance.LookRight();
+					__instance.StartCoroutine(rotateNodes());
+				}
 				__result = null;
 				return false;
 			}
+		}
+
+		public static IEnumerator rotateNodes()
+        {
+			rotating = true;
+			foreach (GameObject gameObject in MagnificusMod.Generation.nodes)
+			{
+				if (gameObject == null) { continue; }
+				if (gameObject.name.Contains("nodeIcon"))
+				{
+					Tween.LocalRotation (gameObject.transform, Quaternion.Euler(30, 45 + (float)Singleton<FirstPersonController>.Instance.LookDirection * 90, 0), 0.2f, 0);
+					if (NavigationGrid.instance.GetZoneInDirection((LookDirection)((int)(Singleton<FirstPersonController>.Instance.LookDirection + 2) % 4), gameObject.transform.GetParent().gameObject.GetComponent<NavigationZone>()) == null)
+					{
+						string[] pos = gameObject.transform.GetParent().gameObject.name.Split('y');
+						int xPos = Convert.ToInt32(pos[0].Split('x')[1]);
+						int yPos = Convert.ToInt32(pos[1]);
+						float rotation = (float)Singleton<FirstPersonController>.Instance.LookDirection * 90;
+						if (rotation == 0) { yPos += 1; }
+						else if (rotation == 90) { xPos -= 1; }
+						else if (rotation == 180) { yPos -= 1; }
+						else if (rotation == 270) { xPos += 1; }
+						try
+						{
+							if (GameObject.Find("x" + xPos + " y" + yPos + " cover") != null)
+							{
+								Tween.LocalPosition(gameObject.transform, new Vector3(1f, 30.72f, 0), 0.2f, 0);
+							}
+							else
+							{
+								Tween.LocalPosition(gameObject.transform, new Vector3(1f, 22.72f, 0), 0.2f, 0);
+							}
+						}
+						catch { Tween.LocalPosition(gameObject.transform, new Vector3(1f, 22.72f, 0), 0.2f, 0); }
+					} else
+                    {Tween.LocalPosition(gameObject.transform, new Vector3(1f, 22.72f, 0), 0.2f, 0);}
+				}
+			}
+			yield return new WaitForSeconds(0.2f);
+			rotating = false;
+			yield break;
 		}
 
 	}

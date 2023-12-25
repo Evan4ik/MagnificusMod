@@ -2695,7 +2695,6 @@ namespace MagnificusMod
 						for (int i = 0; i < Singleton<BoardManager>.Instance.opponentSlots[j].Card.temporaryMods.Count; i++)
 						{
 							if (Singleton<BoardManager>.Instance.opponentSlots[j].Card == null) { continue; }
-							Debug.Log(Singleton<BoardManager>.Instance.opponentSlots[j].Card.name);
 							if (Singleton<BoardManager>.Instance.opponentSlots[j].Card.temporaryMods[i].singletonId == "planetMod")
 							{
 								Singleton<BoardManager>.Instance.opponentSlots[j].Card.temporaryMods[i].attackAdjustment = 0;
@@ -3276,22 +3275,12 @@ namespace MagnificusMod
 				tempMod.singletonId = "DECKCARD";
 				if (emptySlot < 0)
 				{
-					bool isDeckCard = false;
-					foreach (CardModificationInfo mod in Singleton<BoardManager>.Instance.OpponentSlotsCopy[emptySlot].Card.TemporaryMods)
-					{
-						if (mod.singletonId == null) { continue; }
-						if (mod.singletonId == "DECKCARD")
-						{
-							isDeckCard = true;
-						}
-					}
-					int slot = isDeckCard ? 3 : 0;
-					yield return Singleton<BoardManager>.Instance.opponentSlots[slot].Card.Die(false);
+					yield return Singleton<BoardManager>.Instance.opponentSlots[0].Card.Die(false);
 					yield return new WaitForSeconds(0.2f);
-					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(urCard, Singleton<BoardManager>.Instance.OpponentSlotsCopy[slot], 0.1f, true);
-					if (Singleton<BoardManager>.Instance.OpponentSlotsCopy[slot].Card != null)
+					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(urCard, Singleton<BoardManager>.Instance.OpponentSlotsCopy[0], 0.1f, true);
+					if (Singleton<BoardManager>.Instance.OpponentSlotsCopy[0].Card != null)
 					{
-						Singleton<BoardManager>.Instance.OpponentSlotsCopy[slot].Card.AddTemporaryMod(tempMod);
+						Singleton<BoardManager>.Instance.OpponentSlotsCopy[0].Card.AddTemporaryMod(tempMod);
 					}
 				} else
                 {

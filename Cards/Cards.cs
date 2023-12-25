@@ -1008,7 +1008,7 @@ namespace MagnificusMod
 			List<Ability> list2 = new List<Ability> { SigilCode.FamiliarA.ability, Ability.Reach };
 
 			List<GemType> gemCost = new List<GemType> { GemType.Blue };
-			CardInfo myCard = CardManager.New("mag", "mag_bullfrog", "Gem Frog", 1, 3, "Upward it shoots, blocking any soaring foe.")
+			CardInfo myCard = CardManager.New("mag", "mag_bullfrog", "Gem Frog", 1, 4, "Upward it shoots, blocking any soaring foe.")
 
 					.SetPortrait(Tools.GetTexture("WizFrog.png"))
 					.SetCost(bloodCost: 0, gemsCost: gemCost)

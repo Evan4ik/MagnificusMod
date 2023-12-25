@@ -59,7 +59,6 @@ namespace MagnificusMod
 					{
 						Singleton<MagnificusDuelDisk>.Instance.OnCardPlayed();
 						oldView = Singleton<ViewManager>.Instance.CurrentView;
-						yield return new WaitForSeconds(0.25f);
 						/*
 						if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("FadingMox"))
 						{
@@ -91,7 +90,8 @@ namespace MagnificusMod
 						Singleton<ViewManager>.Instance.SwitchToView(View.OpponentQueue, false, __state.cardSlot.IsPlayerSlot);
 					}
 					__state.SummonPortraitForCard(otherCard);
-					yield return new WaitForSeconds(1f);
+					if (!otherCard.slot.IsPlayerSlot)
+					{yield return new WaitForSeconds(0.65f);} else { yield return new WaitForSeconds(0.15f); }
 					if (__state.cardSlot.IsPlayerSlot)
 					{
 						Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Unlocked;
@@ -889,6 +889,63 @@ namespace MagnificusMod
 					}
 				}
 				yield break;
+			}
+		}
+
+
+		[HarmonyPatch(typeof(TurnManager), "SetupPhase")]
+		public class SpeedUpBattleIntro
+		{
+			public static void Prefix(out TurnManager __state, ref TurnManager __instance)
+			{
+				__state = __instance;
+			}
+
+			public static IEnumerator Postfix(IEnumerator enumerator, TurnManager __state, EncounterData encounterData)
+			{
+				__state.IsSetupPhase = true;
+				Singleton<PlayerHand>.Instance.PlayingLocked = true;
+				if (__state.SpecialSequencer != null)
+				{
+					yield return __state.SpecialSequencer.PreBoardSetup();
+				}
+				yield return new WaitForSeconds(0.15f);
+				if (SceneLoader.ActiveSceneName == "finale_magnificus" && SavedVars.LearnedMechanics.Contains("liferace;") || SceneLoader.ActiveSceneName == "finale_magnificus" && SaveManager.saveFile.ascensionActive) { __state.StartCoroutine(Singleton<LifeManager>.Instance.Initialize(__state.SpecialSequencer == null || __state.SpecialSequencer.ShowScalesOnStart)); }
+				else {yield return Singleton<LifeManager>.Instance.Initialize(__state.SpecialSequencer == null || __state.SpecialSequencer.ShowScalesOnStart);}
+				if (ProgressionData.LearnedMechanic(MechanicsConcept.Rulebook) && Singleton<TableRuleBook>.Instance != null)
+				{
+					Singleton<TableRuleBook>.Instance.SetOnBoard(onBoard: true);
+				}
+				__state.StartCoroutine(Singleton<BoardManager>.Instance.Initialize());
+				__state.StartCoroutine(Singleton<ResourcesManager>.Instance.Setup());
+				yield return new WaitForSeconds(0.2f);
+				yield return __state.opponent.IntroSequence(encounterData);
+				__state.StartCoroutine(__state.PlacePreSetCards(encounterData));
+				if (Singleton<BoonsHandler>.Instance != null)
+				{
+					yield return Singleton<BoonsHandler>.Instance.ActivatePreCombatBoons();
+				}
+				if (__state.SpecialSequencer != null)
+				{
+					yield return __state.SpecialSequencer.PreDeckSetup();
+				}
+				Singleton<PlayerHand>.Instance.Initialize();
+				yield return Singleton<CardDrawPiles>.Instance.Initialize();
+				if (__state.SpecialSequencer != null)
+				{
+					yield return __state.SpecialSequencer.PreHandDraw();
+				}
+				yield return Singleton<CardDrawPiles>.Instance.DrawOpeningHand(__state.GetFixedHand());
+				if (__state.opponent.QueueFirstCardBeforePlayer)
+				{
+					yield return __state.opponent.QueueNewCards(doTween: true, changeView: false);
+				}
+				if (AscensionSaveData.Data.ChallengeIsActive(AscensionChallenge.StartingDamage))
+				{
+					ChallengeActivationUI.TryShowActivation(AscensionChallenge.StartingDamage);
+					yield return Singleton<LifeManager>.Instance.ShowDamageSequence(1, 1, toPlayer: true, 0.125f, null, 0f, changeView: false);
+				}
+				__state.IsSetupPhase = false;
 			}
 		}
 

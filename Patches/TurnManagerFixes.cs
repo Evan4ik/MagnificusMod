@@ -24,7 +24,6 @@ namespace MagnificusMod
 {
     class TurnManagerStuff
     {
-		//rotate the nodes
 
 
 		[HarmonyPatch(typeof(TurnManager), "ScalesTippedToOpponent")]

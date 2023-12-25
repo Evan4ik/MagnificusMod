@@ -39,7 +39,7 @@ namespace MagnificusMod
 						if (gameObject == null) { return; }
 						if (gameObject.name.Contains("nodeIcon") && config.isometricMode == true)
 						{
-							gameObject.transform.localRotation = Quaternion.Euler(30, 45, 0);
+							//gameObject.transform.localRotation = Quaternion.Euler(30, 45 + (float)Singleton<FirstPersonController>.Instance.LookDirection * 90, 0);
 							continue;
 						}
 						float oldRot = gameObject.transform.eulerAngles.y;
@@ -77,7 +77,7 @@ namespace MagnificusMod
 						}
 						if (config.isometricMode == true)
                         {
-							rotation = Singleton<FirstPersonController>.Instance.gameObject.transform.Find("figure").localRotation.eulerAngles.y;
+							rotation = Singleton<FirstPersonController>.Instance.gameObject.transform.Find("figure").localRotation.eulerAngles.y + IsometricStuff.getMapRotationOffset((float)Singleton<FirstPersonController>.Instance.LookDirection * 90);
 
 						}
 						GameObject playerIcon = GameObject.Find("playerMapNode");
@@ -99,22 +99,32 @@ namespace MagnificusMod
 						if (gameObject == null) { return; }
 						if (gameObject.name.Contains("nodeIcon") && config.isometricMode == true)
 						{
-							gameObject.transform.localRotation = Quaternion.Euler(30, 45, 0);
-							if (NavigationGrid.instance.GetZoneInDirection(LookDirection.South, gameObject.transform.GetParent().gameObject.GetComponent<NavigationZone>()) == null)
+							gameObject.transform.localRotation = Quaternion.Euler(30, 45 + (float)Singleton<FirstPersonController>.Instance.LookDirection * 90, 0);
+							if (NavigationGrid.instance.GetZoneInDirection((LookDirection)((int)(Singleton<FirstPersonController>.Instance.LookDirection + 2) % 4), gameObject.transform.GetParent().gameObject.GetComponent<NavigationZone>()) == null)
                             {
 								string[] pos = gameObject.transform.GetParent().gameObject.name.Split('y');
-								int yPos = Convert.ToInt32(pos[1]) + 1;
+								int xPos = Convert.ToInt32(pos[0].Split('x')[1]);
+								int yPos = Convert.ToInt32(pos[1]);
+								float rotation = (float)Singleton<FirstPersonController>.Instance.LookDirection * 90;
+								if (rotation == 0) { yPos += 1; }
+								else if (rotation == 90) { xPos -= 1; }
+								else if (rotation == 180) { yPos -= 1; }
+								else if (rotation == 270) { xPos += 1; }
 								try
                                 {
-									if (GameObject.Find(pos[0] + "y" + yPos + " cover") != null)
+									if (GameObject.Find("x" + xPos + " y" + yPos + " cover") != null)
                                     {
 										gameObject.transform.localPosition = new Vector3(1f, 30.72f, 0);
-                                    }
+                                    } else
+                                    {
+										gameObject.transform.localPosition = new Vector3(1f, 22.72f, 0);
+									}
                                 }
-                                catch { }
-							}
+                                catch { gameObject.transform.localPosition = new Vector3(1f, 22.72f, 0); }
+							} else
+							{ gameObject.transform.localPosition = new Vector3(1f, 22.72f, 0); }
 							continue;
-						}
+						} 
 						float oldRot = gameObject.transform.eulerAngles.y;
 						float xRot = gameObject.transform.eulerAngles.x;
 						float zRot = gameObject.transform.eulerAngles.z;

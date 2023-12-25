@@ -368,7 +368,7 @@ namespace MagnificusMod
 					{
 						if (carde.HasTrait(Trait.EatsWarrens))
 						{
-							spellCards.Add(carde);
+							spellCards.Add(CardLoader.GetCardByName(carde.name));
 						}
 					}
 					List<CardInfo> selectedCards = new List<CardInfo>();
@@ -378,6 +378,11 @@ namespace MagnificusMod
 						selectedCards.Add(spellCards[selected]);
 						spellCards.Remove(spellCards[selected]);
 					}
+					if (selectedCards[0].name == "mag_potion")
+                    {
+						CardModificationInfo potionbuff = new CardModificationInfo(1, 2);
+						selectedCards[0].mods.Add(potionbuff);
+                    }
 					return selectedCards[0];
 				}
 			}

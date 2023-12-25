@@ -63,7 +63,7 @@ namespace MagnificusMod
 				if (RunState.Run.regionTier == 3)
                 {
 					GameObject.Find("DungeonFloor").transform.Find("BrickGround").gameObject.SetActive(false);
-					Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().farClipPlane = 75f;
+					if (!config.isometricMode) { Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().farClipPlane = 75f; }
 					GameObject.Find("Player").transform.Find("Directional Light").gameObject.GetComponent<Light>().intensity = 0;
 				}
 				yield return new WaitForSeconds(0.25f);
