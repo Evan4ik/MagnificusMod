@@ -5085,7 +5085,7 @@ namespace MagnificusMod
 					//gameObject.transform.localPosition = new Vector3(1f, 22.72f, 0);
 				}
 			}
-			GameObject.Find("deckLight").GetComponent<Light>().enabled = true;
+			GameObject.Find("GameTable").transform.Find("light").Find("deckLight").gameObject.GetComponent<Light>().enabled = true;
 			Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
 			yield break;
         }
@@ -5109,7 +5109,7 @@ namespace MagnificusMod
 				Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30, 45, 0), 0.25f, 0.5f);
 				Tween.FieldOfView(GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>(), 65f, 0.25f, 0.5f);
 			}
-			GameObject.Find("deckLight").GetComponent<Light>().enabled = false;
+			GameObject.Find("GameTable").transform.Find("light").Find("deckLight").gameObject.GetComponent<Light>().enabled = false;
 			Singleton<ViewController>.Instance.LockState = ViewLockState.Locked;
 			yield return new WaitForSeconds(0.3f);
 			if (Singleton<ViewManager>.Instance.CurrentView == View.Candles) { yield break; }
@@ -5138,7 +5138,7 @@ namespace MagnificusMod
 			GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(true);
 			GameObject.Find("Player").transform.Find("clickToMove").gameObject.SetActive(true);
 			Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
-			GameObject.Find("deckLight").GetComponent<Light>().enabled = true;
+			GameObject.Find("GameTable").transform.Find("light").Find("deckLight").gameObject.GetComponent<Light>().enabled = true;
 			if (config.gridActive) { GameObject.Find("Player").transform.Find("clickGrid").gameObject.SetActive(true); }
 			yield break;
 		}
