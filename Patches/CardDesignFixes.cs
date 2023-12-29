@@ -38,7 +38,7 @@ namespace MagnificusMod
 					__instance.defaultPortraitPos = new Vector2(0, 0.084f);
 					__instance.portraitRenderer.transform.position = new Vector3(0, 0.084f, 0);
 					__instance.portraitRenderer.color = Color.white;
-				} else if (SavedVars.FinaleCardBacks && SceneLoader.ActiveSceneName == "finale_magnificus")
+				} else if (SavedVars.FinaleCardBacks && SceneLoader.ActiveSceneName == "finale_magnificus" || SavedVars.LoadWithFinaleCardBacks && SceneLoader.ActiveSceneName == "finale_magnificus")
 				{
 					__instance.defaultCardBackground = Tools.getImage("finalecardback.png");
 					__instance.defaultPortraitPos = new Vector2(0, 0.0855f);
@@ -46,84 +46,6 @@ namespace MagnificusMod
 				}
 			}
 		}
-
-		[HarmonyPatch(typeof(CardDisplayer3D), "DisplaySpecialStatIcons")]
-		public class IamGoingToFixGreenMage
-		{
-			public static bool Prefix(ref CardDisplayer3D __instance, CardRenderInfo renderInfo, PlayableCard playableCard)
-			{
-				if (SceneLoader.ActiveSceneName != "finale_magnificus")
-				{
-					return true;
-				}
-				if (__instance.info.SpecialStatIcon != SpecialStatIcon.None && !renderInfo.showSpecialStats)
-				{
-					__instance.SetHealthAndAttackIconsActive(StatIconInfo.IconAppliesToAttack(__instance.info.SpecialStatIcon), StatIconInfo.IconAppliesToHealth(__instance.info.SpecialStatIcon));
-					__instance.StatIcons.AssignStatIcon(__instance.info.SpecialStatIcon, playableCard);
-					return false;
-				}
-				else if (__instance.info.SpecialStatIcon == SpecialStatIcon.None)
-				{
-					GameObject.Find("CardElements").transform.Find("Damage_Graphic").gameObject.SetActive(false);
-					GameObject.Find("CardElements").transform.Find("Health_Graphic").gameObject.SetActive(false);
-				}
-				__instance.SetHealthAndAttackIconsActive(false, false);
-				return false;
-			}
-
-		}
-
-		[HarmonyPatch(typeof(CardStatIcons), "AssignStatIcon")]
-		public class TryToFixGreenMageIDareYou
-		{
-			public static void Postfix(ref CardStatIcons __instance, SpecialStatIcon icon, PlayableCard playableCard)
-			{
-				bool flag = SceneLoader.ActiveSceneName == "finale_magnificus";
-				if (flag)
-				{
-					bool flag2 = icon != SpecialStatIcon.None && playableCard == null;
-					if (flag2)
-					{
-						bool flag3 = false;
-						GameObject gameObject = GameObject.Find("GameTable").transform.Find("CardBattle_Magnificus").Find("CombatBell_Magnificus").gameObject;
-						bool activeSelf = gameObject.activeSelf;
-						if (activeSelf)
-						{
-							flag3 = true;
-							GameObject.Find("CardElements").transform.Find("Damage_Graphic").gameObject.GetComponent<MeshRenderer>().material.mainTexture = null;
-							GameObject.Find("CardElements").transform.Find("Health_Graphic").gameObject.GetComponent<MeshRenderer>().material.mainTexture = null;
-							GameObject.Find("CardElements").transform.Find("Damage_Graphic").gameObject.SetActive(false);
-							GameObject.Find("CardElements").transform.Find("Health_Graphic").gameObject.SetActive(false);
-						}
-						StatIconInfo iconInfo = StatIconInfo.GetIconInfo(icon);
-						GameObject.Find("CardElements").transform.Find("Damage_Graphic").gameObject.SetActive(false);
-						GameObject.Find("CardElements").transform.Find("Health_Graphic").gameObject.SetActive(false);
-						bool flag4 = iconInfo.appliesToAttack && !flag3;
-						if (flag4)
-						{
-							GameObject.Find("CardElements").transform.Find("Damage_Graphic").gameObject.SetActive(true);
-							GameObject.Find("Damage_Graphic").gameObject.GetComponent<MeshRenderer>().material.mainTexture = iconInfo.iconGraphic;
-							GameObject.Find("Damage_Graphic").transform.localScale = new Vector3(0.26f, 0.178f, 0.8852f);
-						}
-						bool flag5 = iconInfo.appliesToHealth && !flag3;
-						if (flag5)
-						{
-							GameObject.Find("CardElements").transform.Find("Health_Graphic").gameObject.SetActive(true);
-							GameObject.Find("Health_Graphic").gameObject.GetComponent<MeshRenderer>().material.mainTexture = iconInfo.iconGraphic;
-							GameObject.Find("Health_Graphic").transform.localScale = new Vector3(0.26f, 0.178f, 0.8852f);
-						}
-					}
-					else
-					{
-						GameObject.Find("CardElements").transform.Find("Damage_Graphic").gameObject.GetComponent<MeshRenderer>().material.mainTexture = null;
-						GameObject.Find("CardElements").transform.Find("Health_Graphic").gameObject.GetComponent<MeshRenderer>().material.mainTexture = null;
-						GameObject.Find("CardElements").transform.Find("Damage_Graphic").gameObject.SetActive(false);
-						GameObject.Find("CardElements").transform.Find("Health_Graphic").gameObject.SetActive(false);
-					}
-				}
-			}
-		}
-
 		[HarmonyPatch(typeof(CardDisplayer3D), "DisplayInfo")]
 		public class cardtexhelpPlease
 		{
@@ -172,8 +94,7 @@ namespace MagnificusMod
 				{
 					return true;
 				}
-				bool flag = !__instance.Card.Info.displayedName.ToLower().Contains("mox");
-				if (flag)
+				if (__instance.Card.Info.displayedName.ToLower().Contains("mox"))
 				{
 					__instance.Card.RenderInfo.baseTextureOverride = Tools.getImage("magrarecardbackground.png");
 				}
@@ -199,8 +120,7 @@ namespace MagnificusMod
 					return true;
 				}
 				if (SavedVars.LoadWithFinaleCardBacks) { __instance.Card.RenderInfo.baseTextureOverride = Tools.getImage("finalecardback.png"); return false; }
-				bool flag = !__instance.Card.Info.displayedName.ToLower().Contains("mox");
-				if (flag)
+				if (!__instance.Card.Info.displayedName.ToLower().Contains("mox") && !__instance.Card.Info.HasTrait(Trait.Gem))
 				{
 					__instance.Card.RenderInfo.baseTextureOverride = Tools.getImage("magterraincardbackground.png");
 				}

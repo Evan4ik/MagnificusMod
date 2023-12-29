@@ -2680,7 +2680,7 @@ namespace MagnificusMod
 
 			public override bool RespondsToUpkeep(bool playerUpkeep)
 			{
-				return playerUpkeep && Singleton<TurnManager>.Instance.TurnNumber > 1 && Singleton<MagnusOpponent>.Instance.NumLives > 1 || Singleton<MagnusOpponent>.Instance.NumLives == 1 && removePlanetMods;
+				return playerUpkeep && Singleton<TurnManager>.Instance.TurnNumber > 1 && Singleton<MagnusOpponent>.Instance.NumLives > 1 || playerUpkeep && Singleton<MagnusOpponent>.Instance.NumLives == 1 && removePlanetMods;
 			}
 
 			public List<Texture2D> textures = new List<Texture2D> { WallTextures.goo, WallTextures.lava, Tools.getImage("magnusstars.png"), WallTextures.goo, Tools.getImage("cloudfloor.png"), Tools.getImage("magnusstars.png") };
@@ -2702,6 +2702,9 @@ namespace MagnificusMod
 							}
 						}
 					}
+					yield break;
+                } else if (Singleton<MagnusOpponent>.Instance.NumLives == 1 && !removePlanetMods)
+                {
 					yield break;
                 }
 				if (eventState == 0)
@@ -3126,7 +3129,8 @@ namespace MagnificusMod
 
 			public override IEnumerator OnOtherCardResolve(PlayableCard otherCard)
 			{
-				if (otherCard.Info.mods.Count > 0 && otherCard.Info.HasTrait(Trait.EatsWarrens))
+				int modCount = Generation.challenges.Contains("ItemSpells") ? 1 : 0;
+				if (otherCard.Info.mods.Count > modCount && otherCard.Info.HasTrait(Trait.EatsWarrens))
 				{
 					Plugin.switchToSpeakerStyle(1);
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hah! Using one of my own spells against me?", -0.65f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);

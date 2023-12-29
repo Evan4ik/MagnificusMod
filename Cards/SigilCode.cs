@@ -907,9 +907,9 @@ namespace MagnificusMod
 
 			public static StatIconManager.FullStatIcon InitStatIconAndAbility()
 			{
-				MoxPowerBypass = AbilityManager.New(Plugin.PluginGuid, "Mox Power", "The value represented with this sigil will be equal to the number of Mox Cards that the owner has on their side of the table.", typeof(SigilCode.HealthForAnts), Tools.GetTexture("mox empowered.png"))
+				MoxPowerBypass = AbilityManager.New(Plugin.PluginGuid, "Mox Power", "The value represented with this sigil will be equal to the number of Mox Cards that the owner has on their side of the table.", typeof(SigilCode.HealthForAnts), Tools.getImage("mox empowered.png"))
 				.SetDefaultPart1Ability()
-				.SetIcon(Tools.GetTexture("mox empowered.png"));
+				.SetIcon(Tools.getImage("mox empowered.png"));
 				MoxPowerBypass.powerLevel = 10;
 				HealthForAnts.ability = MoxPowerBypass;
 
@@ -922,7 +922,7 @@ namespace MagnificusMod
 					"The value represented with this sigil will be equal to the number of Mox Cards that the owner has on their side of the table.";
 				info.gbcDescription = MoxPowerBypass.ability.ToString();
 
-				info.iconGraphic = Tools.GetTexture("mox empowered.png");
+				info.iconGraphic = Tools.getImage("mox empowered.png");
 				info.pixelIconGraphic = Tools.getSprite("moxempowered_pixel.png");
 
 				FullStatIcon = StatIconManager.Add(Plugin.PluginGuid, info, typeof(HealthForAnts));
@@ -949,7 +949,7 @@ namespace MagnificusMod
 						   select slot).Count((CardSlot cardSlot) => cardSlot.Card.Info.HasTrait(Trait.Gem));
 				int[] array = new int[2];
 				array[1] = num;
-				if (num < 1 && !Singleton<TurnManager>.Instance.GameIsOver() && !Singleton<TurnManager>.Instance.Opponent.Queue.Exists((PlayableCard x) => x != null && x.Info.HasTrait(Trait.Gem)) && base.PlayableCard.Health <= 0)
+				if (num < 1 && !Singleton<TurnManager>.Instance.GameIsOver() && !(Singleton<TurnManager>.Instance.Opponent.Queue.Exists((PlayableCard x) => x != null && x.Info.HasTrait(Trait.Gem)) && Singleton<TurnManager>.Instance.Opponent.Queue.Exists((PlayableCard x) => x != null && x == base.PlayableCard)) && base.PlayableCard.Health <= 0)
 				{
 					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(base.PlayableCard.Die(false));
 				} else
@@ -964,9 +964,9 @@ namespace MagnificusMod
 			{
 
 
-				AbilityInfo MoxHealthBypass = AbilityManager.New(Plugin.PluginGuid, "Mox Power", "The value represented with this sigil will be equal to the number of Mox Cards that the owner has on their side of the table.", typeof(SigilCode.MoxHp), Tools.GetTexture("mox empowered.png"))
+				AbilityInfo MoxHealthBypass = AbilityManager.New(Plugin.PluginGuid, "Mox Power", "The value represented with this sigil will be equal to the number of Mox Cards that the owner has on their side of the table.", typeof(SigilCode.MoxHp), Tools.getImage("mox empowered.png"))
 					.SetDefaultPart1Ability()
-					.SetIcon(Tools.GetTexture("mox empowered.png"));
+					.SetIcon(Tools.getImage("mox empowered.png"));
 				MoxHp.ability = MoxHealthBypass;
 
 				StatIconInfo info = ScriptableObject.CreateInstance<StatIconInfo>();
@@ -978,7 +978,7 @@ namespace MagnificusMod
 					"The value represented with this sigil will be equal to the number of Mox Cards that the owner has on their side of the table.";
 				info.gbcDescription = SigilCode.HealthForAnts.MoxPowerBypass.ability.ToString();
 
-				info.iconGraphic = Tools.GetTexture("mox empowered.png");
+				info.iconGraphic = Tools.getImage("mox empowered.png");
 				info.pixelIconGraphic = Tools.getSprite("moxempowered_pixel.png");
 
 				FullStatIcon = StatIconManager.Add(Plugin.PluginGuid, info, typeof(MoxHp));
@@ -1017,7 +1017,7 @@ namespace MagnificusMod
 				info.rulebookDescription =
 					"The value represented with this sigil will be equal to how close this card is to the Candle on the table.";
 
-				info.iconGraphic = Tools.GetTexture("candle proximity.png");
+				info.iconGraphic = Tools.getImage("candle proximity.png");
 
 				FullStatIcon = StatIconManager.Add(Plugin.PluginGuid, info, typeof(CandleSquid));
 				FullSpecial = SpecialTriggeredAbilityManager.Add(Plugin.PluginGuid, info.rulebookName, typeof(CandleSquid));
@@ -1055,7 +1055,7 @@ namespace MagnificusMod
 				info.rulebookDescription =
 					"The value represented with this sigil will be equal to how many bones the card's owner has, divided by two.";
 
-				info.iconGraphic = Tools.GetTexture("bone_stat_icon.png");
+				info.iconGraphic = Tools.getImage("bone_stat_icon.png");
 
 				FullStatIcon = StatIconManager.Add(uid, info, typeof(BoneSquid));
 				FullSpecial = SpecialTriggeredAbilityManager.Add(uid, info.rulebookName, typeof(BoneSquid));
@@ -1095,9 +1095,9 @@ namespace MagnificusMod
 
 			public static StatIconManager.FullStatIcon InitStatIconAndAbility()
 			{
-				AbilityInfo KillSquide = AbilityManager.New(Plugin.PluginGuid, "Murder Power", "The value represented with this sigil will be equal to half the total amount of power on your board.", typeof(SigilCode.KillSquid), Tools.GetTexture("killsquid_icon.png"))
+				AbilityInfo KillSquide = AbilityManager.New(Plugin.PluginGuid, "Murder Power", "The value represented with this sigil will be equal to half the total amount of power on your board.", typeof(SigilCode.KillSquid), Tools.getImage("killsquid_icon.png"))
 					.SetDefaultPart1Ability()
-					.SetIcon(Tools.GetTexture("killsquid_icon.png"));
+					.SetIcon(Tools.getImage("killsquid_icon.png"));
 				KillSquide.powerLevel = 10;
 				KillSquid.ability = KillSquide;
 
@@ -1110,7 +1110,7 @@ namespace MagnificusMod
 					"The value represented with this sigil will be equal to half the total amount of power on your board.";
 				info.gbcDescription = KillSquide.ability.ToString();
 
-				info.iconGraphic = Tools.GetTexture("killsquid_icon.png");
+				info.iconGraphic = Tools.getImage("killsquid_icon.png");
 
 				FullStatIcon = StatIconManager.Add(Plugin.PluginGuid, info, typeof(KillSquid));
 				FullSpecial = SpecialTriggeredAbilityManager.Add(Plugin.PluginGuid, info.rulebookName, typeof(KillSquid));
@@ -1137,9 +1137,9 @@ namespace MagnificusMod
 
 			public static StatIconManager.FullStatIcon InitStatIconAndAbility()
 			{
-				AbilityInfo SpellPowere = AbilityManager.New(Plugin.PluginGuid, "Spell Power", "The value represented with this sigil will be equal to total amount of spells played during the battles, times 1.5.", typeof(SigilCode.SpellPower), Tools.GetTexture("spellpower.png"))
+				AbilityInfo SpellPowere = AbilityManager.New(Plugin.PluginGuid, "Spell Power", "The value represented with this sigil will be equal to total amount of spells played during the battles, times 1.5.", typeof(SigilCode.SpellPower), Tools.getImage("spellpower.png"))
 				.SetDefaultPart1Ability()
-				.SetIcon(Tools.GetTexture("spellpower.png"));
+				.SetIcon(Tools.getImage("spellpower.png"));
 				SpellPowere.powerLevel = 10;
 				SpellPower.ability = SpellPowere;
 				StatIconInfo info = ScriptableObject.CreateInstance<StatIconInfo>();
@@ -1151,7 +1151,7 @@ namespace MagnificusMod
 					"The value represented with this sigil will be equal to total amount of spells played during the battle, times 1.5.";
 				info.gbcDescription = SpellPowere.ability.ToString();
 
-				info.iconGraphic = Tools.GetTexture("spellpower.png");
+				info.iconGraphic = Tools.getImage("spellpower.png");
 
 				FullStatIcon = StatIconManager.Add(Plugin.PluginGuid, info, typeof(SpellPower));
 				FullSpecial = SpecialTriggeredAbilityManager.Add(Plugin.PluginGuid, info.rulebookName, typeof(SpellPower));
@@ -1185,9 +1185,9 @@ namespace MagnificusMod
 
 			public static StatIconManager.FullStatIcon InitStatIconAndAbility()
 			{
-				AbilityInfo BPowere = AbilityManager.New(Plugin.PluginGuid, "Counterbattery Power", "The value represented with this sigil will be equal to the amount of damage taken by you this battle, divided by two.", typeof(SigilCode.CounterBatteryPower), Tools.GetTexture("spellpower.png"))
+				AbilityInfo BPowere = AbilityManager.New(Plugin.PluginGuid, "Counterbattery Power", "The value represented with this sigil will be equal to the amount of damage taken by you this battle, divided by two.", typeof(SigilCode.CounterBatteryPower), Tools.getImage("spellpower.png"))
 				.SetDefaultPart1Ability()
-				.SetIcon(Tools.GetTexture("batterypower.png"));
+				.SetIcon(Tools.getImage("batterypower.png"));
 				BPowere.powerLevel = 10;
 				CounterBatteryPower.ability = BPowere;
 
@@ -1200,7 +1200,7 @@ namespace MagnificusMod
 					"The value represented with this sigil will be equal to the amount of damage taken by you this battle, divided by two.";
 				info.gbcDescription = BPowere.ability.ToString();
 
-				info.iconGraphic = Tools.GetTexture("batterypower.png");
+				info.iconGraphic = Tools.getImage("batterypower.png");
 
 				FullStatIcon = StatIconManager.Add(Plugin.PluginGuid, info, typeof(CounterBatteryPower));
 				FullSpecial = SpecialTriggeredAbilityManager.Add(Plugin.PluginGuid, info.rulebookName, typeof(CounterBatteryPower));
@@ -2491,6 +2491,79 @@ namespace MagnificusMod
 
 		}
 
+		public class Frozen : AbilityBehaviour
+		{
+			public static Ability ability;
+			public override Ability Ability
+			{
+				get
+				{
+					return ability;
+				}
+			}
+
+			public override bool RespondsToTakeDamage(PlayableCard source)
+			{
+				if (source != null)
+				{
+					return source.Health > 0 && base.Card.Health > 0;
+				}
+				return false;
+			}
+
+			public override IEnumerator OnTakeDamage(PlayableCard source)
+			{
+				string slotName = base.Card.OpponentCard ? "OpponentSlots" : "PlayerSlots";
+				for (int i = 0; i < base.Card.temporaryMods.Count; i++)
+				{
+					if (base.Card.temporaryMods[i].singletonId != null && base.Card.temporaryMods[i].singletonId.Contains("frost"))
+					{
+						base.Card.temporaryMods[i].abilities = new List<Ability>();
+						base.Card.temporaryMods[i].attackAdjustment = 0;
+						base.Card.temporaryMods[i].singletonId = "none";
+						if (GameObject.Find(slotName).transform.GetChild(base.Card.slot.Index).childCount > 5)
+						{
+							GameObject model = GameObject.Find(slotName).transform.GetChild(base.Card.slot.Index).GetChild(5).gameObject;
+							model.GetComponent<Card>().RenderCard();
+						}
+					}
+				}
+				yield break;
+			}
+
+			public override bool RespondsToTurnEnd(bool playerTurnEnd)
+			{
+				return base.Card.OpponentCard == playerTurnEnd;
+			}
+
+			public override IEnumerator OnTurnEnd(bool playerTurnEnd)
+			{
+				string slotName = base.Card.OpponentCard ? "OpponentSlots" : "PlayerSlots";
+				for (int i = 0; i < base.Card.temporaryMods.Count; i++)
+				{
+					Debug.Log(base.Card.Info.name);
+					if (base.Card.temporaryMods[i].singletonId != null && base.Card.temporaryMods[i].singletonId.Contains("frost"))
+					{
+						Debug.Log(base.Card.temporaryMods[i]);
+						if (base.Card.temporaryMods[i].healthAdjustment <= 0)
+						{
+							base.Card.temporaryMods[i].abilities = new List<Ability>();
+							base.Card.temporaryMods[i].attackAdjustment = 0;
+							base.Card.temporaryMods[i].singletonId = "none";
+							if (GameObject.Find(slotName).transform.GetChild(base.Card.slot.Index).childCount > 5)
+							{
+								GameObject model = GameObject.Find(slotName).transform.GetChild(base.Card.slot.Index).GetChild(5).gameObject;
+								model.transform.Find("RenderStatsLayer").Find("Quad").gameObject.SetActive(false);
+								model.transform.Find("RenderStatsLayer").Find("Quad").GetComponent<MeshRenderer>().material.color = new Color(0.329f, 0.682f, 1f, 0f);
+								model.GetComponent<Card>().RenderCard();
+							}
+						} else { base.Card.temporaryMods[i].healthAdjustment -= 1; }
+					}
+				}
+				yield break;
+			}
+
+		}
 		public class FrostSpell : AbilityBehaviour
 		{
 			public static Ability ability;
@@ -2513,7 +2586,7 @@ namespace MagnificusMod
 				string slotName = base.Card.slot.IsPlayerSlot ? "OpponentSlots" : "PlayerSlots";
 				foreach (CardSlot slot in list)
 				{
-					if (slot.Card != null && slot.Card.Info.name != "mag_frostspell")
+					if (slot.Card != null && slot.Card.Info.name != "mag_frostspell" && slot.Card.Info.abilities.Count < 4)
 					{
 						int dex;
 						dex = slot.Index;
@@ -2532,11 +2605,10 @@ namespace MagnificusMod
 							model.transform.Find("RenderStatsLayer").Find("Quad").GetComponent<MeshRenderer>().material.color = new Color(0.329f, 0.682f, 1f, 0.5f);
 						}
 						CardModificationInfo mod = new CardModificationInfo();
+						mod.singletonId = "frost";
+						mod.abilities.Add(SigilCode.Frozen.ability);
 						mod.attackAdjustment = -slot.Card.Attack;
-						if (base.Card.Attack < 1)
-						{
-							mod.healthAdjustment = 2;
-						}
+						mod.healthAdjustment = 2;
 						slot.Card.AddTemporaryMod(mod);
 					}
 				}

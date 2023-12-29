@@ -173,6 +173,7 @@
     <None Remove="Resources\fireballA.png" />
     <None Remove="Resources\fonts" />
     <None Remove="Resources\frosty.png" />
+    <None Remove="Resources\frozen.png" />
     <None Remove="Resources\gaingemtriple.png" />
     <None Remove="Resources\gemboundripper.png" />
     <None Remove="Resources\GemFriend.png" />
@@ -422,6 +423,7 @@
     <EmbeddedResource Include="Resources\achievement_magnus.png" />
     <EmbeddedResource Include="Resources\achievement_sacrifice.png" />
     <EmbeddedResource Include="Resources\achievement_timegoddess.png" />
+    <EmbeddedResource Include="Resources\frozen.png" />
     <EmbeddedResource Include="Resources\gridtile.png" />
     <EmbeddedResource Include="Resources\gridtile1.png" />
     <EmbeddedResource Include="Resources\hydrablack.png" />

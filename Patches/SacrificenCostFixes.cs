@@ -121,10 +121,10 @@ namespace MagnificusMod
 					{
 						num += 3;
 					}
-					else if (cardSlot.Card.Info.HasAbility(Ability.GainGemBlue) || cardSlot.Card.Info.HasAbility(Ability.GainGemGreen) || cardSlot.Card.Info.HasAbility(Ability.GainGemOrange))
+					else if (cardSlot.Card.Info.HasAbility(Ability.GainGemBlue) || cardSlot.Card.Info.HasAbility(Ability.GainGemGreen) || cardSlot.Card.Info.HasAbility(Ability.GainGemOrange) || cardSlot.Card.Info.HasTrait(Trait.Gem))
 					{
 						num++;
-					}
+					} 
 					else if (isManaHeart)
 					{
 						num++;

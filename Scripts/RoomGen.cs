@@ -375,11 +375,11 @@ namespace MagnificusMod
           new List<List<string>>//troll
         {
             new List<string> { "W1C", "W2N", "W1J","W1D","W1J","W2N","W1C" },
-            new List<string> { "W2E",  "-",   "-",  "-",  "-",  "-", "W2W" },
-            new List<string> { "W1K",  "-",   "-",  "W1F",  "-",  "-", "W1K" },
-            new List<string> { "W1d",  "-",   "W1F",  "EVN",  "W1F",  "-", "W1d" },
-            new List<string> { "W1H",  "-",   "-",  "W1F",  "-",  "-", "W1K" },
-            new List<string> { "W2E",  "-",   "-",  "-",  "-",  "-", "W2W" },
+            new List<string> { "W2E",  "-", "W3F",  "-",  "-",  "-", "W2W" },
+            new List<string> { "W1K",  "-",   "-", "W3F",  "-",  "-", "W1K" },
+            new List<string> { "W1d",  "-",   "-",  "EVN",  "-",  "-", "W1d" },
+            new List<string> { "W1H",  "-",   "-", "W3F",  "-",  "-", "W1K" },
+            new List<string> { "W2E",  "-",   "-",  "-", "W3F",  "-", "W2W" },
             new List<string> { "W1C", "W2S","W1H", "W1D","W1H","W2S", "W1C" }
         },
           new List<List<string>>
@@ -485,7 +485,7 @@ namespace MagnificusMod
          new List<List<string>>
         {
             new List<string> { "WgC", "WgN", "WgJ","WgD","WgJ","WgN","WgC" },
-            new List<string> { "WgE",  "-",   "-",  "B",  "-",  "-", "WgW" },
+            new List<string> { "WgE",  "-",   "-",  "-",  "-",  "-", "WgW" },
             new List<string> { "WgK",  "-",   "-",  "P3",  "-",  "-", "WgK" },
             new List<string> { "Wgd",  "-",   "P3", "CR","P3",  "-", "Wgd" },
             new List<string> { "WgH",  "P2",   "-",  "B",  "-",  "-", "WgK" },
@@ -579,10 +579,10 @@ namespace MagnificusMod
        new List<List<string>>//troll room p2
         {
             new List<string> { "W4C", "W5N", "W4J","W4D","W4J","W4N","W4C" },
-            new List<string> { "W5E",  "htr",   "-",  "-",  "-",  "-", "W5W" },
-            new List<string> { "W5K",  "-", "-", "W1F", "-",  "-", "W5K" },
-            new List<string> { "W4d",  "-",   "W1F", "EVN", "W1F",  "-", "W4d" },
-            new List<string> { "W4H",  "-", "-", "W1F", "-",  "-", "W4K" },
+            new List<string> { "W5E",  "-",   "-",  "-",  "-",  "-", "W5W" },
+            new List<string> { "W5K",  "-", "W1F", "W1F", "W1F",  "-", "W5K" },
+            new List<string> { "W4d",  "-", "W1F", "htr", "W1F",  "-", "W4d" },
+            new List<string> { "W4H",  "-", "W1F", "W1F", "W1F",  "-", "W4K" },
             new List<string> { "W4E",  "-",   "-",  "-",  "-",  "-", "W4W" },
             new List<string> { "W4C", "W5S","W5H", "W4D","W4H","W5S", "W4C" }
         },
@@ -986,12 +986,12 @@ namespace MagnificusMod
         },
        new List<List<string>>
         {
-            new List<string> { "W8C", "W8N", "W8J","W8D","W8J","W8N","W8C" },//EL TROLL ROOM DE FINALE
-            new List<string> { "W8E",  "-",   "-",  "-",  "W1F",  "EVN", "W8W" },
+            new List<string> { "W8C", "W8N", "W8J","W8D","W8J","W8N","W8C" },//TROLL ROOM DE FINALE
+            new List<string> { "W8E",  "-",   "-",  "-",  "B",  "EVN", "W8W" },
             new List<string> { "W8K",  "-",   "-",  "-",  "TO3",  "W1F", "W8K" },
-            new List<string> { "W8d",  "-",   "-",  "B",  "-",  "-", "W8d" },
+            new List<string> { "W8d",  "-",   "-",  "-",  "-",  "-", "W8d" },
             new List<string> { "W8H",  "W1F",   "TO3",  "-",  "-",  "-", "W8K" },
-            new List<string> { "W8E",  "EVN",   "W1F",  "-",  "-",  "-", "W8W" },
+            new List<string> { "W8E",  "EVN",   "B",  "-",  "-",  "-", "W8W" },
             new List<string> { "W8C", "W8S","W8H", "W8D","W8H","W8S", "W8C" }
         },
        new List<List<string>>

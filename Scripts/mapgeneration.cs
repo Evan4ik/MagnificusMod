@@ -1555,31 +1555,30 @@ namespace MagnificusMod
 										}
 										if (random< 55)
 										{
-											if (!challenges.Contains("NoCostChange"))
-											{
-												if (!loading) { SavedVars.GeneratedEvents += "costchng;"; }
-												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = costchngTex;
-												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> {Generation.costChange };
-											} else if (challenges.Contains("NoCostChange"))
-                                            {
-												if (!loading) { SavedVars.GeneratedEvents += "costselect;"; }
-												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = costTex;
-												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.costSelect };
-											}
+											if (!loading) { SavedVars.GeneratedEvents += "costchng;"; }
+											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = costchngTex;
+											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> {Generation.costChange };
 										} else
                                         {
 											random = 0;//SHITTY NESTED CODE! BUT ITS NECCESSARY
 											if (SavedVars.LearnedMechanics.Contains("beatamber;"))
-											{
-												random = UnityEngine.Random.RandomRangeInt(0, 100);
-											}
-											if (random < 85)
+											{ random = UnityEngine.Random.RandomRangeInt(0, 66); }
+											if (SavedVars.LearnedMechanics.Contains("beatlonely;"))
+											{ random = UnityEngine.Random.RandomRangeInt(0, 100); }
+											if (random < 35)
 											{
 												if (!loading) { SavedVars.GeneratedEvents += "goobert;"; }
 												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = copyTex;
 												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.copyCard };
-											} else
-                                            {
+											}
+											else if (random < 66)
+											{
+												if (!loading) { SavedVars.GeneratedEvents += "spellupgrade;"; }
+												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = spellUpgradeTex;
+												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.spellUpgrade };
+											}
+											else
+											{
 												if (!loading) { SavedVars.GeneratedEvents += "painting;"; }
 												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = paintTex;
 												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.cardPainting };
@@ -1606,18 +1605,9 @@ namespace MagnificusMod
 
 										if (random < 33)
 										{
-											if (!challenges.Contains("NoCostChange"))
-											{
-												if (!loading) { SavedVars.GeneratedEvents += "costchng;"; }
-												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = costchngTex;
-												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.costChange };
-											}
-											else if (challenges.Contains("NoCostChange"))
-											{
-												if (!loading) { SavedVars.GeneratedEvents += "merge;"; }
-												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = mergeTex;
-												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.mergeCard };
-											}
+											if (!loading) { SavedVars.GeneratedEvents += "costchng;"; }
+											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = costchngTex;
+											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.costChange };
 										}
 										else if (random < 77)
                                         {
@@ -1628,20 +1618,26 @@ namespace MagnificusMod
                                         {
 											random = 0;
 											if (SavedVars.LearnedMechanics.Contains("beatamber;"))
-											{
-												random = UnityEngine.Random.RandomRangeInt(0, 100);
-											}
+											{random = UnityEngine.Random.RandomRangeInt(0, 66);}
+											if (SavedVars.LearnedMechanics.Contains("beatlonely;"))
+											{random = UnityEngine.Random.RandomRangeInt(0, 100);}
 											if (random < 35)
 											{
 												if (!loading) { SavedVars.GeneratedEvents += "goobert;"; }
 												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = copyTex;
 												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.copyCard };
 											}
-											else
+											else if (random < 66)
 											{
 												if (!loading) { SavedVars.GeneratedEvents += "spellupgrade;"; }
 												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = spellUpgradeTex;
 												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.spellUpgrade };
+											}
+											else
+											{
+												if (!loading) { SavedVars.GeneratedEvents += "cauldron;"; }
+												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = cauldronTex;
+												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.cauldronEvent };
 											}
 										}
 									}
@@ -1666,18 +1662,9 @@ namespace MagnificusMod
 
 										if (random < 42)
 										{
-											if (!challenges.Contains("NoCostChange"))
-											{
-												if (!loading) { SavedVars.GeneratedEvents += "costchng;"; }
-												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = costchngTex;
-												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.costChange };
-											}
-											else if (challenges.Contains("NoCostChange"))
-											{
-												if (!loading) { SavedVars.GeneratedEvents += "painting;"; }
-												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = paintTex;
-												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.cardPainting };
-											}
+											if (!loading) { SavedVars.GeneratedEvents += "costchng;"; }
+											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = costchngTex;
+											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.costChange };
 										}
 										else if (random < 70)
 										{
@@ -1839,12 +1826,12 @@ namespace MagnificusMod
 									nodesLoaded++;
 									break;
                                 }
-								if (rand < 15)
+								if (rand < 7)
 								{
 									icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = spellTex;
 									GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.spellSelect);
 									if (!loading) { SavedVars.GeneratedEvents += "spellselect;"; }
-								} else if (rand < 55)
+								} else if (rand < 57)
 								{
 									icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = costTex;
 									GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.costSelect);
@@ -2405,24 +2392,20 @@ namespace MagnificusMod
 				map.AddComponent<InscryptionAPI.Card.OpponentGemsManager>();
 				map.AddComponent<ConduitCircuitManager>();
 				map.SetActive(true);
-				GameObject newDamageRenderer = GameObject.Instantiate(GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_1Ability").gameObject);
+				GameObject newDamageRenderer = GameObject.Find("CardStatIcons").transform.Find("Damage_Icon").gameObject;
 				newDamageRenderer.name = "Damage_Graphic";
-				newDamageRenderer.GetComponent<AbilityIconInteractable>().enabled = false;
-				newDamageRenderer.transform.localScale = new Vector3(0.26f, 0.2368f, 0.8852f);
+				newDamageRenderer.transform.localScale = new Vector3(1.6f, 1.6f, 1);
 				newDamageRenderer.transform.position = new Vector3(78.0871f, -3.137f, 4.998f);
-				newDamageRenderer.transform.parent = GameObject.Find("CardElements").transform;
 				newDamageRenderer.GetComponent<MeshRenderer>().material.mainTexture = null;
-
-				GameObject newHealthRenderer = GameObject.Instantiate(newDamageRenderer);
+				newDamageRenderer.layer = 13;
+				GameObject newHealthRenderer = GameObject.Find("CardStatIcons").transform.Find("Health_Icon").gameObject;
 				newHealthRenderer.name = "Health_Graphic";
 				newHealthRenderer.transform.position = new Vector3(81.9128f, -3.137f, 5f);
-				newHealthRenderer.transform.parent = GameObject.Find("CardElements").transform;
+				newHealthRenderer.transform.localScale = new Vector3(1.6f, 1.6f, 1);
 				newHealthRenderer.GetComponent<MeshRenderer>().material.mainTexture = null;
+				newHealthRenderer.layer = 13;
 
-				newDamageRenderer.gameObject.SetActive(false);
-				newHealthRenderer.gameObject.SetActive(false);
 
-			
 
 				//areaText.transform.Find("TextCanvas").Find("TextFitter").Find("DialogueText").Find("TextShadow").localPosition = new Vector3(0f, 4.25f, 1);
 
@@ -3769,9 +3752,11 @@ namespace MagnificusMod
 						gooOrbSpawner2.transform.localPosition = new Vector3(16.25f, 0f, 9.5f);
 						gooOrbSpawner2.name = "gooOrbSpawner2";
 
+						GameObject.Find("bgStarParent").transform.localRotation = Quaternion.Euler(0, 0, 0);
 						Tween.Rotation(GameObject.Find("Player").transform, Quaternion.Euler(0, 0, 0), 0.25f, 1);
 						Tween.LocalPosition(GameObject.Find("walls").transform, new Vector3(0, -31, 9), 5f, 10f);
-						Tween.LocalPosition(GameObject.Find("bgStarParent").transform, new Vector3(0, -43, 0), 5f, 10f);
+						float height = config.isometricMode ? -30f : -43;
+						Tween.LocalPosition(GameObject.Find("bgStarParent").transform, new Vector3(0, height, 0), 5f, 10f);
 						Tween.LocalPosition(GameObject.Find("walls").transform, new Vector3(0, -255, 9), 0.25f, 15f);
 					}
 				};
@@ -5540,10 +5525,10 @@ namespace MagnificusMod
 						new List<string> { "WnC", "WnN", "WnN","WnN","WnN","WnN","WnC" },
 						new List<string> { "WnE",  "-",   "-",  "-",  "-",  "-", "WnW" },
 						new List<string> { "WnE",  "-",   "-",  "-",  "-",  "-", "WnW" },
-						new List<string> { "WnE",  "-",   "-",  "-","-",  "-", "WnW" },
 						new List<string> { "WnE",  "-",   "-",  "-",  "-",  "-", "WnW" },
 						new List<string> { "WnE",  "-",   "-",  "-",  "-",  "-", "WnW" },
-						new List<string> { "WnC", "WnS","WnS", "WnS","WnS","WnS", "WnW" }
+						new List<string> { "WnE",  "-",   "-",  "-",  "-",  "-", "WnW" },
+						new List<string> { "WnC", "WnS","WnS", "WnS","WnS","WnS", "WnC" }
 					};
 
 					makeBattleRoom(battleRoom);
@@ -5584,7 +5569,7 @@ namespace MagnificusMod
 					roof.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().lightmapIndex = 0;
 					roof.transform.localScale = new Vector3(350, 250, 1);
 	
-					GameObject towerLight = GameObject.Instantiate(GameObject.Find("light"));
+					GameObject towerLight = GameObject.Instantiate(GameObject.Find("GameTable").transform.Find("light").gameObject);
 					towerLight.transform.parent = environment.transform;
 					towerLight.transform.position = new Vector3(80, 20, -80);
 					towerLight.GetComponent<Light>().intensity = 0f;
@@ -5592,8 +5577,8 @@ namespace MagnificusMod
 					towerLight.transform.rotation = Quaternion.Euler(90, 0, 0);
 					towerLight.GetComponent<Light>().range = 1000;
 
-					GameObject.Find("deckLight").transform.parent.localPosition = new Vector3(0, 17, 0);
-					GameObject.Find("deckLight").transform.parent.gameObject.GetComponent<Light>().intensity = 1.2f;
+					GameObject.Find("GameTable").transform.Find("light").localPosition = new Vector3(0, 17, 0);
+					GameObject.Find("GameTable").transform.Find("light").gameObject.GetComponent<Light>().intensity = 1.2f;
 
 					if (towerLevel.Contains("4") || towerLevel.Contains("5"))
                     {
@@ -6632,7 +6617,8 @@ namespace MagnificusMod
 					','
 			});
 			yield return new WaitForSeconds(0.2f);
-			if (config.isometricActive) {
+			if (config.isometricActive && (location == "goobert" || location == "espeara" || location == "lonely"))
+			{
 				IsometricStuff.moveDisabled = false;
 				GameObject.Find("Player").transform.Find("clickToMove").localRotation = Quaternion.Euler(0, 0, 0);
 				if (config.gridActive) { GameObject.Find("Player").transform.Find("clickGrid").localRotation = Quaternion.Euler(0, 0, 0); }
@@ -6806,6 +6792,7 @@ namespace MagnificusMod
 								GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>().farClipPlane = 325f - getClippingPlaneQualityAdjustment();
 								GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>().backgroundColor = new Color(0.0784f, 0.1024f, 0.058f, 1);
 								GameObject.Find("DungeonFloor").transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTexture = (Resources.Load("art/generictexture3d/roughrock/Rough_rock_003_COLOR") as Texture2D);
+								GameObject.Find("DungeonFloor").transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.25f, 0.25f, 0.25f);
 								GameObject.Find("Player").transform.Find("Directional Light").gameObject.SetActive(true);
 								GameObject.Find("lanterns").transform.position = new Vector3(0, 0, 0);
 								Singleton<FirstPersonController>.Instance.footstepSound = FirstPersonController.FootstepSound.Stone;
@@ -7551,8 +7538,6 @@ namespace MagnificusMod
 		{
 			if (__instance.cardSlot.Card != null && __instance.gameObject.transform.childCount > 5)
 			{
-					GameObject.Find("CardElements").transform.Find("Damage_Graphic").gameObject.SetActive(false);
-					GameObject.Find("CardElements").transform.Find("Health_Graphic").gameObject.SetActive(false);
 					//string slotName = Singleton<WizardPortraitSlotManager>.Instance.playerSlots.Contains(__instance) ? "PlayerSlots" : "OpponentSlots";
 					//int dex = slotName == "PlayerSlots" ? Singleton<WizardPortraitSlotManager>.Instance.playerSlots.IndexOf(__instance) : Singleton<WizardPortraitSlotManager>.Instance.opponentSlots.IndexOf(__instance);
 				if (__instance.gameObject.transform.GetChild(5).gameObject.name != "Wizard3DPortrait_Glitched(Clone)" && __instance.gameObject.transform.GetChild(5).gameObject.name != "ProjectileImpactEffects(Clone)")

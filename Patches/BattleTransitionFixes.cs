@@ -138,8 +138,8 @@ namespace MagnificusMod
 					{
 						Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().farClipPlane = 325f - Generation.getClippingPlaneQualityAdjustment();
 						GameObject.Find("lanterns").transform.position = new Vector3(0, 0, 0);
-						GameObject.Find("deckLight").GetComponent<Light>().intensity = 0;
-						GameObject.Find("deckLight").transform.parent.gameObject.GetComponent<Light>().intensity = 0;
+						GameObject.Find("GameTable").transform.Find("light").Find("deckLight").gameObject.GetComponent<Light>().intensity = 0;
+						GameObject.Find("GameTable").transform.Find("light").gameObject.GetComponent<Light>().intensity = 0;
 					}
 					else if (RunState.Run.regionTier == 1)
 					{
@@ -220,6 +220,7 @@ namespace MagnificusMod
 					if (GameObject.Find("walls").transform.position == new Vector3(0, -90, 9))
 					{
 						string nodeName = Singleton<FirstPersonController>.Instance.currentZone.gameObject.name;
+						Debug.Log(nodeName);
 						string[] x1 = nodeName.Split('x');
 						string[] x2 = x1[1].Split(' ');
 						int x = int.Parse(x2[0]);

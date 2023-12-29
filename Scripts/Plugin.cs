@@ -46,7 +46,7 @@ namespace MagnificusMod
 		private void Awake()
 		{
 			Achievements.addAchievements();
-			WallTextures.GetTextures();
+			WallTextures.getImages();
 			base.Logger.LogInfo("Loaded MagnificusMod!");
 			Plugin.Directory = base.Info.Location.Replace("MagnificusMod.dll", "");
 			Harmony harmony = new Harmony("silenceman.inscryption.magnificusmod");
@@ -219,6 +219,7 @@ namespace MagnificusMod
 
 			Sigils.HPSpellAbility();
 			Sigils.ATKSpellAbility();
+			Sigils.FrozenAbility();
 			Sigils.FrostSpellAbility();
 			Sigils.TargetFrostSpellAbility();
 			Sigils.GoldSpellAbility();
@@ -745,7 +746,7 @@ namespace MagnificusMod
 					if (flag2)
 					{
 
-						Texture2D texture2D = Tools.GetTexture("mognus mox.png");
+						Texture2D texture2D = Tools.getImage("mognus mox.png");
 
 						List<Texture> list = new List<Texture>();
 						list.Add(texture2D);
@@ -1323,7 +1324,7 @@ namespace MagnificusMod
 				case 2:
 					style = new TextDisplayer.SpeakerTextStyle();
 					style.voiceSoundIdPrefix = "stimmy";
-					style.voiceSoundVolume = 1f;
+					style.voiceSoundVolume =0.6f;
 					style.color = new Color(0, 0.7f, 1f);
 					style.font = GameObject.Find("StimmyFont").GetComponent<UnityEngine.UI.Text>().font;
 					style.fontSizeChange = 10;

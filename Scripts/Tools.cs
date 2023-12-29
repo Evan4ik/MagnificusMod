@@ -14,14 +14,9 @@ namespace MagnificusMod
         private static Assembly _assembly;
         public static Assembly CurrentAssembly => _assembly ??= Assembly.GetExecutingAssembly();
 
-        public static Texture2D GetTexture(string name)
+        public static Texture2D getImage(string name)
         {
             return TextureHelper.GetImageAsTexture(name, CurrentAssembly);
-        }
-
-        public static Texture2D getImage(string path)
-        {
-            return TextureHelper.GetImageAsTexture(path, CurrentAssembly);
         }
 
         public static Sprite getSprite(string path)

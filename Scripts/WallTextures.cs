@@ -24,7 +24,7 @@ namespace MagnificusMod
         public static Sprite minimapNode;
         public static List<Sprite> gridTiles = new List<Sprite>();
 
-        public static void GetTextures()
+        public static void getImages()
         {
             none = Tools.getImage("blank.png");
             goo = (Resources.Load("art/generictexture3d/goo/Goo_Color") as Texture2D);

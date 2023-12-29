@@ -235,6 +235,7 @@ namespace MagnificusMod
 					enableNorth = true;
 					for (int i = 0; i < directions.Count; i++)
 					{GameObject.Find("click" + directions[i]).GetComponent<BoxCollider>().enabled = false;}
+					Singleton<InteractionCursor>.Instance.ClearForcedCursorType();
 				}
 				if (!__instance.PrerequisitesMet && enableNorth)
                 {
