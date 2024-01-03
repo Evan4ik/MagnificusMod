@@ -16,7 +16,7 @@ using System.Reflection;
 using UnityEngine.UI;
 using Tools = MagnificusMod.Tools;
 using Random = UnityEngine.Random;
-using MagSave = MagnificusMod.Plugin.MagCurrentNode;
+using MagSave = MagnificusMod.MagCurrentNode;
 using SavedVars = MagnificusMod.SaveVariables;
 using KayceeStorage = MagnificusMod.KayceeStorage;
 using MagnificusMod;
@@ -44,7 +44,7 @@ namespace MagnificusMod
 				__state.zoomInteractable.enabled = false;
 				__state.zoomInteractable.SetEnabled(false);
 				Singleton<CameraEffects>.Instance.Shake(0.05f, 0.3f);
-				GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(false);
+				if (config.isometricMode){GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(false);}
 				AudioController.Instance.PlaySound3D("giant_stones_falling", MixerGroup.ExplorationSFX, __state.transform.position, 0.75f, 0f, null, null, null, null, false);
 				yield return new WaitForSeconds(0.5f);
 				__state.zoomInteractable.SetZoomed(false, false, 0.2f);
@@ -67,7 +67,7 @@ namespace MagnificusMod
 					GameObject.Find("Player").transform.Find("Directional Light").gameObject.GetComponent<Light>().intensity = 0;
 				}
 				yield return new WaitForSeconds(0.25f);
-				GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(true);
+				if (config.isometricMode) { GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(true); }
 				if (!config.isometricMode)
 				{
 					Singleton<FirstPersonController>.Instance.MoveLocked = (Singleton<FirstPersonController>.Instance.LookLocked = false);

@@ -16,7 +16,7 @@ using System.Reflection;
 using UnityEngine.UI;
 using Tools = MagnificusMod.Tools;
 using Random = UnityEngine.Random;
-using MagSave = MagnificusMod.Plugin.MagCurrentNode;
+using MagSave = MagnificusMod.MagCurrentNode;
 using SavedVars = MagnificusMod.SaveVariables;
 using KayceeStorage = MagnificusMod.KayceeStorage;
 using SigilCode = MagnificusMod.SigilCode;
@@ -378,7 +378,7 @@ namespace MagnificusMod
 
 		public static void MadeOfGold()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Made of Gold", "When a card bearing this sigil perishes, the killer will gain 2 mana crystals.", typeof(SigilCode.DropMana), Tools.getImage("goldenA.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Made of Gold", "When a card bearing this sigil perishes, the killer will gain 2 crystals.", typeof(SigilCode.DropMana), Tools.getImage("goldenA.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("goldenA.png"));
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };

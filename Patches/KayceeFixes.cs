@@ -16,7 +16,7 @@ using System.Reflection;
 using UnityEngine.UI;
 using Tools = MagnificusMod.Tools;
 using Random = UnityEngine.Random;
-using MagSave = MagnificusMod.Plugin.MagCurrentNode;
+using MagSave = MagnificusMod.MagCurrentNode;
 using SavedVars = MagnificusMod.SaveVariables;
 using KayceeStorage = MagnificusMod.KayceeStorage;
 using PackManager = Infiniscryption.PackManagement.PackManager;

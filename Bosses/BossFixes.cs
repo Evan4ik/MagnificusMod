@@ -16,7 +16,7 @@ using System.Reflection;
 using UnityEngine.UI;
 using Tools = MagnificusMod.Tools;
 using Random = UnityEngine.Random;
-using MagSave = MagnificusMod.Plugin.MagCurrentNode;
+using MagSave = MagnificusMod.MagCurrentNode;
 using SavedVars = MagnificusMod.SaveVariables;
 using KayceeStorage = MagnificusMod.KayceeStorage;
 
@@ -459,11 +459,11 @@ namespace MagnificusMod
 							}
 							if (!SavedVars.LearnedMechanics.Contains("hushlonely;"))
 							{
-								Plugin.switchToSpeakerStyle(2);
+								CustomTextDisplayerStuff.switchToSpeakerStyle(2);
 								yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("WHAT? BUT DON'T I GET TO LEAVE?", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 								yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I STILL HAVE SO MUCH STIMULATION TO GET!!", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 								yield return Singleton<TextDisplayer>.Instance.ShowThenClear("[c:g2]PLEASE, CHALLENGER,[c:] YOU HAVE TO GET ME-", 1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-								Plugin.switchToSpeakerStyle(0);
+								CustomTextDisplayerStuff.switchToSpeakerStyle(0);
 								yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hush.", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 								SavedVars.LearnedMechanics += "hushlonely;";
 							}

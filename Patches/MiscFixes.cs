@@ -16,7 +16,7 @@ using System.Reflection;
 using UnityEngine.UI;
 using Tools = MagnificusMod.Tools;
 using Random = UnityEngine.Random;
-using MagSave = MagnificusMod.Plugin.MagCurrentNode;
+using MagSave = MagnificusMod.MagCurrentNode;
 using SavedVars = MagnificusMod.SaveVariables;
 using KayceeStorage = MagnificusMod.KayceeStorage;
 
@@ -349,6 +349,24 @@ namespace MagnificusMod
 					}
 				}
 				return result;
+			}
+		}
+
+		[HarmonyPatch(typeof(CardPile), "CursorType", MethodType.Getter)]
+		public class FixCursorSprite
+		{
+			public static bool Prefix(ref CardPile __instance, ref CursorType __result)
+			{
+				if (SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
+				if (__instance.gameObject.transform.parent == null) { return true; }
+				if (__instance.gameObject.transform.parent.gameObject.name != "shopObjects") { return true; }
+				if (!__instance.ClickEventAssigned && __instance.gameObject.transform.parent.name != "shopObjects")
+				{
+					__result = __instance.CursorType;
+					return false;
+				}
+				__result = CursorType.Pickup;
+				return false;
 			}
 		}
 	}

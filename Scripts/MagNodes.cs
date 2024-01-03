@@ -16,11 +16,11 @@ using System.Reflection;
 using UnityEngine.UI;
 using Tools = MagnificusMod.Tools;
 using Random = UnityEngine.Random;
-using MagSave = MagnificusMod.Plugin.MagCurrentNode;
+using MagSave = MagnificusMod.MagCurrentNode;
 using SavedVars = MagnificusMod.SaveVariables;
 using KayceeStorage = MagnificusMod.KayceeStorage;
 using MagModGeneration = MagnificusMod.Generation;
-using MagCurrentNode = MagnificusMod.Plugin.MagCurrentNode;
+using MagCurrentNode = MagnificusMod.MagCurrentNode;
 
 namespace MagnificusMod
 {
@@ -811,7 +811,7 @@ namespace MagnificusMod
 					sideDeckObject.transform.localPosition = new Vector3(3.05f, -5.01f, 1.3f);
 					sideDeckObject.name = "ShopDeck1";
 					deckObject.name = "ShopDeck2";
-					base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("You arrive at a humble storefront. \nYou gaze at what you can buy with " + RunState.Run.currency.ToString() + " Mana Crystals.", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
+					base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("You arrive at a humble storefront. \nYou gaze at what you can buy with " + RunState.Run.currency.ToString() + " Crystals.", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
 
 					yield return new WaitForSeconds(1f);
 					if (config.isometricMode == true)
@@ -1026,6 +1026,7 @@ namespace MagnificusMod
 
 				public IEnumerator cardpackOpen(SelectableCard component, string type)
 				{
+					Singleton<ViewController>.Instance.LockState = ViewLockState.Locked;
 					yield return new WaitForSeconds(0.76f);
 					Vector3 packpos = component.gameObject.transform.localPosition;
 					AudioController.Instance.PlaySound2D("gbc_pack_open", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
@@ -1143,11 +1144,20 @@ namespace MagnificusMod
 				{
 					openingCardPack = false;
 					RunState.Run.playerDeck.AddCard(component.Info);
+					component.ExitBoard(0.25f, new Vector3(0, 1, 1));
+					base.StartCoroutine(removeOtherCardPackCards());
+					Tween.LocalPosition(GameObject.Find("shopObjects").transform, new Vector3(0, 0, 0), 0.01f, 0.25f);
+				}
+
+				public IEnumerator removeOtherCardPackCards()
+                {
+					yield return new WaitForSeconds(0.25f);
+					Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
 					foreach (SelectableCard info in cardPackCards)
 					{
-						info.ExitBoard(0.25f, new Vector3(0, 0, 0));
+						info.ExitBoard(0f, new Vector3(0, 0, 0));
 					}
-					Tween.LocalPosition(GameObject.Find("shopObjects").transform, new Vector3(0, 0, 0), 0f, 0.2f);
+					yield break;
 				}
 				public void action(SelectableCard component)
 				{
@@ -2321,7 +2331,7 @@ namespace MagnificusMod
 			public IEnumerator sequencer(UpgradeSpellNode tradeCardsData)
 			{
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default);
-				Plugin.switchToSpeakerStyle(1);
+				CustomTextDisplayerStuff.switchToSpeakerStyle(1);
 				this.cardpickedfromdeck = new List<SelectableCard>();
 				upgraded = false;
 				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("FadingMox"))
@@ -2567,7 +2577,7 @@ namespace MagnificusMod
 				yield return new WaitForSeconds(0.36f);
 				component.ExitBoard(0.3f, new Vector3(0f, 0f, -6f));
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
-				Plugin.switchToSpeakerStyle(0);
+				CustomTextDisplayerStuff.switchToSpeakerStyle(0);
 				yield return NodeOutroSequence();
 				bool flag3 = Singleton<GameFlowManager>.Instance != null;
 				if (flag3)
@@ -3113,6 +3123,8 @@ namespace MagnificusMod
 						abilites.Add(choice2.Info.Abilities[i]);
                     }
 				}
+				if (abilites.Contains(Ability.PreventAttack))
+                {potionMod.bloodCostAdjustment = 1;}
 				potionMod.abilities.AddRange(abilites);
 				potion.mods.Add(potionMod);
 				component.SetInfo(potion);
@@ -3124,8 +3136,12 @@ namespace MagnificusMod
 					SavedVars.LearnedMechanics += "stimmyf3;";
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("GO!!", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g2]GET OUT OF HERE!![c:]", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				} else if (abilites.Contains(Ability.PreventAttack) && !SavedVars.LearnedMechanics.Contains("repulsivepotion"))
+				{
+					SavedVars.LearnedMechanics += "repulsivepotion;";
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("WOAH! LOOKS LIKE SOMETHING YOU PUT INTO THE POTION MADE IT A BIT.. [c:g1]PRICY[c:]..", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 				}
-				Plugin.switchToSpeakerStyle(0);
+				CustomTextDisplayerStuff.switchToSpeakerStyle(0);
 				RunState.Run.playerDeck.AddCard(component.Info);
 				done = true;
 				component.gameObject.GetComponent<BoxCollider>().enabled = true;
@@ -3148,7 +3164,7 @@ namespace MagnificusMod
 				cauldron.transform.localRotation = Quaternion.Euler(0, 180, 0);
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default);
 				yield return new WaitForSeconds(1.55f);
-				Plugin.switchToSpeakerStyle(2);
+				CustomTextDisplayerStuff.switchToSpeakerStyle(2);
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
 				GameObject.Find("GameTable").transform.Find("LonelyMage").transform.localPosition = new Vector3(0f, 1f, 7.5f);
 				GameObject.Find("GameTable").transform.Find("LonelyMage").gameObject.SetActive(true);
@@ -3506,7 +3522,7 @@ namespace MagnificusMod
 					yield return GameObject.Find("TextDisplayer").GetComponent<TextDisplayer>().ShowUntilInput("IS IT GOOD?", -1f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
 				}
 				done = true;
-				Plugin.setBaseTextDisplayerOn(false);
+				CustomTextDisplayerStuff.setBaseTextDisplayerOn(false);
 				yield break;
 			}
 
@@ -3520,7 +3536,7 @@ namespace MagnificusMod
 					Singleton<MagnificusLifeManager>.Instance.playerLife = KayceeStorage.FleetingLife;
 				}
 				yield return new WaitForSeconds(1.55f);
-				Plugin.setBaseTextDisplayerOn(true);
+				CustomTextDisplayerStuff.setBaseTextDisplayerOn(true);
 				GameObject.Find("GameTable").transform.Find("Goober").transform.localPosition = new Vector3(0, 6, 26);
 				GameObject.Find("GameTable").transform.Find("Goober").transform.rotation = Quaternion.Euler(0, 180, 0);
 				GameObject.Find("GameTable").transform.Find("Goober").gameObject.SetActive(true);
@@ -3714,7 +3730,6 @@ namespace MagnificusMod
 				GameObject.Instantiate(Resources.Load("prefabs\\specialnodesequences\\ConfirmStoneButton")).name = "TESTSTONE";
 				GameObject.Find("TESTSTONE").AddComponent<BoxCollider>().size = new Vector3(1.4f, 0.2f, 2.1f);
 				this.confirmStone = GameObject.Find("TESTSTONE").GetComponentInChildren<ConfirmStoneButton>();
-				Debug.Log(firstComponent.Info);
 				Tween.Position(GameObject.Find("TESTSTONE").transform, new Vector3(table.transform.position.x, 14.75f, -2.6f + table.transform.position.z), 0.15f, 0.1f, null, Tween.LoopType.None, null, null, true);
 				component.gameObject.GetComponent<BoxCollider>().enabled = true;
 				component.Initialize(component.Info, new Action<SelectableCard>(this.cardpickingupscropt));

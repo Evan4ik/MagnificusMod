@@ -16,7 +16,7 @@ using System.Reflection;
 using UnityEngine.UI;
 using Tools = MagnificusMod.Tools;
 using Random = UnityEngine.Random;
-using MagSave = MagnificusMod.Plugin.MagCurrentNode;
+using MagSave = MagnificusMod.MagCurrentNode;
 using SavedVars = MagnificusMod.SaveVariables;
 using KayceeStorage = MagnificusMod.KayceeStorage;
 
@@ -220,7 +220,6 @@ namespace MagnificusMod
 					if (GameObject.Find("walls").transform.position == new Vector3(0, -90, 9))
 					{
 						string nodeName = Singleton<FirstPersonController>.Instance.currentZone.gameObject.name;
-						Debug.Log(nodeName);
 						string[] x1 = nodeName.Split('x');
 						string[] x2 = x1[1].Split(' ');
 						int x = int.Parse(x2[0]);
@@ -243,6 +242,16 @@ namespace MagnificusMod
 							SaveManager.SaveToFile();
                             Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Generation.leshyCardGetSequence());
 						}
+					} else if (RunState.Run.regionTier == 0 && MagSave.layout.Contains("2"))
+					{
+						if (Singleton<ViewManager>.Instance.CurrentView != View.Candles)
+						{
+							Singleton<FirstPersonController>.Instance.enabled = false;
+							MagSave.SaveNode("x4 y2");
+							File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(false, false)));
+							SaveManager.SaveToFile();
+							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Generation.dummyWinSequence());
+						}
 					}
 				}
 				bool flag9 = StoryEventsData.EventCompleted(StoryEvent.UhOhSpaghettiOh) && RunState.Run.bonelordPuzzleActive;
@@ -253,5 +262,8 @@ namespace MagnificusMod
 				return false;
 			}
 		}
+
+
+
 	}
 }

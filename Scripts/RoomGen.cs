@@ -528,13 +528,13 @@ namespace MagnificusMod
         {
         new List<List<string>>
         {
-            new List<string> { "W4C", "W5N", "W4J","W4D","W4J","W4N","W4C", "W4N", "W4N","W4C","W4N","W5N","W4C" },
-            new List<string> { "W4E", "MR1",   "MR1",  "MR2",  "MR1",  "MR1", "MRR", " ",   " ",  " ",  " ",  " ", "W4W" },
-            new List<string> { "W4K",  "MR1",   "PK",  "MR1",  "PK",  "MR1", "W5K", " ",   "PK",  " ",  "PK",  " ", "W4W" },
-            new List<string> { "W4d",  "MR2",   "-", "SPWN","MR1",  "MR1", "W4W", " ",   " ", " "," ",  "-", "W4W" },
-            new List<string> { "W4H",  "-",   "PK",  "-",  "PK",  "MR1", "W4W",  " ",   "PK",  " ",  "PK",  " ", "W4W" },
-            new List<string> { "W4E",  "-",   "-",  "-",  "MR1",  "MR1", "W4W", " ",   " ",  " ",  " ",  " ", "W4W" },
-            new List<string> { "W4C", "W4S","W4S", "W4S","W4S","W4S", "W4S", "W4S","W4S", "W4S","W4S","W4S", "W4S" }
+            new List<string> { "W4C", "W5N", "W4J","W4D","W4J","W4N","W4C", "W4N", "W4N","W4N","W4C","W4C" },
+            new List<string> { "W4E", "MR1",   "MR1",  "MR2",  "MR1",  "MR1", "MRR", " ",   " ",  " ",  " ", "W4W" },
+            new List<string> { "W4K",  "MR1",   "PK",  "MR1",  "PK",  "MR1", "W5W", "PK",   " ",  "PK",  " ", "W4W" },
+            new List<string> { "W4d",  "MR2",   "-", "SPWN","MR1",  "MR1", "W4W", " ",   " ", " "," ",  "W4W" },
+            new List<string> { "W4H",  "-",   "PK",  "-",  "PK",  "MR1", "W4W",  "PK",   " ",  "PK",  " ", "W4W" },
+            new List<string> { "W4E",  "-",   "-",  "-",  "MR1",  "MR1", "W4W", " ",   " ",  " ",  " ", "W4W" },
+            new List<string> { "W4C", "W4S","W4S", "W4S","W4S","W4S", "W4S", "W4S","W4S", "W4S","W4S","W4C" }
         },
          new List<List<string>>
         {
@@ -1737,7 +1737,7 @@ namespace MagnificusMod
                 }
             }
 
-            MagnificusMod.Plugin.MagCurrentNode.SaveLayout(ids);
+            MagnificusMod.MagCurrentNode.SaveLayout(ids);
             return id2;
         }
 

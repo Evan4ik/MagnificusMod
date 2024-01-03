@@ -16,7 +16,7 @@ using System.Reflection;
 using UnityEngine.UI;
 using Tools = MagnificusMod.Tools;
 using Random = UnityEngine.Random;
-using MagSave = MagnificusMod.Plugin.MagCurrentNode;
+using MagSave = MagnificusMod.MagCurrentNode;
 using MagMod = MagnificusMod.Plugin;
 using SigilCode = MagnificusMod.SigilCode;
 
@@ -1276,42 +1276,8 @@ namespace MagnificusMod
 			myCard.temple = CardTemple.Wizard;
 		}
 
-		[HarmonyPatch(typeof(RandomAbility), "AddMod")]
-		public class AmorphousFix
-		{
-			public static bool Prefix(ref RandomAbility __instance)
-			{
-				if (SceneLoader.ActiveSceneName == "finale_magnificus")
-                {
-					__instance.Card.Status.hiddenAbilities.Add(__instance.Ability);
-					List<Ability> learnedAbilities = AbilitiesUtil.GetLearnedAbilities(false, 0, 5, AbilityMetaCategory.MagnificusRulebook);
-					var instance = __instance;
-					List<Ability> bannedAbilites = new List<Ability> { Ability.EdaxioArms, Ability.EdaxioHead, Ability.EdaxioLegs, Ability.EdaxioTorso, Ability.VirtualReality, Ability.GainGemBlue, Ability.GainGemGreen, Ability.GainGemOrange, Ability.DropRubyOnDeath, Ability.GemsDraw };
-					if (__instance.Card.Info.HasTrait(Trait.EatsWarrens)) { bannedAbilites.Add(Ability.Tutor); }
-					learnedAbilities.RemoveAll((Ability x) => x == Ability.RandomAbility || instance.Card.HasAbility(x) || bannedAbilites.Contains(x));
-					Ability result = Ability.Sharp;
-					if (learnedAbilities.Count > 0)
-					{
-						result = learnedAbilities[SeededRandom.Range(0, learnedAbilities.Count, Environment.TickCount)];
-					}
-					CardModificationInfo cardModificationInfo = new CardModificationInfo(result);
-					CardModificationInfo cardModificationInfo2 = __instance.Card.TemporaryMods.Find((CardModificationInfo x) => x.HasAbility(instance.Ability));
-					if (cardModificationInfo2 == null)
-					{
-						cardModificationInfo2 = __instance.Card.Info.Mods.Find((CardModificationInfo x) => x.HasAbility(instance.Ability));
-					}
-					if (cardModificationInfo2 != null)
-					{
-						cardModificationInfo.fromTotem = cardModificationInfo2.fromTotem;
-						cardModificationInfo.fromCardMerge = cardModificationInfo2.fromCardMerge;
-					}
-					__instance.Card.AddTemporaryMod(cardModificationInfo);
-					return false;
-				}
-				return true;
-			}
-		}
 
+		
 		public static void AddPerformer()
 		{
 			List<CardMetaCategory> list = new List<CardMetaCategory> { CardMetaCategory.ChoiceNode };
@@ -2102,91 +2068,6 @@ namespace MagnificusMod
 
 
 
-		[HarmonyPatch(typeof(DrawRabbits), "CardToDraw", MethodType.Getter)]
-		public class RabbitFix
-		{
-			public static bool Prefix(ref DrawRabbits __instance, ref CardInfo __result)
-			{
-				if (SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
-				List<string> cardToGet = new List<string>();
-				Plugin.MagCurrentNode.GetSideDeck();
-				string text = File.ReadAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave");
-				string[] array3 = text.Split('R');
-				array3 = array3[1].Split(',');
-				for (int j = 0; j < int.Parse(array3[0]); j++)
-				{cardToGet.Add("mag_orangemoxrabbit");}
-				for (int k = 0; k < int.Parse(array3[1]); k++)
-				{cardToGet.Add("mag_greenmoxrabbit");}
-				for (int l = 0; l < int.Parse(array3[2]); l++)
-				{cardToGet.Add("mag_moxrabbit");}
-				CardInfo cardByName = CardLoader.GetCardByName(cardToGet[UnityEngine.Random.RandomRangeInt(0, cardToGet.Count)]);
-				cardByName.Mods.AddRange(__instance.GetNonDefaultModsFromSelf(new Ability[]
-				{
-				__instance.Ability
-				}));
-				__result = cardByName;
-				return false;
-			}
-		}
-
-		[HarmonyPatch(typeof(AbilityBehaviour), "GetNonDefaultModsFromSelf")]
-		public class RabbitFix2
-		{
-			public static bool Prefix(ref AbilityBehaviour __instance, ref List<CardModificationInfo> __result, params Ability[] exclude)
-			{
-				if (SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
-				List<Ability> abilities = __instance.Card.Info.Abilities;
-				foreach (CardModificationInfo cardModificationInfo in __instance.Card.TemporaryMods)
-				{
-					abilities.AddRange(cardModificationInfo.abilities);
-				}
-				foreach (Ability item in __instance.Card.Info.DefaultAbilities)
-				{
-					abilities.Remove(item);
-				}
-				foreach (Ability item2 in exclude)
-				{
-					abilities.Remove(item2);
-				}
-				if (abilities.Count == 0)
-				{
-					__result = new List<CardModificationInfo>();
-					return false;
-				}
-				CardModificationInfo cardModificationInfo2 = new CardModificationInfo();
-				if (SceneLoader.ActiveSceneName != "finale_magnificus") { cardModificationInfo2.fromCardMerge = true; }
-				cardModificationInfo2.abilities.AddRange(abilities);
-				__result =  new List<CardModificationInfo>
-				{
-					cardModificationInfo2
-				}; 
-				return false;
-			}
-		}
-
-		[HarmonyPatch(typeof(CreateCardsAdjacent), "ModifySpawnedCard")]
-		public class AdjacentCardsFix
-		{
-			public static bool Prefix(ref CreateCardsAdjacent __instance, CardInfo card)
-			{
-				List<Ability> abilities = __instance.Card.Info.Abilities;
-				var instance = __instance;
-				foreach (CardModificationInfo cardModificationInfo in __instance.Card.TemporaryMods)
-				{
-					abilities.AddRange(cardModificationInfo.abilities);
-				}
-				abilities.RemoveAll((Ability x) => x == instance.Ability);
-				if (abilities.Count > 4)
-				{
-					abilities.RemoveRange(3, abilities.Count - 4);
-				}
-				CardModificationInfo cardModificationInfo2 = new CardModificationInfo();
-				if (SceneLoader.ActiveSceneName != "finale_magnificus") { cardModificationInfo2.fromCardMerge = true; }
-				cardModificationInfo2.abilities = abilities;
-				card.Mods.Add(cardModificationInfo2);
-				return false;
-			}
-		}
 
 		public static void AddMasterGO()
 		{
@@ -3739,6 +3620,7 @@ namespace MagnificusMod
 					.AddTraits(traits[0])
 					.SetBloodCost(0)
 					.AddSpecialAbilities(Plugin.PotionStuff)
+					.SetExtendedProperty("ManaCost", true)
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("TargetedSpell", true);
 			myCard.metaCategories = list;

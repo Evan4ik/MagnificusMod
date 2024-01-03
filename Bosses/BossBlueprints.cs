@@ -16,7 +16,7 @@ using System.Reflection;
 using UnityEngine.UI;
 using Tools = MagnificusMod.Tools;
 using Random = UnityEngine.Random;
-using MagSave = MagnificusMod.Plugin.MagCurrentNode;
+using MagSave = MagnificusMod.MagCurrentNode;
 using SavedVars = MagnificusMod.SaveVariables;
 using KayceeStorage = MagnificusMod.KayceeStorage;
 
@@ -2875,5 +2875,108 @@ namespace MagnificusMod
 				});
 			}
 		}
+
+		public class DummyBlueprint : EncounterBlueprintData
+		{
+			public DummyBlueprint()
+			{
+				base.name = "DummyBlueprint";
+				this.turns = new List<List<EncounterBlueprintData.CardBlueprint>>();
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_practicemage")
+					},
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_forcemage")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_alchemist")
+					},
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_practicemage")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_hpspell")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_puppeteer")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_practicemage")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_almondcookie")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_alchemist")
+					},
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_stimmachine")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_practicemage")
+					},
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_puppeteer")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("mag_hpspell")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+
+					}
+				});
+			}
+		}
+
 	}
 }

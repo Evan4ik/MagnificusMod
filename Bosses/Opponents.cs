@@ -16,7 +16,7 @@ using System.Reflection;
 using UnityEngine.UI;
 using Tools = MagnificusMod.Tools;
 using Random = UnityEngine.Random;
-using MagSave = MagnificusMod.Plugin.MagCurrentNode;
+using MagSave = MagnificusMod.MagCurrentNode;
 using SavedVars = MagnificusMod.SaveVariables;
 using KayceeStorage = MagnificusMod.KayceeStorage;
 using BossBlueprints = MagnificusMod.BossBlueprints;
@@ -618,7 +618,7 @@ namespace MagnificusMod
 				AudioController.Instance.SetLoopAndPlay("Goo_Mage", 0, true, true);
 				AudioController.Instance.SetLoopVolume(0.3f, 4f, 1, true);
 				yield return new WaitForSeconds(0.81f);
-				Plugin.setBaseTextDisplayerOn(false);
+				CustomTextDisplayerStuff.setBaseTextDisplayerOn(false);
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
 				yield return new WaitForSeconds(0.75f);
 				yield break;
@@ -699,7 +699,7 @@ namespace MagnificusMod
 						GameObject.Find("OpponentSlots").transform.GetChild(i).transform.Find("QueuedCardFrame").gameObject.SetActive(false);
 					}
 					Singleton<ViewManager>.Instance.SwitchToView(View.OpponentQueue);
-					Plugin.setBaseTextDisplayerOn(true);
+					CustomTextDisplayerStuff.setBaseTextDisplayerOn(true);
 					yield return GameObject.Find("TextDisplayer").GetComponent<TextDisplayer>().ShowUntilInput("Don't you think those cards are a little too powerful?", -0.65f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
 					foreach (CardSlot cardSlot in Singleton<BoardManager>.Instance.PlayerSlotsCopy)
 					{
@@ -726,7 +726,7 @@ namespace MagnificusMod
 					yield return new WaitForSeconds(0.1f);
 					yield return GameObject.Find("TextDisplayer").GetComponent<TextDisplayer>().ShowUntilInput("That's better.", -0.65f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
 					yield return new WaitForSeconds(0.1f);
-					Plugin.setBaseTextDisplayerOn(false);
+					CustomTextDisplayerStuff.setBaseTextDisplayerOn(false);
 					List<CardSlot> list = Singleton<BoardManager>.Instance.OpponentSlotsCopy.FindAll((CardSlot x) => x.opposingSlot.Card == null);
 					foreach (CardSlot slot in list)
 					{
@@ -774,7 +774,7 @@ namespace MagnificusMod
 
 				GameObject.Find("Player").transform.Find("PixelCameraParent").Find("Pixel Camera").gameObject.GetComponent<Camera>().backgroundColor = new Color(0.4f, 0, 0);
 
-				Plugin.switchToSpeakerStyle(1);
+				CustomTextDisplayerStuff.switchToSpeakerStyle(1);
 				yield return new WaitForSeconds(1.55f);
 				GameObject.Find("GameTable").transform.Find("Espeara").transform.localPosition = new Vector3(0, -10f, 36f);
 				GameObject.Find("GameTable").transform.Find("Espeara").transform.localScale = new Vector3(5, 0, 5);
@@ -793,7 +793,7 @@ namespace MagnificusMod
 				AudioController.Instance.SetLoopVolume(0.25f, 4f, 1, true);
 
 				yield return new WaitForSeconds(1f);
-				Plugin.switchToSpeakerStyle(0);
+				CustomTextDisplayerStuff.switchToSpeakerStyle(0);
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
 				GameObject.Find("GameTable").transform.Find("Espeara").gameObject.AddComponent<SineWaveRotation>();
 				GameObject.Find("GameTable").transform.Find("Espeara").gameObject.GetComponent<SineWaveRotation>().originalRotation = new Vector3(1, 270, 0);
@@ -895,10 +895,10 @@ namespace MagnificusMod
 					}
 					List<CardSlot>.Enumerator enumerator2 = default(List<CardSlot>.Enumerator);
 					Singleton<ViewManager>.Instance.SwitchToView(View.OpponentQueue, false, true);
-					Plugin.switchToSpeakerStyle(1);
+					CustomTextDisplayerStuff.switchToSpeakerStyle(1);
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("These enchanted spears won't just damage your cards..", 1.5f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 					yield return new WaitForSeconds(0.5f);
-					Plugin.switchToSpeakerStyle(0);
+					CustomTextDisplayerStuff.switchToSpeakerStyle(0);
 					Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
 				}
 				yield break;
@@ -930,7 +930,7 @@ namespace MagnificusMod
 				phase = 1;
 				TurnTimerDialogue = false;
 				Plugin.specialBossSequence = true;
-				Plugin.switchToSpeakerStyle(2);
+				CustomTextDisplayerStuff.switchToSpeakerStyle(2);
 				AudioController.Instance.FadeOutLoop(0.75f, Array.Empty<int>());
 				yield return base.IntroSequence(encounter);
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
@@ -948,7 +948,7 @@ namespace MagnificusMod
 				Singleton<ViewManager>.Instance.SwitchToView(View.BossCloseup, false, true);
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("FINALLY!! STIMULATION!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 				yield return new WaitForSeconds(1f);
-				Plugin.switchToSpeakerStyle(0);
+				CustomTextDisplayerStuff.switchToSpeakerStyle(0);
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
 				yield return new WaitForSeconds(0.15f);
 				yield break;
@@ -1014,14 +1014,14 @@ namespace MagnificusMod
 			public IEnumerator NewPhaseSequence()
 			{
 				base.TurnPlan.Clear();
-				Plugin.switchToSpeakerStyle(2);
+				CustomTextDisplayerStuff.switchToSpeakerStyle(2);
 				Singleton<ViewManager>.Instance.SwitchToView(View.OpponentQueue, false, true);
 				yield return new WaitForSeconds(0.15f);
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I'M STILL NOT STIMULATED ENOUGH!!", 0f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I HAVE THE URGE TO SEARCH A CARD PILE!", 0f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 				yield return Singleton<LonelyMageSequencer>.Instance.shuffleBoard();
 				yield return new WaitForSeconds(0.5f);
-				Plugin.switchToSpeakerStyle(0);
+				CustomTextDisplayerStuff.switchToSpeakerStyle(0);
 				
 				yield break;
 			}
@@ -3132,10 +3132,10 @@ namespace MagnificusMod
 				int modCount = Generation.challenges.Contains("ItemSpells") ? 1 : 0;
 				if (otherCard.Info.mods.Count > modCount && otherCard.Info.HasTrait(Trait.EatsWarrens))
 				{
-					Plugin.switchToSpeakerStyle(1);
+					CustomTextDisplayerStuff.switchToSpeakerStyle(1);
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hah! Using one of my own spells against me?", -0.65f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 					yield return new WaitForSeconds(0.1f);
-					Plugin.switchToSpeakerStyle(0);
+					CustomTextDisplayerStuff.switchToSpeakerStyle(0);
 				}
 				yield break;
 			}
@@ -3207,9 +3207,9 @@ namespace MagnificusMod
                     }
 					if (hasEmptySlot)
 					{
-						Plugin.switchToSpeakerStyle(2);
+						CustomTextDisplayerStuff.switchToSpeakerStyle(2);
 						yield return shuffleBoard(false);
-						Plugin.switchToSpeakerStyle(0);
+						CustomTextDisplayerStuff.switchToSpeakerStyle(0);
 					}
 				}
 				turnsSinceDeckKill++;
@@ -3339,10 +3339,10 @@ namespace MagnificusMod
 					if (!Singleton<LonelyMageOpponnent>.Instance.TurnTimerDialogue)
 					{
 						Singleton<LonelyMageOpponnent>.Instance.TurnTimerDialogue = true;
-						Plugin.switchToSpeakerStyle(2);
+						CustomTextDisplayerStuff.switchToSpeakerStyle(2);
 						yield return new WaitForSeconds(0.5f);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I'M GROWING IMPATIENT!\nI NEED MORE STIMULATION!!", -0.65f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-						Plugin.switchToSpeakerStyle(0);
+						CustomTextDisplayerStuff.switchToSpeakerStyle(0);
 					}
 				}
 				yield break;

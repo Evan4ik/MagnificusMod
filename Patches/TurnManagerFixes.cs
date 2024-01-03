@@ -16,7 +16,7 @@ using System.Reflection;
 using UnityEngine.UI;
 using Tools = MagnificusMod.Tools;
 using Random = UnityEngine.Random;
-using MagSave = MagnificusMod.Plugin.MagCurrentNode;
+using MagSave = MagnificusMod.MagCurrentNode;
 using SavedVars = MagnificusMod.SaveVariables;
 using KayceeStorage = MagnificusMod.KayceeStorage;
 
@@ -169,7 +169,7 @@ namespace MagnificusMod
 					if (!config.isometricMode) { Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North); }
 					lifeCounter.GetComponent<SineWaveMovement>().originalPosition = lifeCounter.transform.localPosition;
 					lifeCounter.GetComponent<SineWaveMovement>().enabled = true;
-					if (RunState.Run.regionTier == 0)
+					if (RunState.Run.regionTier == 0 && MagSave.layout.Contains("3"))
 					{
 						RunState.Run.playerLives = 0;
 						displayedLives = 1;
@@ -222,7 +222,8 @@ namespace MagnificusMod
 				yield return new WaitForSeconds(1.51f);
 				lifeCounter.SetActive(false);
 			}
-			GameObject.Find("transitionIcon").transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("lifepainting" + displayedLives + ".png");
+			if (config.isometricMode)
+			{GameObject.Find("transitionIcon").transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("lifepainting" + displayedLives + ".png");}
 			if (RunState.Run.playerLives <= 0)
 			{
 				if (RunState.Run.currentNodeId < 101)
@@ -531,18 +532,15 @@ namespace MagnificusMod
 									GameObject weightLol = GameObject.Instantiate(manaTypes[UnityEngine.Random.RandomRangeInt(0, manaTypes.Count)]);
 									summonedWeights.Add(weightLol);
 									weightLol.transform.parent = GameObject.Find("GameTable").transform;
-									weightLol.transform.localPosition = new Vector3(0 + UnityEngine.Random.RandomRangeInt(-3, 3), 8.76f + UnityEngine.Random.RandomRangeInt(-3, 3), 5.08f + UnityEngine.Random.RandomRangeInt(-3, 3));
+									weightLol.transform.localPosition = new Vector3(0 + UnityEngine.Random.Range(-3.00f, 3.00f), 9.76f + UnityEngine.Random.Range(0.00f, 1.70f), 5.08f + UnityEngine.Random.Range(-3.00f, 3.00f));
 									weightLol.AddComponent<BoxCollider>();
 									weightLol.GetComponent<BoxCollider>().size = new Vector3(0.3f, 0.3f, 0.3f);
-									weightLol.AddComponent<Rigidbody>();
+									weightLol.AddComponent<Rigidbody>().mass = 0.25f;
 									AudioController.Instance.PlaySound3D("metal_drop", MixerGroup.TableObjectsSFX, weightLol.transform.position, 1f, 0f, new AudioParams.Pitch(0.7f), null, new AudioParams.Randomization(true), null, false);
 									yield return new WaitForSeconds(0.1f);
 								}
 								yield return new WaitForSeconds(0.75f);
-								foreach (GameObject weight in summonedWeights)
-								{
-									GameObject.Destroy(weight);
-								}
+								__state.StartCoroutine(removeOverkill(summonedWeights));
 								yield return MagnificusMod.Generation.currencyTutorial();
 							}
 							else
@@ -599,5 +597,15 @@ namespace MagnificusMod
 				return true;
 			}
 		}
+
+		public static IEnumerator removeOverkill(List<GameObject> summonedWeights)
+        {
+			yield return new WaitForSeconds(0.25f);
+			foreach(GameObject weight in summonedWeights)
+            {
+				GameObject.Destroy(weight);
+            }
+			yield break;
+        }
 	}
 }
