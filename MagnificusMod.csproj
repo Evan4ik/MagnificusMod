@@ -794,7 +794,7 @@
     <EmbeddedResource Include="Resources\cards\spell of whirlwind.png" />
     <EmbeddedResource Include="Resources\cards\spell of wind.png" />
     <EmbeddedResource Include="Resources\sigils\spell of wind_ability.png" />
-    <EmbeddedResource Include="Resources\sigils\spellbook.png" />
+    <EmbeddedResource Include="Resources\battlestuff\spellbook.png" />
     <EmbeddedResource Include="Resources\sigils\spellbooksigil.png" />
     <EmbeddedResource Include="Resources\cardbacks\spellcardback.png" />
     <EmbeddedResource Include="Resources\cardbacks\spellcardbackrare.png" />
@@ -931,10 +931,7 @@
     <EmbeddedResource Include="Resources\cards\sharko_kick.png" />
     <EmbeddedResource Include="Resources\cards\spell of frost.png" />
     <EmbeddedResource Include="Resources\sigils\spell of frost_ability.png" />
-    <EmbeddedResource Include="Resources\sigils\squid_bones.png" />
-    <EmbeddedResource Include="Resources\cards\squid_candle.png" />
     <EmbeddedResource Include="Resources\cards\squid_kill.png" />
-    <EmbeddedResource Include="Resources\sigils\squid_title.png" />
     <EmbeddedResource Include="Resources\cards\StimMage.png" />
     <EmbeddedResource Include="Resources\sigils\stimulationability.png" />
     <EmbeddedResource Include="Resources\sigils\stimulationhealth.png" />
