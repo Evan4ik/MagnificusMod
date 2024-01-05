@@ -161,7 +161,6 @@ namespace MagnificusMod
 			//Cards.AddUrayuliWizard();
 			Cards.ChangeWolf();
 			Cards.tailreplacement();
-			Cards.ChangeGeck();
 			Cards.ChangeRingWorm();
 
 			Cards.ChangeStoat();

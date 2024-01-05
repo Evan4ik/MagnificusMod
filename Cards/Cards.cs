@@ -241,11 +241,10 @@ namespace MagnificusMod
 			list.Add(CardMetaCategory.ChoiceNode);
 			List<Ability> list2 = new List<Ability>();
 			list2.Add(Ability.GemDependant);
-			Texture2D image = Tools.getImage("PupilEmmission.png");
 			CardInfo myCard = CardManager.New("mag", "mag_magepupil", "Mage Pupil", 1, 1, "Though weak, it can always be useful in the right situation.")
 				.SetCost()
 				.SetPixelPortrait(Tools.convertToSprite(Resources.Load("art/gbc/cards/pixelportraits/pixelportrait_pupil") as Texture2D))
-				.SetPortrait(Tools.getImage("magepupil.png"), image)
+				.SetPortrait(Tools.getImage("magepupil.png"))
 				.AddAbilities(list2[0])
 				.AddMetaCategories(list[0]);
 
@@ -261,7 +260,6 @@ namespace MagnificusMod
 			List<Texture> list3 = new List<Texture>();
 			Texture2D texture2D = Tools.getImage("green mox.png");
 			list3.Add(texture2D);
-			Texture2D image = Tools.getImage("JuniorSageEmmission.png");
 			string text = "mag_jrsage";
 			string text2 = "Junior Sage";
 			int num = 1;
@@ -270,7 +268,7 @@ namespace MagnificusMod
 			List<Texture> list13 = list3;
 			CardInfo myCard = CardManager.New("mag", text, text2, num, num2, text3)
 					.SetCost(bloodCost: 0, gemsCost: list2)
-					.SetPortrait(Tools.getImage("juniorsage.png"), image)
+					.SetPortrait(Tools.getImage("juniorsage.png"))
 					.SetPixelPortrait(Tools.convertToSprite(Resources.Load("art/gbc/cards/pixelportraits/pixelportrait_juniorsage") as Texture2D))
 					.SetEvolve("mag_srsage", 1)
 					.AddMetaCategories(list[0]);
@@ -305,7 +303,6 @@ namespace MagnificusMod
 			list3.Add(GemType.Green);
 			List<Texture> list4 = new List<Texture>();
 
-			Texture2D image = Tools.getImage("GreenMageEmmission.png");
 			string text = "mag_greenmage";
 			string text2 = "Green Mage";
 			int num = 0;
@@ -323,7 +320,7 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", text, text2, num, num2, text3)
 					.SetPixelPortrait(Tools.convertToSprite(Resources.Load("art/gbc/cards/pixelportraits/pixelportrait_greenmage") as Texture2D))
 					.SetCost(bloodCost: 0, gemsCost: list3)
-					.SetPortrait(Tools.getImage("green mage.png"), image)
+					.SetPortrait(Tools.getImage("green mage.png"))
 					.AddSpecialAbilities(SigilCode.HealthForAnts.FullSpecial.Id)
 					.AddMetaCategories(list[0]);
 			myCard.specialStatIcon = SigilCode.HealthForAnts.FullStatIcon.Id;
@@ -363,7 +360,6 @@ namespace MagnificusMod
 			list4.Add(SigilCode.BlueMageDraw.ability);
 			list4.Add(SigilCode.BlueMageDraw.ability);
 
-			Texture2D image = Tools.getImage("BlueMageFusedEmmission.png");
 			string text = "mag_sporebluemage";
 			string text2 = "Blue SporeMage";
 			int num = 0;
@@ -385,7 +381,7 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", text, text2, num, num2, text3)
 
 						.SetCost(bloodCost: 0, gemsCost: list3)
-						.SetPortrait(Tools.getImage("BlueMageFused.png"), image)
+						.SetPortrait(Tools.getImage("BlueMageFused.png"))
 						.AddAbilities(list4[0], list4[1])
 						.SetRare();
 			myCard.metaCategories = list;
@@ -404,7 +400,6 @@ namespace MagnificusMod
 			List<Trait> list4 = new List<Trait>();
 			list4.Add(Trait.Fused);
 
-			Texture2D image = Tools.getImage("ForceMageEmmission.png");
 			string text = "mag_forcemage";
 			string text2 = "Force Mage";
 			int num = 0;
@@ -424,7 +419,7 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", text, text2, num, num2, text3)
 					.SetPixelPortrait(Tools.convertToSprite(Resources.Load("art/gbc/cards/pixelportraits/pixelportrait_forcemage") as Texture2D))
 					.SetCost(bloodCost: 0, gemsCost: list2)
-					.SetPortrait(Tools.getImage("ForceMage.png"), image)
+					.SetPortrait(Tools.getImage("ForceMage.png"))
 					.AddAbilities(list3[0])
 					.AddMetaCategories(list[0]);
 			myCard.temple = CardTemple.Wizard;
@@ -440,7 +435,6 @@ namespace MagnificusMod
 			List<Ability> list3 = new List<Ability>();
 			list3.Add(Ability.GemDependant);
 
-			Texture2D image = Tools.getImage("GemFeindEmmission.png");
 			string text = "mag_gemfiend";
 			string text2 = "Gem Fiend";
 			int num = 3;
@@ -461,7 +455,7 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", text, text2, num, num2, text3)
 					.SetPixelPortrait(Tools.convertToSprite(Resources.Load("art/gbc/cards/pixelportraits/pixelportrait_gemfiend") as Texture2D))
 					.SetCost(bloodCost: 0, gemsCost: list2)
-					.SetPortrait(Tools.getImage("GemFeind.png"), image)
+					.SetPortrait(Tools.getImage("GemFeind.png"))
 					.AddAbilities(list3[0])
 					.AddMetaCategories(list[0]);
 			myCard.temple = CardTemple.Wizard;
@@ -477,7 +471,6 @@ namespace MagnificusMod
 			List<Ability> list3 = new List<Ability>();
 			list3.Add(Ability.Flying);
 
-			Texture2D image = Tools.getImage("FlyingMageEmmission.png");
 			string text = "mag_hovermage";
 			string text2 = "Hover Mage";
 			int num = 2;
@@ -497,7 +490,7 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", text, text2, num2, num, text3)
 					.SetPixelPortrait(Tools.convertToSprite(Resources.Load("art/gbc/cards/pixelportraits/pixelportrait_flyingmage") as Texture2D))
 					.SetCost(bloodCost: 0, gemsCost: list2)
-					.SetPortrait(Tools.getImage("FlyingMage.png"), image)
+					.SetPortrait(Tools.getImage("FlyingMage.png"))
 					.AddAbilities(list3[0])
 					.AddMetaCategories(list[0]);
 			myCard.temple = CardTemple.Wizard;
@@ -513,7 +506,6 @@ namespace MagnificusMod
 			List<Ability> list3 = new List<Ability>();
 			list3.Add(Ability.GemDependant);
 
-			Texture2D image = Tools.getImage("KnightMageEmmission.png");
 			string text = "mag_knightmage";
 			string text2 = "Mage Knight";
 			int num = 1;
@@ -521,7 +513,7 @@ namespace MagnificusMod
 			List<CardMetaCategory> list5 = list;
 			CardComplexity cardComplexity = CardComplexity.Simple;
 			CardTemple cardTemple = CardTemple.Nature;
-			string text3 = "The tower Knight Mage, a good defense.";
+			string text3 = "The towering Knight Mage, a good defense.";
 			bool flag = false;
 			int num3 = 0;
 			int num4 = 0;
@@ -532,7 +524,7 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", text, text2, num, num2, text3)
 				.SetPixelPortrait(Tools.convertToSprite(Resources.Load("art/gbc/cards/pixelportraits/pixelportrait_mageknight") as Texture2D))
 					.SetCost(bloodCost: 0, gemsCost: list2)
-					.SetPortrait(Tools.getImage("KnightMage.png"), image)
+					.SetPortrait(Tools.getImage("KnightMage.png"))
 					.AddAbilities(list3[0])
 					.AddMetaCategories(list[0]);
 			myCard.temple = CardTemple.Wizard;
@@ -548,7 +540,6 @@ namespace MagnificusMod
 			List<Ability> list3 = new List<Ability>();
 			list3.Add(Ability.BuffGems);
 
-			Texture2D image = Tools.getImage("OrangeMageEmmission.png");
 			string text = "mag_orangemage";
 			string text2 = "Orange Mage";
 			int num = 0;
@@ -567,7 +558,7 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", text, text2, num, num2, text3)
 				.SetPixelPortrait(Tools.convertToSprite(Resources.Load("art/gbc/cards/pixelportraits/pixelportrait_orangemage") as Texture2D))
 					.SetCost(bloodCost: 0, gemsCost: list2)
-					.SetPortrait(Tools.getImage("OrangeMage.png"), image)
+					.SetPortrait(Tools.getImage("OrangeMage.png"))
 					.AddAbilities(list3[0])
 					.AddMetaCategories(list[0]);
 			myCard.temple = CardTemple.Wizard;
@@ -583,7 +574,6 @@ namespace MagnificusMod
 			List<Ability> list3 = new List<Ability>();
 			list3.Add(Ability.Reach);
 
-			Texture2D image = Tools.getImage("PracticeMageEmmission.png");
 			string text = "mag_practicemage";
 			string text2 = "Practice Mage";
 			int num = 0;
@@ -604,7 +594,7 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", text, text2, num, num2, text3)
 
 					.SetCost(bloodCost: 0, gemsCost: list2)
-					.SetPortrait(Tools.getImage("PracticeMage.png"), image)
+					.SetPortrait(Tools.getImage("PracticeMage.png"))
 					.AddAbilities(list3[0])
 					.AddMetaCategories(list[0]);
 			myCard.temple = CardTemple.Wizard;
@@ -620,7 +610,6 @@ namespace MagnificusMod
 			List<Ability> list3 = new List<Ability>();
 			list3.Add(SigilCode.MagDropRubyOnDeath.ability);
 
-			Texture2D image = Tools.getImage("RubyGolemEmmission.png");
 			string text = "mag_rubygolem";
 			string text2 = "Ruby Golem";
 			int num = 2;
@@ -642,58 +631,13 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", text, text2, num, num2, text3)
 					.SetPixelPortrait(Tools.convertToSprite(Resources.Load("art/gbc/cards/pixelportraits/pixelportrait_rubygolem") as Texture2D))
 					.SetCost(bloodCost: 0, gemsCost: list2)
-					.SetPortrait(Tools.getImage("RubyGolem.png"), image)
+					.SetPortrait(Tools.getImage("RubyGolem.png"))
 					.AddAbilities(list3[0])
 					.AddMetaCategories(list[0]);
 
 			myCard.temple = CardTemple.Wizard;
 		}
 
-		public static void AddUrayuliWizard()
-		{
-			List<CardMetaCategory> list = new List<CardMetaCategory>();
-			list.Add(CardMetaCategory.Rare);
-			List<CardAppearanceBehaviour.Appearance> list2 = new List<CardAppearanceBehaviour.Appearance>();
-			list2.Add(CardAppearanceBehaviour.Appearance.RareCardBackground);
-			List<GemType> list3 = new List<GemType>();
-			list3.Add(GemType.Green);
-			list3.Add(GemType.Orange);
-			list3.Add(GemType.Blue);
-
-			string text = "mag_wizardurayuli";
-			string text2 = "Urayuli";
-			int num = 7;
-			int num2 = 7;
-			List<CardMetaCategory> list5 = list;
-			CardComplexity cardComplexity = CardComplexity.Simple;
-			CardTemple cardTemple = CardTemple.Nature;
-			string text3 = "I would fear it only if it could fly.";
-			bool flag = false;
-			int num3 = 0;
-			int num4 = 0;
-			int num5 = 0;
-			List<GemType> list6 = list3;
-			SpecialStatIcon specialStatIcon = SpecialStatIcon.None;
-			List<Tribe> list7 = null;
-			List<Trait> list8 = null;
-			List<SpecialTriggeredAbility> list9 = null;
-			List<Ability> list10 = null;
-			EvolveParams evolveParams = null;
-			string text4 = null;
-			TailParams tailParams = null;
-			IceCubeParams iceCubeParams = null;
-			bool flag2 = false;
-			bool flag3 = false;
-
-			CardInfo myCard = CardManager.New("mag", text, text2, num, num2, text3)
-
-						.SetCost(bloodCost: 0, gemsCost: list3)
-						.SetPortrait(Tools.getImage("urayuli wizard.png"))
-						//.AddAbilities(list3[0])
-						.AddMetaCategories(list[0])
-						.SetRare();
-			myCard.temple = CardTemple.Wizard;
-		}
 
 		public static void AddCandleSquid()
 		{
@@ -1061,7 +1005,7 @@ namespace MagnificusMod
 			myCard.temple = CardTemple.Wizard;
 		}
 
-		public static void ChangeGeck()
+		/*public static void ChangeGeck()
 		{
 			List<CardMetaCategory> list = new List<CardMetaCategory>();
 			List<GemType> list2 = new List<GemType>();
@@ -1074,7 +1018,7 @@ namespace MagnificusMod
 			customCard.description = "What? How did [c:g2]his[c:] cards get in here?";
 			customCard.SetPixelPortrait(pixelTex);
 			customCard.SetPortrait(Tools.getImage("wizgeck.png"));
-		}
+		}*/
 
 
 		public static void ChangePackrat()
@@ -1094,21 +1038,6 @@ namespace MagnificusMod
 
 		}
 
-
-
-		public static void ChangeAmalgam()
-		{
-			List<CardMetaCategory> list = new List<CardMetaCategory> { CardMetaCategory.Rare };
-			List<Ability> list2 = new List<Ability> { SigilCode.RandomPower.ability };
-
-			List<GemType> gemCost = new List<GemType> { GemType.Green, GemType.Orange };
-			CardInfo myCard = CardManager.New("mag", "mag_amalgam", "Amalgam", 3, 3, "A failed experiment to achieve greatness.")
-					.AddAppearances(CardAppearanceBehaviour.Appearance.RareCardBackground)
-					.SetPortrait(Tools.getImage("amalgam wiz.png"))
-					.SetCost(bloodCost: 0, gemsCost: gemCost)
-					.AddAbilities(list2[0]);
-			myCard.temple = CardTemple.Wizard;
-		}
 		public static void tailreplacement()
 		{
 			List<CardMetaCategory> list = new List<CardMetaCategory>();
@@ -1647,7 +1576,6 @@ namespace MagnificusMod
 
 			List<Ability> list2 = new List<Ability>();
 			list2.Add(SigilCode.GemAbsorber.ability);
-			Sprite pixelTex = Tools.getSprite("gemabsorber_pixel.png");
 			CardInfo myCard = CardManager.New("mag", "mag_gemabsorber", "Gem Absorber", 1, 1, "It seeks out to consume all mana within Mox to grow stronger.")
 
 						.SetCost(bloodCost: 1)
@@ -1760,7 +1688,6 @@ namespace MagnificusMod
 			List<Texture> list3 = new List<Texture>();
 			List<Ability> list4 = new List<Ability>();
 			list4.Add(SigilCode.Stimulation.ability);
-			Texture2D image = Tools.getImage("StimMageEmmission.png");
 			string text = "mag_stimmage";
 			string text2 = "Stim Mage";
 			int num = 0;
@@ -1777,7 +1704,7 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", text, text2, num, num2, text3)
 					.SetPixelPortrait(Tools.convertToSprite(Resources.Load("art/gbc/cards/pixelportraits/pixelportrait_stimmage") as Texture2D))
 					.SetCost(bloodCost: 0, gemsCost: list2)
-					.SetPortrait(Tools.getImage("StimMage.png"), image)
+					.SetPortrait(Tools.getImage("StimMage.png"))
 					.AddAbilities(list4[0])
 					.AddMetaCategories(list[0]);
 			myCard.temple = CardTemple.Wizard;
@@ -2082,7 +2009,6 @@ namespace MagnificusMod
 			List<Ability> list5 = new List<Ability>();
 			list5.Add(Ability.GemDependant);
 
-			Texture2D image = Tools.getImage("MasterGOEmmission.png");
 			string text = "mag_mastergo";
 			string text2 = "Master Goranj";
 			int num = 2;
@@ -2120,7 +2046,6 @@ namespace MagnificusMod
 			List<Ability> list5 = new List<Ability>();
 			list5.Add(SigilCode.BleeneDraw.ability);
 
-			Texture2D image = Tools.getImage("MasterBGEmmission.png");
 			string text = "mag_masterbg";
 			string text2 = "Master Bleene";
 			int num = 0;
@@ -2159,7 +2084,6 @@ namespace MagnificusMod
 			list5.Add(Ability.Flying);
 			list5.Add(SigilCode.OrluHit.ability);
 
-			Texture2D image = Tools.getImage("MasterOBEmmission.png");
 			string text = "mag_masterob";
 			string text2 = "Master Orlu";
 			int num = 1;
@@ -2602,7 +2526,6 @@ namespace MagnificusMod
 			List<Ability> list5 = new List<Ability>();
 			list5.Add(SigilCode.submergekraken.ability);
 
-			Sprite pixelTex = Tools.getSprite("kraken_pixel.png");
 			string text = "mag_masterkraken";
 			string text2 = "Master Cephalo";
 			int num = 2;
@@ -2623,7 +2546,6 @@ namespace MagnificusMod
 					.SetPortrait(Tools.getImage("master kraken.png"))
 					.AddAbilities(list5[0])
 					.AddMetaCategories(list[0])
-					.SetPixelPortrait(pixelTex)
 					.SetRare();
 			myCard.temple = CardTemple.Wizard;
 		}
@@ -2834,100 +2756,6 @@ namespace MagnificusMod
 					.SetRare();
 			myCard.temple = CardTemple.Wizard;
 		}
-
-		public static void AddLonelyMage()
-		{
-			List<CardMetaCategory> list = new List<CardMetaCategory>();
-			list.Add(CardMetaCategory.Rare);
-			List<GemType> list2 = new List<GemType>();
-			list2.Add(GemType.Blue);
-			List<CardAppearanceBehaviour.Appearance> list3 = new List<CardAppearanceBehaviour.Appearance>();
-			list3.Add(CardAppearanceBehaviour.Appearance.RareCardBackground);
-
-			List<Ability> list5 = new List<Ability>();
-			list5.Add(Ability.MoveBeside);
-
-			string text = "mag_lonelymage";
-			string text2 = "Lonely Mage";
-			int num = 3;
-			int num2 = 1;
-			List<CardMetaCategory> list6 = list;
-			CardComplexity cardComplexity = CardComplexity.Simple;
-			CardTemple cardTemple = CardTemple.Nature;
-			string text3 = "A replica of one of my students.. Years of isolation unlocked his potential, but broke his mind.";
-			bool flag = false;
-			int num3 = 0;
-			int num4 = 0;
-			int num5 = 0;
-			List<GemType> list7 = list2;
-			SpecialStatIcon specialStatIcon = SpecialStatIcon.None;
-			List<Tribe> list8 = null;
-			List<Trait> list9 = null;
-			List<SpecialTriggeredAbility> list10 = null;
-			List<Ability> list11 = list5;
-			EvolveParams evolveParams = null;
-			string text4 = null;
-			TailParams tailParams = null;
-			IceCubeParams iceCubeParams = null;
-			bool flag2 = false;
-			bool flag3 = false;
-			CardInfo myCard = CardManager.New("mag", text, text2, num, num2, text3)
-
-					.SetCost(bloodCost: 0, gemsCost: list2)
-					.SetPortrait(Tools.getImage("mag_lonelymage.png"))
-					.AddAbilities(list5[0])
-					.AddMetaCategories(list[0])
-					.SetRare();
-			myCard.temple = CardTemple.Wizard;
-		}
-
-		public static void AddEspearara()
-		{
-			List<CardMetaCategory> list = new List<CardMetaCategory>();
-			list.Add(CardMetaCategory.Rare);
-			List<GemType> list2 = new List<GemType>();
-			list2.Add(GemType.Orange);
-			List<CardAppearanceBehaviour.Appearance> list3 = new List<CardAppearanceBehaviour.Appearance>();
-			list3.Add(CardAppearanceBehaviour.Appearance.RareCardBackground);
-			List<Texture> list4 = new List<Texture>();
-
-			List<Ability> list5 = new List<Ability>();
-			list5.Add(SigilCode.MagDropSpear.ability);
-
-			string text = "mag_espearara";
-			string text2 = "Amber";
-			int num = 2;
-			int num2 = 2;
-			List<CardMetaCategory> list6 = list;
-			CardComplexity cardComplexity = CardComplexity.Simple;
-			CardTemple cardTemple = CardTemple.Nature;
-			string text3 = "A replica of one of my students..";
-			bool flag = false;
-			int num3 = 0;
-			int num4 = 0;
-			int num5 = 0;
-			List<GemType> list7 = list2;
-			SpecialStatIcon specialStatIcon = SpecialStatIcon.None;
-			List<Tribe> list8 = null;
-			List<Trait> list9 = null;
-			List<SpecialTriggeredAbility> list10 = null;
-			List<Ability> list11 = list5;
-			EvolveParams evolveParams = null;
-			string text4 = null;
-			TailParams tailParams = null;
-			IceCubeParams iceCubeParams = null;
-			bool flag2 = false;
-			bool flag3 = false;
-			CardInfo myCard = CardManager.New("mag", text, text2, num, num2, text3)
-
-					.SetCost(bloodCost: 0, gemsCost: list2)
-					.SetPortrait(Tools.getImage("mag_espearara.png"))
-					.AddAbilities(list5[0])
-					.AddMetaCategories(list[0])
-					.SetRare();
-			myCard.temple = CardTemple.Wizard;
-		}
-
 		public static void AddBossExclusive()
 		{
 			List<CardMetaCategory> list = new List<CardMetaCategory>();
@@ -3055,56 +2883,8 @@ namespace MagnificusMod
 			List<Trait> list36 = null;
 			List<SpecialTriggeredAbility> list37 = null;
 			List<Ability> list38 = list10;
-
-			CardInfo myCard6 = CardManager.New("mag", text9, text10, num11, num12, text3)
-
-					.SetCost()
-					.SetPortrait(Tools.getImage("mag_lonelymage.png"))
-					.AddAbilities(list10[0], list10[1])
-					.AddMetaCategories();
-			myCard6.metaCategories = new List<CardMetaCategory>();
-			string text13 = "mag_BOSSlonelymage2";
-			string text14 = "Lonely Mage";
-			int num16 = 2;
-			int num17 = 2;
-			List<CardMetaCategory> list41 = list;
-			CardComplexity cardComplexity4 = CardComplexity.Simple;
-			CardTemple cardTemple4 = CardTemple.Nature;
-			string text15 = "";
-			bool flag10 = false;
-			int num18 = 0;
-			int num19 = 0;
-			int num20 = 0;
-			List<GemType> list42 = null;
-			SpecialStatIcon specialStatIcon4 = SpecialStatIcon.None;
-			List<Tribe> list43 = null;
-			List<Trait> list44 = null;
-			List<SpecialTriggeredAbility> list45 = null;
-			List<Ability> list46 = list11;
-			EvolveParams evolveParams4 = null;
-			string text16 = null;
-			TailParams tailParams4 = null;
-			IceCubeParams iceCubeParams4 = null;
-			bool flag11 = false;
-			bool flag12 = false;
-			CardInfo myCard7 = CardManager.New("mag", text13, text14, num16, num17, text3)
-
-					.SetCost()
-					.SetPortrait(Tools.getImage("mag_lonelymage.png"))
-					.AddAbilities(list11[0], list11[1])
-					.AddMetaCategories();
-			myCard7.metaCategories = new List<CardMetaCategory>();
 			string text17 = "mag_BOSStrapspear";
 			string text18 = "Spear";
-			int num22 = 1;
-			List<CardMetaCategory> list49 = list;
-			CardComplexity cardComplexity5 = CardComplexity.Simple;
-			CardTemple cardTemple5 = CardTemple.Nature;
-			string text19 = "";
-			bool flag13 = false;
-			int num23 = 0;
-			int num24 = 0;
-			int num25 = 0;
 			List<GemType> list50 = null;
 			SpecialStatIcon specialStatIcon5 = SpecialStatIcon.None;
 			List<Tribe> list51 = null;
@@ -3113,7 +2893,7 @@ namespace MagnificusMod
 			List<Ability> list54 = new List<Ability>();
 			EvolveParams evolveParams5 = null;
 
-			CardInfo myCard8 = CardManager.New("mag", text17, "Enchanted Spear", 1, num22, text3)
+			CardInfo myCard8 = CardManager.New("mag", text17, "Enchanted Spear", 1, 1, text3)
 
 					.SetCost()
 					.SetPortrait(Tools.getImage("mag_enchspear.png"))
@@ -3122,71 +2902,6 @@ namespace MagnificusMod
 					.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)
 					.AddMetaCategories();
 			myCard8.metaCategories = new List<CardMetaCategory>();
-			string text21 = "mag_BOSSgoobert";
-			string text22 = "Goobert";
-			int num26 = 1;
-			int num27 = 4;
-			List<CardMetaCategory> list57 = list;
-			CardComplexity cardComplexity6 = CardComplexity.Simple;
-			CardTemple cardTemple6 = CardTemple.Nature;
-			string text23 = "";
-			bool flag16 = false;
-			int num28 = 0;
-			int num29 = 0;
-			int num30 = 0;
-
-			List<CardAppearanceBehaviour.Appearance> list61 = list3;
-			CardInfo myCard9 = CardManager.New("mag", text21, text22, num26, num27, text3)
-
-					.SetCost()
-					.SetPortrait(Tools.getImage("mag_goobert.png"))
-					.AddAbilities(list13[0])
-					.AddMetaCategories();
-			myCard9.metaCategories = new List<CardMetaCategory>();
-			string text24 = "mag_BOSSespearara";
-			string text25 = "Espeara";
-			int num31 = 2;
-			int num32 = 8;
-			List<CardMetaCategory> list62 = list;
-			CardComplexity cardComplexity7 = CardComplexity.Simple;
-			CardTemple cardTemple7 = CardTemple.Nature;
-			string text26 = "";
-			bool flag17 = false;
-			int num33 = 0;
-			int num34 = 0;
-			int num35 = 0;
-
-			list61 = list3;
-			CardInfo myCard10 = CardManager.New("mag", text24, text25, num31, num32, text3)
-
-					.SetCost()
-					.SetPortrait(Tools.getImage("mag_espearara.png"))
-					.AddAbilities(list14[0], list14[1])
-					.AddMetaCategories();
-			myCard10.metaCategories = new List<CardMetaCategory>();
-			string text27 = "mag_BOSSmagnificuslonelymage";
-			string text28 = "Lonely Mage";
-			int num36 = 0;
-			int num37 = 10;
-			List<CardMetaCategory> list65 = list;
-			CardComplexity cardComplexity8 = CardComplexity.Simple;
-			CardTemple cardTemple8 = CardTemple.Nature;
-			string text29 = "";
-			bool flag18 = false;
-			int num38 = 0;
-			int num39 = 0;
-			int num40 = 0;
-			List<GemType> list66 = null;
-			SpecialStatIcon specialStatIcon8 = SpecialStatIcon.None;
-
-			list61 = list3;
-			CardInfo myCard11 = CardManager.New("mag", text27, text28, num36, num37, text3)
-
-					.SetCost()
-					.SetPortrait(Tools.getImage("mag_lonelymage.png"))
-					.AddAbilities(list15[0], list15[1])
-					.AddMetaCategories();
-			myCard11.metaCategories = new List<CardMetaCategory>();
 
 			//NewCard.Add(text30, text31, num41, num42, list68, cardComplexity9, cardTemple9, text32, flag19, num43, num44, num45, list69, specialStatIcon9, list70, list5, list6, list60, null, null, null, null, null, null, false, false, list61, texture2D10, null, null, null, null, null, null, null, null, null);
 		}
