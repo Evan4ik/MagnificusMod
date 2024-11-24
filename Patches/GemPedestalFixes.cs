@@ -78,8 +78,8 @@ namespace MagnificusMod
 					Tween.Rotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(0, 0, 0), 0.1f, 0.5f);
 				} else
                 {
-					Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(-40, 47.5f, -40), 0.25f, 0);
-					Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30, 45, 0), 0.25f, 0);
+					Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(0, 45, -50), 0.25f, 0);
+					Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(40, 0, 0), 0.25f, 0);
 					Singleton<FirstPersonController>.Instance.MoveLocked = (Singleton<FirstPersonController>.Instance.LookLocked = false);
 				}
 				//__state.gooRoom.SetActive(true);

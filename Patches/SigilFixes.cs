@@ -188,6 +188,41 @@ namespace MagnificusMod
 			}
 		}
 
+		[HarmonyPatch(typeof(TailParams), "GetDefaultTail")]
+		public class setMagDefaultTail
+		{
+			public static bool Prefix( ref CardInfo __result, CardInfo info)
+			{
+				if (SceneLoader.ActiveSceneName == "finale_magnificus")
+                {
+					__result = CardLoader.GetCardByName("mag_defaultastralprojection");
+					return false;
+                }
+				CardInfo cardByName = CardLoader.GetCardByName("DefaultTail");
+				CardModificationInfo item = new CardModificationInfo
+				{
+					nameReplacement = string.Format(Localization.Translate("{0} Tail"), info.DisplayedNameLocalized)
+				};
+				cardByName.Mods.Add(item);
+				__result = cardByName;
+				return false;
+			}
+		}
+
+		[HarmonyPatch(typeof(CardSpawner), "SpawnPlayableCardWithCopiedMods")]
+		public class fixProjectionLoop
+		{
+			public static bool Prefix(ref PlayableCard __result, CardInfo info, PlayableCard copyFrom, ref Ability excludedAbility)
+			{
+				if (excludedAbility == Ability.TailOnHit && SceneLoader.ActiveSceneName == "finale_magnificus")
+                {
+					excludedAbility = SigilCode.AstralProjection.ability;
+				}
+				return true;
+			}
+		}
+
+
 		[HarmonyPatch(typeof(Submerge), "OnTurnEnd")]
 		public class submergefix
 		{
@@ -204,7 +239,9 @@ namespace MagnificusMod
 				{
 					__state.Card.SetCardback(Tools.getImage("magsubmergecard.png"));
 					string slotName = __state.Card.slot.IsPlayerSlot ? "PlayerSlots" : "OpponentSlots";
-					Tween.LocalPosition(GameObject.Find(slotName).transform.GetChild(__state.Card.slot.Index).GetChild(5), new Vector3(GameObject.Find(slotName).transform.GetChild(__state.Card.slot.Index).GetChild(5).localPosition.x, -5f, GameObject.Find(slotName).transform.GetChild(__state.Card.slot.Index).GetChild(5).localPosition.z), 0.75f, 0);
+					Tween.LocalPosition(GameObject.Find(slotName).transform.GetChild(__state.Card.slot.Index).GetChild(5), new Vector3(GameObject.Find(slotName).transform.GetChild(__state.Card.slot.Index).GetChild(5).localPosition.x, -5.65f, GameObject.Find(slotName).transform.GetChild(__state.Card.slot.Index).GetChild(5).localPosition.z), 0.75f, 0);
+					if (__state.Card.HasAbility(Ability.Flying))
+						GameObject.Find(slotName).transform.GetChild(__state.Card.slot.Index).GetChild(5).gameObject.GetComponent<SineWaveMovement>().enabled = false;
 				}
 				else
 				{
@@ -236,7 +273,10 @@ namespace MagnificusMod
 				{
 					string slotName = __state.Card.slot.IsPlayerSlot ? "PlayerSlots" : "OpponentSlots";
 					float why = __state.Card.slot.IsPlayerSlot ? 1.435f : 4.435f;
-					Tween.LocalPosition(GameObject.Find(slotName).transform.GetChild(__state.Card.slot.Index).GetChild(5), new Vector3(GameObject.Find(slotName).transform.GetChild(__state.Card.slot.Index).GetChild(5).localPosition.x, why, GameObject.Find(slotName).transform.GetChild(__state.Card.slot.Index).GetChild(5).localPosition.z), 0.75f, 0);
+					Tween.LocalPosition(GameObject.Find(slotName).transform.GetChild(__state.Card.slot.Index).GetChild(5), new Vector3(GameObject.Find(slotName).transform.GetChild(__state.Card.slot.Index).GetChild(5).localPosition.x, why, GameObject.Find(slotName).transform.GetChild(__state.Card.slot.Index).GetChild(5).localPosition.z), 0.75f, 0, null, Tween.LoopType.None, new Action(delegate {
+						if (__state.Card.HasAbility(Ability.Flying))
+							GameObject.Find(slotName).transform.GetChild(__state.Card.slot.Index).GetChild(5).gameObject.GetComponent<SineWaveMovement>().enabled = true;
+					}));
 				}
 				__state.Card.UpdateFaceUpOnBoardEffects();
 				__state.OnResurface();

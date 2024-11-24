@@ -34,7 +34,7 @@ namespace MagnificusMod
 
 		public override void OnCursorSelectStart()
 		{
-			if (!this.rotating)
+			if (!this.rotating && this.transform.parent.parent.gameObject.GetComponent<GemPedestal3D>().zoomInteractable.Zoomed)
 			{
 				if (GameObject.Find("Cursor").transform.position.x < 0)
 				{
@@ -95,31 +95,18 @@ namespace MagnificusMod
 			this.iconRenderers[this.rendererIndex].material.mainTexture = this.iconTextures[this.IconIndex];
 		}
 
-
-
 		public IEnumerator deleteTheUseless(GameObject rotator)
         {
 			rotator.GetComponent<BoxCollider>().size = new Vector3(0, 0, 0);
 			yield return new WaitForSeconds(0.5f);
 			rotator.GetComponent<GemPedestalRotator3D>().enabled = false;
-			rotator.GetComponent<MagnificusMod.BossPedestalRotator>().iconTextures = rotator.GetComponent<GemPedestalRotator3D>().iconTextures;
+
 			rotator.GetComponent<MagnificusMod.BossPedestalRotator>().rotator = rotator.GetComponent<GemPedestalRotator3D>().rotator;
 			rotator.GetComponent<MagnificusMod.BossPedestalRotator>().iconRenderers = rotator.GetComponent<GemPedestalRotator3D>().iconRenderers;
-			switch (base.gameObject.name)
-			{
-				case "Rotator_Top":
-					this.startIndex = 0;
-					break;
-				case "Rotator_Mid":
-					this.startIndex = 1;
-					break;
-				case "Rotator_Bot":
-					this.startIndex = 2;
-					break;
-			}
-			this.IconIndex = this.startIndex;
+
 			DestroyImmediate(rotator.GetComponent<GemPedestalRotator3D>());
 			rotator.GetComponent<BoxCollider>().size = new Vector3(4, 2, 4);
+			this.transform.Find("Icon_1").gameObject.GetComponent<MeshRenderer>().material.mainTexture = this.iconTextures[this.IconIndex];
 			this.UpdateIcon();
 			yield break;
         }

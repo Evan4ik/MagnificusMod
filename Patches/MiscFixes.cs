@@ -37,6 +37,15 @@ namespace MagnificusMod
 			}
 		}
 
+		[HarmonyPatch(typeof(OilPaintingPuzzle), "ManagedUpdate")]
+		public class oilPainting2
+		{
+			public static bool Prefix()
+			{
+				return false;
+			}
+		}
+
 		[HarmonyPatch(typeof(CardInfo), "HasConduitAbility")]
 		public class weirderror
 		{
@@ -101,7 +110,7 @@ namespace MagnificusMod
 				{
 					return true;
 				}
-				__result = new Vector3(0, 0.75f, 0);
+				__result = new Vector3(0, 0f, 0);
 				return false;
 			}
 		}
@@ -115,7 +124,7 @@ namespace MagnificusMod
 				{
 					return true;
 				}
-				__result = new Vector3(0, 0.75f, 0);
+				__result = new Vector3(0, 0f, 0);
 				return false;
 			}
 		}
@@ -148,18 +157,18 @@ namespace MagnificusMod
 						bool flag2 = value > 0.33f;
 						if (flag2)
 						{
-							list.Add(CardLoader.GetCardByName("mag_greenmox"));
+							list.Add(CardLoader.GetCardByName("MoxEmerald"));
 						}
 						else
 						{
 							bool flag3 = value > 0.66f;
 							if (flag3)
 							{
-								list.Add(CardLoader.GetCardByName("mag_rubymox"));
+								list.Add(CardLoader.GetCardByName("MoxRuby"));
 							}
 							else
 							{
-								list.Add(CardLoader.GetCardByName("mag_bluemox"));
+								list.Add(CardLoader.GetCardByName("MoxSapphire"));
 							}
 						}
 					}
@@ -173,29 +182,29 @@ namespace MagnificusMod
 				{
 					new List<string>
 					{
-						"mag_orangemage"
+						"OrangeMage"
 					},
 					new List<string>
 					{
-						"mag_orangemage"
+						"OrangeMage"
 					},
 					new List<string>
 					{
-						"mag_rubygolem"
+						"RubyGolem"
 					},
 					new List<string>
 					{
-						"mag_jrsage"
-					},
-					new List<string>
-					{
-						"#GEM",
-						"mag_orangemage"
+						"JuniorSage"
 					},
 					new List<string>
 					{
 						"#GEM",
-						"mag_jrsage"
+						"OrangeMage"
+					},
+					new List<string>
+					{
+						"#GEM",
+						"JuniorSage"
 					},
 					new List<string>
 					{
@@ -206,21 +215,21 @@ namespace MagnificusMod
 				{
 					new List<string>
 					{
-						"mag_orangemage"
+						"OrangeMage"
 					},
 					new List<string>
 					{
-						"mag_gemfiend"
-					},
-					new List<string>
-					{
-						"#GEM",
-						"mag_orangemage"
+						"GemFiend"
 					},
 					new List<string>
 					{
 						"#GEM",
-						"mag_gemfiend"
+						"OrangeMage"
+					},
+					new List<string>
+					{
+						"#GEM",
+						"GemFiend"
 					},
 					new List<string>
 					{
@@ -304,49 +313,63 @@ namespace MagnificusMod
 		{
 			public static bool Prefix(ref ViewController __instance, ViewController.ControlMode mode, bool immediate = false)
 			{
-				bool flag = mode == ViewController.ControlMode.WizardBattleDefault || mode == ViewController.ControlMode.WizardBattleChooseDraw;
-				bool result;
-				if (flag)
+				bool result = true;
+				if (mode == ViewController.ControlMode.WizardBattleDefault || mode == ViewController.ControlMode.WizardBattleChooseDraw)
 				{
 					__instance.allowedViews = new List<View>
 					{
 						View.WizardBattleHand,
 						View.WizardBattleSlots,
-						View.Default,
+						View.WizardBattleUnits,
 						View.OpponentQueue
 					};
 					__instance.altTransitionInputs = new List<ViewController.ViewTransitionInput>
 					{
 						new ViewController.ViewTransitionInput(View.WizardBattleSlots, View.WizardBattlePiles, Button.LookRight),
 						new ViewController.ViewTransitionInput(View.WizardBattleHand, View.WizardBattlePiles, Button.LookRight),
-						new ViewController.ViewTransitionInput(View.WizardBattlePiles, View.WizardBattleSlots, Button.LookLeft),
+						new ViewController.ViewTransitionInput(View.WizardBattlePiles, View.WizardBattleUnits, Button.LookLeft),
 						new ViewController.ViewTransitionInput(View.WizardBattlePiles, View.WizardBattleSlots, Button.LookDown),
-						new ViewController.ViewTransitionInput(View.OpponentQueue, View.Default, Button.LookDown),
-						new ViewController.ViewTransitionInput(View.Default, View.OpponentQueue, Button.LookUp)
+						new ViewController.ViewTransitionInput(View.OpponentQueue, View.WizardBattleUnits, Button.LookDown),
+						new ViewController.ViewTransitionInput(View.WizardBattleUnits, View.OpponentQueue, Button.LookUp),
+					};
+
+					if (Singleton<SpellPile>.Instance != null) {
+						__instance.altTransitionInputs.AddRange(new List<ViewController.ViewTransitionInput>{new ViewController.ViewTransitionInput(View.WizardBattleUnits, View.Consumables, Button.LookRight),
+						new ViewController.ViewTransitionInput(View.OpponentQueue, View.Consumables, Button.LookRight),
+						new ViewController.ViewTransitionInput(View.Consumables, View.OpponentQueue, Button.LookLeft),
+						new ViewController.ViewTransitionInput(View.Consumables, View.WizardBattleUnits, Button.LookDown) });
+				}
+
+					result = false;
+				}
+				else if (mode == ViewController.ControlMode.MapNoDeckReview && SceneLoader.ActiveSceneName == "finale_magnificus")
+				{
+					__instance.allowedViews = new List<View>
+					{
+						View.MapDeckReview,
+						View.Candles
+					};
+					__instance.altTransitionInputs = new List<ViewController.ViewTransitionInput>
+					{
+						new ViewController.ViewTransitionInput(View.MapDeckReview, View.Candles, Button.LookRight),
+						new ViewController.ViewTransitionInput(View.Candles, View.MapDeckReview, Button.LookLeft)
 					};
 					result = false;
 				}
+				else if (mode == ViewController.ControlMode.CardGameChoosingSlot && SceneLoader.ActiveSceneName == "finale_magnificus")
+                {
+					__instance.allowedViews = new List<View>
+					{
+						View.WizardBattleSlots
+					};
+					if (!__instance.allowedViews.Contains(Singleton<ViewManager>.Instance.CurrentView))
+					{
+						Singleton<ViewManager>.Instance.SwitchToView(View.WizardBattleUnits, immediate);
+					}
+				}
 				else
 				{
-					bool flag2 = mode == ViewController.ControlMode.MapNoDeckReview && SceneLoader.ActiveSceneName == "finale_magnificus";
-					if (flag2)
-					{
-						__instance.allowedViews = new List<View>
-						{
-							View.MapDeckReview,
-							View.Candles
-						};
-						__instance.altTransitionInputs = new List<ViewController.ViewTransitionInput>
-						{
-							new ViewController.ViewTransitionInput(View.MapDeckReview, View.Candles, Button.LookRight),
-							new ViewController.ViewTransitionInput(View.Candles, View.MapDeckReview, Button.LookLeft)
-						};
-						result = false;
-					}
-					else
-					{
-						result = true;
-					}
+					result = true;
 				}
 				return result;
 			}

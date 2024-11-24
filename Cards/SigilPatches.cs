@@ -22,8 +22,8 @@ using KayceeStorage = MagnificusMod.KayceeStorage;
 
 namespace MagnificusMod
 {
-    public static class SigilPatches
-    {
+	public static class SigilPatches
+	{
 		[HarmonyPatch(typeof(RandomAbility), "AddMod")]
 		public class AmorphousFix
 		{
@@ -36,7 +36,7 @@ namespace MagnificusMod
 					var instance = __instance;
 					List<Ability> bannedAbilites = new List<Ability> { Ability.EdaxioArms, Ability.EdaxioHead, Ability.EdaxioLegs, Ability.EdaxioTorso, Ability.VirtualReality, Ability.GainGemBlue, Ability.GainGemGreen, Ability.GainGemOrange, Ability.DropRubyOnDeath, Ability.GemsDraw };
 					if (__instance.Card.Info.HasTrait(Trait.EatsWarrens)) { bannedAbilites.Add(Ability.Tutor); }
-					learnedAbilities.RemoveAll((Ability x) => x == Ability.RandomAbility || instance.Card.HasAbility(x) || bannedAbilites.Contains(x));
+					learnedAbilities.RemoveAll((Ability x) => x == Ability.RandomAbility || instance.Card.HasAbility(x) || bannedAbilites.Contains(x) || AbilitiesUtil.GetInfo(x).activated || AbilitiesUtil.GetInfo(x).powerLevel > 5);
 					Ability result = Ability.Sharp;
 					if (learnedAbilities.Count > 0)
 					{
@@ -123,6 +123,40 @@ namespace MagnificusMod
 		}
 
 
+		[HarmonyPatch(typeof(ExplodeOnDeath), "BombCard")]
+		public class ExplodeFix
+		{
+			public static void Prefix(ref ExplodeOnDeath __instance, out ExplodeOnDeath __state)
+			{
+				__state = __instance;
+			}
+
+			public static IEnumerator Postfix(IEnumerator enumerator, ExplodeOnDeath __state, PlayableCard target, PlayableCard attacker)
+			{
+				GameObject bomb = SceneLoader.ActiveSceneName == "finale_magnificus" ? GameObject.Instantiate(GameObject.Find("sapphireMoxPref")) : GameObject.Instantiate(__state.bombPrefab);
+				if (SceneLoader.ActiveSceneName != "finale_magnificus")
+				{
+					bomb.transform.position = attacker.transform.position + Vector3.up * 0.1f;
+					Tween.Position(bomb.transform, target.transform.position + Vector3.up * 0.1f, 0.5f, 0f, Tween.EaseLinear);
+				} else
+                {
+					bomb.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f);
+					bomb.transform.Find("Gem").gameObject.GetComponent<MeshRenderer>().material = (Resources.Load("art/assets3d/gametable/robomodules/Unlit_Gems") as Material);
+
+					GameObject slotCard = GameObject.Find(attacker.slot.IsPlayerSlot ? "PlayerSlots" : "OpponentSlots").transform.GetChild(attacker.slot.Index).gameObject; 
+					bomb.transform.position = slotCard.transform.position + Vector3.up * 0.95f;
+					GameObject oppCard = GameObject.Find(target.slot.IsPlayerSlot ? "PlayerSlots" : "OpponentSlots").transform.GetChild(target.slot.Index).gameObject;
+					Tween.Position(bomb.transform, oppCard.transform.position + Vector3.up * 0.75f, 0.5f, 0f, Tween.EaseLinear);
+				}
+				yield return new WaitForSeconds(0.5f);
+				target.Anim.PlayHitAnimation();
+				GameObject.Destroy(bomb);
+				yield return target.TakeDamage(10, attacker);
+				yield break;
+			}
+		}
+
+
 		[HarmonyPatch(typeof(TailOnHit), "OnCardGettingAttacked")]
 		public class skinkFix
 		{
@@ -180,37 +214,6 @@ namespace MagnificusMod
 			}
 		}
 
-
-		[HarmonyPatch(typeof(SexyGoat), "ApplyAppearance")]
-		public class sussyGoat
-		{
-			public static bool Prefix(ref SexyGoat __instance)
-			{
-				bool flag = __instance.Card.Info.name == "Goat";
-				if (flag)
-				{
-					bool flag2 = RunState.Run.eyeState == EyeballState.Goat;
-					if (flag2)
-					{
-
-						Texture2D texture2D = Tools.getImage("mognus mox.png");
-
-						List<Texture> list = new List<Texture>();
-						list.Add(texture2D);
-						__instance.Card.Info.decals = list;
-					}
-				}
-				else
-				{
-					if (__instance.Card.Info.name == "mag_invisimage" && RunState.Run.eyeState == EyeballState.Wizard)
-					{
-						__instance.Card.renderInfo.portraitOverride = Tools.getPortraitSprite("visiinvisimage.png");
-					}
-				}
-				return false;
-			}
-		}
-
 		[HarmonyPatch(typeof(BoardManager), "AssignCardToSlot")]
 		public class StrafeFix
 		{
@@ -240,16 +243,17 @@ namespace MagnificusMod
 				}
 				card.transform.parent = slot.transform;
 				card.Anim.PlayRiffleSound();
-				//Debug.Log(__state.slotheight)
-				string slotName = "";
-				if (SceneLoader.ActiveSceneName == "finale_magnificus" && transitionDuration != 0.1f && !card.HasTrait(Trait.Terrain) && !card.HasTrait(Trait.Giant))
+				string slotName = slot.IsPlayerSlot ? "PlayerSlots" : "OpponentSlots";
+				if (SceneLoader.ActiveSceneName == "finale_magnificus" && !card.HasTrait(Trait.Giant) && slot2 != slot)
 				{
 					try
 					{
-						slotName = slot.IsPlayerSlot ? "PlayerSlots" : "OpponentSlots";
-						GameObject WizardCardBoy = GameObject.Find(slotName).transform.GetChild(slot2.Index).GetChild(5).gameObject;
-						Vector3 slotPos = new Vector3(GameObject.Find(slotName).transform.GetChild(slot.Index).position.x, WizardCardBoy.transform.position.y, WizardCardBoy.transform.position.z);
-						Tween.Position(WizardCardBoy.transform, slotPos, 0.25f, 0.05f);
+						if (GameObject.Find(slotName).transform.GetChild(slot2.Index).childCount > 5 && GameObject.Find(slotName).transform.GetChild(slot2.Index).GetChild(5).gameObject != null)
+						{
+							GameObject WizardCardBoy = GameObject.Find(slotName).transform.GetChild(slot2.Index).GetChild(5).gameObject;
+							Vector3 slotPos = new Vector3(GameObject.Find(slotName).transform.GetChild(slot.Index).position.x, WizardCardBoy.transform.position.y, WizardCardBoy.transform.position.z);
+							Tween.Position(WizardCardBoy.transform, slotPos, 0.25f, 0.05f);
+						}
 					}
 					catch { }
 				}
@@ -263,7 +267,8 @@ namespace MagnificusMod
 					}
 					card.Anim.PlayRiffleSound();
 				}, true);
-				Tween.Rotation(card.transform, slot.transform.GetChild(0).rotation, transitionDuration, 0f, Tween.EaseOut, Tween.LoopType.None, null, null, true);
+				if (SceneLoader.ActiveSceneName != "finale_magnificus") { Tween.Rotation(card.transform, slot.transform.GetChild(0).rotation, transitionDuration, 0f, Tween.EaseOut, Tween.LoopType.None, null, null, true); }
+				else { Tween.LocalRotation(card.transform, Quaternion.Euler(90, 0, 0), transitionDuration, 0f, Tween.EaseOut, Tween.LoopType.None, null, null, true); }
 				if (resolveTriggers && slot2 != card.Slot)
 				{
 					yield return Singleton<GlobalTriggerHandler>.Instance.TriggerCardsOnBoard(Trigger.OtherCardAssignedToSlot, false, new object[]
@@ -271,12 +276,15 @@ namespace MagnificusMod
 					card
 					});
 				}
-				if (SceneLoader.ActiveSceneName == "finale_magnificus" && transitionDuration != 0.1f && !card.HasTrait(Trait.Terrain) && !card.HasTrait(Trait.Giant))
+				if (SceneLoader.ActiveSceneName == "finale_magnificus" && !card.HasTrait(Trait.Giant) && slot2 != slot)
 				{
 					try
 					{
-						GameObject.Find(slotName).transform.GetChild(slot2.Index).GetChild(5).parent = GameObject.Find(slotName).transform.GetChild(slot.Index);
-						GameObject.Find(slotName).transform.GetChild(slot2.Index).GetChild(5).parent = GameObject.Find(slotName).transform.GetChild(slot.Index);
+						if (GameObject.Find(slotName).transform.GetChild(slot2.Index).childCount > 5 && GameObject.Find(slotName).transform.GetChild(slot2.Index).GetChild(5).gameObject != null)
+						{
+							GameObject.Find(slotName).transform.GetChild(slot2.Index).GetChild(5).parent = GameObject.Find(slotName).transform.GetChild(slot.Index);
+							GameObject.Find(slotName).transform.GetChild(slot2.Index).GetChild(5).parent = GameObject.Find(slotName).transform.GetChild(slot.Index);
+						}
 					}
 					catch { }
 				}
@@ -351,14 +359,14 @@ namespace MagnificusMod
 					yield return new WaitForSeconds(0.2f);
 				}
 				if (__state.CardToDraw.name == "mag_potion" && __state.CardToDraw.BloodCost < 3 && SaveManager.saveFile.ascensionActive)
-                {
+				{
 					CardModificationInfo increaseCost = new CardModificationInfo();
 					increaseCost.bloodCostAdjustment = 1;
 					if (tempMods != null)
-					{tempMods.Add(increaseCost);} 
+					{ tempMods.Add(increaseCost); }
 					else
-                    { tempMods = new List<CardModificationInfo> { increaseCost };}
-                }
+					{ tempMods = new List<CardModificationInfo> { increaseCost }; }
+				}
 				yield return Singleton<CardSpawner>.Instance.SpawnCardToHand(__state.CardToDraw, tempMods);
 				yield return new WaitForSeconds(0.45f);
 				yield return __state.LearnAbility(0.1f);
@@ -443,21 +451,14 @@ namespace MagnificusMod
 			public static void Postfix(ref bool __result, ref PlayableCard __instance)
 			{
 
-				if (__instance.Info.HasTrait(Trait.EatsWarrens) && __instance.Info.name == "mag_potion")
+				if (__instance.Info.HasTrait(Trait.EatsWarrens) && __instance.Info.GetExtendedPropertyAsBool("TargetedSpell") == true || __instance.Info.name == "mag_potion")
 				{
 					int boardCards = 0;
 					foreach (CardSlot card in Singleton<BoardManager>.Instance.PlayerSlotsCopy)
 					{
 						if (card.Card != null) { boardCards++; }
 					}
-					if (boardCards > __instance.Info.BloodCost)
-					{
-						__result = true;
-					}
-					else
-					{
-						__result = false;
-					}
+					__result = (boardCards >= __instance.Info.BloodCost);
 					return;
 				}
 				if (!__result) // Don't do anything if the result's already false
@@ -513,14 +514,14 @@ namespace MagnificusMod
 
 				// All card slots
 				List<CardSlot> allSlots = Singleton<BoardManager>.Instance.AllSlotsCopy;
-				Vector3 playerPos = GameObject.Find("Player").transform.position;
+
 				if (card.Info.GetExtendedPropertyAsBool("TargetAllSpell") != null)
 				{
-					Singleton<ViewController>.Instance.LockState = ViewLockState.Locked;
-					int zOffset = RunState.Run.regionTier == 4 ? 7 : 0;
-					Tween.Position(GameObject.Find("Player").transform, new Vector3(GameObject.Find("Player").transform.position.x, GameObject.Find("Player").transform.position.y + 3, playerPos.z + 7f + zOffset), 0.25f, 0f);
 					Generation.SetBigOpponentSlotHitboxes(true, GameObject.Find("BoardManager"), true);
+					Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
+					Singleton<ViewManager>.Instance.SwitchToView(View.OpponentQueue, false, false);
 				}
+
 				if (!Singleton<BoardManager>.Instance.CancelledSacrifice)
 				{
 					IEnumerator chooseSlotEnumerator = Singleton<BoardManager>.Instance.ChooseSlot(allSlots, !requiresSacrifices);
@@ -529,23 +530,20 @@ namespace MagnificusMod
 					// Mark which slots can be targeted before letting the code continue
 					foreach (CardSlot slot in allSlots)
 					{
-						bool isValidTarget;
-						if (card.Info.GetExtendedPropertyAsBool("TargetedSpell") == true)
-							isValidTarget = IsValidTarget(slot, card);
-						else
-							isValidTarget = true;
+						bool isValidTarget = (card.Info.GetExtendedPropertyAsBool("TargetedSpell") == true) ? IsValidTarget(slot, card) : true;
 
 						slot.SetEnabled(isValidTarget);
 						slot.ShowState(isValidTarget ? HighlightedInteractable.State.Interactable : HighlightedInteractable.State.NonInteractable);
 						slot.Chooseable = isValidTarget;
 					}
-					yield return chooseSlotEnumerator.Current;
 
+					yield return chooseSlotEnumerator.Current;
 					// Run through the rest of the code to determine what slot has been targeted
 					while (chooseSlotEnumerator.MoveNext())
 						yield return chooseSlotEnumerator.Current;
 
-					if (!Singleton<BoardManager>.Instance.cancelledPlacementWithInput)
+
+					if (!Singleton<BoardManager>.Instance.cancelledPlacementWithInput)// && Singleton<ViewManager>.Instance.CurrentView == View.OpponentQueue))
 					{
 						cardWasPlayed = true;
 						card.Anim.SetSelectedToPlay(false);
@@ -597,6 +595,7 @@ namespace MagnificusMod
 								}
 							}
 
+
 							// SlotTargetedForAttack (targeted spells only)
 							if (card.Info.GetExtendedPropertyAsBool("TargetedSpell") == true)
 							{
@@ -615,29 +614,32 @@ namespace MagnificusMod
 							if (card.TriggerHandler.RespondsToTrigger(Trigger.Die, diedArgs))
 								yield return card.TriggerHandler.OnTrigger(Trigger.Die, diedArgs);
 
+
+
 							yield return new WaitUntil(() => Singleton<GlobalTriggerHandler>.Instance.StackSize == 0);
 
 							if (Singleton<TurnManager>.Instance.IsPlayerTurn)
+							{
 								Singleton<BoardManager>.Instance.playerCardsPlayedThisRound.Add(card.Info);
+							}
 
 							Singleton<InteractionCursor>.Instance.ClearForcedCursorType();
+							Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
+							Singleton<ViewManager>.Instance.SwitchToView(View.WizardBattleUnits, false, false);
 							if (card.Info.GetExtendedPropertyAsBool("TargetAllSpell") != null)
 							{
-								Tween.Position(GameObject.Find("Player").transform, playerPos, 0.2f, 0f);
-								Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
-								Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
 								Generation.SetBigOpponentSlotHitboxes(false, GameObject.Find("BoardManager"), true);
 							}
 							yield return new WaitForSeconds(0.6f);
 							GameObject.Destroy(card.gameObject, 0.5f);
-							Singleton<ViewManager>.Instance.SwitchToView(View.Default);
+							Singleton<ViewManager>.Instance.SwitchToView(View.WizardBattleUnits);
 						}
 					}
 				}
 				if (card.Info.GetExtendedPropertyAsBool("TargetAllSpell") != null)
 				{
-					Tween.Position(GameObject.Find("Player").transform, playerPos, 0.2f, 0f);
-					Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
+					Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
+					Singleton<ViewManager>.Instance.SwitchToView(View.WizardBattleUnits, false, false);
 					Generation.SetBigOpponentSlotHitboxes(false, GameObject.Find("BoardManager"), true);
 				}
 				if (!cardWasPlayed)
@@ -681,6 +683,60 @@ namespace MagnificusMod
 				if (SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
 				Singleton<RuleBookController>.Instance.OpenToAbilityPage(StatIconInfo.GetIconInfo(__instance.statIcon).gbcDescription, __instance.card);
 				return false;
+			}
+		}
+
+		[HarmonyPatch(typeof(BoardManager), "ChooseSlot")]
+		public class SpellsAlsoChooseSlotsDifferently
+		{
+			public static void Prefix(out BoardManager __state, ref BoardManager __instance)
+			{
+				__state = __instance;
+			}
+			public static IEnumerator Postfix(IEnumerator sequenceResult, BoardManager __state, List<CardSlot> validSlots, bool canCancel)
+			{
+				__state.ChoosingSlot = true;
+				Singleton<InteractionCursor>.Instance.ForceCursorType(CursorType.Place);
+				if (!canCancel)
+				{
+					Singleton<ViewManager>.Instance.Controller.SwitchToControlMode(__state.choosingSlotViewMode);
+				}
+				bool targetedSpell = Singleton<PlayerHand>.Instance.ChoosingSlotCard != null ? Singleton<PlayerHand>.Instance.ChoosingSlotCard.Info.GetExtendedPropertyAsBool("TargetAllSpell") == true : false;
+				Singleton<ViewManager>.Instance.SwitchToView(targetedSpell ? View.OpponentQueue : __state.boardView);
+				__state.cancelledPlacementWithInput = false;
+				__state.currentValidSlots = validSlots;
+				__state.LastSelectedSlot = null;
+				foreach (CardSlot opponentSlot in __state.opponentSlots)
+				{
+					opponentSlot.SetEnabled(enabled: false);
+					opponentSlot.ShowState(HighlightedInteractable.State.NonInteractable);
+				}
+				__state.SetQueueSlotsEnabled(slotsEnabled: false);
+				foreach (CardSlot validSlot in validSlots)
+				{
+					validSlot.Chooseable = true;
+				}
+				yield return new WaitUntil(() => __state.LastSelectedSlot != null || (canCancel && __state.cancelledPlacementWithInput || targetedSpell && Singleton<ViewManager>.Instance.CurrentView != View.OpponentQueue));
+				if (canCancel && __state.cancelledPlacementWithInput || targetedSpell && Singleton<ViewManager>.Instance.CurrentView != View.OpponentQueue)
+				{
+					Singleton<ViewManager>.Instance.SwitchToView(__state.defaultView);
+				} else
+                {
+					__state.cancelledPlacementWithInput = false;
+                }
+				foreach (CardSlot opponentSlot2 in __state.opponentSlots)
+				{
+					opponentSlot2.SetEnabled(enabled: true);
+					opponentSlot2.ShowState(HighlightedInteractable.State.Interactable);
+				}
+				__state.SetQueueSlotsEnabled(slotsEnabled: true);
+				foreach (CardSlot validSlot2 in validSlots)
+				{
+					validSlot2.Chooseable = false;
+				}
+				Singleton<ViewManager>.Instance.Controller.SwitchToControlMode(__state.defaultViewMode);
+				__state.ChoosingSlot = false;
+				Singleton<InteractionCursor>.Instance.ClearForcedCursorType();
 			}
 		}
 	}

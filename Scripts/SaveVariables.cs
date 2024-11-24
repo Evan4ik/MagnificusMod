@@ -20,22 +20,6 @@ namespace MagnificusMod
             get { return ModdedSaveManager.SaveData.GetValueAsBoolean(PluginGuid, "HasMapIcons"); }
             set { ModdedSaveManager.SaveData.SetValue(PluginGuid, "HasMapIcons", value); }
         }
-
-        public static bool LoadWithFinaleCardBacks = false;
-        public static bool LoadWithPaintSplashes = false;
-
-        public static bool FinaleCardBacks
-        {
-            get { return ModdedSaveManager.SaveData.GetValueAsBoolean(PluginGuid, "FinaleCardBacks"); }
-            set { ModdedSaveManager.SaveData.SetValue(PluginGuid, "FinaleCardBacks", value); }
-        }
-
-        public static bool PaintSplashes
-        {
-            get { return ModdedSaveManager.SaveData.GetValueAsBoolean(PluginGuid, "PaintSplashes"); }
-            set { ModdedSaveManager.SaveData.SetValue(PluginGuid, "PaintSplashes", value); }
-        }
-
         public static int[] BossTeleportSolution
         {
             get 
@@ -61,6 +45,12 @@ namespace MagnificusMod
         {
             get { return ModdedSaveManager.SaveData.GetValueAsInt(PluginGuid, "NodesCleared"); }
             set { ModdedSaveManager.SaveData.SetValue(PluginGuid, "NodesCleared", value); }
+        }
+
+        public static int LastBlueprint
+        {
+            get { return ModdedSaveManager.SaveData.GetValueAsInt(PluginGuid, "LastBlueprint"); }
+            set { ModdedSaveManager.SaveData.SetValue(PluginGuid, "LastBlueprint", value); }
         }
 
         public static string GeneratedEvents

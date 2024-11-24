@@ -46,93 +46,6 @@ namespace MagnificusMod
 			}
 		}
 
-		public class Lesbiane : SpecialCardBehaviour
-		{
-			public override bool RespondsToResolveOnBoard()
-			{
-				return true;
-			}
-
-			public override IEnumerator OnResolveOnBoard()
-			{
-				List<CardSlot> slots = Singleton<BoardManager>.Instance.PlayerSlotsCopy;
-				for (int i = 0; i < slots.Count; i++)
-				{
-					if (slots[i].Card != null)
-					{
-						if (slots[i].Card.Info.name == "mag_teamage" && base.PlayableCard.Info.name == "mag_coffeemage" || slots[i].Card.Info.name == "mag_coffeemage" && base.PlayableCard.Info.name == "mag_teamage")
-						{
-							string partnerWhere = "idk";
-							if (slots[i].Index == 0 && slots[1].Card == null)
-							{
-								yield return Singleton<BoardManager>.Instance.AssignCardToSlot(base.PlayableCard, slots[1], 0.11f, null, true);
-								partnerWhere = "left";
-								yield return new WaitForSeconds(0.2f);
-							}
-							else if (slots[i].Index == 0 && slots[1].Card != null)
-							{
-								CardSlot baseSlot = base.PlayableCard.slot;
-								yield return Singleton<BoardManager>.Instance.AssignCardToSlot(base.PlayableCard, slots[1], 0.11f, null, true);
-								yield return Singleton<BoardManager>.Instance.AssignCardToSlot(slots[1].Card, baseSlot, 0.11f, null, true);
-								partnerWhere = "left";
-							}
-
-							if (slots[i].Index == 3 && slots[2].Card == null)
-							{
-								partnerWhere = "right";
-								yield return Singleton<BoardManager>.Instance.AssignCardToSlot(base.PlayableCard, slots[2], 0.11f, null, true);
-								yield return new WaitForSeconds(0.2f);
-							}
-							else if (slots[i].Index == 3 && slots[2].Card != null)
-							{
-								partnerWhere = "right";
-								CardSlot baseSlot = base.PlayableCard.slot;
-								yield return Singleton<BoardManager>.Instance.AssignCardToSlot(slots[2].Card, baseSlot, 0.11f, null, true);
-								yield return Singleton<BoardManager>.Instance.AssignCardToSlot(base.PlayableCard, slots[2], 0.11f, null, true);
-								yield return new WaitForSeconds(0.2f);
-							}
-
-							if (slots[i].Index != 3 && slots[i].Index != 0)
-							{
-								int dex = slots[i].Index;
-								if (slots[dex - 1].Card != null && slots[dex + 1].Card == null)
-								{
-									partnerWhere = "left";
-									yield return Singleton<BoardManager>.Instance.AssignCardToSlot(base.PlayableCard, slots[dex + 1], 0.11f, null, true);
-								}
-								else if (slots[dex - 1].Card == null && slots[dex + 1].Card != null)
-								{
-									partnerWhere = "right";
-									yield return Singleton<BoardManager>.Instance.AssignCardToSlot(base.PlayableCard, slots[dex - 1], 0.11f, null, true);
-								}
-								else if (slots[dex - 1].Card != null && slots[dex + 1].Card != null)
-								{
-									partnerWhere = "right";
-									CardSlot baseSlot = base.PlayableCard.slot;
-									yield return Singleton<BoardManager>.Instance.AssignCardToSlot(slots[dex - 1].Card, baseSlot, 0.11f, null, true);
-									yield return Singleton<BoardManager>.Instance.AssignCardToSlot(base.PlayableCard, slots[dex - 1], 0.11f, null, true);
-									yield return new WaitForSeconds(0.2f);
-								}
-
-							}
-
-							if (base.PlayableCard.Info.name == "mag_coffeemage" && partnerWhere == "left")
-							{
-								base.PlayableCard.renderInfo.flippedPortrait = true;
-								slots[base.PlayableCard.slot.Index - 1].Card.renderInfo.flippedPortrait = true;
-							}
-							else if (base.PlayableCard.Info.name == "mag_teamage" && partnerWhere == "right")
-							{
-								base.PlayableCard.renderInfo.flippedPortrait = true;
-								slots[base.PlayableCard.slot.Index + 1].Card.renderInfo.flippedPortrait = true;
-							}
-						}
-					}
-				}
-				yield break;
-			}
-		}
-
 
 
 		public class OuroRandomize : SpecialCardBehaviour
@@ -158,15 +71,15 @@ namespace MagnificusMod
 				{
 					case GemType.Blue:
 						newGem = new List<GemType> { GemType.Orange };
-						base.PlayableCard.renderInfo.portraitOverride = Tools.getPortraitSprite("mag_oroborous1.png");
+						if (base.PlayableCard.Info.name == "mag_ouro") { base.PlayableCard.renderInfo.portraitOverride = Tools.getPortraitSprite("mag_oroborous1.png"); }
 						break;
 					case GemType.Orange:
 						newGem = new List<GemType> { GemType.Green };
-						base.PlayableCard.renderInfo.portraitOverride = Tools.getPortraitSprite("mag_oroborous.png");
+						if (base.PlayableCard.Info.name == "mag_ouro") { base.PlayableCard.renderInfo.portraitOverride = Tools.getPortraitSprite("mag_oroborous.png"); }
 						break;
 					case GemType.Green:
 						newGem = new List<GemType> { GemType.Blue };
-						base.PlayableCard.renderInfo.portraitOverride = Tools.getPortraitSprite("mag_oroborous2.png");
+						if (base.PlayableCard.Info.name == "mag_ouro") { base.PlayableCard.renderInfo.portraitOverride = Tools.getPortraitSprite("mag_oroborous2.png"); }
 						break;
 				}
 				mod.addGemCost = newGem;
@@ -222,7 +135,7 @@ namespace MagnificusMod
 			{
 				if (slot.Card != null)
 				{
-					return slot.Card != null && slot.IsPlayerSlot;
+					return slot.Card != null;
 				}
 
 				return false;
@@ -250,6 +163,7 @@ namespace MagnificusMod
 							model.GetComponent<Card>().RenderCard();
 						}
 					}
+					Singleton<ResourcesManager>.Instance.ForceGemsUpdate();
 				}
 				yield break;
 			}
@@ -313,8 +227,12 @@ namespace MagnificusMod
 
 		public class CustomPortraited : SpecialCardBehaviour
 		{
-			public void Awake()
+			public void Start()
 			{
+
+				base.Card.RenderCard();
+				Transform CardCameraParent = Singleton<CardRenderCamera>.Instance.GetLiveRenderCamera(base.Card.StatsLayer).transform;
+
 				GameObject paintSplotch = Instantiate(new GameObject());
 				paintSplotch.AddComponent<SpriteRenderer>().sprite = Tools.getSprite("paint.png");
 				paintSplotch.name = "paintSplotch";
@@ -324,24 +242,13 @@ namespace MagnificusMod
 				paintSplotch.GetComponent<SpriteRenderer>().color = random[gemTypes.IndexOf(base.Card.Info.mods[0].addGemCost[0])];
 				paintSplotch.transform.position = new Vector3(0, 0, 0);
 				paintSplotch.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+				paintSplotch.layer = 13;
 				GameObject splotches = Instantiate(new GameObject());
 				splotches.name = "splotches";
-				splotches.transform.parent = base.Card.gameObject.transform;
-				splotches.transform.localPosition = new Vector3(0, -0.25f, 0f);
+				splotches.transform.parent = CardCameraParent.Find("CardsPlane").Find("CardBase").GetChild(1);
+				splotches.transform.localPosition = Vector3.zero;
+				splotches.layer = 13;
 
-				if (base.Card.gameObject.transform.GetChild(0).gameObject.name == "DustParticles")
-				{
-					splotches.transform.parent = base.Card.gameObject.transform.GetChild(1).GetChild(0);
-				}
-				else if (base.Card.gameObject.GetComponent<WizardBattle3DPortrait>() == null)
-				{
-					splotches.transform.parent = base.Card.gameObject.transform.GetChild(0).GetChild(0);
-				}
-				else
-				{
-					splotches.transform.localRotation = Quaternion.Euler(270, 0, 0);
-					splotches.transform.localPosition = new Vector3(0f, -0.25f, -0.01f);
-				}
 				Sprite smallSplotch = Tools.getSprite("smallpaint.png");
 
 				for (int i = 0; i < base.Card.Info.mods[0].decalIds.Count; i++)
@@ -414,7 +321,9 @@ namespace MagnificusMod
 					splotch.transform.localRotation = Quaternion.Euler(90, 0, UnityEngine.Random.RandomRangeInt(0, 180));
 					splotch.transform.localPosition = new Vector3(float.Parse(splotchData[0]), 0.01f + (0.01f * Convert.ToInt32(splotchData[3])), (float.Parse(splotchData[1]) - 6.1f));
 				}
-				splotches.transform.localPosition = new Vector3(0, -0.25f, -0.01f);
+				splotches.transform.localPosition =new Vector3(0, -0.25f, 0);
+				splotches.transform.localScale = new Vector3(0.8f, 1, 0.535f);
+				splotches.transform.localRotation = Quaternion.Euler(270, 0, 0);
 			}
 		}
 	}

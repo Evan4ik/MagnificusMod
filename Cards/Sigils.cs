@@ -30,7 +30,20 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Blank Mox", "When a card bearing this sigil is drawn, it will materialize into a random Mox Crystal. \n When on another card, the card will generate a random Mox Crystal.", typeof(SigilCode.MoxRandom), Tools.getImage("random mox icon.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("random mox icon.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> ();
+			newAbility.powerLevel = 10;
 			SigilCode.MoxRandom.ability = newAbility.ability;
+
+		}
+
+		public static void SelectMox()
+		{
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Undecided Mox", "When a card bearing this sigil is played, select a mox type for this card to provide.", typeof(SigilCode.MoxSelect), Tools.getImage("random mox icon.png"))
+				.SetDefaultPart1Ability()
+				.SetIcon(Tools.getImage("random mox icon.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 3;
+			SigilCode.MoxSelect.ability = newAbility.ability;
 
 		}
 
@@ -40,31 +53,59 @@ namespace MagnificusMod
 				.SetDefaultPart1Ability()
 				.SetPixelAbilityIcon(Resources.Load("art/gbc/cards/pixelabilityicons/pixelability_droprubyondeath") as Texture2D)
 				.SetIcon(Tools.getImage("mag_dropruby.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 2;
 			SigilCode.MagDropRubyOnDeath.ability = newAbility.ability;
+		}
+
+		public static void DropSapphire()
+		{
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Sapphire Heart", "When a card bearing this sigil perishes, it creates a Sapphire Mox in its place.", typeof(SigilCode.MagDropSapphireOnDeath), Tools.getImage("mag_dropsapphire.png"))
+				.SetDefaultPart1Ability()
+				.SetIcon(Tools.getImage("mag_dropsapphire.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 2;
+			SigilCode.MagDropSapphireOnDeath.ability = newAbility.ability;
+		}
+
+		public static void BoneMarrows()
+		{
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Bone Marrow", "When one of your non-gem cards perishes, a card bearing this sigil gains 1 power, maxing out at 5.", typeof(SigilCode.BoneMarrow), Tools.getImage("bonemarrow.png"))
+				.SetDefaultPart1Ability()
+				.SetIcon(Tools.getImage("bonemarrow.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 3;
+			SigilCode.BoneMarrow.ability = newAbility.ability;
 		}
 
 		public static void Stimulate()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Stimulation", "At the end of every turn, a card bearing this sigils gains 1 power, maxes out at 4.", typeof(SigilCode.Stimulation), Tools.getImage("stimulationability.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Stimulation", "At the end of every turn, a card bearing this sigil gains 1 power, maxing out at 4.", typeof(SigilCode.Stimulation), Tools.getImage("stimulationability.png"))
 				.SetDefaultPart1Ability()
 				.SetPixelAbilityIcon(Tools.getImage("stimulation_pixel.png"))
 				.SetIcon(Tools.getImage("stimulationability.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 3;
 			SigilCode.Stimulation.ability = newAbility.ability;
 		}
 
 		public static void StimulateHP()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Stimulation (Health)", "At the end of every turn, a card bearing this sigils gains 2 health, maxes out at 10.", typeof(SigilCode.StimulationHP), Tools.getImage("stimulationhealth.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Stimulation (Health)", "At the end of every turn, a card bearing this sigil gains 2 health, maxes out at 10.", typeof(SigilCode.StimulationHP), Tools.getImage("stimulationhealth.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("stimulationhealth.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 5;
 			SigilCode.StimulationHP.ability = newAbility.ability;
 		}
 
 		public static void Bleene()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Dead Draw", "When a card dies, draw two cards from your deck.", typeof(SigilCode.BleeneDraw), Tools.getImage("mag_bleeneability.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Dead Draw", "When a non-gem card dies, draw a card from your deck.", typeof(SigilCode.BleeneDraw), Tools.getImage("mag_bleeneability.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("mag_bleeneability.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 3;
 			SigilCode.BleeneDraw.ability = newAbility.ability;
 		}
 
@@ -73,6 +114,8 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Emerald Heart", "When a card bearing this sigil perishes, it creates an Emerald Mox in its place.", typeof(SigilCode.MagDropEmeraldOnDeath), Tools.getImage("mag_dropemerald.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("mag_dropemerald.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 2;
 			SigilCode.MagDropEmeraldOnDeath.ability = newAbility.ability;
 		}
 
@@ -81,6 +124,8 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Gooey", "When a card bearing this sigil is struck, the striker loses 1 attack.", typeof(SigilCode.GoobertDebuff), Tools.getImage("mag_goobertability.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("mag_goobertability.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 3;
 			newAbility.canStack = true;
 			SigilCode.GoobertDebuff.ability = newAbility.ability;
 		}
@@ -92,6 +137,8 @@ namespace MagnificusMod
 				.SetDefaultPart1Ability()
 				.SetPixelAbilityIcon(Resources.Load("art/gbc/cards/pixelabilityicons/pixelability_gemsdraw") as Texture2D)
 				.SetIcon(Tools.getImage("mag_bluemagedraw.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 3;
 			newAbility.canStack = true;
 			SigilCode.BlueMageDraw.ability = newAbility.ability;
 		}
@@ -101,6 +148,8 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Loot", "When a card bearing this sigil deals direct damage, draw cards from your deck based on how much damage was dealt.", typeof(SigilCode.OrluHit), Tools.getImage("mag_loot.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("mag_loot.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 3;
 			SigilCode.OrluHit.ability = newAbility.ability;
 		}
 
@@ -109,6 +158,8 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Life Steal", "When a card bearing this sigil deals direct damage, the amount dealt will be healed to the owner of this card.", typeof(SigilCode.LifeSteal), Tools.getImage("lifesteal.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("lifesteal.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 2;
 			SigilCode.LifeSteal.ability = newAbility.ability;
 		}
 
@@ -117,6 +168,8 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Knockback Hit", "When a card bearing this sigil hits an opposing card, the opposing card will be kicked in the direction inscrybed in the sigil.", typeof(SigilCode.sharkoKick), Tools.getImage("sharko_kick.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("sharko_kick.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 2;
 			SigilCode.sharkoKick.ability = newAbility.ability;
 		}
 		public static void DropSpear()
@@ -124,6 +177,8 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Impaled", "When a card bearing this sigil perishes, it creates a Spear in its placed. A spear is defined as Sharp, 0 power, 3 health.", typeof(SigilCode.MagDropSpear), Tools.getImage("mag_impaled.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("mag_impaled.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 2;
 			SigilCode.MagDropSpear.ability = newAbility.ability;
 		}
 
@@ -132,6 +187,8 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Magnus Mox", "While a card bearing this sigil is on the board, it provides an orange gem, a blue gem and a green gem to its owner.", typeof(SigilCode.MagGainGemTriple), Tools.getImage("gaingemtriple.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("gaingemtriple.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 5;
 			SigilCode.MagGainGemTriple.ability = newAbility.ability;
 		}
 		/*
@@ -152,17 +209,21 @@ namespace MagnificusMod
 
 		public static void LIFEUP()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "1 Up", "When a card bearing this sigil is played, and another card on the board perishes, the dead card will be brought back to life, but this card loses 3 health.", typeof(SigilCode.LifeUpOmega), Tools.getImage("1up.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Resurrection", "When a non-gem card perishes, the dead card will be brought back to life, but this card loses 3 health.", typeof(SigilCode.LifeUpOmega), Tools.getImage("1up.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("1up.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 0;
 			SigilCode.LifeUpOmega.ability = newAbility.ability;
 		}
 
 		public static void ReRoll()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Rerolls", "At the end of every turn, a card bearing this sigils' power will be randomized.", typeof(SigilCode.RandomPower), Tools.getImage("diceability.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Rerolls", "At the end of every turn, a card bearing this sigils' power will be a random value between 0 and 3.", typeof(SigilCode.RandomPower), Tools.getImage("diceability.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("diceability.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 1;
 			SigilCode.RandomPower.ability = newAbility.ability;
 		}
 
@@ -171,7 +232,8 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Steel Trap", "When a card bearing this sigil perishes, the opposing card also perishes.", typeof(SigilCode.ImprovedSteelTrap), Tools.getImage("ability_steeltrap.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("ability_steeltrap.png"));
-			newAbility.powerLevel = 10;
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 2;
 			SigilCode.ImprovedSteelTrap.ability = newAbility.ability;
 		}
 
@@ -180,6 +242,8 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Gem Shield", "When a card bearing this sigil is played, all gems on the board gain a shield.", typeof(SigilCode.GemGuardianFix), Tools.getImage("ability_shieldgems.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("ability_shieldgems.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 2;
 			SigilCode.GemGuardianFix.ability = newAbility.ability;
 		}
 
@@ -188,6 +252,8 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Plating Work", "While a card bearing this sigil is on the board, all gems on your side of the board gain the Sharp Quills sigil, and 2 health.", typeof(SigilCode.PlatingWork), Tools.getImage("whitesmith_A.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("whitesmith_A.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 2;
 			SigilCode.PlatingWork.ability = newAbility.ability;
 		}
 
@@ -196,6 +262,8 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Animator", "While a card bearing this sigil is on the board, all non-mox cards with 0 power gain 2 power", typeof(SigilCode.Animator), Tools.getImage("animator.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("animator.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 3;
 			SigilCode.Animator.ability = newAbility.ability;
 		}
 
@@ -205,6 +273,8 @@ namespace MagnificusMod
 				.SetDefaultPart1Ability()
 				.SetPixelAbilityIcon(Tools.getImage("pixelability_absorbgems.png"))
 				.SetIcon(Tools.getImage("ability_absorbgems.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 2;
 			SigilCode.GemAbsorber.ability = newAbility.ability;
 		}
 
@@ -272,6 +342,7 @@ namespace MagnificusMod
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("krakensubmerge.png"));
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			newAbility.powerLevel = 3;
 			SigilCode.submergekraken.ability = newAbility.ability;
 		}
 
@@ -281,6 +352,7 @@ namespace MagnificusMod
 				.SetDefaultPart1Ability()
 				.SetPixelAbilityIcon(Tools.getImage("pixelability_familiar.png"))
 				.SetIcon(Tools.getImage("familiar.png"));
+			newAbility.powerLevel = -2;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.FamiliarA.ability = newAbility.ability;
 		}
@@ -290,6 +362,7 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Fading", "A card bearing this sigil will perish at the end of the turn.", typeof(SigilCode.FadingA), Tools.getImage("fading.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("fading.png"));
+			newAbility.powerLevel = -4;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.FadingA.ability = newAbility.ability;
 		}
@@ -299,6 +372,7 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Morph", "When a card bearing this sigil is played, it will mimic the card opposing it. If there is no card opposing it, this card will perish.", typeof(SigilCode.Ditto), Tools.getImage("transformability.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("transformability.png"));
+			newAbility.powerLevel = 2;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.Ditto.ability = newAbility.ability;
 		}
@@ -307,7 +381,9 @@ namespace MagnificusMod
 		{
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Multiplication", "When a card bearing this sigil is played, draw another of this card, but with a different gem cost.", typeof(SigilCode.FecundityCycle), Tools.getImage("multiply.png"))
 				.SetDefaultPart1Ability()
+				.SetPixelAbilityIcon(Tools.getImage("pixelability_fecunditycycle.png"))
 				.SetIcon(Tools.getImage("multiply.png"));
+			newAbility.powerLevel = 4;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.FecundityCycle.ability = newAbility.ability;
 		}
@@ -316,7 +392,9 @@ namespace MagnificusMod
 		{
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Mox Cycle", "At the end of every turn, all the mox on the board will cycle into different gems.", typeof(SigilCode.MoxCycling), Tools.getImage("moxcycle.png"))
 				.SetDefaultPart1Ability()
+				.SetPixelAbilityIcon(Tools.getImage("pixelability_moxcycle.png"))
 				.SetIcon(Tools.getImage("moxcycle.png"));
+			newAbility.powerLevel = 0;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.MoxCycling.ability = newAbility.ability;
 		}
@@ -327,6 +405,7 @@ namespace MagnificusMod
 				.SetDefaultPart1Ability()
 				.SetPixelAbilityIcon(Tools.getImage("pixelability_moxstrafe.png"))
 				.SetIcon(Tools.getImage("moxstrafe.png"));
+			newAbility.powerLevel = 1;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.MoxStrafe.ability = newAbility.ability;
 		}
@@ -336,6 +415,7 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Purist", "Any card directly opposing this one will have all it's sigils removed.", typeof(SigilCode.NullifySigils), Tools.getImage("purist.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("purist.png"));
+			newAbility.powerLevel = 2;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.NullifySigils.ability = newAbility.ability;
 		}
@@ -345,6 +425,7 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Brewery", "At the end of every turn, you automatically draw a mox card from your side deck.", typeof(SigilCode.DrawMoxFromSideDeck), Tools.getImage("brewery.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("brewery.png"));
+			newAbility.powerLevel = 3;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.DrawMoxFromSideDeck.ability = newAbility.ability;
 		}
@@ -353,8 +434,19 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Ignite", "When a card bearing this sigil is played, every empty opposing slot will be filled with flames. A flame is defined as a 0/1, Annoying.", typeof(SigilCode.Ignite), Tools.getImage("igniteability.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("igniteability.png"));
+			newAbility.powerLevel = 3;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.Ignite.ability = newAbility.ability;
+		}
+
+		public static void ProjectorSigil()
+		{
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Projection", "When a card bearing this sigil is stuck, it will move and leave behind an astral projection of itself.", typeof(SigilCode.AstralProjection), Tools.getImage("projector.png"))
+				.SetDefaultPart1Ability()
+				.SetIcon(Tools.getImage("projector.png"));
+			newAbility.powerLevel = 2;
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			SigilCode.AstralProjection.ability = newAbility.ability;
 		}
 
 		public static void SpellBookSigil()
@@ -363,15 +455,17 @@ namespace MagnificusMod
 				.SetDefaultPart1Ability()
 				.SetPixelAbilityIcon(Tools.getImage("pixelability_spellbook.png"))
 				.SetIcon(Tools.getImage("spellbooksigil.png"));
+			newAbility.powerLevel = 3;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.DrawSpell.ability = newAbility.ability;
 		}
 
 		public static void MidasTouch()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Midas' Touch", "When a card bearing this sigil attacks another card, the attacked card will gain 2 health, lose all of it's attack and turn to gold.", typeof(SigilCode.MidasTouchA), Tools.getImage("midas touch.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Midas' Touch", "When a card bearing this sigil attacks another card, the attacked card will lose all of it's attack and turn to gold.", typeof(SigilCode.MidasTouchA), Tools.getImage("midas touch.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("midas touch.png"));
+			newAbility.powerLevel = 4;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.MidasTouchA.ability = newAbility.ability;
 		}
@@ -381,6 +475,7 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Made of Gold", "When a card bearing this sigil perishes, the killer will gain 2 crystals.", typeof(SigilCode.DropMana), Tools.getImage("goldenA.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("goldenA.png"));
+			newAbility.powerLevel = 1;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.DropMana.ability = newAbility.ability;
 		}
@@ -390,6 +485,7 @@ namespace MagnificusMod
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Summon Runes", "When a card bearing this sigil is played, it will summon two runes beside it. A rune is defined as 0 power, 1 health, Detonator.", typeof(SigilCode.SummonRunes), Tools.getImage("spawnrunes.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("spawnrunes.png"));
+			newAbility.powerLevel = 0;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.SummonRunes.ability = newAbility.ability;
 		}
@@ -424,26 +520,6 @@ namespace MagnificusMod
 			SigilCode.FrostSpell.ability = newAbility.ability;
 		}
 
-		public static void TargetFrostSpellAbility()
-		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Spell of Frost", "Select a side of the board to freeze over, all cards belonging to the selected side will have their attack set to 0, but given +2 health.", typeof(SigilCode.TargetFrost), Tools.getImage("spell of frost_ability.png"))
-				.SetDefaultPart1Ability()
-				.SetIcon(Tools.getImage("spell of frost_ability.png"));
-			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
-			newAbility.powerLevel = 10;
-			SigilCode.TargetFrost.ability = newAbility.ability;
-		}
-
-		public static void GoldSpellAbility()
-		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Gold Rush", "When a spell bearing this sigil is played, all cards belonging to the opponent will have their attack set to 0, but given +2 health and the Made Of Gold sigil.", typeof(SigilCode.GoldSpell), Tools.getImage("spell of gold_ability.png"))
-				.SetDefaultPart1Ability()
-				.SetIcon(Tools.getImage("spell of gold_ability.png"));
-			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
-			newAbility.powerLevel = 10;
-			SigilCode.GoldSpell.ability = newAbility.ability;
-		}
-
 		public static void WindSpellAbility()
 		{
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Spell of Wind", "When a spell bearing this sigil is played, all cards on your side of the board will become airborne.", typeof(SigilCode.WindSpell), Tools.getImage("spell of wind_ability.png"))
@@ -456,11 +532,11 @@ namespace MagnificusMod
 
 		public static void WhirlwindSpellAbility()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Spell of Whirlwind", "When a spell bearing this sigil is played, all cards on the board will move clockwise.", typeof(SigilCode.WhirlwindSpell), Tools.getImage("spell of whirlwind.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Ruckus", "When a card bearing this sigil is played, all cards on the board will move clockwise.", typeof(SigilCode.WhirlwindSpell), Tools.getImage("spell of whirlwind.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("spell of whirlwind.png"));
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
-			newAbility.powerLevel = 10;
+			newAbility.powerLevel = 3;
 			SigilCode.WhirlwindSpell.ability = newAbility.ability;
 		}
 
@@ -474,24 +550,23 @@ namespace MagnificusMod
 			SigilCode.WaterSpell.ability = newAbility.ability;
 		}
 
-		public static void FlameSpellAbility()
-		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Flame Spell", "When a spell bearing this sigil is played, every opponent card will have their health set to 1, but have their attack increased by 1.", typeof(SigilCode.FlameSpell), Tools.getImage("spell of flame_ability.png"))
-				.SetDefaultPart1Ability()
-				.SetIcon(Tools.getImage("spell of flame_ability.png"));
-			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
-			newAbility.powerLevel = 10;
-			SigilCode.FlameSpell.ability = newAbility.ability;
-		}
-
 		public static void TargetFlameSpellAbility()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Spell of Flame", "Select a side of the board, every card on that side will have their health set to 1, but have their attack increased by 1.", typeof(SigilCode.TargetFlame), Tools.getImage("spell of flame_ability.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Spell of Flame", "Select a side of the board, every card on that side will lose 2 health (without perishing) and have their attack increased by 1.", typeof(SigilCode.TargetFlame), Tools.getImage("spell of flame_ability.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("spell of flame_ability.png"));
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			newAbility.powerLevel = 10;
 			SigilCode.TargetFlame.ability = newAbility.ability;
+		}
+
+		public static void FlameSpellAbility()
+		{
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Set Ablaze", "Every card on the opposite side will lose 2 health (without perishing) and have their attack increased by 1.", typeof(SigilCode.Flame), Tools.getImage("spell of flame_ability.png"))
+				.SetIcon(Tools.getImage("spell of flame_ability.png"));
+			newAbility.metaCategories = new List<AbilityMetaCategory>();
+			newAbility.powerLevel = 10;
+			SigilCode.Flame.ability = newAbility.ability;
 		}
 
 		public static void MagnusSpellAbility()
@@ -516,7 +591,7 @@ namespace MagnificusMod
 
 		public static void GnomeAbility()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Trasgnomification", "When a spell bearing this sigil is played, a gnome will be placed in the opposing slot, any cards in the opposing slot will be replaced.", typeof(SigilCode.GnomeSpell), Tools.getImage("trasgnomification.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Gnomification", "Select a slot to summon a Gnome card in.", typeof(SigilCode.GnomeSpell), Tools.getImage("trasgnomification.png"))
 				.SetDefaultPart1Ability()
 				.SetPixelAbilityIcon(Tools.getImage("pixelability_trasgnomification.png"))
 				.SetIcon(Tools.getImage("trasgnomification.png"));
@@ -567,7 +642,7 @@ namespace MagnificusMod
 
 		public static void FireballAbility()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Fireball", "Select a card to take 1 damage, twice.", typeof(SigilCode.Fireball), Tools.getImage("fireballA.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Fireball", "Select a card to take 2 damage.", typeof(SigilCode.Fireball), Tools.getImage("fireballA.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("fireballA.png"));
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
@@ -577,7 +652,7 @@ namespace MagnificusMod
 
 		public static void FrostyAbility()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Frosty", "When a card bearing this sigils attack another card, that card will lose 1 attack.", typeof(SigilCode.FrostyA), Tools.getImage("frosty.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Cold to the Touch", "When a card bearing this sigils attack another card, that card will lose 1 attack.", typeof(SigilCode.FrostyA), Tools.getImage("frosty.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("frosty.png"));
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
@@ -611,8 +686,20 @@ namespace MagnificusMod
 				.SetDefaultPart1Ability()
 				.SetPixelAbilityIcon(Tools.getImage("displacement_pixel.png"))
 				.SetIcon(Tools.getImage("displacement.png"));
+			newAbility.powerLevel = 2;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.AddCardToDeck.ability = newAbility.ability;
+		}
+
+		public static void GemReckoning()
+		{
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Gem Reckoning", "At the end of each turn, if the owner of this card does not control any gems, the leftmost card in your hand is discarded.", typeof(SigilCode.DiscardCards), Tools.getImage("ability_gemreckoning.png"))
+				.SetDefaultPart1Ability()
+				.SetPixelAbilityIcon(Tools.getImage("pixelability_gemreckoning.png"))
+				.SetIcon(Tools.getImage("ability_gemreckoning.png"));
+			newAbility.powerLevel = -3;
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			SigilCode.DiscardCards.ability = newAbility.ability;
 		}
 
 	}

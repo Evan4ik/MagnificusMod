@@ -34,7 +34,6 @@ namespace MagnificusMod
 			public static IEnumerator Postfix(IEnumerator enumerator, MagnificusLifeManager __state)
 			{
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
-				Generation.didDyingBreath = false;
 				yield return new WaitForSeconds(0.2f);
 				__state.playerLifeCounter.gameObject.SetActive(true);
 				__state.opponentLifeCounter.gameObject.SetActive(true);

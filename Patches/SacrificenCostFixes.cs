@@ -35,7 +35,7 @@ namespace MagnificusMod
 				}
 				bool manaCheck = __instance.Info.GetExtendedPropertyAsBool("ManaCost") == true;
 				bool bloodCheck = !manaCheck && __instance.Info.BloodCost <= MagGetValueOfSacrifices(Singleton<BoardManager>.Instance.playerSlots.FindAll((CardSlot x) => x.Card != null && !x.Card.HasTrait(Trait.Gem) && MagCanBeSacrificed(x.Card, false)), false) || manaCheck && __instance.Info.BloodCost <= MagGetValueOfSacrifices(Singleton<BoardManager>.Instance.playerSlots.FindAll((CardSlot x) => x.Card != null && x.Card.HasTrait(Trait.Gem) && MagCanBeSacrificed(x.Card, true)), true);
-				__result = __instance.Info.BloodCost <= Singleton<BoardManager>.Instance.AvailableSacrificeValue && __instance.Info.BonesCost <= Singleton<ResourcesManager>.Instance.PlayerBones && __instance.EnergyCost <= Singleton<ResourcesManager>.Instance.PlayerEnergy && __instance.GemsCostRequirementMet() && Singleton<BoardManager>.Instance.SacrificesCreateRoomForCard(__instance, Singleton<BoardManager>.Instance.PlayerSlotsCopy);
+				__result = bloodCheck && __instance.Info.BonesCost <= Singleton<ResourcesManager>.Instance.PlayerBones && __instance.EnergyCost <= Singleton<ResourcesManager>.Instance.PlayerEnergy && __instance.GemsCostRequirementMet() && Singleton<BoardManager>.Instance.SacrificesCreateRoomForCard(__instance, Singleton<BoardManager>.Instance.PlayerSlotsCopy);
 				return false;
 			}
 		}
@@ -44,7 +44,7 @@ namespace MagnificusMod
 		public static bool MagCanBeSacrificed(PlayableCard instance, bool isMana)
 		{
 			if (SceneLoader.ActiveSceneName != "finale_magnificus")
-            {
+			{
 				return !instance.FaceDown && (instance.Info.Sacrificable || instance.HasAbility(Ability.TripleBlood));
 			}
 			bool isManaHeart = false;
@@ -92,11 +92,6 @@ namespace MagnificusMod
 			int num = 0;
 			foreach (CardSlot cardSlot in sacrifices)
 			{
-				bool isManaHeart = false;
-				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("AllMana"))
-				{
-					isManaHeart = true;
-				}
 				if (cardSlot != null && cardSlot.Card != null && isMana)
 				{
 					if (SceneLoader.ActiveSceneName != "finale_magnificus")
@@ -112,20 +107,16 @@ namespace MagnificusMod
 						}
 						continue;
 					}
-					if (!cardSlot.Card.HasTrait(Trait.Gem) && !isManaHeart) { continue; }
+					if (!cardSlot.Card.HasTrait(Trait.Gem)) { continue; }
 					if (cardSlot.Card.Info.HasAbility(Ability.GainGemBlue) && cardSlot.Card.Info.HasAbility(Ability.GainGemGreen) || cardSlot.Card.Info.HasAbility(Ability.GainGemGreen) && cardSlot.Card.Info.HasAbility(Ability.GainGemOrange) || cardSlot.Card.Info.HasAbility(Ability.GainGemOrange) && cardSlot.Card.Info.HasAbility(Ability.GainGemBlue))
 					{
 						num += 2;
 					}
-					else if (cardSlot.Card.Info.HasAbility(Ability.GainGemBlue) && cardSlot.Card.Info.HasAbility(Ability.GainGemGreen) && cardSlot.Card.Info.HasAbility(Ability.GainGemOrange))
+					else if (cardSlot.Card.Info.HasAbility(Ability.GainGemBlue) && cardSlot.Card.Info.HasAbility(Ability.GainGemGreen) && cardSlot.Card.Info.HasAbility(Ability.GainGemOrange) || cardSlot.Card.Info.HasAbility(Ability.GainGemTriple))
 					{
 						num += 3;
 					}
 					else if (cardSlot.Card.Info.HasAbility(Ability.GainGemBlue) || cardSlot.Card.Info.HasAbility(Ability.GainGemGreen) || cardSlot.Card.Info.HasAbility(Ability.GainGemOrange) || cardSlot.Card.Info.HasTrait(Trait.Gem))
-					{
-						num++;
-					} 
-					else if (isManaHeart)
 					{
 						num++;
 					}
@@ -166,18 +157,21 @@ namespace MagnificusMod
 			public static bool Prefix(ref CardSlot __instance)
 			{
 				if (SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
+
 				if (__instance.Card != null)
 				{
 					bool isMana = Singleton<PlayerHand>.Instance.ChoosingSlotCard != null ? Singleton<PlayerHand>.Instance.ChoosingSlotCard.Info.GetExtendedPropertyAsBool("ManaCost") == true : false;
 					if (Singleton<BoardManager>.Instance.ChoosingSacrifices && MagCanBeSacrificed(__instance.Card, isMana))
 					{
 						__instance.Card.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").gameObject.SetActive(true);
-						if (!__instance.Card.HasTrait(Trait.Gem) && !isMana || !__instance.Card.HasTrait(Trait.Gem) && isMana && Generation.challenges.Contains("AllMana")) {
+						if (!__instance.Card.HasTrait(Trait.Gem) && !isMana || !__instance.Card.HasTrait(Trait.Gem) && isMana && Generation.challenges.Contains("AllMana"))
+						{
 							__instance.Card.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.4f, 0, 0, 0);
 							__instance.Card.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").GetChild(1).gameObject.GetComponent<ParticleSystem>().startColor = new Color(0.3961f, 0.1098f, 0.2275f, 1);//this is just a lie
 							__instance.Card.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").gameObject.GetComponent<LerpAlpha>().intendedAlpha = 1;
 							__instance.Card.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").GetChild(0).gameObject.SetActive(true);//0.3961 0.1098 0.2275 1
-						} else if (isMana)
+						}
+						else if (isMana)
 						{
 							Color renderColor = new Color(1, 1, 1, 0);
 							__instance.Card.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").gameObject.GetComponent<LerpAlpha>().intendedAlpha = 1;
@@ -185,7 +179,8 @@ namespace MagnificusMod
 							if (__instance.Card.HasAbility(Ability.GainGemBlue) && __instance.Card.HasAbility(Ability.GainGemOrange))
 							{
 								renderColor = new Color(0.45f, 0, 1, 0);
-							} else if (__instance.Card.HasAbility(Ability.GainGemGreen) && __instance.Card.HasAbility(Ability.GainGemOrange))
+							}
+							else if (__instance.Card.HasAbility(Ability.GainGemGreen) && __instance.Card.HasAbility(Ability.GainGemOrange))
 							{
 								renderColor = new Color(0.58f, 0.28f, 0, 0);
 							}
@@ -215,6 +210,9 @@ namespace MagnificusMod
 					return false;
 				}
 				__instance.PlaySound();
+				GameObject slot = GameObject.Find(__instance.IsPlayerSlot ? "PlayerSlots" : "OpponentSlots").transform.GetChild(__instance.Index).Find("Border").gameObject;
+				int slotIdx = int.Parse(slot.GetComponent<MeshRenderer>().material.name.Split(';')[1]);
+				slot.GetComponent<MeshRenderer>().material.mainTexture = Generation.slotTextures[slotIdx];
 				if (__instance.Chooseable)
 				{
 					__instance.ShowState(HighlightedInteractable.State.Highlighted, false, 0.15f);
@@ -240,6 +238,9 @@ namespace MagnificusMod
 						__instance.StartCoroutine(MagnificusMod.Generation.WaitThenDisable(__instance.Card.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").gameObject, 2f));
 					}
 				}
+				GameObject slot = GameObject.Find(__instance.IsPlayerSlot ? "PlayerSlots" : "OpponentSlots").transform.GetChild(__instance.Index).Find("Border").gameObject;
+				int slotIdx = int.Parse(slot.GetComponent<MeshRenderer>().material.name.Split(';')[0]);
+				slot.GetComponent<MeshRenderer>().material.mainTexture = Generation.slotTextures[slotIdx];
 				__instance.ShowState(HighlightedInteractable.State.Interactable, false, 0.15f);
 				return false;
 			}
@@ -264,12 +265,12 @@ namespace MagnificusMod
 				if (SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
 				if (marked)
 				{
-					bool isMana = Singleton<PlayerHand>.Instance.ChoosingSlotCard != null ? Singleton<PlayerHand>.Instance.ChoosingSlotCard.Info.GetExtendedPropertyAsBool("ManaCost") == true : false;
-					if (__instance.Card.Info.HasTrait(Trait.Gem) && !isMana || !__instance.Card.Info.HasTrait(Trait.Gem) && isMana && !Generation.challenges.Contains("AllMana"))
-                    {
+					bool isMana = Singleton<PlayerHand>.Instance.ChoosingSlotCard != null ? Singleton<PlayerHand>.Instance.ChoosingSlotCard.Info.GetExtendedPropertyAsBool("ManaCost") != null : false;
+					if (__instance.Card.Info.HasTrait(Trait.Gem) != isMana)
+					{
 						HintsHandler.OnNonsacrificableCardClicked(__instance.PlayableCard);
 						return false;
-                    }
+					}
 					AudioController.Instance.PlaySound2D("sacrifice_mark", MixerGroup.TableObjectsSFX);
 				}
 				return false;
@@ -287,7 +288,7 @@ namespace MagnificusMod
 			public static IEnumerator Postfix(IEnumerator enumeratr, BoardManager __state, List<CardSlot> validSlots, PlayableCard card)
 			{
 				if (SceneLoader.ActiveSceneName != "finale_magnificus")
-                {
+				{
 					Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Unlocked;
 					Singleton<ViewManager>.Instance.SwitchToView(__state.BoardView, false, false);
 					Singleton<InteractionCursor>.Instance.ForceCursorType(CursorType.Sacrifice);
@@ -448,7 +449,7 @@ namespace MagnificusMod
 					{
 						if (cardSlot5.Card != null && !cardSlot5.Card.Dead)
 						{
-							if (isMana && !cardSlot5.Card.Info.HasTrait(Trait.Gem) && !Generation.challenges.Contains("AllMana") || !isMana && cardSlot5.Card.Info.HasTrait(Trait.Gem)) { continue; }
+							if (isMana && !cardSlot5.Card.Info.HasTrait(Trait.Gem)) { continue; }
 							int sacrificesMade__stateTurn = __state.SacrificesMadeThisTurn;
 							__state.SacrificesMadeThisTurn = sacrificesMade__stateTurn + 1;
 							yield return cardSlot5.Card.Sacrifice();
@@ -468,9 +469,9 @@ namespace MagnificusMod
 				yield break;
 			}
 		}
-	
 
-        [HarmonyPatch(typeof(PlayableCard), "Sacrifice")]
+
+		[HarmonyPatch(typeof(PlayableCard), "Sacrifice")]
 		public class addSacrificeAnimation
 		{
 			public static void Prefix(ref PlayableCard __instance, out PlayableCard __state)
@@ -479,7 +480,7 @@ namespace MagnificusMod
 			}
 
 			public static IEnumerator Postfix(IEnumerator enumeratr, PlayableCard __state)
-            {
+			{
 				AscensionStatsData.TryIncrementStat(AscensionStat.Type.SacrificesMade);
 				__state.Anim.PlaySacrificeSound();
 				if (__state.HasAbility(Ability.Sacrificial))
@@ -490,8 +491,9 @@ namespace MagnificusMod
 						__state.Anim.SetMarkedForSacrifice(false);
 						__state.Anim.PlaySacrificeParticles();
 						ProgressionData.SetAbilityLearned(Ability.Sacrificial);
-					} else
-                    {
+					}
+					else
+					{
 						__state.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").GetChild(1).gameObject.SetActive(true);
 						__state.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").gameObject.GetComponent<LerpAlpha>().intendedAlpha = 0;
 						__state.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").GetChild(0).gameObject.SetActive(false);
@@ -509,8 +511,9 @@ namespace MagnificusMod
 						__state.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").GetChild(0).gameObject.SetActive(false);
 						__state.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").gameObject.GetComponent<LerpAlpha>().intendedAlpha = 0;
 						__state.StartCoroutine(MagnificusMod.Generation.WaitThenDisable(__state.Anim.gameObject.transform.GetChild(0).GetChild(0).Find("MagSacrificeMarker").gameObject, 2f));
-					} else
-                    {
+					}
+					else
+					{
 						__state.Anim.DeactivateSacrificeHoverMarker();
 					}
 					if (__state.TriggerHandler.RespondsToTrigger(Trigger.Sacrifice, Array.Empty<object>()))
@@ -520,7 +523,7 @@ namespace MagnificusMod
 					yield return __state.Die(true, null, true);
 				}
 				yield break;
-            }
+			}
 		}
 
 		[HarmonyPatch(typeof(HintsHandler), "OnNonplayableCardClicked")]
@@ -553,25 +556,25 @@ namespace MagnificusMod
 						int bitch = UnityEngine.Random.Range(0, 100);
 						if (bitch < 25)
 						{
-							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("You don't have two " + HintsHandler.GetColorCodeForGem(doubleCost) + Localization.Translate(doubleCost.ToString()) + "</color> gems to play that.", 0, 0));
+							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowThenClear("You don't have two " + HintsHandler.GetColorCodeForGem(doubleCost) + Localization.Translate(doubleCost.ToString()) + "</color> gems to play that.", 4.5f));
 						}
 						else if (bitch < 50)
 						{
-							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("You'll need two " + HintsHandler.GetColorCodeForGem(doubleCost) + Localization.Translate(doubleCost.ToString()) + "</color> gems to play your " + card.Info.DisplayedNameLocalized + ".", 0, 0));
+							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowThenClear("You'll need two " + HintsHandler.GetColorCodeForGem(doubleCost) + Localization.Translate(doubleCost.ToString()) + "</color> gems to play your " + card.Info.DisplayedNameLocalized + ".", 4.5f));
 						}
 						else if (bitch < 75)
 						{
-							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("You don't have enough " + HintsHandler.GetColorCodeForGem(doubleCost) + Localization.Translate(doubleCost.ToString()) + "</color> gems on the board to play that " + card.Info.DisplayedNameLocalized + ".", 0, 0));
+							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowThenClear("You don't have enough " + HintsHandler.GetColorCodeForGem(doubleCost) + Localization.Translate(doubleCost.ToString()) + "</color> gems on the board to play that " + card.Info.DisplayedNameLocalized + ".", 4.5f));
 						}
 						else
 						{
-							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("You need two " + HintsHandler.GetColorCodeForGem(doubleCost) + Localization.Translate(doubleCost.ToString()) + "</color> gems on the board.", 0, 0));
+							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowThenClear("You need two " + HintsHandler.GetColorCodeForGem(doubleCost) + Localization.Translate(doubleCost.ToString()) + "</color> gems on the board.", 4.5f));
 						}
 						return false;
 					}
 				}
 				if (card.Info.name == "mag_potion")
-                {
+				{
 					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("You don't have any cards to use that [c:g1]potion[c:] on."));
 					return false;
 				}
@@ -591,7 +594,7 @@ namespace MagnificusMod
 				}
 				bool targetedSpell = Singleton<PlayerHand>.Instance.ChoosingSlotCard != null ? Singleton<PlayerHand>.Instance.ChoosingSlotCard.Info.GetExtendedPropertyAsBool("TargetedSpell") == true : false;
 				if (card.Info.HasTrait(Trait.Gem) && targetedSpell == true)
-                {
+				{
 					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("You won't have any cards to use that spell on."));
 					return false;
 				}
@@ -665,16 +668,17 @@ namespace MagnificusMod
 		}
 
 		public static List<float> getSplashData(CardInfo info)
-        {
+		{
 			List<float> data = new List<float> { 1f, 1f, 1f };
 			if (info.BloodCost > 0 && info.GetExtendedProperty("ManaCost") != null)
-            {
+			{
 				data[1] -= 0.5f;
-            } else if (info.BloodCost > 0)
-            {
+			}
+			else if (info.BloodCost > 0)
+			{
 				data[1] -= 1f;
 				data[2] -= 1f;
-            }
+			}
 			if (info.GemsCost.Contains(GemType.Blue) && info.GemsCost.Contains(GemType.Orange) || info.HasAbility(Ability.GainGemBlue) && info.HasAbility(Ability.GainGemOrange))
 			{
 				data = new List<float> { 0.45f, 0f, 1f };
@@ -706,47 +710,56 @@ namespace MagnificusMod
 			data.Add(flipX);
 			data.Add(flipY);
 			return data;
-        }
+		}
 
 		[HarmonyPatch(typeof(CardDisplayer), "GetCostSpriteForCard")]
+		[HarmonyAfter(new string[] { "community.inscryption.patch" })]
 		public class displayCustomCosts
 		{
 			public static bool Prefix(ref CardDisplayer __instance, ref Sprite __result, CardInfo card)
 			{
-				if (SceneLoader.ActiveSceneName == "finale_magnificus" && SavedVars.PaintSplashes)
-                {
-						List<float> data = getSplashData(card);
-						__instance.gameObject.transform.Find("PaintSplashes").gameObject.GetComponent<SpriteRenderer>().color = new Color(data[0], data[1], data[2], 1);
-						__instance.gameObject.transform.Find("PaintSplashes").rotation = Quaternion.Euler(0, 0, data[3]);
-						__instance.gameObject.transform.Find("PaintSplashes").gameObject.GetComponent<SpriteRenderer>().flipX = data[4] > 0 ? true : false;
-						__instance.gameObject.transform.Find("PaintSplashes").gameObject.GetComponent<SpriteRenderer>().flipY = data[5] > 0 ? true : false;
-					
-				}
-				if (card.BloodCost > 0 && (card.BonesCost > 0 || card.energyCost > 0 || card.gemsCost.Count > 0) && SceneLoader.ActiveSceneName == "finale_magnificus")
-                {
-					if (card.GetExtendedProperty("ManaCost") != null)
-					{
-						__instance.gameObject.transform.Find("AdditionalManaCost").gameObject.GetComponent<SpriteRenderer>().sprite = Generation.manaCostTextures[card.BloodCost];
-					}
-					else
-					{
-						__instance.gameObject.transform.Find("AdditionalManaCost").gameObject.GetComponent<SpriteRenderer>().sprite = __instance.costTextures[card.BloodCost];
-					}
-
-				} else if (card.BonesCost > 0 && (card.BloodCost > 0 || card.energyCost > 0 || card.gemsCost.Count > 0) && SceneLoader.ActiveSceneName == "finale_magnificus")
+				if (SceneLoader.ActiveSceneName == "finale_magnificus" && config.paintSplashes)
 				{
-					__instance.gameObject.transform.Find("AdditionalManaCost").gameObject.GetComponent<SpriteRenderer>().sprite = __instance.boneCostTextures[card.BonesCost - 1];
+					List<float> data = getSplashData(card);
+					__instance.gameObject.transform.Find("PaintSplashes").gameObject.GetComponent<SpriteRenderer>().color = new Color(data[0], data[1], data[2], 1);
+					__instance.gameObject.transform.Find("PaintSplashes").rotation = Quaternion.Euler(0, 0, data[3]);
+					__instance.gameObject.transform.Find("PaintSplashes").gameObject.GetComponent<SpriteRenderer>().flipX = data[4] > 0 ? true : false;
+					__instance.gameObject.transform.Find("PaintSplashes").gameObject.GetComponent<SpriteRenderer>().flipY = data[5] > 0 ? true : false;
 
 				}
-				else if (card.energyCost > 0 && (card.BloodCost > 0 || card.bonesCost > 0 || card.gemsCost.Count > 0) && SceneLoader.ActiveSceneName == "finale_magnificus")
+
+				if (__instance.gameObject.transform.Find("AdditionalManaCost") != null)
 				{
-					__instance.gameObject.transform.Find("AdditionalManaCost").gameObject.GetComponent<SpriteRenderer>().sprite = __instance.energyCostTextures[card.EnergyCost - 1];
 
+					if (card.BloodCost > 0 && (card.BonesCost > 0 || card.energyCost > 0 || card.gemsCost.Count > 0) && SceneLoader.ActiveSceneName == "finale_magnificus")
+					{
+						if (card.GetExtendedProperty("ManaCost") != null)
+						{
+							__instance.gameObject.transform.Find("AdditionalManaCost").gameObject.GetComponent<SpriteRenderer>().sprite = Generation.manaCostTextures[card.BloodCost];
+						}
+						else
+						{
+							__instance.gameObject.transform.Find("AdditionalManaCost").gameObject.GetComponent<SpriteRenderer>().sprite = __instance.costTextures[card.BloodCost];
+						}
+
+					}
+					else if (card.BonesCost > 0 && (card.BloodCost > 0 || card.energyCost > 0 || card.gemsCost.Count > 0) && SceneLoader.ActiveSceneName == "finale_magnificus")
+					{
+						__instance.gameObject.transform.Find("AdditionalManaCost").gameObject.GetComponent<SpriteRenderer>().sprite = __instance.boneCostTextures[card.BonesCost - 1];
+
+					}
+					else if (card.energyCost > 0 && (card.BloodCost > 0 || card.bonesCost > 0 || card.gemsCost.Count > 0) && SceneLoader.ActiveSceneName == "finale_magnificus")
+					{
+						__instance.gameObject.transform.Find("AdditionalManaCost").gameObject.GetComponent<SpriteRenderer>().sprite = __instance.energyCostTextures[card.EnergyCost - 1];
+
+					}
+					else if (SceneLoader.ActiveSceneName == "finale_magnificus")
+					{
+						__instance.gameObject.transform.Find("AdditionalManaCost").gameObject.GetComponent<SpriteRenderer>().sprite = null;
+					}
 				}
-				else if (SceneLoader.ActiveSceneName == "finale_magnificus")
-                {
-					__instance.gameObject.transform.Find("AdditionalManaCost").gameObject.GetComponent<SpriteRenderer>().sprite = null;
-                }
+
+
 				if (card.BonesCost > 0)
 				{
 					__result = __instance.boneCostTextures[card.BonesCost - 1];
@@ -813,17 +826,28 @@ namespace MagnificusMod
 					return false;
 				}
 				if (card.GetExtendedProperty("ManaCost") != null)
-                {
+				{
 					__result = Generation.manaCostTextures[card.BloodCost];
-					if (SceneLoader.ActiveSceneName.Contains("Ascension") || SceneLoader.ActiveSceneName.Contains("GBC"))
-                    {
+					if (SceneLoader.ActiveSceneName.Contains("Ascension") || SceneLoader.ActiveSceneName.Contains("GBC")) 
 						__result = Plugin.GBCmanaCostTextures[card.BloodCost];
-					}
 					return false;
-                }
+				}
 				__result = __instance.costTextures[card.BloodCost];
 				return false;
 			}
+		}
+
+
+		[HarmonyPatch(typeof(CardDisplayer), "DisplayInfo")]
+		[HarmonyAfter(new string[] { "community.inscryption.patch" })]
+		public class gbcManaFix
+		{
+			public static void Postfix(ref CardDisplayer __instance, CardRenderInfo renderInfo, PlayableCard playableCard)
+			{
+				if (!SceneLoader.ActiveSceneName.Contains("Ascension") && !SceneLoader.ActiveSceneName.Contains("GBC") || __instance.costRenderer == null || __instance.info == null || __instance.info.GetExtendedProperty("ManaCost") == null) return;
+				__instance.costRenderer.sprite = Plugin.GBCmanaCostTextures[__instance.info.BloodCost];
+			}
+
 		}
 	}
 }

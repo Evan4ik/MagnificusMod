@@ -330,6 +330,13 @@ namespace MagnificusMod
 				GameObject npc = GameObject.Find("GameEnvironment");
 				Tween.LocalPosition(GameObject.Find("CombatBell_Magnificus").transform, new Vector3(-7.64f, 27.1583f, 6.42f), 5f, 0);
 				Tween.LocalPosition(GameObject.Find("LifeManager").transform, new Vector3(0f, 20, 0), 5f, 0);
+
+				Tween.LocalRotation(GameObject.Find("WizardBattleDuelDisk").transform, new Vector3(0, 75, 0), 1.25f, 0);
+				Tween.LocalPosition(GameObject.Find("WizardBattleDuelDisk").transform, new Vector3(0.9f, 4.5f, -12.5f), 1.5f, 0.15f);
+
+				Tween.LocalPosition(Singleton<PlayerHand3D>.Instance.transform, new Vector3(1, -0.5445f, -5.4f), 1.5f, 0.15f);
+
+				if (Singleton<SpellPile>.Instance != null) { Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<SpellPile>.Instance.disappear()); }
 				Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(BossFixes.dissapearSlots());
 				switch (RunState.Run.regionTier)
 				{
@@ -346,9 +353,7 @@ namespace MagnificusMod
 								AchievementManager.Unlock(MagnificusMod.Achievements.HumanoidSlime);
 							}
 							if (!SavedVars.LearnedMechanics.Contains("beatgoobert;"))
-							{
 								SavedVars.LearnedMechanics += "beatgoobert;";
-							}
 							npc = GameObject.Find("Goober");
 							Tween.Rotation(npc.transform, Quaternion.Euler(0, 0, 0), 5f, 0);
 							Vector3 npcPos = npc.transform.localPosition;
@@ -374,6 +379,7 @@ namespace MagnificusMod
 							Vector3 npcPos = npc.transform.localPosition;
 							npc.GetComponent<SineWaveMovement>().enabled = false;
 							Tween.LocalPosition(GameObject.Find("bgStarParent").transform, new Vector3(0, 0, 0), 5f, 0);
+							CustomTextDisplayerStuff.switchToSpeakerStyle(3);
 							if (rand <= 33)
 							{
 								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g1]What..?[c:] [c:g2]Me,[c:] [c:g1]defeated..?[c:]", Emotion.Anger, TextDisplayer.LetterAnimation.WavyJitter);
@@ -426,17 +432,18 @@ namespace MagnificusMod
 							npc = GameObject.Find("orluPainting");
 							Vector3 npcPos = npc.transform.localPosition;
 							npc.GetComponent<SineWaveMovement>().enabled = false;
+							CustomTextDisplayerStuff.switchToSpeakerStyle(4);
 							if (rand <= 33)
 							{
-								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g2]A[c:] [c:g3]fantastic[c:] [c:g2]duel[c:] [c:g3]we[c:] [c:g2]had![c:]", Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter);
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g2]A[c:] [c:g3]fantastic[c:] [c:g2]duel[c:] [c:g3]we[c:] [c:g2]had![c:]", Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.Single);
 							}
 							else if (rand <= 66)
 							{
-								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g2]'Twas[c:] [c:g3]an[c:] [c:g2]excellent[c:] [c:g3]battle.[c:]", Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter);
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g2]'Twas[c:] [c:g3]an[c:] [c:g2]excellent[c:] [c:g3]battle.[c:]", Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.Single);
 							}
 							else if (rand <= 101)
 							{
-								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g2]Great[c:] [c:g3]fighting,[c:] [c:g2]young[c:] [c:g3]mage.[c:]", Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter);
+								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g2]Great[c:] [c:g3]fighting,[c:] [c:g2]young[c:] [c:g3]mage.[c:]", Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter, DialogueEvent.Speaker.Single);
 							}
 							Tween.LocalPosition(npc.transform, new Vector3(0, 4.5f, 13.5f), 3.75f, 0);
 							Tween.LocalPosition(npc.transform, new Vector3(0, 15.5f, 13.5f), 0.25f, 4.25f);
@@ -524,6 +531,7 @@ namespace MagnificusMod
 							Vector3 npcPos = npc.transform.localPosition;
 							npc.GetComponent<SineWaveMovement>().enabled = false;
 							rand = Random.RandomRangeInt(0, 100);
+							CustomTextDisplayerStuff.switchToSpeakerStyle(5);
 							if (rand <= 33)
 							{
 								yield return Singleton<TextDisplayer>.Instance.ShowMessage("[c:g3]An[c:] [c:g1]excellent[c:] [c:g3]fight![c:]", Emotion.Anger, TextDisplayer.LetterAnimation.WavyJitter);
@@ -717,7 +725,7 @@ namespace MagnificusMod
 				SavedVars.GeneratedEvents = "";
 				yield return MagnificusMod.Generation.WaitThenDisable(GameObject.Find("CardBattle_Magnificus"), 0.5f);
 				GameObject.Destroy(GameObject.Find("bossPainting"));
-				Tween.LocalPosition(GameObject.Find("tbPillar").transform, new Vector3(0.88f, -4.94f, -1), 0.75f, 0);
+				Tween.LocalPosition(GameObject.Find("tbPillar").transform, new Vector3(0.88f, -5f, -1), 0.75f, 0);
 				__state.box.gameObject.SetActive(false);
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
 				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Locked;
@@ -728,6 +736,7 @@ namespace MagnificusMod
 				AudioController.Instance.SetLoopAndPlay("School_of_Magicks", 0, true, true);
 				AudioController.Instance.SetLoopVolumeImmediate(0.55f);
 				yield return new WaitForSeconds(1f);
+				CustomTextDisplayerStuff.switchToSpeakerStyle(0);
 				if (RunState.Run.playerLives > -1)
 				{
 					if (!SavedVars.LearnedMechanics.Contains("beatbosswithdamage;") && RunState.Run.playerLives != RunState.Run.maxPlayerLives)
@@ -751,15 +760,15 @@ namespace MagnificusMod
 					{
 						List<CardInfo> unlockedCards = CardLoader.GetUnlockedCards(CardMetaCategory.Rare, CardTemple.Wizard);
 						unlockedCards.RemoveAll((CardInfo x) => x.name == "MoxTriple" && x.HasTrait(Trait.Gem));
-						unlockedCards.RemoveAll((CardInfo x) => !x.appearanceBehaviour.Contains(CardAppearanceBehaviour.Appearance.RareCardBackground));
-						CardInfo card = CardLoader.Clone(unlockedCards[SeededRandom.Range(0, unlockedCards.Count, randomSeed)]);
+
+						CardInfo card = CardLoader.Clone(unlockedCards[SeededRandom.Range(0, unlockedCards.Count, SaveManager.saveFile.randomSeed)]);
 						if (unlockedCards.Count >= 3)
 						{
-							randomSeed++;
-							while (list.Exists((CardChoice x) => x.CardInfo.name == card.name) || card.metaCategories.Contains(CardMetaCategory.GBCPack))
+							SaveManager.saveFile.randomSeed++;
+							while (list.Exists((CardChoice x) => x.CardInfo.name == card.name))
 							{
-								card = CardLoader.Clone(unlockedCards[SeededRandom.Range(0, unlockedCards.Count, randomSeed)]);
-								randomSeed++;
+								card = CardLoader.Clone(unlockedCards[SeededRandom.Range(0, unlockedCards.Count, SaveManager.saveFile.randomSeed)]);
+								SaveManager.saveFile.randomSeed++;
 							}
 						}
 						list.Add(new CardChoice
@@ -805,7 +814,7 @@ namespace MagnificusMod
 					lifePainting.transform.localPosition = new Vector3(1.45f, 7.54f, -0.4f);
 					Tween.LocalRotation(lifePainting.transform, Quaternion.Euler(71, 0, 0), 0.5f, 0);
 					yield return new WaitForSeconds(0.6f);
-					CardInfo cardLol = CardLoader.GetCardByName("mag_jrsage");
+					CardInfo cardLol = CardLoader.GetCardByName("JuniorSage");
 					for (int i = 0; i < 2; i++)
 					{
 						yield return new WaitForSeconds(Time.deltaTime);
@@ -844,7 +853,7 @@ namespace MagnificusMod
 				__state.chosenReward.transform.parent = null;
 				Singleton<RuleBookController>.Instance.SetShown(false, true);
 				__state.gamepadGrid.enabled = false;
-				if (__state.chosenReward.Info.name != "mag_jrsage")
+				if (__state.chosenReward.Info.name != "JuniorSage")
 				{
 					__state.deckPile.MoveCardToPile(__state.chosenReward, true, 0.25f, 1f);
 					__state.AddChosenCardToDeck();
@@ -877,6 +886,11 @@ namespace MagnificusMod
 					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.WaitThenDestroy(GameObject.Find("lavaOrbSpawner1"), 4f));
 				}
 				int regionTier = RunState.Run.regionTier;
+				if (regionTier < 3)
+				{
+					AscensionSaveData.Data.currentOuroborosDeaths = 0;
+					SaveManager.saveFile.ouroborosDeaths = 0;
+				}
 				regionTier++;
 				MagSave.clearedNode = new List<string>();
 				MagSave.SaveLayout(regionTier.ToString());

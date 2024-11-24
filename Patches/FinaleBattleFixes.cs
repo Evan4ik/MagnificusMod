@@ -41,7 +41,7 @@ namespace MagnificusMod
 				{
 					MagnificusMod.Plugin.spellsPlayed++;
 				}
-				if (otherCard.Dead)
+				if (otherCard.Dead || otherCard.HasTrait(Trait.EatsWarrens) && otherCard.Info.GetExtendedPropertyAsBool("PhysicalSpell") == null)
 				{
 					AudioController.Instance.PlaySound2D("card_death", MixerGroup.None, 0.6f, 0f, null, null, null, null, false);
 					if (otherCard.HasTrait(Trait.EatsWarrens))
@@ -49,6 +49,11 @@ namespace MagnificusMod
 						if (!otherCard.slot.IsPlayerSlot && otherCard.OriginatedFromQueue)
 						{
 							GameObject.Find("OpponentSlots").transform.GetChild(otherCard.slot.Index).transform.Find("QueuedCardFrame").gameObject.SetActive(false);
+						}
+						yield return new WaitForSeconds(0.3f);
+						if (otherCard.Info.HasTrait(Trait.EatsWarrens))
+						{
+							yield return otherCard.Die(false);
 						}
 					}
 				}
@@ -62,7 +67,7 @@ namespace MagnificusMod
 						/*
 						if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("FadingMox"))
 						{
-							if (otherCard.Info.name == "mag_randommox" || otherCard.Info.name == "mag_rubymox" || otherCard.Info.name == "mag_greenmox" || otherCard.Info.name == "mag_bluemox")
+							if (otherCard.Info.name == "mag_randommox" || otherCard.Info.name == "MoxRuby" || otherCard.Info.name == "MoxEmerald" || otherCard.Info.name == "MoxSapphire")
 							{
 								CardModificationInfo fadingMod = new CardModificationInfo();
 								fadingMod.abilities.Add(MagnificusMod.SigilCode.FadingA.ability);
@@ -85,13 +90,14 @@ namespace MagnificusMod
 						}
 					}*/
 
-					if (!otherCard.slot.IsPlayerSlot && !otherCard.Info.HasTrait(Trait.Terrain))
+					if (!otherCard.slot.IsPlayerSlot)
 					{
 						Singleton<ViewManager>.Instance.SwitchToView(View.OpponentQueue, false, __state.cardSlot.IsPlayerSlot);
 					}
 					__state.SummonPortraitForCard(otherCard);
 					if (!otherCard.slot.IsPlayerSlot)
-					{yield return new WaitForSeconds(0.65f);} else { yield return new WaitForSeconds(0.15f); }
+					{ yield return new WaitForSeconds(0.65f); }
+					else { yield return new WaitForSeconds(0.15f); }
 					if (__state.cardSlot.IsPlayerSlot)
 					{
 						Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Unlocked;
@@ -107,47 +113,47 @@ namespace MagnificusMod
 			public static bool Prefix(ref HandModelChooser __instance)
 			{
 				if (SceneLoader.ActiveSceneName != "finale_magnificus")
-                {
+				{
 					return true;
-                }
+				}
 				if (__instance.activeHandRenderer == null)
 				{
 					CompositeFigurine.FigurineType avatarHead = SaveManager.SaveFile.AvatarHead;
 					Color value = __instance.handColorMid;
-						switch (avatarHead)
-						{
-							case CompositeFigurine.FigurineType.SettlerMan:
-								
-								value = __instance.handColorLight;
-								break;
-							case CompositeFigurine.FigurineType.SettlerWoman:
-								
-								value = __instance.handColorDark;
-								break;
-							case CompositeFigurine.FigurineType.Chief:
-								
-								value = __instance.handColorMid;
-								break;
-							case CompositeFigurine.FigurineType.Wildling:
-								
-								value = __instance.handColorMid;
-								break;
-							case CompositeFigurine.FigurineType.Prospector:
-								
-								value = __instance.handColorDark;
-								break;
-							case CompositeFigurine.FigurineType.Enchantress:
-								
-								value = __instance.handColorLight;
-								break;
-							case CompositeFigurine.FigurineType.Gravedigger:
-								
-								value = __instance.handColorLight;
-								break;
-							case CompositeFigurine.FigurineType.Robot:
-								value = __instance.handColorDark;
-								break;
-						}
+					switch (avatarHead)
+					{
+						case CompositeFigurine.FigurineType.SettlerMan:
+
+							value = __instance.handColorLight;
+							break;
+						case CompositeFigurine.FigurineType.SettlerWoman:
+
+							value = __instance.handColorDark;
+							break;
+						case CompositeFigurine.FigurineType.Chief:
+
+							value = __instance.handColorMid;
+							break;
+						case CompositeFigurine.FigurineType.Wildling:
+
+							value = __instance.handColorMid;
+							break;
+						case CompositeFigurine.FigurineType.Prospector:
+
+							value = __instance.handColorDark;
+							break;
+						case CompositeFigurine.FigurineType.Enchantress:
+
+							value = __instance.handColorLight;
+							break;
+						case CompositeFigurine.FigurineType.Gravedigger:
+
+							value = __instance.handColorLight;
+							break;
+						case CompositeFigurine.FigurineType.Robot:
+							value = __instance.handColorDark;
+							break;
+					}
 					__instance.maleHand.SetActive(true);
 					__instance.femaleHand.SetActive(false);
 					__instance.activeHandRenderer = __instance.maleHandRenderer;
@@ -178,7 +184,7 @@ namespace MagnificusMod
 			}
 		}
 
-        [HarmonyPatch(typeof(WizardBattlePortraitSlot), "ShowQueueCardFrame")]
+		[HarmonyPatch(typeof(WizardBattlePortraitSlot), "ShowQueueCardFrame")]
 		public class fixQueueCardBack
 		{
 			public static bool Prefix(ref WizardBattlePortraitSlot __instance, PlayableCard card)
@@ -226,7 +232,7 @@ namespace MagnificusMod
 				if (!slot.Card.HasAbility(Ability.Sniper) && SceneLoader.ActiveSceneName == "finale_magnificus" || SceneLoader.ActiveSceneName != "finale_magnificus")
 					Singleton<ViewManager>.Instance.SwitchToView(Singleton<BoardManager>.Instance.CombatView, false, false);
 				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Locked;
-				if (slot.Card.HasAbility(Ability.Sniper))
+				if (slot.Card.HasAbility(Ability.Sniper) && slot.IsPlayerSlot)
 				{
 					if (SceneLoader.ActiveSceneName == "finale_magnificus")
 					{
@@ -245,7 +251,8 @@ namespace MagnificusMod
 					if (SceneLoader.ActiveSceneName != "finale_magnificus")
 					{
 						Singleton<ViewManager>.Instance.Controller.SwitchToControlMode(Singleton<BoardManager>.Instance.ChoosingSlotViewMode);
-					} else
+					}
+					else
 					{
 						Singleton<ViewManager>.Instance.SwitchToView(View.OpponentQueue, false, false);
 					}
@@ -278,7 +285,8 @@ namespace MagnificusMod
 				bool strongPull = Singleton<BoardManager>.Instance.GetSlots(false).Find((CardSlot x) => x.Card != null && x.Card.HasAbility(SigilCode.StrongPull.ability)) != null;
 				foreach (CardSlot opposingSlot in opposingSlots)
 				{
-					if (strongPull && slot.IsPlayerSlot) {
+					if (strongPull && slot.IsPlayerSlot)
+					{
 						Singleton<ViewManager>.Instance.SwitchToView(Singleton<BoardManager>.Instance.CombatView, false, false);
 						yield return __state.SlotAttackSlot(slot, Singleton<BoardManager>.Instance.GetSlots(false).Find((CardSlot x) => x.Card != null && x.Card.HasAbility(SigilCode.StrongPull.ability)), j);
 						j += 0.01f;
@@ -313,12 +321,12 @@ namespace MagnificusMod
 					bool flightBlocker = false;
 					if (opponentSlot.transform.childCount > 5 && opposingSlot.Card != null)
 					{
-						if (opposingSlot.Card.HasAbility(Ability.Reach) || attacker.Info.ModAbilities.Contains(Ability.Reach))
+						if (opposingSlot.Card.HasAbility(Ability.Reach))
 						{
 							flightBlocker = true;
 						}
 					}
-					bool flyer = attacker.HasAbility(Ability.Flying) || attacker.Info.ModAbilities.Contains(Ability.Flying);
+					bool flyer = attacker.HasAbility(Ability.Flying);
 					if (attacker.temporaryMods.Count > 0)
 					{
 						foreach (CardModificationInfo mod in attacker.temporaryMods)
@@ -330,12 +338,18 @@ namespace MagnificusMod
 						}
 					}
 					bool isMoon = false;
-					if (RunState.Run.regionTier == 4) {
+					if (RunState.Run.regionTier == 4)
+					{
 						CardSlot moonCardSlot = Singleton<BoardManager>.Instance.GetSlots(false).Find((CardSlot x) => x.Card != null && x.Card.Info.HasTrait(Trait.Giant));
 						if (moonCardSlot != null) { isMoon = true; }
 					}
+
+					GemType attacking = GemType.Green;
+					bool mana = false;
+
 					if (attacker.Info.gemsCost.Count > 0)
 					{
+						attacking = attacker.Info.gemsCost[0];
 						switch (attacker.Info.gemsCost[0])
 						{
 							case GemType.Green:
@@ -348,84 +362,55 @@ namespace MagnificusMod
 								mox = GameObject.Instantiate(GameObject.Find("sapphireMoxPref"));
 								break;
 						}
-						if (opponentSlot.transform.childCount > 5 && opposingSlot.Card != null && !flyer && !opposingSlot.Card.HasAbility(Ability.Submerge) && !opposingSlot.Card.HasAbility(MagnificusMod.SigilCode.submergekraken.ability))
-						{
-							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.FlashCard(opponentSlot.transform.GetChild(5).gameObject, 0.4f, attacker.Info.gemsCost[0], false));
-
-						}
-						else if (flyer && flightBlocker)
-						{
-							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.FlashCard(opponentSlot.transform.GetChild(5).gameObject, 0.4f, attacker.Info.gemsCost[0], false));
-						}
-						else if (isMoon && GameObject.Find(opponentSlotName).transform.GetChild(0).childCount > 5)
-						{
-							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.FlashCard(GameObject.Find(opponentSlotName).transform.GetChild(0).gameObject.transform.GetChild(5).gameObject, 0.4f, attacker.Info.gemsCost[0], false));
-						}
-						else
-						{
-							MagnificusMod.Generation.damageDoneThisTurn += attackingSlot.Card.Attack;
-						}
 					}
 					else if (attacker.Info.HasTrait(Trait.Gem))
 					{
-						GemType hello = GemType.Green;
 						if (attacker.HasAbility(Ability.GainGemGreen))
 						{
 							mox = GameObject.Instantiate(GameObject.Find("emeraldMoxPref"));
 						}
 						else if (attacker.HasAbility(Ability.GainGemOrange))
 						{
-							hello = GemType.Orange;
+							attacking = GemType.Orange;
 							mox = GameObject.Instantiate(GameObject.Find("rubyMoxPref"));
 						}
 						else if (attacker.HasAbility(Ability.GainGemBlue))
 						{
-							hello = GemType.Blue;
+							attacking = GemType.Blue;
 							mox = GameObject.Instantiate(GameObject.Find("sapphireMoxPref"));
-						} else
-						{
-							hello = GemType.Orange;
-							mox = GameObject.Instantiate(GameObject.Find("rubyMoxPref"));
-							mox.transform.Find("Gem").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("mana.png");
-						}
-						if (opponentSlot.transform.childCount > 5 && opposingSlot.Card != null && !flyer)
-						{
-							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.FlashCard(opponentSlot.transform.GetChild(5).gameObject, 0.4f, hello, false));
-						}
-						else if (flyer && flightBlocker)
-						{
-							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.FlashCard(opponentSlot.transform.GetChild(5).gameObject, 0.4f, hello, false));
-						}
-						else if (isMoon && GameObject.Find(opponentSlotName).transform.GetChild(0).childCount > 5)
-						{
-							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.FlashCard(GameObject.Find(opponentSlotName).transform.GetChild(0).gameObject.transform.GetChild(5).gameObject, 0.4f, hello, false));
 						}
 						else
 						{
-							MagnificusMod.Generation.damageDoneThisTurn += attackingSlot.Card.Attack;
+							attacking = GemType.Orange;
+							mox = GameObject.Instantiate(GameObject.Find("rubyMoxPref"));
+							mox.transform.Find("Gem").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("manashard.png");
 						}
 					}
 					else if (attacker.Info.BloodCost > 0 || attacker.Info.BonesCost > 0 || attacker.Info.BloodCost == 0)
 					{
+						mana = true;
+						attacking = GemType.Orange;
 						mox = GameObject.Instantiate(GameObject.Find("rubyMoxPref"));
-						mox.transform.Find("Gem").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("mana.png");
-						if (opponentSlot.transform.childCount > 5 && opposingSlot.Card != null && !flyer)
-						{
-							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.FlashCard(opponentSlot.transform.GetChild(5).gameObject, 0.4f));
-						}
-						else if (flyer && flightBlocker)
-						{
-							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.FlashCard(opponentSlot.transform.GetChild(5).gameObject, 0.4f));
-						}
-						else if (isMoon && GameObject.Find(opponentSlotName).transform.GetChild(0).childCount > 5)
-						{
-							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.FlashCard(GameObject.Find(opponentSlotName).transform.GetChild(0).gameObject.transform.GetChild(5).gameObject, 0.4f));
-						}
-						else
-						{
-							MagnificusMod.Generation.damageDoneThisTurn += attackingSlot.Card.Attack;
-						}
+						mox.transform.Find("Gem").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("manashard.png");
 					}
+					if (opponentSlot.transform.childCount > 5 && opposingSlot.Card != null && !flyer && !opposingSlot.Card.HasAbility(Ability.Submerge) && !opposingSlot.Card.HasAbility(MagnificusMod.SigilCode.submergekraken.ability))
+					{
+						Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.FlashCard(opponentSlot.transform.GetChild(5).gameObject, 0.4f, attacking, mana));
+
+					}
+					else if (flyer && flightBlocker)
+					{
+						Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.FlashCard(opponentSlot.transform.GetChild(5).gameObject, 0.4f, attacking, mana));
+					}
+					else if (isMoon && GameObject.Find(opponentSlotName).transform.GetChild(0).childCount > 5)
+					{
+						Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.FlashCard(GameObject.Find(opponentSlotName).transform.GetChild(0).gameObject.transform.GetChild(5).gameObject, 0.4f, attacking, mana));
+					}
+
+
+					AudioController.Instance.PlaySound3D("card_attack_creature", MixerGroup.TableObjectsSFX, realCard.transform.position, 0.35f, 0f, new AudioParams.Pitch(AudioParams.Pitch.Variation.Small), null, new AudioParams.Randomization(noRepeating: false)).spatialBlend = 0.05f;
+
+
 					mox.transform.parent = realCard.transform.parent;
 					mox.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
 					mox.transform.position = realCard.transform.position;
@@ -478,7 +463,8 @@ namespace MagnificusMod
 					if (!realCard.GetComponent<Card>().Info.HasTrait(Trait.Giant))
 					{
 						Tween.LocalPosition(mox.transform, new Vector3(0, 5 + isEnemy, 0), 0.15f, 0);
-					} else
+					}
+					else
 					{
 						Tween.LocalPosition(mox.transform, new Vector3(12.1f, 8.5f + isEnemy, 0), 0.15f, 0);
 					}
@@ -536,23 +522,9 @@ namespace MagnificusMod
 							ProgressionData.SetAbilityLearned(Ability.PreventAttack);
 							yield return __state.ShowCardBlocked(attackingSlot.Card);
 						}
-						else if (attackingSlot.Card.CanAttackDirectly(opposingSlot) && opposingSlot.Card == null && !hasStrongPull)
+						else if (attackingSlot.Card.CanAttackDirectly(opposingSlot) && !hasStrongPull)
 						{
-							//MagnificusMod.Generation.damageDoneThisTurn += attackingSlot.Card.Attack;
-							if (attackingSlot.Card.TriggerHandler.RespondsToTrigger(Trigger.DealDamageDirectly, new object[]
-							{
-						attackingSlot.Card.Attack
-							}))
-							{
-								yield return attackingSlot.Card.TriggerHandler.OnTrigger(Trigger.DealDamageDirectly, new object[]
-								{
-							attackingSlot.Card.Attack
-								});
-							}
-						}
-						else if (attackingSlot.Card.CanAttackDirectly(opposingSlot) && opposingSlot.Card != null && !hasStrongPull)
-						{
-							//MagnificusMod.Generation.damageDoneThisTurn += attackingSlot.Card.Attack;
+							MagnificusMod.Generation.damageDoneThisTurn += attackingSlot.Card.Attack;
 							if (attackingSlot.Card.TriggerHandler.RespondsToTrigger(Trigger.DealDamageDirectly, new object[]
 							{
 						attackingSlot.Card.Attack
@@ -824,22 +796,36 @@ namespace MagnificusMod
 		{
 			public static void Prefix(ref WizardBattlePortraitSlot __instance, PlayableCard card)
 			{
-				if (!card.HasTrait(Trait.EatsWarrens) || card.HasAbility(Ability.GainGemTriple))
+				if (card != null && (!card.HasTrait(Trait.EatsWarrens) || card.Info.GetExtendedPropertyAsBool("PhysicalSpell") != null) && !card.Dead)
 				{
 					__instance.glitched = true;
 					GameObject cardModel = __instance.queueCard.gameObject;
 					bool queuedCardSummon = card.OpponentCard && card.OriginatedFromQueue;
 					GameObject cardModel2;
 					cardModel2 = GameObject.Instantiate(GameObject.Find("OpponentSlots").transform.Find("3DPortraitSlot").Find("QueuedCardFrame").Find("Anim").Find("SineWaveMovement").GetChild(0).gameObject);
+
+
+					if (!config.oldCardDesigns)
+					{
+						GameObject goodCardFrame = GameObject.Instantiate(card.gameObject.GetComponentInChildren<MagCardFrame>().gameObject);
+						goodCardFrame.name = "cardFrame";
+						goodCardFrame.transform.parent = cardModel2.transform.Find("RenderStatsLayer");
+						goodCardFrame.transform.localRotation = Quaternion.Euler(0, 180, 0);
+						goodCardFrame.transform.localScale = new Vector3(0.1785f, 0.105f, 0.05f);
+						goodCardFrame.transform.localPosition = new Vector3(-0.01f, 0.0125f, 0);
+					}
+
 					cardModel2.SetActive(true);
 					cardModel2.GetComponent<Card>().Info = card.Info;
-					cardModel2.GetComponent<Card>().RenderInfo.baseInfo = card.Info;
-					cardModel2.GetComponent<Card>().RenderInfo.attack = card.Attack;
-					cardModel2.GetComponent<Card>().RenderInfo.health = card.Health;
-					cardModel2.GetComponent<Card>().RenderInfo.baseInfo = card.renderInfo.baseInfo;
+					cardModel2.GetComponent<Card>().renderInfo = new CardRenderInfo();
+					cardModel2.GetComponent<Card>().renderInfo.baseInfo = card.Info;
+					cardModel2.GetComponent<Card>().renderInfo.attack = card.Attack;
+					cardModel2.GetComponent<Card>().renderInfo.health = card.Health;
+					cardModel2.GetComponent<Card>().renderInfo.baseInfo = card.renderInfo.baseInfo;
+					cardModel2.GetComponent<Card>().renderInfo.temporaryMods = new List<CardModificationInfo>();
 					cardModel2.GetComponent<Card>().RenderCard();
 					cardModel2.transform.Find("RenderStatsLayer").Find("Quad").gameObject.SetActive(false);
-
+					cardModel2.transform.Find("RenderStatsLayer").gameObject.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
 					cardModel2.transform.parent = __instance.queueCardParent.parent;
 
 					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.SummonGoodCard(__instance, card, cardModel2, queuedCardSummon));
@@ -866,6 +852,20 @@ namespace MagnificusMod
 			}
 		}
 
+		[HarmonyPatch(typeof(PlayableCard), "UpdateHandPosition")]
+		public class FinaleHandFix
+		{
+			public static void Prefix(ref PlayableCard __instance, ref Vector3 handPos)
+			{
+				if (SceneLoader.ActiveSceneName != "finale_magnificus" || config.oldCardDesigns) return;
+				int index = Singleton<PlayerHand>.Instance.cardsInHand.IndexOf(__instance);
+				int mult = (index != 0 && __instance.transform.parent.GetChild(index - 1).localPosition.z < __instance.transform.localPosition.z) ? 1 : -1;
+				if (Singleton<BoardManager>.Instance.ChoosingSlot && index == Singleton<PlayerHand>.Instance.cardsInHand.Count - 1) mult = 2;
+				__instance.transform.Find("Quad").Find("CardBase").Find("RenderStatsLayer").localPosition = Vector3.Lerp(__instance.transform.Find("Quad").Find("CardBase").Find("RenderStatsLayer").localPosition, new Vector3(0, 0, (index * 0.0025f) * mult), Time.deltaTime * 8f);
+			}
+		}
+
+
 		[HarmonyPatch(typeof(WizardBattlePortraitSlot), "OnOtherCardDie")]
 		public class FinaleSlotFix3andahalf
 		{
@@ -876,7 +876,8 @@ namespace MagnificusMod
 
 			public static IEnumerator Postfix(IEnumerator enumerator, WizardBattlePortraitSlot __state, PlayableCard card, CardSlot deathSlot, bool fromCombat, PlayableCard killer)
 			{
-				if (card.HasTrait(Trait.EatsWarrens) && !card.HasAbility(Ability.GainGemTriple)) { yield break; }
+				if (card.HasTrait(Trait.EatsWarrens) && card.Info.GetExtendedPropertyAsBool("PhysicalSpell") == null) { yield break; }
+
 				Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.WizardDeathAnim(__state.transform.GetChild(5).gameObject));
 				__state.FlashGlowQuad(0.3f);
 				__state.transform.GetComponentInChildren<WizardBattle3DPortrait>().PlayDeathAnimation(0.3f);
@@ -911,7 +912,7 @@ namespace MagnificusMod
 				}
 				yield return new WaitForSeconds(0.15f);
 				if (SceneLoader.ActiveSceneName == "finale_magnificus" && SavedVars.LearnedMechanics.Contains("liferace;") || SceneLoader.ActiveSceneName == "finale_magnificus" && SaveManager.saveFile.ascensionActive) { __state.StartCoroutine(Singleton<LifeManager>.Instance.Initialize(__state.SpecialSequencer == null || __state.SpecialSequencer.ShowScalesOnStart)); }
-				else {yield return Singleton<LifeManager>.Instance.Initialize(__state.SpecialSequencer == null || __state.SpecialSequencer.ShowScalesOnStart);}
+				else { yield return Singleton<LifeManager>.Instance.Initialize(__state.SpecialSequencer == null || __state.SpecialSequencer.ShowScalesOnStart); }
 				if (ProgressionData.LearnedMechanic(MechanicsConcept.Rulebook) && Singleton<TableRuleBook>.Instance != null)
 				{
 					Singleton<TableRuleBook>.Instance.SetOnBoard(onBoard: true);
@@ -965,17 +966,17 @@ namespace MagnificusMod
 			public static void Prefix(ref Card __instance)
 			{
 				if (SceneLoader.ActiveSceneName == "finale_magnificus")
-                {
+				{
 					try
 					{
 						__instance.SetCardback(Tools.getImage("magcardback.png"));
-                    }
-                    catch { }
+					}
+					catch { }
 				}
 			}
 		}
 
-        [HarmonyPatch(typeof(Card), "UpdateAppearanceBehaviours")]
+		[HarmonyPatch(typeof(Card), "UpdateAppearanceBehaviours")]
 		public class FinaleAbilityFixAAAAA
 		{
 			public static bool Prefix(ref Card __instance)
@@ -985,6 +986,128 @@ namespace MagnificusMod
 					return false;
 				}
 				return true;
+			}
+		}
+
+
+		[HarmonyPatch(typeof(WizardBattlePortraitSlot), "ManagedUpdate")]
+		public class FinaleRenderFix
+		{
+			public static bool Prefix(ref WizardBattlePortraitSlot __instance)
+			{
+				if (__instance.cardSlot.Card != null && __instance.gameObject.transform.childCount > 5)
+				{
+					//string slotName = Singleton<WizardPortraitSlotManager>.Instance.playerSlots.Contains(__instance) ? "PlayerSlots" : "OpponentSlots";
+					//int dex = slotName == "PlayerSlots" ? Singleton<WizardPortraitSlotManager>.Instance.playerSlots.IndexOf(__instance) : Singleton<WizardPortraitSlotManager>.Instance.opponentSlots.IndexOf(__instance);
+					if (__instance.gameObject.transform.GetChild(5).gameObject.name != "Wizard3DPortrait_Glitched(Clone)" && __instance.gameObject.transform.GetChild(5).gameObject.name != "ProjectileImpactEffects(Clone)")
+					{
+						string slotName = Singleton<WizardPortraitSlotManager>.Instance.playerSlots.Contains(__instance) ? "PlayerSlots" : "OpponentSlots";
+						int dex = slotName == "PlayerSlots" ? Singleton<WizardPortraitSlotManager>.Instance.playerSlots.IndexOf(__instance) : Singleton<WizardPortraitSlotManager>.Instance.opponentSlots.IndexOf(__instance);
+						PlayableCard cardLol = Singleton<MagnificusBoardManager>.Instance.transform.Find(slotName).GetChild(dex).GetChild(1).gameObject.GetComponent<PlayableCard>();
+						GameObject card = __instance.gameObject.transform.GetChild(5).gameObject;
+						if (card.name == "Wizard3DPortrait_Glitched(Clone)") { card = __instance.gameObject.transform.GetChild(6).gameObject; }
+
+						MeshRenderer cardRender = card.transform.Find("RenderStatsLayer").gameObject.GetComponent<MeshRenderer>();
+
+						renderCardTexture(cardLol, cardRender, true);
+
+					}
+
+
+				}
+
+				if (__instance.cardSlot != null && Singleton<WizardPortraitSlotManager>.Instance.opponentSlots.Contains(__instance) && __instance.transform.Find("QueuedCardFrame").gameObject.activeSelf)
+				{
+					MeshRenderer queuedCardRender = __instance.transform.Find("QueuedCardFrame").gameObject.GetComponentInChildren<CanvasRenderStatsLayer>().gameObject.GetComponent<MeshRenderer>();
+					int dex = Singleton<WizardPortraitSlotManager>.Instance.opponentSlots.IndexOf(__instance);
+
+					if (Singleton<MagnificusBoardManager>.Instance.transform.Find("OpponentSlots").GetChild(dex + 4).childCount <= 0) return false;
+
+					PlayableCard cardLol = (Singleton<MagnificusBoardManager>.Instance.transform.Find("OpponentSlots").GetChild(dex + 4).childCount > 1) ? Singleton<MagnificusBoardManager>.Instance.transform.Find("OpponentSlots").GetChild(dex + 4).GetChild(1).gameObject.GetComponent<PlayableCard>() : Singleton<MagnificusBoardManager>.Instance.transform.Find("OpponentSlots").GetChild(dex).gameObject.GetComponentInChildren<PlayableCard>();
+
+
+					renderCardTexture(cardLol, queuedCardRender);
+				}
+				return false;
+			}
+		}
+
+		public static void renderCardTexture(PlayableCard cardLol, MeshRenderer cardRender, bool reRenderAbilityIcons = false)
+		{
+			if (cardLol == null) return;
+
+			if (cardRender.transform.parent.gameObject.GetComponent<Card>().renderInfo.temporaryMods.FindAll((CardModificationInfo x) => cardLol.renderInfo.temporaryMods.Contains(x)).Count != cardLol.renderInfo.temporaryMods.Count)
+			{
+				cardRender.transform.parent.gameObject.GetComponent<Card>().renderInfo.temporaryMods = new List<CardModificationInfo>(cardLol.renderInfo.temporaryMods);
+				cardRender.transform.parent.gameObject.GetComponent<Card>().RenderCard();
+
+				if (reRenderAbilityIcons) { renderAbilityIcons(cardLol, cardRender.gameObject); }
+			}
+
+			SkinnedMeshRenderer cardTex = cardLol.GetComponentInChildren<SkinnedMeshRenderer>();
+			if (cardLol != null && cardTex != null && cardTex.material != null && cardTex.material.mainTexture != null && cardTex.material.mainTexture.width == cardRender.material.mainTexture.width && cardTex.material.mainTexture != cardRender.material.mainTexture)
+				Graphics.CopyTexture_Full(cardTex.material.mainTexture, cardRender.material.mainTexture);
+		}
+
+		public static void renderAbilityIcons(PlayableCard cardLol, GameObject cardRender)
+		{
+			List<AbilityIconInteractable> abilityIcons = cardRender.transform.parent.gameObject.GetComponentInChildren<CardAbilityIcons>().abilityIcons;
+			List<AbilityIconInteractable> trueAbilityIcons = cardLol.GetComponentInChildren<CardAbilityIcons>().abilityIcons;
+
+			for (int i = 0; i < abilityIcons.Count; i++)
+			{
+				if (trueAbilityIcons.Count <= i) continue;
+				if (abilityIcons[i].Ability != trueAbilityIcons[i].Ability) abilityIcons[i].Ability = trueAbilityIcons[i].Ability;
+			}
+
+		}
+
+		[HarmonyPatch(typeof(Opponent), "QueueCard")]
+		public class FinaleQueueFix
+		{
+			public static void Prefix(out Opponent __state, ref Opponent __instance)
+			{
+				__state = __instance;
+			}
+
+			public static IEnumerator Postfix(IEnumerator enumerator, Opponent __state, CardInfo cardInfo, CardSlot slot, bool doTween = true, bool changeView = true, bool setStartPosition = true)
+			{
+				if (changeView) Singleton<ViewManager>.Instance.SwitchToView(Singleton<BoardManager>.Instance.QueueView);
+				yield return new WaitForSeconds(0.05f);
+				PlayableCard playableCard = __state.CreateCard(cardInfo);
+				Singleton<BoardManager>.Instance.QueueCardForSlot(playableCard, slot, 0.25f, doTween, setStartPosition);
+				__state.Queue.Add(playableCard);
+				if (SceneLoader.ActiveSceneName == "finale_magnificus")
+				{
+					playableCard.transform.parent = Singleton<BoardManager>.Instance.transform.Find("OpponentSlots").GetChild(slot.Index + 4);
+					if (SaveManager.saveFile.ascensionActive && Generation.challenges.Contains("PaintedSigils") && Singleton<TurnManager>.Instance.TurnNumber % 2 == 0 && Singleton<TurnManager>.Instance.TurnNumber > 1)
+					{
+						List<Ability> modAbilites = new List<Ability> { Ability.BuffGems, Ability.ExplodeGems, Ability.ExplodeOnDeath,Ability.Reach, Ability.BuffNeighbours, Ability.DrawRabbits, SigilCode.GemGuardianFix.ability, SigilCode.Stimulation.ability,
+						SigilCode.MoxStrafe.ability, Ability.StrafePush, Ability.MoveBeside, Ability.DrawRandomCardOnDeath, Ability.Submerge, Ability.MadeOfStone, SigilCode.MoxCycling.ability, SigilCode.LifeUpOmega.ability, SigilCode.GoobertDebuff.ability,
+						SigilCode.MagDropSpear.ability, Ability.Sharp, SigilCode.OrluHit.ability, Ability.DeathShield};
+
+						List<Ability> attackingAbilites = new List<Ability> { Ability.Flying, SigilCode.LifeSteal.ability, SigilCode.FrostyA.ability, Ability.Deathtouch, Ability.SwapStats };
+
+						if (playableCard.Attack > 0) modAbilites.AddRange(attackingAbilites);
+
+						CardModificationInfo sigilMod = new CardModificationInfo();
+						sigilMod.abilities = new List<Ability> { modAbilites[Random.RandomRangeInt(0, modAbilites.Count)] };
+						if (Random.RandomRangeInt(0, 100) > 100 - (RunState.Run.regionTier * 10) + (SavedVars.NodesCleared * 2f)) sigilMod.abilities.Add(modAbilites[Random.RandomRangeInt(0, modAbilites.Count)]);
+						playableCard.AddTemporaryMod(sigilMod);
+						ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.PaintedSigils);
+					}
+				}
+				yield break;
+			}
+		}
+
+
+		[HarmonyPatch(typeof(ResourcesManager), "ForceGemsUpdate")]
+		public class DuelDiskGemsFix
+		{
+			public static void Postfix()
+			{
+				Generation.updateDuelDiskGems();
 			}
 		}
 	}

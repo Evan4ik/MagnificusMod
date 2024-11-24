@@ -71,33 +71,5 @@ namespace MagnificusMod
 				yield break;
 			}
 		}
-
-		[HarmonyPatch(typeof(CurrencyBowl), "ShowGain")]
-		public class overkilldmgfix
-		{
-			// Token: 0x060000D6 RID: 214 RVA: 0x0000DA96 File Offset: 0x0000BC96
-			public static void Prefix(out CurrencyBowl __state, ref CurrencyBowl __instance)
-			{
-				__state = __instance;
-			}
-
-			// Token: 0x060000D7 RID: 215 RVA: 0x0000DA9D File Offset: 0x0000BC9D
-			public static IEnumerator Postfix(IEnumerator enumerator, CurrencyBowl __state, int amount, bool enterFromAbove = false, bool noTutorial = false)
-			{
-				Vector3 scalePos2 = new Vector3(__state.NEAR_SCALES_POS.x + GameObject.Find("GameTable").transform.position.x, __state.NEAR_SCALES_POS.y + 9.72f, __state.NEAR_SCALES_POS.z + GameObject.Find("GameTable").transform.position.z);
-				__state.MoveIntoPlace(scalePos2, __state.NEAR_SCALES_ROT, Tween.EaseInOutStrong, enterFromAbove);
-				yield return __state.DropWeightsIn(amount);
-				yield return new WaitForSeconds(0.75f);
-				bool flag = !noTutorial && !ProgressionData.LearnedMechanic(MechanicsConcept.GainCurrency) && (StoryEventsData.EventCompleted(StoryEvent.TutorialRunCompleted) || StoryEventsData.EventCompleted(StoryEvent.ProspectorDefeated));
-				if (flag && SceneLoader.ActiveSceneName == "finale_magnificus")
-				{
-					ProgressionData.SetMechanicLearned(MechanicsConcept.GainCurrency);
-					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("With a blaze of Magick, you end the battle. You managed to deal more damage than needed.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-					__state.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("The excess Magick you cast turns into [c:g3] Crystals. [c:] You may spend them at the meek store behind you.", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-				}
-				__state.MoveAway(scalePos2);
-				yield break;
-			}
-		}
 	}
 }

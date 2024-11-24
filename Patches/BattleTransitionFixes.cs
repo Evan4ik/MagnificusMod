@@ -52,6 +52,8 @@ namespace MagnificusMod
 				}
 				if (gameState == GameState.Map)
 				{
+					MenuButtonFixes.viewingDeck = false;
+
 					SaveManager.saveFile.randomSeed += 3;
 					MagSave.GetSideDeck();
 					GameObject gameObject = GameObject.Find("Player");
@@ -111,17 +113,20 @@ namespace MagnificusMod
 					catch { }
 					if (config.isometricMode == true)
 					{
-						GameObject.Find("PixelCameraParent").AddComponent<SineWaveMovement>().originalPosition = GameObject.Find("PixelCameraParent").transform.localPosition;
-						GameObject.Find("PixelCameraParent").AddComponent<SineWaveRotation>().originalRotation = GameObject.Find("PixelCameraParent").transform.localRotation.eulerAngles;
+						Singleton<FirstPersonController>.Instance.enabled = false;
 						float delay = battleRoom ? 1.25f : 0.4f;
 						__instance.StartCoroutine(Generation.unIsometricTransition(delay));
                         }
-                        if (battleRoom)
+                    if (battleRoom)
 					{
 						if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("FadingMox"))
 						{
 							KayceeStorage.FleetingLife = Singleton<MagnificusLifeManager>.Instance.playerLife;
 						}
+
+						if (Singleton<SpellPile>.Instance != null)
+							Singleton<SpellPile>.Instance.senableCards(false);
+
 						GameObject.Find("GameEnvironment").transform.Find("walls").gameObject.SetActive(true);
 						GameObject.Find("GameEnvironment").transform.Find("walls").position = new Vector3(GameObject.Find("walls").transform.position.x, 70.5f, GameObject.Find("walls").transform.position.z);
 						Tween.Position(GameObject.Find("walls").transform, new Vector3(GameObject.Find("walls").transform.position.x, 0, GameObject.Find("walls").transform.position.z), 0.75f, 0.2f);
@@ -151,7 +156,7 @@ namespace MagnificusMod
 					Tween.Position(GameObject.Find("GameTable").transform, new Vector3(GameObject.Find("GameTable").transform.position.x, -20f, GameObject.Find("GameTable").transform.position.z), 0.6f, 1.21f, null, Tween.LoopType.None, null, null, true);
 					Tween.LocalPosition(GameObject.Find("tbPillar").transform, new Vector3(0, -5.01f, 0), 0.6f, 0.2f, null, Tween.LoopType.None, null, null, true);
 
-					if (RunState.Run.regionTier != 0) { SavedVars.NodesCleared++; }
+					
 					MagSave.ClearNode(name);
 
 					if (GameObject.Find(name).transform.childCount > 0 && GameObject.Find(name).transform.GetChild(0).gameObject.name.Contains("nodeIconBL"))
@@ -173,23 +178,11 @@ namespace MagnificusMod
 					File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(false, false)));
 					SaveManager.SaveToFile();
 
-					try
+					if (RunState.Run.regionTier != 0 && !GameObject.Find("GameTable").transform.Find("CardBattle_Magnificus").gameObject.activeSelf)
 					{
-						foreach (GemType gem in Singleton<MagnificusResourcesManager>.Instance.gems)
-						{
-							Singleton<MagnificusResourcesManager>.Instance.SetGemLit(gem, false);
-						}
-						Singleton<MagnificusResourcesManager>.Instance.gems = new List<GemType>();
+						SavedVars.NodesCleared++;
+						if (SavedVars.HasMapIcons && SavedVars.HasMap) { Generation.CreateMiniMap(true); }
 					}
-					catch { }
-					try
-					{
-						GameObject.Find("CombatBell_Magnificus").transform.Find("Anim").gameObject.SetActive(false);
-						GameObject.Find("CombatBell_Magnificus").SetActive(false);
-						GameObject.Find("WizardBattleDuelDisk").SetActive(false);
-						GameObject.Find("Hand").SetActive(false);
-					}
-					catch { }
 
 					if (GameObject.Find("GameTable").transform.Find("CardBattle_Magnificus").gameObject.activeSelf)
 					{
@@ -199,17 +192,28 @@ namespace MagnificusMod
 							{
 								for (int b = GameObject.Find("OpponentSlots").transform.GetChild(i).childCount - 1; b > 4; b--)
 								{
-									GameObject.Destroy(GameObject.Find("OpponentSlots").transform.GetChild(i).GetChild(b).gameObject);
+									GameObject.DestroyImmediate(GameObject.Find("OpponentSlots").transform.GetChild(i).GetChild(b).gameObject);
 								}
 							}
 							if (GameObject.Find("PlayerSlots").transform.GetChild(i).childCount > 5)
 							{
 								for (int b = GameObject.Find("PlayerSlots").transform.GetChild(i).childCount - 1; b > 4; b--)
 								{
-									GameObject.Destroy(GameObject.Find("PlayerSlots").transform.GetChild(i).GetChild(b).gameObject);
+									GameObject.DestroyImmediate(GameObject.Find("PlayerSlots").transform.GetChild(i).GetChild(b).gameObject);
 								}
 							}
 						}
+
+						try
+						{
+							GameObject.Find("CombatBell_Magnificus").transform.Find("Anim").gameObject.SetActive(false);
+							GameObject.Find("CombatBell_Magnificus").SetActive(false);
+							GameObject.Find("WizardBattleDuelDisk").SetActive(false);
+							GameObject.Find("Hand").SetActive(false);
+							Generation.updateDuelDiskGems(true);
+							Singleton<MagnificusResourcesManager>.Instance.gems = new List<GemType>();
+						}
+						catch { }
 					}
 
 					try
@@ -253,6 +257,12 @@ namespace MagnificusMod
 							Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Generation.dummyWinSequence());
 						}
 					}
+
+					if (RunState.Run.playerDeck.Cards.Count > 4 && !SavedVars.LearnedMechanics.Contains("tabviewdeck"))
+                    {
+						Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(showControlHint());
+					}
+
 				}
 				bool flag9 = StoryEventsData.EventCompleted(StoryEvent.UhOhSpaghettiOh) && RunState.Run.bonelordPuzzleActive;
 				if (flag9)
@@ -263,6 +273,13 @@ namespace MagnificusMod
 			}
 		}
 
+		public static IEnumerator showControlHint()
+        {
+			yield return new WaitForSeconds(2.5f);
+			GameObject.Find("ControlsHint_Right").GetComponent<AnimatingSprite>().frames = new List<Sprite> { Plugin.ControlsHintFrames[0], Plugin.ControlsHintFrames[1] };
+			Singleton<UIManager>.Instance.SetControlsHintShown(shown: true);
+			yield break;
+        }
 
 
 	}

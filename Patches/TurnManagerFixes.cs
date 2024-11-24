@@ -124,12 +124,11 @@ namespace MagnificusMod
 			yield return new WaitForSeconds(1f);
 			if (config.isometricMode)
 			{
-				GameObject.Destroy(GameObject.Find("PixelCameraParent").GetComponent<SineWaveMovement>());
-				GameObject.Destroy(GameObject.Find("PixelCameraParent").GetComponent<SineWaveRotation>());
+				Singleton<FirstPersonController>.Instance.enabled = false;
 			}
 			if (RunState.Run.playerLives > 0 && Singleton<TextDisplayer>.Instance != null)
 			{
-				Singleton<ViewManager>.Instance.SwitchToView(View.Candles);
+				if (!config.isometricMode) { Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North); }
 				GameObject lifeCounter = GameObject.Find("GameTable").transform.Find("LifePainting").gameObject;
 				lifeCounter.SetActive(true);
 				lifeCounter.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("lifepainting" + displayedLives + ".png");
@@ -138,11 +137,10 @@ namespace MagnificusMod
 				tPos.y -= 10;
 				Tween.Position(lifeCounter.transform, tPos, 1.5f, 0);
 				Singleton<TextDisplayer>.Instance.Clear();
+				Singleton<ViewManager>.Instance.SwitchToView(View.Candles);
+				yield return new WaitForSeconds(1.49f);
 				if (!SavedVars.LearnedMechanics.Contains("lifelost;") && !SaveManager.saveFile.ascensionActive)
 				{
-					Singleton<ViewManager>.Instance.SwitchToView(View.Candles);
-					yield return new WaitForSeconds(1.49f);
-					if (!config.isometricMode) { Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North); }
 					lifeCounter.GetComponent<SineWaveMovement>().originalPosition = lifeCounter.transform.localPosition;
 					lifeCounter.GetComponent<SineWaveMovement>().enabled = true;
 					yield return new WaitForSeconds(0.5f);//It seems that you lost.
@@ -164,9 +162,6 @@ namespace MagnificusMod
 				}
 				else
 				{
-					Singleton<ViewManager>.Instance.SwitchToView(View.Candles);
-					yield return new WaitForSeconds(1.49f);
-					if (!config.isometricMode) { Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North); }
 					lifeCounter.GetComponent<SineWaveMovement>().originalPosition = lifeCounter.transform.localPosition;
 					lifeCounter.GetComponent<SineWaveMovement>().enabled = true;
 					if (RunState.Run.regionTier == 0 && MagSave.layout.Contains("3"))
@@ -236,6 +231,12 @@ namespace MagnificusMod
 				yield return opponent.DefeatedPlayerSequence();
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
 				yield return MagnificusMod.Generation.transition("depths", "unspin");
+				if (SaveManager.saveFile.ascensionActive)
+				{
+					AscensionMenuScreens.ReturningFromSuccessfulRun = false;
+					AscensionMenuScreens.ReturningFromFailedRun = true;
+					KayceeStorage.IsMagRun = false;
+				}
 				yield break;
 			}
 			Singleton<InteractionCursor>.Instance.InteractionDisabled = false;
@@ -245,11 +246,10 @@ namespace MagnificusMod
 				Singleton<ViewManager>.Instance.SwitchToView(View.FirstPerson, false, false);
 				yield return MagnificusMod.Generation.WaitThenEnablePlayer(0.5f);
 			} else { 
-				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
+				Singleton<ViewManager>.Instance.SwitchToView(View.FirstPerson, false, false);
 				yield return new WaitForSeconds(0.25f);
 				Singleton<GameFlowManager>.Instance.StartCoroutine(Generation.WaitThenEnablePlayer(1f));
-				GameObject.Find("PixelCameraParent").AddComponent<SineWaveMovement>().originalPosition = GameObject.Find("PixelCameraParent").transform.localPosition;
-				GameObject.Find("PixelCameraParent").AddComponent<SineWaveRotation>().originalRotation = GameObject.Find("PixelCameraParent").transform.localRotation.eulerAngles;
+				Singleton<FirstPersonController>.Instance.enabled = false;
 				yield return Generation.unIsometricTransition(0.15f); 
 			}
 			yield break;
@@ -334,6 +334,22 @@ namespace MagnificusMod
 					ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.TurnWipeout);
 					__instance.StartCoroutine(Singleton<MagnificusLifeManager>.Instance.ShowLifeLoss(true, 1));
 				}
+
+				foreach(CardSlot slot in Singleton<BoardManager>.Instance.PlayerSlotsCopy)
+                {
+					if (slot.Card == null || !slot.Card.HasTrait(Trait.EatsWarrens)) { continue; }
+
+					if (slot.Card.Info.GetExtendedPropertyAsBool("PhysicalSpell") != null) 
+						__instance.StartCoroutine(slot.Card.Die(false)); 
+                }
+
+				foreach (CardSlot slot in Singleton<BoardManager>.Instance.OpponentSlotsCopy)
+				{
+					if (slot.Card == null || !slot.Card.HasTrait(Trait.EatsWarrens)) { continue; }
+
+					if (slot.Card.Info.GetExtendedPropertyAsBool("PhysicalSpell") != null)
+						__instance.StartCoroutine(slot.Card.Die(false));
+				}
 			}
 		}
 
@@ -346,7 +362,8 @@ namespace MagnificusMod
 				{
 					return;
 				}
-				bool boss = (GameObject.Find("GameTable").transform.Find("Goober").gameObject.activeSelf || GameObject.Find("GameTable").transform.Find("Espeara").gameObject.activeSelf || GameObject.Find("GameTable").transform.Find("LonelyMage").gameObject.activeSelf);
+				Singleton<ResourcesManager>.Instance.ForceGemsUpdate();
+				bool boss = (GameObject.Find("GameTable").transform.Find("Goober").gameObject.activeSelf || GameObject.Find("GameTable").transform.Find("Espeara").gameObject.activeSelf || GameObject.Find("GameTable").transform.Find("LonelyMage").gameObject.activeSelf || RunState.Run.regionTier == 4 || GameObject.Find("goranjPainting") != null || GameObject.Find("orluPainting") != null || GameObject.Find("bleenePainting") != null);
 				if (!boss && SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("MasterMagnus") && __instance.TurnNumber == 2 && RunState.Run.regionTier >= 1 && RunState.Run.regionTier <= 3)
 				{
 					__instance.StartCoroutine(SpawnMagnus());
@@ -367,8 +384,10 @@ namespace MagnificusMod
 			{
 				CardSlot randomSlot = Singleton<BoardManager>.Instance.OpponentSlotsCopy[UnityEngine.Random.Range(0, Singleton<BoardManager>.Instance.OpponentSlotsCopy.Count)];
 				yield return randomSlot.Card.Die(false, null, true);
-				yield return new WaitForSeconds(0.25f);
+				yield return new WaitForSeconds(0.65f);
 			}
+			CardModificationInfo mod = new CardModificationInfo(0, Convert.ToInt32(Math.Floor(MagSave.clearedNode.Count / (3.5f) )) );
+			cardInfo.mods.Add(mod);
 			yield return Singleton<BoardManager>.Instance.CreateCardInSlot(cardInfo, moonCardSlot, 0.1f);
 			ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.MasterMagnus);
 			if (!SavedVars.LearnedMechanics.Contains("mastermagnus;"))
@@ -401,7 +420,35 @@ namespace MagnificusMod
 			}
 		}
 
-        [HarmonyPatch(typeof(CombatPhaseManager), "DoCombatPhase")]
+		[HarmonyPatch(typeof(TurnManager), "PlayerTurn")]
+		public class ironMaiden
+		{
+			public static void Prefix(ref TurnManager __instance)
+			{
+				if (SceneLoader.ActiveSceneName != "finale_magnificus")
+				{
+					return;
+				}
+
+				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("IronMaiden") && __instance.TurnNumber > 1)
+				{
+					bool didKill = false;
+
+					foreach (CardSlot slot in Singleton<BoardManager>.Instance.PlayerSlotsCopy)
+					{
+						if (slot.Card == null || !slot.Card.HasTrait(Trait.Gem)) { continue; }
+						didKill = true;
+						__instance.StartCoroutine(slot.Card.TakeDamage(1, null));
+					}
+
+					if (didKill) ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.IronMaiden);
+				}
+
+			
+			}
+		}
+
+		[HarmonyPatch(typeof(CombatPhaseManager), "DoCombatPhase")]
 		public class hopefullyFinalPatch
 		{
 			public static void Prefix(out CombatPhaseManager __state, ref CombatPhaseManager __instance)
@@ -492,17 +539,6 @@ namespace MagnificusMod
 							excessDamage = -excessDamage;
 							ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.ShieldedMox);
 							damage = 4;
-						}
-						if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("DyingBreath") && playerIsAttacker && SceneLoader.ActiveSceneName == "finale_magnificus" && !Generation.didDyingBreath)
-						{
-							if (Singleton<MagnificusLifeManager>.Instance.opponentLife - damage < 1)
-							{
-								excessDamage = 0;
-								damage += Singleton<MagnificusLifeManager>.Instance.opponentLife - damage;
-								damage -= 1;
-								Generation.didDyingBreath = true;
-								ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.DyingBreath);
-							}
 						}
 						if (MagnificusMod.Generation.damageDoneThisTurn >= 666)
 						{
@@ -601,10 +637,9 @@ namespace MagnificusMod
 		public static IEnumerator removeOverkill(List<GameObject> summonedWeights)
         {
 			yield return new WaitForSeconds(0.25f);
-			foreach(GameObject weight in summonedWeights)
-            {
-				GameObject.Destroy(weight);
-            }
+			foreach (GameObject weight in summonedWeights) Tween.LocalScale(weight.transform, Vector3.zero, 0.25f, 0, Tween.EaseInOut);
+			yield return new WaitForSeconds(0.25f);
+			foreach(GameObject weight in summonedWeights) GameObject.Destroy(weight);
 			yield break;
         }
 	}

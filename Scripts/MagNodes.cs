@@ -84,11 +84,10 @@ namespace MagnificusMod
 		{
 			public static IEnumerator Postfix(IEnumerator enumerator, SelectableCard card)
 			{
-				bool flag = card.ChoiceInfo.resourceType == ResourceType.Blood;
 				CardInfo cardInfo;
 				if (SceneLoader.ActiveSceneName == "finale_magnificus")
 				{
-					if (flag)
+					if (card.ChoiceInfo.resourceType == ResourceType.Blood)
 					{
 						GemType gemType = GemType.Green;
 						switch (card.ChoiceInfo.resourceAmount)
@@ -103,43 +102,23 @@ namespace MagnificusMod
 								gemType = GemType.Blue;
 								break;
 						}
-						cardInfo = CardLoader.GetRandomChoosableCard(Environment.TickCount, CardTemple.Wizard);
-						int j = 0;
-						while (cardInfo.GemsCost.IndexOf(gemType) < 0 && j < 10000)
-						{
-							cardInfo = CardLoader.GetRandomChoosableCard(Environment.TickCount, CardTemple.Wizard);
-							int num = j;
-							j = num + 1;
-						}
-						bool flag3 = j >= 10000;
-						if (flag3)
-						{
-							cardInfo = null;
-						}
+						List<CardInfo> list = CardLoader.GetUnlockedCards(CardMetaCategory.ChoiceNode, CardTemple.Wizard).FindAll((CardInfo x) => x.gemsCost.Count > 0 && x.gemsCost[0] == gemType && (x.gemsCost.Count == 1 || x.gemsCost.Count > 1 && x.gemsCost[0] == x.gemsCost[1]) );
+						cardInfo = list.Count <= 0 ? null : CardLoader.Clone(list[SeededRandom.Range(0, list.Count, Environment.TickCount)]);
 					}
 					else
 					{
-						int cost = Random.RandomRangeInt(1, 2);
-						List<CardInfo> list = CardLoader.GetUnlockedCards(CardMetaCategory.ChoiceNode, CardTemple.Wizard).FindAll((CardInfo x) => x.BloodCost == cost);
-						if (list.Count == 0)
-						{
-							cardInfo = null;
-						}
-						else
-						{
-							cardInfo = CardLoader.Clone(list[SeededRandom.Range(0, list.Count, Environment.TickCount)]);
-						}
+						List<CardInfo> list = CardLoader.GetUnlockedCards(CardMetaCategory.ChoiceNode, CardTemple.Wizard).FindAll((CardInfo x) => x.BloodCost > 0 && x.GetExtendedProperty("ManaCost") != null);
+						cardInfo = list.Count == 0 ? null : CardLoader.Clone(list[SeededRandom.Range(0, list.Count, Environment.TickCount)]);
 					}
 
-					bool flag4 = cardInfo == null;
-					if (flag4)
+					if (cardInfo == null)
 					{
 						cardInfo = CardLoader.GetCardByName("mag_he");
 					}
 				}
 				else
 				{
-					if (flag)
+					if (card.ChoiceInfo.resourceType == ResourceType.Blood)
 					{
 						cardInfo = CardLoader.GetRandomChoosableCardWithCost(SaveManager.SaveFile.GetCurrentRandomSeed(), card.ChoiceInfo.resourceAmount);
 					}
@@ -184,14 +163,11 @@ namespace MagnificusMod
 				{
 					return true;
 				}
-				bool flag = choice.resourceType == ResourceType.Blood;
-				if (flag)
+				if (choice.resourceType == ResourceType.Blood)
 				{
 					Texture2D texture2D = Tools.getImage("card_" + choice.resourceAmount.ToString() + "mox.png");
 					__result = texture2D;
-				}
-				bool flag2 = choice.resourceType == ResourceType.Bone;
-				if (flag2)
+				} else if (choice.resourceType == ResourceType.Bone)
 				{
 					choice.resourceType = ResourceType.Bone;
 					__result = Tools.getImage("card_manamox.png");
@@ -606,10 +582,11 @@ namespace MagnificusMod
 						GameObject.Find("TESTSTONE").SetActive(false);
 						GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.Choices, false, false);
 						List<CardInfo> list = new List<CardInfo>(RunState.DeckList);
-						list.RemoveAll((CardInfo x) => x.SpecialAbilities.Contains(SpecialTriggeredAbility.RandomCard) || x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x.traits.Contains(Trait.Terrain));
+						list.RemoveAll((CardInfo x) => x.SpecialAbilities.Contains(SpecialTriggeredAbility.RandomCard) || x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x.name.Contains("edaxio"));
 						list.RemoveAll((CardInfo x) => x.abilities.Count < 1 || x.Abilities.Count < 1);
 						GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 						theDeck.transform.parent = GameObject.Find("GameTable").transform;
+						theDeck.transform.localScale = new Vector3(1, 1, 1);
 						theDeck.transform.localPosition = new Vector3(0, 5.01f, -2f);
 						Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<DeckReviewSequencer>.Instance.cardArray.SelectCardFrom(list, null, new Action<SelectableCard>(this.removeselectablecardfromdeck)));
 						for (int i = 0; i < theDeck.transform.childCount; i++)
@@ -651,65 +628,81 @@ namespace MagnificusMod
 					component.Anim.SetFaceDown(true);
 					yield return new WaitForSeconds(0.03f);
 					CardModificationInfo componentInfoShite = new CardModificationInfo();
-					bool unbleachableAbility = componentInfoShite.negateAbilities.Contains(Ability.GemDependant) || componentInfoShite.negateAbilities.Contains(SigilCode.FamiliarA.ability) || componentInfoShite.negateAbilities.Contains(Ability.Brittle);
-					if (component.Info.ModAbilities.Count < 1 && component.Info.Abilities.Count == 1)
+
+					if (component.Info.Abilities.Count > 0)
 					{
-						componentInfoShite.negateAbilities = CardLoader.GetCardByName(component.Info.name).abilities;
-						unbleachableAbility = componentInfoShite.negateAbilities.Contains(Ability.GemDependant) || componentInfoShite.negateAbilities.Contains(SigilCode.FamiliarA.ability) || componentInfoShite.negateAbilities.Contains(Ability.Brittle);
+						List<Ability> toNegate = component.Info.Abilities;
+						componentInfoShite.negateAbilities = toNegate.Count == 1 ? toNegate : new List<Ability> { toNegate[UnityEngine.Random.Range(0, toNegate.Count)] };
+
+						bool unbleachableAbility = false;
+						foreach (Ability negate in componentInfoShite.negateAbilities)
+						{
+							if (AbilitiesUtil.GetInfo(negate).powerLevel < 0) { unbleachableAbility = true; break; }
+						}
 						if (unbleachableAbility && MagModGeneration.challenges.Contains("WeakBleach") && SaveManager.saveFile.ascensionActive)
 						{
 							failBleach = true;
 							componentInfoShite.negateAbilities = new List<Ability>();
-						}
-					} else if (component.Info.abilities.Count > 1 && component.Info.ModAbilities.Count < 1)
-					{
-						componentInfoShite.negateAbilities = new List<Ability> { CardLoader.GetCardByName(component.Info.name).abilities[UnityEngine.Random.Range(0, 2)] };
-						unbleachableAbility = componentInfoShite.negateAbilities.Contains(Ability.GemDependant) || componentInfoShite.negateAbilities.Contains(SigilCode.FamiliarA.ability) || componentInfoShite.negateAbilities.Contains(Ability.Brittle);
-						if (unbleachableAbility && MagModGeneration.challenges.Contains("WeakBleach") && SaveManager.saveFile.ascensionActive)
-						{
-							failBleach = true;
-							componentInfoShite.negateAbilities = new List<Ability>();
-						}
-					}
-					else if (component.Info.ModAbilities.Count > 0)
-					{
-						foreach (CardModificationInfo mod in component.Info.mods)
-						{
-							if (mod.abilities.Count > 0)
-							{
-								if (!SaveManager.saveFile.ascensionActive || SaveManager.saveFile.ascensionActive && !MagModGeneration.challenges.Contains("WeakBleach"))
-								{
-									mod.abilities.Clear();
-								}
-								else if (MagModGeneration.challenges.Contains("WeakBleach") && SaveManager.saveFile.ascensionActive)
-								{
-									unbleachableAbility = mod.abilities.Contains(Ability.GemDependant) || mod.abilities.Contains(SigilCode.FamiliarA.ability) || mod.abilities.Contains(Ability.Brittle);
-									if (!unbleachableAbility)
-									{
-										mod.abilities.Clear();
-									}
-									else
-									{
-										failBleach = true;
-									}
-								}
-							}
 						}
 					}
 
 					//componentInfoShite.fromCardMerge = true;
 					RunState.Run.playerDeck.ModifyCard(component.Info, componentInfoShite);
+
+					AbilityInfo bleachedAbility = (!failBleach) ? AbilitiesUtil.GetInfo(componentInfoShite.negateAbilities[0]) : AbilitiesUtil.GetInfo(Ability.Flying);
 					component.SetInfo(component.Info);
 					component.Anim.FaceDown = true;
 					AudioController.Instance.PlaySound2D("magnificus_brush_splatter_bleach", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
 					yield return new WaitForSeconds(0.5f);
 					AudioController.Instance.PlaySound2D("magnificus_brush_splatter_color", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
 					component.Anim.SetFaceDown(false);
+					component.coll.enabled = false;
 					bleached = true;
+
+					this.confirmStone.Disable();
+					Tween.Position(GameObject.Find("TESTSTONE").transform, new Vector3(table.transform.position.x - 10f, 30.75f, -2.6f + table.transform.position.z), 0.15f, 0.1f, null, Tween.LoopType.None, null, null, true);
+
+					component.Anim.FaceDown = false;
+					GameObject.Find("TESTSTONE").GetComponent<BoxCollider>().size = new Vector3(0f, 0f, 0f);
+
 					yield return new WaitForSeconds(0.25f);
 					if (!failBleach)
 					{
-						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("A sigil has been bleached.", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput(  String.Format("Your {0} is now free of its {1}...", component.Info.displayedName, bleachedAbility.rulebookName), -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+						yield return new WaitForSeconds(0.25f);
+						if (bleachedAbility.powerLevel < 0)
+						{
+							component.Anim.StrongNegationEffect();
+							yield return new WaitForSeconds(0.55f);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hmm.. The essence of that sigil does not resonate with your card..", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+
+						}
+						else
+                        {
+							component.Anim.PlaySacrificeParticles();
+							bool hasAttackIcon = component.Info.specialStatIcon != SpecialStatIcon.None && StatIconInfo.GetIconInfo(component.Info.specialStatIcon).appliesToAttack;
+							bool hasHealthIcon = component.Info.specialStatIcon != SpecialStatIcon.None && StatIconInfo.GetIconInfo(component.Info.specialStatIcon).appliesToHealth;
+
+
+							bool boostAttack = component.Info.Attack <= component.Info.Health + Random.RandomRangeInt(-1, 1) && !hasAttackIcon;
+							bool boostHealth = (component.Info.Health <= component.Info.Attack + Random.RandomRangeInt(-1, 1) || !boostAttack) && !hasHealthIcon;
+
+							int attack = (boostAttack) ? Convert.ToInt32(Math.Ceiling( bleachedAbility.powerLevel / 2.5f)) : 0;
+							int health = (boostHealth) ? Convert.ToInt32(Math.Ceiling((bleachedAbility.powerLevel + 1.0f) / 2.0f)) : 0;
+							health -= Convert.ToInt32(Math.Floor(attack * 1.5f));
+							if (health < 0) { health = 0; }
+
+							string describe = "power";
+							if (boostHealth && !boostAttack) { describe = "gourd"; }
+							else if(!boostHealth && boostAttack) { describe = "strength"; }
+
+							CardModificationInfo statMod = new CardModificationInfo(attack, health);
+							RunState.Run.playerDeck.ModifyCard(component.Info, statMod);
+							component.SetInfo(component.Info);
+							yield return new WaitForSeconds(0.525f);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput( (health == 0 && attack == 0) ? ".. It appears nothing was gained" : String.Format("The essence of the sigil has imbued the card with more {0}.", describe), -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+
+						}
 					}
 					else
 					{
@@ -725,11 +718,8 @@ namespace MagnificusMod
 							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hmph..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 						}
 					}
-					this.confirmStone.Disable();
-					Tween.Position(GameObject.Find("TESTSTONE").transform, new Vector3(table.transform.position.x - 10f, 30.75f, -2.6f + table.transform.position.z), 0.15f, 0.1f, null, Tween.LoopType.None, null, null, true);
-					
-					component.Anim.FaceDown = false;
-					GameObject.Find("TESTSTONE").GetComponent<BoxCollider>().size = new Vector3(0f, 0f, 0f);
+					component.coll.enabled = true;
+
 					yield break;
 				}
 
@@ -737,30 +727,39 @@ namespace MagnificusMod
 				{
 					bleached = false;
 					this.cd = 0;
-					yield return new WaitForSeconds(1f);
 					GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.Choices, false, false);
-					List<CardInfo> listOfCards = new List<CardInfo>();
-					foreach (CardInfo card in RunState.Run.playerDeck.Cards)
-					{
-						listOfCards.Add(card);
-					}
-					listOfCards.RemoveAll((CardInfo x) => x.SpecialAbilities.Contains(SpecialTriggeredAbility.RandomCard) || x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x.traits.Contains(Trait.Terrain));
-					listOfCards.RemoveAll((CardInfo x) => x.abilities.Count < 1 || x.Abilities.Count < 1);
+					yield return new WaitForSeconds(1f);
+					List<CardInfo> listOfCards = new List<CardInfo>(RunState.Run.playerDeck.Cards);
+					listOfCards.RemoveAll((CardInfo x) => x.SpecialAbilities.Contains(SpecialTriggeredAbility.RandomCard) || x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x.name.Contains("edaxio"));
+					listOfCards.RemoveAll((CardInfo x) => x.abilities.Count < 1 && x.Abilities.Count < 1);
 					GameObject pot = Instantiate(Resources.Load("prefabs/items/BleachPotItem") as GameObject);
 					pot.name = "pottery";
 					pot.GetComponent<Animator>().enabled = false;
 					pot.transform.parent = base.transform;
 					pot.transform.localPosition = new Vector3(-2f, 5, 1);
-					int num;
 					GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 					theDeck.transform.parent = GameObject.Find("GameTable").transform;
+					theDeck.transform.localScale = new Vector3(1, 1, 1);
 					theDeck.transform.localPosition = new Vector3(0, 5.01f, -2f);
 					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<DeckReviewSequencer>.Instance.cardArray.SelectCardFrom(listOfCards, null, new Action<SelectableCard>(this.removeselectablecardfromdeck)));
 					for (int i = 0; i < theDeck.transform.childCount; i++)
 					{
 						this.cardpickedfromdeck.Add(theDeck.transform.GetChild(i).gameObject.GetComponent<SelectableCard>());
 					}
-					base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Give me a card that you don't particularly like.", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
+
+					if (SavedVars.LearnedMechanics.Contains("bleaching"))
+					{
+						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Select a card to imbue with a lost sigils strength..", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
+					} else
+                    {
+						SavedVars.LearnedMechanics += "bleaching;";
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Here I will allow you to [c:g1]bleach[c:] a card of one of its sigils..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("When bleached, the card will imbue the power of its lost sigil,", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("and get much [c:g2]stronger[c:] depending on the sigils raw strength.", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+
+
+
+					}
 					yield break;
 				}
 
@@ -787,14 +786,28 @@ namespace MagnificusMod
 
 				CardPile sideDeckPile;
 				GameObject sideDeckObject;
+
+				bool clickEnabled = false;
+
 				public IEnumerator sequencer(CustomNode2 tradeCardsData)
 				{
+
+					clickEnabled = false;
+
 					if (config.isometricMode == true)
 					{
 						Singleton<FirstPersonController>.Instance.enabled = false;
-						Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(0f, 16.35f, -1f), 0.25f, 0.1f);
-						Tween.Rotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(83.25f, 0, 0), 0.25f, 0);
+						Tween.LocalPosition(Singleton<FirstPersonController>.Instance.transform, new Vector3(Singleton<FirstPersonController>.Instance.transform.localPosition.x, 9.72f, Singleton<FirstPersonController>.Instance.transform.localPosition.z), 0.3f, 0);
+						
 					}
+					Singleton<ViewManager>.Instance.SwitchToView(View.BoardCentered, false, true);
+
+
+
+					if (!SavedVars.LearnedMechanics.Contains("shoptutorial"))
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You step foot into a small store.." + ((RunState.Run.regionTier > 0) ? " A brief respite from your winding travels." : "."), -0.5f, 0.15f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+
+
 					GameObject shopObjects = GameObject.Instantiate<GameObject>(new GameObject());
 					shopObjects.transform.parent = base.transform;
 					shopObjects.name = "shopObjects";
@@ -805,211 +818,99 @@ namespace MagnificusMod
 					deckObject.transform.parent = shopObjects.transform;
 					deckObject.transform.localPosition = new Vector3(3.05f, 5.01f, 0.55f);
 
-					sideDeckObject = Instantiate(Singleton<CardPile>.Instance.gameObject);
-					sideDeckPile = sideDeckObject.GetComponent<CardPile>();
-					sideDeckObject.transform.parent = shopObjects.transform;
-					sideDeckObject.transform.localPosition = new Vector3(3.05f, -5.01f, 1.3f);
-					sideDeckObject.name = "ShopDeck1";
-					deckObject.name = "ShopDeck2";
-					base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("You arrive at a humble storefront. \nYou gaze at what you can buy with " + RunState.Run.currency.ToString() + " Crystals.", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-
-					yield return new WaitForSeconds(1f);
-					if (config.isometricMode == true)
-					{
-						GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(0f, 16.35f, -1f);
-						GameObject.Find("PixelCameraParent").AddComponent<SineWaveRotation>().originalRotation = new Vector3(83.25f, 0, 0);
-						GameObject.Find("PixelCameraParent").GetComponent<SineWaveRotation>().zMagnitude = 0.1f;
-						GameObject.Find("PixelCameraParent").AddComponent<SineWaveMovement>().originalPosition = new Vector3(0f, 16.35f, -1f);
-					} else { Singleton<ViewManager>.Instance.SwitchToView(View.BoardCentered, false, true); }
-					CardInfo dinfo = CardLoader.GetCardByName("mag_bluemox");
-					dinfo.displayedName = "Cardpack sapphire";
-					GameObject gameObject = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
-					gameObject.transform.SetParent(shopObjects.transform);
-					SelectableCard component = gameObject.GetComponent<SelectableCard>();
-					component.SetEnabled(false);
-					Singleton<SelectableCardArray>.Instance.displayedCards.Add(component);
-					component.SetCardback(Tools.getImage("cardpack_sapphire.png"));
-					Singleton<SelectableCardArray>.Instance.TweenInCard(component.transform, new Vector3(-2.5f, 5.01f, 0.5f), 0f, false);
-					component.Anim.PlayQuickRiffleSound();
-					component.Initialize(dinfo, new Action<SelectableCard>(this.action), null, false, null);
-					yield return new WaitForSeconds(Time.deltaTime);
-					component.GetComponent<Collider>().enabled = true;
-					this.created.Add(component);
-					this.AddPricetag(component, 5, 0.25f);
-					component.Anim.SetFaceDown(true, true);
-					CardInfo dinfo2 = CardLoader.GetCardByName("mag_rubymox");
-					dinfo2.displayedName = "Cardpack ruby";
-					GameObject gameObject2 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
-					gameObject2.transform.SetParent(shopObjects.transform);
-					SelectableCard component2 = gameObject2.GetComponent<SelectableCard>();
-					component2.SetEnabled(false);
-					Singleton<SelectableCardArray>.Instance.displayedCards.Add(component2);
-					component2.SetCardback(Tools.getImage("cardpack_ruby.png"));
-					component2.Anim.SetFaceDown(true, true);
-					Singleton<SelectableCardArray>.Instance.TweenInCard(component2.transform, new Vector3(-1f, 5.01f, 0.5f), 0f, false);
-					component2.Anim.PlayQuickRiffleSound();
-					component2.Initialize(dinfo2, new Action<SelectableCard>(this.action), null, false, null);
-					yield return new WaitForSeconds(Time.deltaTime);
-					component2.GetComponent<Collider>().enabled = true;
-					this.created.Add(component2);
-					this.AddPricetag(component2, 5, 0.25f);
-					component2.Anim.SetFaceDown(true, true);
-					CardInfo dinfo3 = CardLoader.GetCardByName("mag_greenmox");
-					dinfo3.displayedName = "Cardpack emerald";
-					dinfo3.hideAttackAndHealth = true;
-					GameObject gameObject3 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
-					gameObject3.transform.SetParent(shopObjects.transform);
-					SelectableCard component3 = gameObject3.GetComponent<SelectableCard>();
-					component3.SetEnabled(false);
-					Singleton<SelectableCardArray>.Instance.displayedCards.Add(component3);
-					component3.SetCardback(Tools.getImage("cardpack_emerald.png"));
-					Singleton<SelectableCardArray>.Instance.TweenInCard(component3.transform, new Vector3(0.5f, 5.01f, 0.5f), 0f, false);
-					component3.Anim.PlayQuickRiffleSound();
-					component3.Initialize(dinfo3, new Action<SelectableCard>(this.action), null, false, null);
-					yield return new WaitForSeconds(Time.deltaTime);
-					component3.GetComponent<Collider>().enabled = true;
-					this.created.Add(component3);
-					this.AddPricetag(component3, 5, 0.25f);
-					component3.Anim.SetFaceDown(true, true);
-					List<string> masterMox = new List<string>
-					{
-						"mag_goranjmox",
-						"mag_bleenemox",
-						"mag_orlumox"
-					};
-					CardInfo dinfo4 = CardLoader.GetCardByName(masterMox[UnityEngine.Random.Range(0, masterMox.Count)]);
-					GameObject gameObject4 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
-					gameObject4.transform.SetParent(shopObjects.transform);
-					SelectableCard component4 = gameObject4.GetComponent<SelectableCard>();
-					component4.SetEnabled(false);
-					Singleton<SelectableCardArray>.Instance.displayedCards.Add(component4);
-					float x4 = -0.25f;
-					if (RunState.Run.regionTier > 0 && RunState.Run.regionTier != 4 && !MagModGeneration.minimap || RunState.Run.regionTier > 0 && RunState.Run.regionTier != 4 && SavedVars.HasMap == true && SavedVars.HasMapIcons == false) { x4 = 0.5f; }
-					Singleton<SelectableCardArray>.Instance.TweenInCard(component4.transform, new Vector3(x4, 5.01f, -1.5f), 0f, false);
-					component4.Anim.PlayQuickRiffleSound();
-					component4.Initialize(dinfo4, new Action<SelectableCard>(this.action), null, false, null);
-					yield return new WaitForSeconds(Time.deltaTime);
-					component4.GetComponent<Collider>().enabled = true;
-					this.created.Add(component4);
-					this.AddPricetag(component4, 9, 0.25f);
-
-					CardInfo dinfo5 = CardLoader.GetCardByName("Squirrel");
-					dinfo5.displayedName = "Exit";
-					//dinfo5.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainLayout);
-					dinfo5.SetPortrait(Tools.getImage("exitshop.png"));
-					GameObject gameObject5 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
-					gameObject5.transform.SetParent(shopObjects.transform);
-					SelectableCard component5 = gameObject5.GetComponent<SelectableCard>();
-					component5.Initialize(dinfo5, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardSelected), null, false, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardInspected));
-					component5.SetEnabled(false);
-					Singleton<SelectableCardArray>.Instance.displayedCards.Add(component5);
-					Singleton<SelectableCardArray>.Instance.TweenInCard(component5.transform, new Vector3(1.82f, 5.01f, -0.62f), 0f, false);
-					component5.Anim.PlayQuickRiffleSound();
-					component5.Initialize(dinfo5, new Action<SelectableCard>(this.action), null, false, null);
-					component5.GetComponent<Collider>().enabled = true;
-					this.created.Add(component5);
-
-					if (!MagModGeneration.challenges.Contains("RandomSidedeck") || !SaveManager.saveFile.ascensionActive)
-					{
-						sideDeckObject.transform.localPosition = new Vector3(3.05f, 5.01f, -1.35f);
-						GameObject sidePrefab = Instantiate(sideDeckPile.cardbackPrefab.gameObject);
-						sidePrefab.transform.Find("StaticCard").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("moxcardback.png");
-						sideDeckPile.cardbackPrefab = sidePrefab;
-						sideDeckPile.cardbackPrefab.gameObject.transform.Find("StaticCard").gameObject.SetActive(true);
-						sideDeckPile.cardbackPrefab.gameObject.transform.Find("BendableCard").gameObject.SetActive(false);//THIS IS IT
-						Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(sideDeckPile.SpawnCards(10, 0f));//this
-						sideDeckPile.CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(sideDeckPile.CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
-						{
-							this.deckAction(true);
-						}));
-					}
-
-					List<CardInfo> sidedeck2 = new List<CardInfo>();
-
 					deckPile2.cardbackPrefab.gameObject.transform.Find("StaticCard").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("magcardback.png");
 					deckPile2.cardbackPrefab.gameObject.transform.Find("StaticCard").gameObject.SetActive(true);
 					deckPile2.cardbackPrefab.gameObject.transform.Find("BendableCard").gameObject.SetActive(false);//THIS IS IT
-					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(deckPile2.SpawnCards(SaveManager.SaveFile.CurrentDeck.Cards.Count, 0f));//this
+					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(deckPile2.SpawnCards(RunState.Run.playerDeck.Cards.Count, 0f));//this
 					deckPile2.CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(deckPile2.CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
 					{
 						this.deckAction(false);
 					}));
-					List<CardInfo> sidedeck3 = new List<CardInfo>();
+					//GlitchOutAssetEffect.GlitchModel(GameObject.Find("MagnificusAnim").transform, false, true);
+					//ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.MasterBosses);
 
-					CardInfo dinfo8 = CardLoader.GetCardByName("mag_magnusspell");
-					dinfo8.displayedName = "Magnus Mox Spell";
-					GameObject gameObject8 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
-					gameObject8.transform.SetParent(shopObjects.transform);
-					SelectableCard component8 = gameObject8.GetComponent<SelectableCard>();
-					component8.Initialize(dinfo8, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardSelected), null, false, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardInspected));
-					component8.SetEnabled(false);
-					Singleton<SelectableCardArray>.Instance.displayedCards.Add(component8);
+					if (!SavedVars.LearnedMechanics.Contains("shoptutorial"))
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Your [c:g1]deck[c:] is stored in this pile.. ", -0.5f, 0.15f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+
+
+					sideDeckObject = Instantiate(Singleton<CardPile>.Instance.gameObject);
+					sideDeckPile = sideDeckObject.GetComponent<CardPile>();
+					sideDeckObject.transform.parent = shopObjects.transform;
+					sideDeckObject.transform.localPosition = new Vector3(3.05f, 5.01f, -1.3f);
+					sideDeckObject.name = "ShopDeck1";
+					deckObject.name = "ShopDeck2";
+
+					GameObject sidePrefab = Instantiate(sideDeckPile.cardbackPrefab.gameObject);
+					sidePrefab.transform.Find("StaticCard").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("moxcardback.png");
+					sideDeckPile.cardbackPrefab = sidePrefab;
+					sideDeckPile.cardbackPrefab.gameObject.transform.Find("StaticCard").gameObject.SetActive(true);
+					sideDeckPile.cardbackPrefab.gameObject.transform.Find("BendableCard").gameObject.SetActive(false);//THIS IS IT
+					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(sideDeckPile.SpawnCards(10, 0f));//this
+					sideDeckPile.CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(sideDeckPile.CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
+					{
+						this.deckAction(true);
+					}));
+
+					if (!SavedVars.LearnedMechanics.Contains("shoptutorial"))
+					{
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput(".. And your [c:g1]side deck[c:] is stored here, where you can adjust it as you see fit. ", -1f, 0.2f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+					}
+
+					if (MagModGeneration.challenges.Contains("RandomSidedeck") && SaveManager.saveFile.ascensionActive)
+					{
+						GlitchOutAssetEffect.GlitchModel(sideDeckObject.transform, false, true);
+						ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.RandomSidedeck);
+						if (!SavedVars.LearnedMechanics.Contains("shoptutorial"))
+						{
+							yield return new WaitForSeconds(0.5f);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput(".. Hmmph, I guess it was not meant to be..", -0.25f, 0.2f, Emotion.Anger, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+						}
+					}
+
+					
+					yield return new WaitForSeconds(1f);
+
+					if (!SavedVars.LearnedMechanics.Contains("shoptutorial"))
+						SavedVars.LearnedMechanics += "shoptutorial;";
+
+					createCard("MoxSapphire", shopObjects.transform, new Vector3(-2.5f, 5.01f, 0.5f), 5, true, "Cardpack sapphire", "cardpack_sapphire.png");
+					createCard("MoxRuby", shopObjects.transform, new Vector3(-1f, 5.01f, 0.5f), 5, true, "Cardpack ruby", "cardpack_ruby.png");
+					createCard("MoxEmerald", shopObjects.transform, new Vector3(0.5f, 5.01f, 0.5f), 5, true, "Cardpack emerald", "cardpack_emerald.png");
+
+					List<string> masterMox = new List<string>
+					{
+						"MoxDualGO",
+						"MoxDualOB",
+						"MoxDualBG"
+					};
+					int masterDex = RunState.Run.regionTier != 0 && RunState.Run.regionTier < 4 ? RunState.Run.regionTier - 1 : Random.RandomRangeInt(0, masterMox.Count);
+					if (RunState.Run.regionTier == 0 && MagSave.layout.Contains("2")) masterDex = 2;
+					else if (RunState.Run.regionTier == 0 && MagSave.layout.Contains("3")) masterDex = 1;
+					else if (RunState.Run.regionTier == 4 || RunState.Run.regionTier == 0 && MagSave.layout.Contains("1")) masterDex = 0;
+
+					float x4 = -0.25f;
+					if (RunState.Run.regionTier > 0 && RunState.Run.regionTier != 4 && !MagModGeneration.minimap || RunState.Run.regionTier > 0 && RunState.Run.regionTier != 4 && SavedVars.HasMap == true && SavedVars.HasMapIcons == false) { x4 = 0.5f; }
+
+					createCard(masterMox[masterDex], shopObjects.transform, new Vector3(x4, 5.01f, -1.5f), 9, false);
+
+					createCard("Squirrel", shopObjects.transform, new Vector3(1.82f, 5.01f, -0.62f), 0, false, "n", "exitshop.png", "exitShop");
+
 					float x8 = -1.85f;
 					if (RunState.Run.regionTier > 0 && RunState.Run.regionTier != 4 && !MagModGeneration.minimap || RunState.Run.regionTier > 0 && RunState.Run.regionTier != 4 && SavedVars.HasMap == true && SavedVars.HasMapIcons == false) { x8 = -1f; }
-					Singleton<SelectableCardArray>.Instance.TweenInCard(component8.transform, new Vector3(x8, 5.01f, -1.5f), 0f, false);
-					component8.Anim.PlayQuickRiffleSound();
-					component8.Initialize(dinfo8, new Action<SelectableCard>(this.action), null, false, null);
-					component8.GetComponent<Collider>().enabled = true;
-					this.created.Add(component8);
-					this.AddPricetag(component8, 4, 0.25f);
-					if (RunState.Run.regionTier > 0 && RunState.Run.regionTier != 4 && !MagModGeneration.minimap)
-					{
-						CardInfo dinfo9 = CardLoader.GetCardByName("Squirrel");
-						dinfo9.displayedName = "Buy Minimap";
-						dinfo9.hideAttackAndHealth = true;
-						dinfo9.portraitTex = Tools.getPortraitSprite("minimap.png");
-						GameObject gameObject9 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
-						gameObject9.transform.SetParent(shopObjects.transform);
-						SelectableCard component9 = gameObject9.GetComponent<SelectableCard>();
-						component9.Initialize(dinfo9, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardSelected), null, false, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardInspected));
-						component9.SetEnabled(false);
-						Singleton<SelectableCardArray>.Instance.displayedCards.Add(component9);
-						component9.SetCardback(Tools.getImage("magcardback.png"));
-						Singleton<SelectableCardArray>.Instance.TweenInCard(component9.transform, new Vector3(-2.5f, 5.01f, -1.5f), 0f, false);
-						component9.Anim.PlayQuickRiffleSound();
-						component9.Initialize(dinfo9, new Action<SelectableCard>(this.action), null, false, null);
-						component9.GetComponent<Collider>().enabled = true;
-						this.created.Add(component9);
-						this.AddPricetag(component9, 4, 0.25f);
-					}
+					createCard("mag_magnusspell", shopObjects.transform, new Vector3(x8, 5.01f, -1.5f), 4, false, "Ethereal Gems");
+
 					if (RunState.Run.regionTier > 0 && RunState.Run.regionTier != 4 && SavedVars.HasMap == true && SavedVars.HasMapIcons == false)
                     {
-						CardInfo dinfo9 = CardLoader.GetCardByName("Squirrel");
-						dinfo9.displayedName = "Fill In Minimap";
-						dinfo9.hideAttackAndHealth = true;
-						dinfo9.portraitTex = Tools.getPortraitSprite("minimap.png");
-						GameObject gameObject9 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
-						gameObject9.transform.SetParent(shopObjects.transform);
-						SelectableCard component9 = gameObject9.GetComponent<SelectableCard>();
-						component9.Initialize(dinfo9, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardSelected), null, false, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardInspected));
-						component9.SetEnabled(false);
-						Singleton<SelectableCardArray>.Instance.displayedCards.Add(component9);
-						component9.SetCardback(Tools.getImage("magcardback.png"));
-						Singleton<SelectableCardArray>.Instance.TweenInCard(component9.transform, new Vector3(-2.5f, 5.01f, -1.5f), 0f, false);
-						component9.Anim.PlayQuickRiffleSound();
-						component9.Initialize(dinfo9, new Action<SelectableCard>(this.action), null, false, null);
-						component9.GetComponent<Collider>().enabled = true;
-						this.created.Add(component9);
-						this.AddPricetag(component9, 4, 0.25f);
+						createCard("Squirrel", shopObjects.transform, new Vector3(-2.5f, 5.01f, -1.5f), 4, false, "Fill In Minimap", "minimap.png");
 					}
-					CardInfo dinfo10 = CardLoader.GetCardByName("Squirrel");
-					dinfo10.displayedName = "Back";
-					//dinfo10.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainLayout);
-					dinfo10.SetPortrait(Tools.getImage("backarrow.png"));
-					GameObject gameObject10 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
-					gameObject10.transform.SetParent(GameObject.Find("GameTable").transform);
-					SelectableCard component10 = gameObject10.GetComponent<SelectableCard>();
-					component10.Initialize(dinfo10, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardSelected), null, false, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardInspected));
-					component10.SetEnabled(false);
-					Singleton<SelectableCardArray>.Instance.displayedCards.Add(component10);
-					Singleton<SelectableCardArray>.Instance.TweenInCard(component10.transform, new Vector3(2.24f, 4.01f, 0.5999f), 0f, false);
-					component10.Anim.PlayQuickRiffleSound();
-					component10.Initialize(dinfo10, new Action<SelectableCard>(this.action), null, false, null);
-					component10.GetComponent<Collider>().enabled = true;
-					component10.name = "sidedeckBack";
-					this.created.Add(component10);
+
+					createCard("Squirrel", GameObject.Find("GameTable").transform, new Vector3(2.24f, 4.01f, 0.5999f), 0, false, "n", "backarrow.png", "sidedeckBack");
 					yield return new WaitForSeconds(0.25f);
 					shopObjects.transform.localPosition = new Vector3(0, 0, 0);
+					clickEnabled = true;
+
+					Singleton<TextDisplayer>.Instance.ShowMessage(string.Format("[c:g3]~ {0} Crystals ~[c:]", RunState.Run.currency),Emotion.Laughter, TextDisplayer.LetterAnimation.WavyJitter);
+
 					yield break;
 				}
 
@@ -1017,11 +918,60 @@ namespace MagnificusMod
 				{
 					GameObject gameObject = GameObject.Instantiate<GameObject>(Singleton<BuyPeltsSequencer>.Instance.pricetagPrefab);
 					gameObject.transform.SetParent(card.transform);
-					gameObject.transform.localPosition = new Vector3(-0.4f + UnityEngine.Random.value * 0.1f, 0.95f, -0.03f);
+					gameObject.transform.localPosition = new Vector3(-0.4f + UnityEngine.Random.value * 0.1f, 0.95f, -0.085f);
 					gameObject.transform.localEulerAngles = new Vector3(-90f, -90f, 90f);
 					gameObject.name = "pricetag";
 					gameObject.GetComponentInChildren<Renderer>().material.mainTexture = Singleton<BuyPeltsSequencer>.Instance.pricetagTextures[priceIndex];
-					Tween.LocalRotation(gameObject.transform, new Vector3(-80f + UnityEngine.Random.value * -20f, -90f, 90f), 0.25f, tweenDelay, Tween.EaseOut, Tween.LoopType.None, null, null, true);
+					Tween.LocalRotation(gameObject.transform, new Vector3(290f + Random.RandomRangeInt(5, -5), 90f, 270f), 0.25f, tweenDelay, Tween.EaseOut, Tween.LoopType.None, null, null, true);
+				}
+
+				public void createCard(string cardName, Transform parent, Vector3 position, int price, bool faceDown = true, string displayName = "", string image = "", string nameOverride ="")
+                {
+					CardInfo dinfo = CardLoader.GetCardByName(cardName);
+					if (image != "" && !faceDown) {
+						dinfo.SetPortrait(Tools.getImage(image));
+					}
+
+					GameObject gameObject = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
+					gameObject.transform.SetParent(parent);
+					SelectableCard component = gameObject.GetComponent<SelectableCard>();
+					component.SetEnabled(false);
+					if(displayName == "n") {
+						dinfo.displayedName = "";
+						component.renderInfo.hiddenAttack = true;
+						component.renderInfo.hiddenHealth = true;
+						component.renderInfo.baseTextureOverride = Tools.getImage( (!config.oldCardDesigns) ? "finalecardbacknobars.png" : "spellcardback.png");
+						if (!config.oldCardDesigns)
+						{
+							component.gameObject.GetComponentInChildren<MagCardFrame>().setCardBars(false);
+							component.gameObject.GetComponentInChildren<MagCardFrame>().setTheme("spell");
+						}
+					}
+					else if (displayName != "") { dinfo.displayedName = displayName; }
+					if (image != "" && faceDown) { 
+						component.SetCardback(Tools.getImage(image));
+						if (!config.oldCardDesigns) component.gameObject.GetComponentInChildren<MagCardFrame>().gameObject.SetActive(false); 
+					} 
+					Singleton<SelectableCardArray>.Instance.TweenInCard(component.transform, position, 0f, false);
+					component.Anim.PlayQuickRiffleSound();
+					component.Initialize(dinfo, new Action<SelectableCard>(this.action), null, false, null);
+					component.GetComponent<Collider>().enabled = true;
+					this.created.Add(component);
+					if (price > 0) { this.AddPricetag(component, price, 0.25f); }
+					component.Anim.SetFaceDown(faceDown, true);
+					if (nameOverride != "") { component.name = nameOverride; }
+
+
+					component.CursorEntered = (Action<MainInputInteractable>)Delegate.Combine(component.CursorEntered, new Action<MainInputInteractable>(delegate (MainInputInteractable m)
+					{
+						Tween.LocalRotation(component.transform, new Vector3(90, 3, 0), 0.1f, 0);
+					}));
+
+					component.CursorExited = (Action<MainInputInteractable>)Delegate.Combine(component.CursorExited, new Action<MainInputInteractable>(delegate (MainInputInteractable m)
+					{
+						Tween.LocalRotation(component.transform, new Vector3(90, 0, 0), 0.1f, 0);
+					}));
+
 				}
 
 				public IEnumerator cardpackOpen(SelectableCard component, string type)
@@ -1053,7 +1003,6 @@ namespace MagnificusMod
 						GameObject gameObject = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
 						gameObject.transform.SetParent(base.transform);
 						SelectableCard component2 = gameObject.GetComponent<SelectableCard>();
-						CardInfo packCard = CardLoader.GetCardByName("Geck");
 						GemType gemType = GemType.Green;
 						switch (type)
 						{
@@ -1068,41 +1017,9 @@ namespace MagnificusMod
 								break;
 						}
 						int random = Random.RandomRangeInt(0, 100);
-						if (i == 1 && random < 89 || i != 1)
-						{
-							packCard = CardLoader.GetRandomChoosableCard(Random.RandomRangeInt(0, 10000), CardTemple.Wizard);
-						}
-						else
-						{
-							List<CardInfo> unlockedCards = CardLoader.GetUnlockedCards(CardMetaCategory.Rare, CardTemple.Wizard);
-							packCard = CardLoader.Clone(unlockedCards[SeededRandom.Range(0, unlockedCards.Count, Random.RandomRangeInt(0, 10000))]);
-							while (MagModGeneration.gbcMages.Exists((string x) => x == packCard.name))
-							{
-								packCard = CardLoader.Clone(unlockedCards[SeededRandom.Range(0, unlockedCards.Count, Random.RandomRangeInt(0, 10000))]);
-							}
-						}
-						if (i < 3)
-						{
-							int limit = 0;
-							while (packCard.GemsCost.IndexOf(gemType) < 0 && limit < 10000)
-							{
-								if (i != 1 || i == 1 && random < 89)
-								{
-									packCard = CardLoader.GetRandomChoosableCard(Random.RandomRangeInt(0, 10000), CardTemple.Wizard);
 
-								}
-								else
-								{
-									List<CardInfo> unlockedCards = CardLoader.GetUnlockedCards(CardMetaCategory.Rare, CardTemple.Wizard);
-									packCard = CardLoader.Clone(unlockedCards[SeededRandom.Range(0, unlockedCards.Count, Random.RandomRangeInt(0, 10000))]);
-									while (MagModGeneration.gbcMages.Exists((string x) => x == packCard.name))
-									{
-										packCard = CardLoader.Clone(unlockedCards[SeededRandom.Range(0, unlockedCards.Count, Random.RandomRangeInt(0, 10000))]);
-									}
-								}
-								limit++;
-							}
-						}
+						List<CardInfo> list = (i < 3) ? CardLoader.GetUnlockedCards((i == 1 && random < 89 || i != 1) ? CardMetaCategory.ChoiceNode : CardMetaCategory.Rare, CardTemple.Wizard).FindAll((CardInfo x) => x.gemsCost.Count > 0 && x.gemsCost[0] == gemType && (x.gemsCost.Count == 1 || x.gemsCost.Count > 1 && x.gemsCost[0] == x.gemsCost[1])) : CardLoader.GetUnlockedCards((i == 1 && random < 89 || i != 1) ? CardMetaCategory.ChoiceNode : CardMetaCategory.Rare, CardTemple.Wizard);
+						CardInfo packCard = list.Count <= 0 ? CardLoader.GetCardByName("Geck") : CardLoader.Clone(list[SeededRandom.Range(0, list.Count, Environment.TickCount)]);
 
 						component2.Initialize(packCard, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardSelected), null, false, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardInspected));
 						component2.SetEnabled(false);
@@ -1159,12 +1076,16 @@ namespace MagnificusMod
 					}
 					yield break;
 				}
+
 				public void action(SelectableCard component)
 				{
-					if (openingCardPack)
+					if (openingCardPack || !clickEnabled)
 					{
 						return;
 					}
+
+					int oldCurrency = RunState.Run.currency;
+
 					if (component.Info.displayedName.Contains("Cardpack"))
 					{
 						if (RunState.Run.currency >= 5)
@@ -1179,68 +1100,35 @@ namespace MagnificusMod
 							openingCardPack = true;
 							base.StartCoroutine(cardpackOpen(component, type));
 							RunState.Run.currency -= 5;
-						}
-					}
-					else if (component.Info.displayedName == "View Deck")
-					{
-						GameObject.Find("sidedeckBack").transform.position = new Vector3(GameObject.Find("GameTable").transform.position.x + 2.86f, 14.73f, GameObject.Find("GameTable").transform.position.z + -0.1801f);
-						GameObject.Find("shopObjects").transform.position = new Vector3(0f, -9f, 0f);
-						List<CardInfo> list2 = new List<CardInfo>(RunState.Run.playerDeck.Cards);
-						int num5 = 0;
-						int count = list2.Count;
-						for (int n = 0; n < count; n++)
-						{
-							GameObject gameObject2 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
-							gameObject2.transform.SetParent(base.transform);
-							SelectableCard component3 = gameObject2.GetComponent<SelectableCard>();
-							component3.Initialize(list2[n], new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardSelected), null, false, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardInspected));
-							component3.SetEnabled(false);
-							Singleton<SelectableCardArray>.Instance.displayedCards.Add(component3);
-							bool flag9 = count < 11;
-							if (flag9)
-							{
-								component3.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
-								component3.transform.position = new Vector3(GameObject.Find("GameTable").transform.position.x + 1f * (float)num5 - 3f - (float)(num5 / 6) * 6f, 14.75f, GameObject.Find("GameTable").transform.position.z - 1.5f + (float)(num5 / 6) * 1.5f);
-							}
-							else
-							{
-								bool flag10 = count < 21;
-								if (flag10)
-								{
-									component3.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-									component3.transform.position = new Vector3(GameObject.Find("GameTable").transform.position.x + 0.7f * (float)num5 - 3.1f - (float)(num5 / 8) * 5.6f, 14.75f, GameObject.Find("GameTable").transform.position.z - 2f + (float)(num5 / 8) * 1f);
-								}
-								else
-								{
-									component3.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
-									component3.transform.position = new Vector3(GameObject.Find("GameTable").transform.position.x + 0.5f * (float)num5 - 3.1f - (float)(num5 / 12) * 6f, 14.75f, GameObject.Find("GameTable").transform.position.z - 2f + (float)(num5 / 12) * 0.75f);
-								}
-							}
-							component3.Anim.PlayQuickRiffleSound();
-							this.Deck.Add(component3);
-							num5++;
-						}
+						} 
 					}
 					else if (component.Info.displayedName == "Sapphire Mox")
 					{
+						component.Anim.PlayTransformAnimation();
 						List<CardInfo> list3 = new List<CardInfo>();
 						MagCurrentNode.editSideDeck(1, 0, -1);
-						component.SetInfo(CardLoader.GetCardByName("mag_rubymox"));
+						component.SetInfo(CardLoader.GetCardByName("MoxRuby"));
+						return;
 					}
 					else if (component.Info.displayedName == "Ruby Mox")
 					{
+						component.Anim.PlayTransformAnimation();
 						List<CardInfo> list4 = new List<CardInfo>();
 						MagCurrentNode.editSideDeck(-1, 1, 0);
-						component.SetInfo(CardLoader.GetCardByName("mag_greenmox"));
+						component.SetInfo(CardLoader.GetCardByName("MoxEmerald"));
+						return;
 					}
 					else if (component.Info.displayedName == "Emerald Mox")
 					{
+						component.Anim.PlayTransformAnimation();
 						List<CardInfo> list5 = new List<CardInfo>();
 						MagCurrentNode.editSideDeck(0, -1, 1);
-						component.SetInfo(CardLoader.GetCardByName("mag_bluemox"));
+						component.SetInfo(CardLoader.GetCardByName("MoxSapphire"));
+						return;
 					}
-					else if (component.Info.displayedName == "Back")
+					else if (component.gameObject.name == "sidedeckBack")
 					{
+						Singleton<ViewManager>.Instance.SwitchToView(View.BoardCentered, false, true);
 						GameObject.Find("sidedeckBack").transform.position = new Vector3(342.24f, 13.73f, -339.4001f);
 						GameObject.Find("shopObjects").transform.position = new Vector3(GameObject.Find("GameTable").transform.position.x, 9.72f, GameObject.Find("GameTable").transform.position.z);
 						foreach (SelectableCard selectableCard in this.MoxDeck)
@@ -1252,66 +1140,41 @@ namespace MagnificusMod
 							selectableCard2.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
 						}
 						File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagCurrentNode.GetNodeStuff(false, true)));
+						return;
 					}
 					else if (component.Info.DisplayedNameLocalized == "Bleene's Mox" || component.Info.DisplayedNameLocalized == "Orlu's Mox" || component.Info.DisplayedNameLocalized == "Goranj's Mox")
 					{
-						bool flag26 = RunState.Run.currency >= 9;
-						if (flag26)
+						if (RunState.Run.currency >= 9)
 						{
-							CurrencyBowlWeight[] array8 = GameObject.FindObjectsOfType<CurrencyBowlWeight>();
-							int num14 = 0;
-							foreach (CurrencyBowlWeight currencyBowlWeight4 in array8)
-							{
-								bool flag27 = num14 < 9;
-								if (flag27)
-								{
-									GameObject.Destroy(currencyBowlWeight4.gameObject);
-									num14++;
-								}
-							}
-
 							RunState.Run.currency -= 9;
 							component.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
 							RunState.Run.playerDeck.AddCard(CardLoader.GetCardByName(component.Info.name));
 							SaveManager.SaveToFile();
 						}
-						
+						else
+						{
+							component.Anim.StrongNegationEffect();
+						}
+
 
 					}
-					else if (component.Info.displayedName == "Magnus Mox Spell")
+					else if (component.Info.name == "mag_magnusspell")
 					{
-						bool flag34 = RunState.Run.currency >= 4;
-						if (flag34)
+						if (RunState.Run.playerDeck.Cards.FindAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens)).Count >= ((SaveManager.saveFile.ascensionActive && Generation.challenges.Contains("SmallSpellbook")) ? 4 : 8) )
+                        {
+							base.StartCoroutine(fullSpellBook());
+							return;
+                        }
+						if (RunState.Run.currency >= 4)
 						{
-							CurrencyBowlWeight[] array12 = GameObject.FindObjectsOfType<CurrencyBowlWeight>();
-							int num20 = 6;
-							int num21 = 0;
-							foreach (CurrencyBowlWeight currencyBowlWeight6 in array12)
-							{
-								bool flag36 = num21 < num20;
-								if (flag36)
-								{
-									GameObject.Destroy(currencyBowlWeight6.gameObject);
-									num21++;
-								}
-							}
 							RunState.Run.currency -= 4;
 							RunState.Run.playerDeck.AddCard(CardLoader.GetCardByName("mag_magnusspell"));
 							Singleton<ItemsManager>.Instance.UpdateItems(false);
 							component.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
 						}
-					}
-					else if (component.Info.displayedName == "Buy Minimap")
-					{
-						if (RunState.Run.currency >= 4)
+						else
 						{
-							MagModGeneration.minimap = true;
-							SavedVars.HasMapIcons = true;
-							SaveManager.SaveToFile();
-							MagModGeneration.CreateMiniMap(true);
-							RunState.Run.currency -= 4;
-							component.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
-							SaveManager.SaveToFile();
+							component.Anim.StrongNegationEffect();
 						}
 					}
 					else if (component.Info.displayedName == "Fill In Minimap")
@@ -1326,12 +1189,16 @@ namespace MagnificusMod
 							RunState.Run.currency -= 4;
 							component.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
 						}
+						else
+						{
+							component.Anim.StrongNegationEffect();
+						}
 					}
-					else if (component.Info.displayedName == "Exit")
+					else if (component.gameObject.name == "exitShop")
 					{
 						if (Singleton<GameFlowManager>.Instance != null)
 						{
-							GameObject.Find("Player").GetComponentInChildren<ViewManager>().CurrentView = View.FirstPerson;
+							Singleton<TextDisplayer>.Instance.Clear();
 							foreach (SelectableCard selectableCard3 in this.created)
 							{
 								selectableCard3.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
@@ -1363,29 +1230,38 @@ namespace MagnificusMod
 							GameObject.Destroy(GameObject.Find("shopObjects"));
 							SaveManager.SaveToFile(false);
 							GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, false);
-							Singleton<ViewManager>.Instance.SwitchToView(View.FirstPerson, false, true);
 							if (config.isometricMode == false)
 							{
+								Singleton<ViewManager>.Instance.SwitchToView(View.FirstPerson, false, true);
 								GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, false);
 								GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = true;
 								GameObject.Find("Player").GetComponentInChildren<ViewController>().allowedViews = new List<View>();
 								Tween.FieldOfView(GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>(), 65f, 0.5f, 0);
 								GameObject.Find("Player").transform.Find("PixelCameraParent").transform.localPosition = new Vector3(0, 7, -6.86f);
 							} else {
+								Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
 								shopZone.events.Add(Generation.shop);
 								base.StartCoroutine(Generation.unIsometricTransition());
-								GameObject.Find("Player").transform.Find("PixelCameraParent").gameObject.GetComponent<SineWaveMovement>().originalPosition = new Vector3(0f, 9f, -22.5f);
-								GameObject.Find("Player").transform.Find("PixelCameraParent").gameObject.GetComponent<SineWaveMovement>().zMagnitude = 0.1f;
-								GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = true;
 							}
 							File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagCurrentNode.GetNodeStuff(false, true)));
 							if (RunState.Run.regionTier == 2)
 							{
 								GameObject.Find("lanterns").transform.position = new Vector3(0, 0, 0);
 							}
+							return;
 						}
 
 					}
+
+					if (RunState.Run.currency != oldCurrency) 
+						Singleton<TextDisplayer>.Instance.ShowMessage(string.Format("[c:g3]~ {0} Crystals ~[c:]", RunState.Run.currency), Emotion.Laughter, TextDisplayer.LetterAnimation.WavyJitter); 
+
+				}
+
+				public IEnumerator fullSpellBook()
+                {
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Ah, but your [c:g1]spell book[c:] is full...", -0.15f, 0.15f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+					Singleton<TextDisplayer>.Instance.ShowMessage(string.Format("[c:g3]~ {0} Crystals ~[c:]", RunState.Run.currency), Emotion.Laughter, TextDisplayer.LetterAnimation.WavyJitter);
 
 				}
 
@@ -1398,52 +1274,39 @@ namespace MagnificusMod
 				}
 				public void deckAction(bool side)
 				{
+					if (!clickEnabled) { return; }
+					Singleton<ViewManager>.Instance.SwitchToView(View.MapDeckReview, false, true);
 					if (!side)
 					{
-						GameObject.Find("sidedeckBack").transform.position = new Vector3(GameObject.Find("GameTable").transform.position.x + 2.86f, 14.73f, GameObject.Find("GameTable").transform.position.z + -0.1801f);
+						this.Deck = new List<SelectableCard>();
+						GameObject.Find("sidedeckBack").transform.localPosition = new Vector3(4.45f, 5.01f, 1);
 						GameObject.Find("shopObjects").transform.position = new Vector3(0f, -9f, 0f);
-						List<CardInfo> list2 = new List<CardInfo>(RunState.Run.playerDeck.Cards);
-						int count = list2.Count;
-						for (int n = 0; n < count; n++)
+
+
+						List<CardInfo> cards = new List<CardInfo>(RunState.Run.playerDeck.Cards);
+						cards.RemoveAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens));
+
+
+						GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
+						theDeck.transform.parent = GameObject.Find("GameTable").transform;
+						theDeck.transform.localPosition = new Vector3(-0.35f, 5.01f, 1.15f);
+
+						Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<DeckReviewSequencer>.Instance.cardArray.DisplayUntilCancelled(cards, null, () => GameObject.Find("shopObjects").transform.position.y >= 0, null, null));
+
+						/*for (int i = 0; i < theDeck.transform.childCount; i++)
 						{
-							GameObject gameObject2 = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
-							gameObject2.transform.SetParent(base.transform);
-							SelectableCard component3 = gameObject2.GetComponent<SelectableCard>();
-							component3.Initialize(list2[n], new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardSelected), null, false, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardInspected));
-							component3.SetInfo(list2[n]);
-							component3.SetEnabled(false);
-							Singleton<SelectableCardArray>.Instance.displayedCards.Add(component3);
-							bool flag9 = count < 11;
-							if (flag9)
-							{
-								component3.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
-								component3.transform.position = new Vector3(GameObject.Find("GameTable").transform.position.x + 1f * (float)n - 3f - (float)(n / 6) * 6f, 15.25f, GameObject.Find("GameTable").transform.position.z - 1.5f + (float)(n / 6) * 1.5f);
-							}
-							else
-							{
-								bool flag10 = count < 21;
-								if (flag10)
-								{
-									component3.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-									component3.transform.position = new Vector3(GameObject.Find("GameTable").transform.position.x + 0.7f * (float)n - 3.1f - (float)(n / 8) * 5.6f, 15.25f, GameObject.Find("GameTable").transform.position.z - 2f + (float)(n / 8) * 1f);
-								}
-								else
-								{
-									component3.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
-									component3.transform.position = new Vector3(GameObject.Find("GameTable").transform.position.x + 0.5f * (float)n - 3.1f - (float)(n / 12) * 6f, 15.25f, GameObject.Find("GameTable").transform.position.z - 2f + (float)(n / 12) * 0.75f);
-								}
-							}
-							Tween.Position(component3.transform, new Vector3(component3.transform.position.x, 14.75f, component3.transform.position.z), 0.1f, 0 + (n / 40f));
-							component3.Anim.PlayQuickRiffleSound();
-							this.Deck.Add(component3);
-						}
+							this.Deck.Add(theDeck.transform.GetChild(i).gameObject.GetComponent<SelectableCard>());
+						}*/
 					}
 					else
 					{
-						GameObject.Find("sidedeckBack").transform.localPosition = new Vector3(3.1f, 5.02f, -0.6f);
+						this.MoxDeck = new List<SelectableCard>();
+						GameObject.Find("sidedeckBack").transform.localPosition = new Vector3(4.45f, 5.01f, 1);
 						GameObject.Find("shopObjects").transform.position = new Vector3(0f, -9f, 0f);
 						MagCurrentNode.GetSideDeck();
-						List<CardInfo> list = new List<CardInfo>();
+
+						List<CardInfo> cards = new List<CardInfo>();
+
 						string text = File.ReadAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave");
 						string[] array3 = text.Split(new char[]
 						{
@@ -1455,36 +1318,54 @@ namespace MagnificusMod
 						});
 						for (int j = 0; j < int.Parse(array3[0]); j++)
 						{
-							CardInfo cardByName = CardLoader.GetCardByName("mag_rubymox");
-							list.Add(cardByName);
+							CardInfo cardByName = CardLoader.GetCardByName("MoxRuby");
+							cards.Add(cardByName);
 						}
 						for (int k = 0; k < int.Parse(array3[1]); k++)
 						{
-							CardInfo cardByName2 = CardLoader.GetCardByName("mag_greenmox");
-							list.Add(cardByName2);
+							CardInfo cardByName2 = CardLoader.GetCardByName("MoxEmerald");
+							cards.Add(cardByName2);
 						}
 						for (int l = 0; l < int.Parse(array3[2]); l++)
 						{
-							CardInfo cardByName3 = CardLoader.GetCardByName("mag_bluemox");
-							list.Add(cardByName3);
+							CardInfo cardByName3 = CardLoader.GetCardByName("MoxSapphire");
+							cards.Add(cardByName3);
 						}
-						int num4 = 0;
-						for (int m = 0; m < list.Count; m++)
+
+
+						for (int i = 0; i < cards.Count; i++)
 						{
 							GameObject gameObject = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
 							gameObject.transform.SetParent(GameObject.Find("GameTable").transform);
 							SelectableCard component2 = gameObject.GetComponent<SelectableCard>();
-							component2.Initialize(list[m], new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardSelected), null, false, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardInspected));
+							component2.Initialize(cards[i], new Action<SelectableCard>(this.action), null, false);
 							component2.SetEnabled(false);
-							component2.SetInfo(list[m]);
+							component2.SetInfo(cards[i]);
 							Singleton<SelectableCardArray>.Instance.displayedCards.Add(component2);//component2.transform.position = new Vector3(1.3f * num4 - 2.5f - num4 / 5 * 6.5f, 5.01f, 0.5f + num4 / 5 * 2);
-							component2.transform.localPosition = new Vector3(1.3f * num4 - 3f - num4 / 5 * 6.5f, 5.51f, -1.5f + num4 / 5 * 2);
+
+							float layer = i % 5;
+
+							component2.transform.localPosition = new Vector3(-3.35f + (1.5f * layer), 5.25f, (i < 5) ? 2.15f : 0f);
 							component2.Anim.PlayQuickRiffleSound();
-							component2.Initialize(list[m], new Action<SelectableCard>(this.action), null, false, null);
-							Tween.LocalPosition(component2.transform, new Vector3(component2.transform.localPosition.x, 5.01f, component2.transform.localPosition.z), 0.1f, 0 + (m / 40f));
+
+							component2.SetCardback(Tools.getImage("magcardback.png"));
+
+							Tween.LocalPosition(component2.transform, new Vector3(component2.transform.localPosition.x, 5.01f + (0.02f * layer), component2.transform.localPosition.z), 0.1f, (i / 35.0f));
+
 							component2.GetComponent<Collider>().enabled = true;
+
+							component2.CursorEntered = (Action<MainInputInteractable>)Delegate.Combine(component2.CursorEntered, new Action<MainInputInteractable>(delegate (MainInputInteractable m)
+							{
+								if (!component2.FaceDown)
+									Tween.LocalPosition(component2.transform.Find("Quad").Find("CardBase"), new Vector3(0, 0, -0.1f), 0.1f, 0);
+							}));
+
+							component2.CursorExited = (Action<MainInputInteractable>)Delegate.Combine(component2.CursorExited, new Action<MainInputInteractable>(delegate (MainInputInteractable m)
+							{
+								Tween.LocalPosition(component2.transform.Find("Quad").Find("CardBase"), Vector3.zero, 0.1f, 0);
+							}));
+
 							this.MoxDeck.Add(component2);
-							num4++;
 						}
 					}
 				}
@@ -1508,26 +1389,45 @@ namespace MagnificusMod
 			public IEnumerator sequencer(CustomNodeDeck tradeCardsData)
 			{
 				yield return new WaitForSeconds(0.75f);
+
+				if (RunState.Run.playerDeck.Cards.FindAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens)).Count > 0)
+				{
+					GameObject spellBook = new GameObject("DeckSpellBook");
+					spellBook.gameObject.AddComponent<MagnificusMod.DeckSpellBook>();
+					spellBook.transform.parent = GameObject.Find("GameTable").transform;
+					spellBook.transform.localPosition = new Vector3(4.5f, 27.5f, 3f);
+					spellBook.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
+					spellBook.transform.localRotation = Quaternion.Euler(0, 35, 0);
+
+					spellBook.GetComponent<DeckSpellBook>().initializeItems();
+					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(spellBook.GetComponent<DeckSpellBook>().initialize(new Vector3(4.5f, 7.5f, 3f), 1.1f));
+					spellBook.GetComponent<DeckSpellBook>().refreshSpellBookCards(RunState.Run.playerDeck.Cards.FindAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens)));
+				}
+
 				GameObject lifeCounter = GameObject.Find("GameTable").transform.Find("LifePainting").gameObject;
 				lifeCounter.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("lifepainting" + RunState.Run.playerLives + ".png");
 				lifeCounter.SetActive(true);
 				lifeCounter.GetComponent<SineWaveMovement>().enabled = false;
-				lifeCounter.GetComponent<SineWaveMovement>().originalPosition = new Vector3(7.5f, 6.72f, 3.5f);
-				Tween.LocalPosition(lifeCounter.transform, new Vector3(7.5f, 6.72f, 3.5f), 1.5f, 0);
+				lifeCounter.GetComponent<SineWaveMovement>().originalPosition = new Vector3(7.75f, 6.72f, 0.8f);
+				lifeCounter.transform.localRotation = Quaternion.Euler(0, 65, 0);
+				Tween.LocalPosition(lifeCounter.transform, new Vector3(7.75f, 6.72f, 0.8f), 0.15f, 0);
 				GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 				Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
 				//Singleton<ViewController>.Instance.back = ViewLockState.Unlocked;
 				Singleton<ViewController>.Instance.controlMode = ViewController.ControlMode.MapNoDeckReview;
 				theDeck.transform.parent = GameObject.Find("GameTable").transform;
 				theDeck.transform.localPosition = new Vector3(0, 5.01f, 1.5f);
-				Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<DeckReviewSequencer>.Instance.cardArray.DisplayUntilCancelled(RunState.Run.playerDeck.Cards, null, () => Singleton<ViewManager>.Instance.CurrentView != View.MapDeckReview && Singleton<ViewManager>.Instance.CurrentView != View.Candles, delegate
-				{
-					Singleton<ViewManager>.Instance.Controller.LockState = (true ? ViewLockState.Locked : ViewLockState.Unlocked);
-				}, null));
+				theDeck.transform.localScale = new Vector3(1, 1, 1);
+
+				List<CardInfo> cards = new List<CardInfo> (RunState.Run.playerDeck.Cards);
+				cards.RemoveAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens));
+
+                Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<DeckReviewSequencer>.Instance.cardArray.DisplayUntilCancelled(cards, null, () => Singleton<ViewManager>.Instance.CurrentView != View.MapDeckReview && Singleton<ViewManager>.Instance.CurrentView != View.Candles, null, null));
+				
 				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Unlocked;
-				float pauseTime = CardPile.GetPauseBetweenCardTime(SaveManager.saveFile.CurrentDeck.Cards.Count);
-				pauseTime *= SaveManager.saveFile.CurrentDeck.Cards.Count;
-				yield return new WaitForSeconds(pauseTime + 1.25f);
+				float pauseTime = CardPile.GetPauseBetweenCardTime(RunState.Run.playerDeck.Cards.Count);
+				pauseTime *= RunState.Run.playerDeck.Cards.Count;
+				yield return new WaitForSeconds(pauseTime + 0.15f);
 				lifeCounter.GetComponent<SineWaveMovement>().enabled = true;
 				Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
 				Singleton<ViewController>.Instance.SwitchToControlMode(ViewController.ControlMode.MapNoDeckReview);
@@ -1648,6 +1548,7 @@ namespace MagnificusMod
 			public bool playedPaintWarning = false;
 			public IEnumerator sequencer(PaintingEvent tradeCardsData)
 			{
+				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
 				GameObject sequencer = Instantiate(new GameObject());
 				sequencer.name = "PaintingEvent";
 				sequencer.transform.parent = base.transform;
@@ -1662,7 +1563,6 @@ namespace MagnificusMod
 				confirmed = false;
 				canTakeIt = false;
 				playedPaintWarning = false;
-				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
 				yield return new WaitForSeconds(0.75f);
 				GameObject gameObject = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
 				gameObject.transform.SetParent(sequencer.transform);
@@ -1918,6 +1818,7 @@ namespace MagnificusMod
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You can use the bleach on the left to wipe your work..", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You are currently holding a [c:g1]replica brush[c:].. If you feel you need a smaller one, you can grab the one on the right.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Use that brush in the back to change your color.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					SavedVars.LearnedMechanics += "cardpainting;";
 				}
 
 				GameObject.Instantiate(Resources.Load("prefabs\\specialnodesequences\\ConfirmStoneButton")).name = "CONFIRMSTONE";
@@ -1958,22 +1859,15 @@ namespace MagnificusMod
 				yield return new WaitForSeconds(1.5f);
 				
 				List<CardInfo> deck = new List<CardInfo>();
-				string[] killedCards = SavedVars.KilledCards.Split(';');
-				for (int i = 0; i < killedCards.Length; i++) {
-					if (killedCards[i] == "")
-					{
-						continue;
-					}
-					CardInfo card = CardLoader.GetCardByName(killedCards[i]);
-					List<CardModificationInfo> mods = new List<CardModificationInfo>();
-					if (SaveManager.saveFile.part3Data.deck.cardIdModInfos.ContainsKey("kill_" + killedCards[i]))
-					{
-						mods = SaveManager.saveFile.part3Data.deck.cardIdModInfos["kill_" + killedCards[i]];
-					}
-					if (mods is not null && mods.Count > 0) 
-					{ 
-						card.mods = mods;
-					}
+
+				List<CardInfo> killedCards = CardLoader.GetUnlockedCards(CardMetaCategory.ChoiceNode, CardTemple.Wizard);
+
+				for (int i = 0; i < killedCards.Count; i++) {
+					int inDex = Random.RandomRangeInt(0, killedCards.Count);
+
+					CardInfo card = killedCards[inDex];
+
+					killedCards.RemoveAt(inDex);
 					deck.Add(card);
                 }
 				deck.RemoveAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens) || x.SpecialStatIcon != SpecialStatIcon.None);
@@ -2005,12 +1899,6 @@ namespace MagnificusMod
 					deck.RemoveAt(rand);
 				}
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Now let's choose which card's [c:g1]stats[c:] to imbue.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-				if (!SavedVars.LearnedMechanics.Contains("cardpainting"))
-				{
-					SavedVars.LearnedMechanics += "cardpainting;";
-					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Do these cards look familiar?", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("They are mages, who have failed.. Perished, one way or another..", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-				}
 				yield break;
 			}
 
@@ -2086,27 +1974,20 @@ namespace MagnificusMod
             {
 				yield return new WaitForSeconds(1f);
 				List<CardInfo> deck = new List<CardInfo>();
-				string[] killedCards = SavedVars.KilledCards.Split(';');
-				for (int i = 0; i < killedCards.Length; i++)
+
+				List<CardInfo> killedCards = CardLoader.GetUnlockedCards(CardMetaCategory.ChoiceNode, CardTemple.Wizard);
+
+				for (int i = 0; i < killedCards.Count; i++)
 				{
-					if (killedCards[i] == "" || i == selectedCard)
-					{
-						continue;
-					}
-					CardInfo card = CardLoader.GetCardByName(killedCards[i]);
-					if (card.HasAbility(Ability.PreventAttack)) { continue; }
-					List<CardModificationInfo> mods = new List<CardModificationInfo>();
-					if (SaveManager.saveFile.part3Data.deck.cardIdModInfos.ContainsKey("kill_" + killedCards[i]))
-					{
-						mods = SaveManager.saveFile.part3Data.deck.cardIdModInfos["kill_" + killedCards[i]];
-					}
-					if (mods is not null && mods.Count > 0)
-					{
-						card.mods = mods;
-					}
+					int inDex = Random.RandomRangeInt(0, killedCards.Count);
+
+					CardInfo card = killedCards[inDex];
+
+					killedCards.RemoveAt(inDex);
 					deck.Add(card);
 				}
-				deck.RemoveAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens));
+
+				deck.RemoveAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens) || x.abilities.Count <= 0 || x.HasAbility(Ability.PreventAttack));
 				cardChoice = new List<SelectableCard>();
 				for (int i = 0; i < 3; i++)
 				{
@@ -2150,7 +2031,7 @@ namespace MagnificusMod
 
 			public int selectedCard = -1;
 
-			public List<CardInfo> presetCards = new List<CardInfo> { CardLoader.GetCardByName("mag_musclemage"), CardLoader.GetCardByName("mag_hovermage"), CardLoader.GetCardByName("mag_BOSSstimmage"), CardLoader.GetCardByName("mag_rubygolem"), CardLoader.GetCardByName("mag_scarecrow") };
+			public List<CardInfo> presetCards = new List<CardInfo> { CardLoader.GetCardByName("MuscleMage"), CardLoader.GetCardByName("FlyingMage"), CardLoader.GetCardByName("mag_BOSSstimmage"), CardLoader.GetCardByName("RubyGolem"), CardLoader.GetCardByName("mag_scarecrow") };
 
 			public bool canTakeIt = false;
 
@@ -2275,6 +2156,7 @@ namespace MagnificusMod
 				yield return new WaitForSeconds(0.2f);
 				GameObject.Instantiate(Resources.Load("prefabs\\specialnodesequences\\ConfirmStoneButton")).name = "TESTSTONE";
 				GameObject.Find("TESTSTONE").AddComponent<BoxCollider>().size = new Vector3(1.4f, 0.2f, 2.1f);
+				GameObject.Find("TESTSTONE").transform.Find("Anim").Find("model").Find("ConfirmButton").Find("Quad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("wand_button.png");
 				this.confirmStone = GameObject.Find("TESTSTONE").GetComponentInChildren<ConfirmStoneButton>();
 				confirmStone.currentHighlightedColor = new Color(0.85f, 0.35f, 0f, 1);
 				confirmStone.currentInteractableColor = new Color(1f, 0.5f, 0, 1);
@@ -2288,32 +2170,19 @@ namespace MagnificusMod
 				component.Initialize(component.Info, new Action<SelectableCard>(this.tookCardWingMan), null, false, null);
 				this.confirmStone.Enter();
 				yield return this.confirmStone.WaitUntilConfirmation();
+				component.coll.enabled = false;
 				this.confirmStone.Unpress();
 				component.SetCardback(Tools.getImage("magcardback.png"));
 				component.Anim.SetFaceDown(true);
 				yield return new WaitForSeconds(0.03f);
-				if (component.Info.name != "mag_frostspell")
-				{
-					CardModificationInfo componentInfoShite = new CardModificationInfo();
-					componentInfoShite.attackAdjustment = 1;
-					componentInfoShite.nameReplacement = "+" + component.Info.DisplayedNameLocalized + "+";
-					if (component.Info.name == "mag_windspell")
-                    {
-						componentInfoShite.negateAbilities = new List<Ability> { SigilCode.WindSpell.ability };
-						componentInfoShite.AddAbilities(SigilCode.WhirlwindSpell.ability);
-                    }
-					if (component.Info.name == "mag_potion") { componentInfoShite.healthAdjustment = 2; }
-					RunState.Run.playerDeck.ModifyCard(component.Info, componentInfoShite);
-					component.SetInfo(component.Info);
-					component.gameObject.GetComponent<TerrainLayout>().ApplyAppearance();
-					component.RenderCard();
-				} else
-                {
-					CardInfo gold = CardLoader.GetCardByName("mag_goldspell");
-					RunState.Run.playerDeck.RemoveCard(component.Info);
-					RunState.Run.playerDeck.AddCard(gold);
-					component.SetInfo(gold);
-				}
+				CardModificationInfo componentInfoShite = new CardModificationInfo();
+				componentInfoShite.healthAdjustment = 1;
+				componentInfoShite.nameReplacement = "~" + component.Info.DisplayedNameLocalized + "~";
+				if (component.Info.name == "mag_potion") { componentInfoShite.healthAdjustment = 2; }
+				RunState.Run.playerDeck.ModifyCard(component.Info, componentInfoShite);
+				component.SetInfo(component.Info);
+				component.gameObject.GetComponent<TerrainLayout>().ApplyAppearance();
+				component.RenderCard();
 				component.FaceDown = true;
 				AudioController.Instance.PlaySound2D("wizard_cast", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
 				yield return new WaitForSeconds(0.5f);
@@ -2321,8 +2190,9 @@ namespace MagnificusMod
 				upgraded = true;
 				component.Anim.SetFaceDown(false);
 				component.FaceDown = false;
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput(upgradedDescs[upgradedDescs.IndexOf(component.Info.name) + 1], -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Now your spell will last forever..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 				this.confirmStone.Disable();
+				component.coll.enabled = true;
 				Tween.Position(GameObject.Find("TESTSTONE").transform, new Vector3(table.transform.position.x - 10f, 30.75f, -2.6f + table.transform.position.z), 0.15f, 0.1f, null, Tween.LoopType.None, null, null, true);
 				GameObject.Find("TESTSTONE").GetComponent<BoxCollider>().size = new Vector3(0f, 0f, 0f);
 				
@@ -2347,65 +2217,79 @@ namespace MagnificusMod
 				Tween.LocalScale(GameObject.Find("GameTable").transform.Find("Espeara"), new Vector3(5, 5, 5), 0.2f, 0.751f);
 				Tween.LocalRotation(GameObject.Find("GameTable").transform.Find("Espeara"), Quaternion.Euler(1, 270, 400), 0.3f, 0.351f);
 				Tween.LocalRotation(GameObject.Find("GameTable").transform.Find("Espeara"), Quaternion.Euler(1, 270, 360), 0.5f, 0.651f);
-				yield return new WaitForSeconds(0.77f);
+				yield return new WaitForSeconds(0.25f);
+				AudioController.Instance.PlaySound2D("pikespawn", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
+				yield return new WaitForSeconds(0.52f);
 				GameObject.Find("GameTable").transform.Find("Espeara").transform.localRotation = Quaternion.Euler(1, 270, 0);
 				GameObject.Find("GameTable").transform.Find("Espeara").gameObject.AddComponent<SineWaveRotation>();
 				GameObject.Find("GameTable").transform.Find("Espeara").gameObject.GetComponent<SineWaveRotation>().originalRotation = new Vector3(1, 270, 0);
 				GameObject.Find("GameTable").transform.Find("Espeara").gameObject.GetComponent<SineWaveRotation>().xMagnitude = -2f;
 				GameObject.Find("GameTable").transform.Find("Espeara").gameObject.GetComponent<SineWaveRotation>().speed = 1;
-				if (RunState.Run.regionTier == 2)
+				switch (RunState.Run.regionTier)
 				{
-					if (!SavedVars.LearnedMechanics.Contains("amberf2"))
-					{
-						SavedVars.LearnedMechanics += "amberf2;";
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Oh.. Hello there.", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("The master asked me to practice my spellcasting..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Why don't you give me some of your [c:g1]spells[c:]?", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-					}
-					else
-					{
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Oh.. Spellcasting. Right..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Give me one of your [c:g1]spells[c:].", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-					}
-				}
-				else if (RunState.Run.regionTier == 3)
-				{
-					if (!SavedVars.LearnedMechanics.Contains("amberf3"))
-					{
-						SavedVars.LearnedMechanics += "amberf3;";
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("What? Oh.. This must be.. [c:g3]his[c:] area..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Well, anyway.. The master asked me to train my spellcasting.", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Why don't you give me some of your [c:g1]spells[c:]?", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-					}
-					else
-					{
-						if (Generation.challenges.Contains("MasterBosses"))
+					case 2:
+						if (!SavedVars.LearnedMechanics.Contains("beatamber") && !SavedVars.LearnedMechanics.Contains("amberf2"))
 						{
-							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hmm..?", -1f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
-							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Here already? We haven't even battled..", -1f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
-							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Well anyways, just hand over a [c:g1]spell[c:].", -1f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
+							SavedVars.LearnedMechanics += "amberf2;";
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Oh.. Greetings... I don't believe we've been introduced..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I've been force- er.. asked to train my spellcasting here.", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Why don't you give me some of your [c:g1]spells[c:]?", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						}
+						else if (!SavedVars.LearnedMechanics.Contains("beatamber") && SavedVars.LearnedMechanics.Contains("amberf2"))
+						{
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hm? Oh, hello again.. We still haven't been formally introduced.", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I'll need one of your [c:g1]spells[c:] for my training..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						}
+						else if (!SavedVars.LearnedMechanics.Contains("amberf2"))
+						{
+							SavedVars.LearnedMechanics += "amberf2;";
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Oh.. Hello there.", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("The master asked me to practice my spellcasting..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Why don't you give me some of your [c:g1]spells[c:]?", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						}
+						else
+						{
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Oh.. Spellcasting. Right..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Give me one of your [c:g1]spells[c:].", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						}
+						break;
+					case 3:
+						if (!SavedVars.LearnedMechanics.Contains("amberf3"))
+						{
+							SavedVars.LearnedMechanics += "amberf3;";
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("What? Oh.. This must be.. [c:g3]his[c:] area..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Well, anyway.. The master asked me to train my spellcasting.", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Why don't you give me some of your [c:g1]spells[c:]?", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						}
+						else
+						{
+							if (Generation.challenges.Contains("MasterBosses"))
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hmm..?", -1f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
+								yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Here already? We haven't even battled..", -1f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
+								yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Well anyways, just hand over a [c:g1]spell[c:].", -1f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null, true);
+							}
+							else
+							{
+								yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Greetings..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+								yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Give me one of your [c:g1]spells[c:]", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							}
+						}
+						break;
+					case 1:
+						if (!SavedVars.LearnedMechanics.Contains("amberf1"))
+						{
+							SavedVars.LearnedMechanics += "amberf1;";
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Eurgh.. This place is disgusting..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Seems like I'm forced to train spellcasting in here.", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Give me a [c:g1]spell[c:] of yours, and make it quick.", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						}
 						else
 						{
 							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Greetings..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Give me one of your [c:g1]spells[c:]", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						}
-					}
-				}
-				else if (RunState.Run.regionTier == 3)
-				{
-					if (!SavedVars.LearnedMechanics.Contains("amberf1"))
-					{
-						SavedVars.LearnedMechanics += "amberf1;";
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Eurgh.. This place is disgusting..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Seems like I'm forced to train spellcasting in here.", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Give me a [c:g1]spell[c:] of yours, and make it quick.", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-					}
-					else
-					{
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Greetings..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Give me one of your [c:g1]spells[c:]", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-					}
+						break;
 				}
 				Singleton<ViewManager>.Instance.SwitchToView(View.MapDefault, false, true);
 				yield return new WaitForSeconds(0.5f);
@@ -2415,7 +2299,7 @@ namespace MagnificusMod
 				{
 					deck.Add(card);
 				}
-				int modCount = Generation.challenges.Contains("ItemSpells") ? 1 : 0;
+				int modCount = 0;
 				deck.RemoveAll((CardInfo x) => !x.HasTrait(Trait.EatsWarrens) || x.mods.Count > modCount || x.name == "mag_goldspell" || upgradedDescs.IndexOf(x.name) < 0);
 				int dength = deck.Count;
 				if (dength > 0)
@@ -2423,6 +2307,7 @@ namespace MagnificusMod
 					GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 					theDeck.transform.parent = GameObject.Find("GameTable").transform;
 					theDeck.transform.localPosition = new Vector3(0, 5.01f, -2f);
+					theDeck.transform.localScale = new Vector3(1, 1, 1);
 					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<DeckReviewSequencer>.Instance.cardArray.SelectCardFrom(deck, null, new Action<SelectableCard>(this.upgradeSpell)));
 					for (int i = 0; i < theDeck.transform.childCount; i++)
 					{
@@ -2449,20 +2334,14 @@ namespace MagnificusMod
 						CardModificationInfo upgradeSpell = new CardModificationInfo();
 						upgradeSpell.nameReplacement = "+" + spell.displayedName + "+";
 						upgradeSpell.attackAdjustment = 1;
+						if (spell.name == "mag_windspell")
+						{
+							upgradeSpell.negateAbilities = new List<Ability> { SigilCode.WindSpell.ability };
+							upgradeSpell.AddAbilities(SigilCode.WhirlwindSpell.ability);
+						}
 						spell.mods.Add(upgradeSpell);
 						selectedCards.Add(spell);
 						spellCards.Remove(spellCards[selected]);
-					}
-					if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("ItemSpells"))
-					{
-						ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.ItemSpells);
-						foreach (CardInfo spell in selectedCards)
-						{
-							CardModificationInfo spellMod = new CardModificationInfo();
-							spellMod.bloodCostAdjustment = -spell.BloodCost;
-							spellMod.abilities.Add(SigilCode.OneTimeSpell.ability);
-							spell.mods.Add(spellMod);
-						}
 					}
 					yield return new WaitForSeconds(0.2f);
 					for (int i = 0; i < 3; i++)
@@ -2499,7 +2378,7 @@ namespace MagnificusMod
 			public static IEnumerator NodeOutroSequence()
 			{
 				GameObject npc = GameObject.Find("Espeara");
-				Tween.LocalPosition(npc.transform, new Vector3(0, -30f, 36f), 4f, 0.375f);
+				Tween.LocalPosition(npc.transform, new Vector3(0, -37f, 36f), 3.75f, 0.375f);
 				Tween.Rotation(npc.transform, Quaternion.Euler(0, 0, 0), 4f, 0.375f);
 				yield return new WaitForSeconds(4.5f);
 				npc.SetActive(false);
@@ -2563,6 +2442,7 @@ namespace MagnificusMod
 					GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 					theDeck.transform.parent = GameObject.Find("GameTable").transform;
 					theDeck.transform.localPosition = new Vector3(0, 5.01f, -2f);
+					theDeck.transform.localScale = new Vector3(1, 1, 1);
 					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<DeckReviewSequencer>.Instance.cardArray.SelectCardFrom(deck, null, new Action<SelectableCard>(this.upgradeSpell)));
 					for (int i = 0; i < theDeck.transform.childCount; i++)
 					{
@@ -2661,7 +2541,7 @@ namespace MagnificusMod
 						{
 							listOfCards.Add(card);
 						}
-						listOfCards.RemoveAll((CardInfo x) => x.SpecialAbilities.Contains(SpecialTriggeredAbility.RandomCard) || x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x.traits.Contains(Trait.Terrain));
+						listOfCards.RemoveAll((CardInfo x) => x.SpecialAbilities.Contains(SpecialTriggeredAbility.RandomCard) || x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens));
 						listOfCards.RemoveAll((CardInfo x) => x.gemsCost.Count < 1);
 						listOfCards.RemoveAll((CardInfo x) => x.gemsCost.Count > 2);
 						GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
@@ -2815,19 +2695,20 @@ namespace MagnificusMod
 			public IEnumerator sequencer(CustomNode1 tradeCardsData)
 			{
 				this.done = false;
-				yield return new WaitForSeconds(1f);
 				GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.Choices, false, false);
+				yield return new WaitForSeconds(1f);
 				List<CardInfo> listOfCards = new List<CardInfo>();
 				foreach (CardInfo card in RunState.Run.playerDeck.Cards)
 				{
 					listOfCards.Add(card);
 				}
-				listOfCards.RemoveAll((CardInfo x) => x.SpecialAbilities.Contains(SpecialTriggeredAbility.RandomCard) || x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x.traits.Contains(Trait.Terrain));
+				listOfCards.RemoveAll((CardInfo x) => x.SpecialAbilities.Contains(SpecialTriggeredAbility.RandomCard) || x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens));
 				listOfCards.RemoveAll((CardInfo x) => x.gemsCost.Count < 1);
 				listOfCards.RemoveAll((CardInfo x) => x.gemsCost.Count > 2);
 				GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 				theDeck.transform.parent = GameObject.Find("GameTable").transform;
 				theDeck.transform.localPosition = new Vector3(0, 5.01f, -2f);
+				theDeck.transform.localScale = new Vector3(1, 1, 1);
 				Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<DeckReviewSequencer>.Instance.cardArray.SelectCardFrom(listOfCards, null, new Action<SelectableCard>(this.removeselectablecardfromdeck)));
 				for (int i = 0; i < theDeck.transform.childCount; i++)
 				{
@@ -2879,7 +2760,7 @@ namespace MagnificusMod
 
 			public IEnumerator NodeOutroSequence()
 			{
-
+				CustomTextDisplayerStuff.switchToSpeakerStyle(0);
 				GameObject npc = GameObject.Find("LonelyMage");
 				Tween.LocalScale(npc.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(1).Find("LeftEye"), new Vector3(1, 1, 0), 3, 1f);
 				Tween.LocalScale(npc.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(2).Find("RightEye"), new Vector3(-1, 0, -1), 3, 1f);
@@ -2892,9 +2773,22 @@ namespace MagnificusMod
 				}
 				yield return new WaitForSeconds(4.5f);
 				npc.SetActive(false);
-				GameObject.Destroy(GameObject.Find("EventCauldron"));
+				
 				Singleton<GameFlowManager>.Instance.TransitionToGameState(GameState.Map, null);
+
+				GameObject.Destroy(GameObject.Find("EventCauldron"));
 				yield break;
+			}
+
+			public void tradeCard(SelectableCard component)
+			{
+				Singleton<ViewManager>.Instance.SwitchToView(View.Default);
+				component.ExitBoard(0.3f, new Vector3(0f, 0f, -6f));
+				potion.ExitBoard(0.3f, new Vector3(0f, 0f, -6f));
+				RunState.Run.playerDeck.AddCard(potion.Info);
+				RunState.Run.playerDeck.RemoveCard(component.Info);
+				Tween.LocalPosition(Singleton<DeckSpellBook>.Instance.transform, new Vector3(0.75f, 5.65f, -7f), 0.55f, 0.35f, Tween.EaseInOut);
+				base.StartCoroutine(this.NodeOutroSequence());
 			}
 
 			public void cardpickingupscropt(SelectableCard component)
@@ -2902,19 +2796,32 @@ namespace MagnificusMod
 				if (doing) { return; }
 				if (done)
 				{
-					choice1.ExitBoard(0.3f, new Vector3(0, -0.5f, 0f));
-					choice2.ExitBoard(0.3f, new Vector3(0, 0.5f, 0f));
 					this.confirmStone.Exit();
 					Destroy(GameObject.Find("TESTSTONE"));
+
+					if (RunState.Run.playerDeck.Cards.FindAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens)).Count >= ((SaveManager.saveFile.ascensionActive && Generation.challenges.Contains("SmallSpellbook")) ? 4 : 8))
+					{
+						base.StartCoroutine(tradeSequence(component));
+						return;
+					}
+
+					choice2.gameObject.GetComponent<SineWaveMovement>().enabled = false;
+					choice2.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
+
+
 
 					base.StartCoroutine(this.NodeOutroSequence());
 				}
 				else
 				{
 					cardsChosen = 0;
-					choice1.gameObject.GetComponent<SineWaveMovement>().enabled = false;
+					if (choice1 != null)
+					{
+						choice1.gameObject.GetComponent<SineWaveMovement>().enabled = false;
+						choice1.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
+					}
+
 					choice2.gameObject.GetComponent<SineWaveMovement>().enabled = false;
-					choice1.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
 					choice2.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
 
 					Destroy(GameObject.Find("TESTSTONE"));
@@ -2925,6 +2832,51 @@ namespace MagnificusMod
 				}
 			}
 
+			public SelectableCard potion;
+
+			public IEnumerator tradeSequence(SelectableCard component)
+			{
+				Vector3 savePosition = component.transform.position;
+				component.transform.parent = GameObject.Find("GameTable").transform;
+				component.transform.position = savePosition;
+				component.coll.enabled = false;
+
+				Tween.LocalPosition(GameObject.Find("EventCauldron").transform, new Vector3(0.0327f, 5.88f, 3f), 1f, 0);
+
+				GameObject spellBook = new GameObject("DeckSpellBook");
+				spellBook.gameObject.AddComponent<MagnificusMod.DeckSpellBook>();
+				spellBook.transform.parent = GameObject.Find("GameTable").transform;
+				spellBook.transform.localPosition = new Vector3(4.5f, 27.5f, 3f);
+				spellBook.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
+				spellBook.transform.localRotation = Quaternion.Euler(65, 358, 0);
+
+				spellBook.GetComponent<DeckSpellBook>().initializeItems();
+				Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(spellBook.GetComponent<DeckSpellBook>().initialize(new Vector3(0f, 5.65f, 3.5f), 0.1f, false));
+				spellBook.GetComponent<DeckSpellBook>().refreshSpellBookCards(RunState.Run.playerDeck.Cards.FindAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens)));
+
+				CustomTextDisplayerStuff.switchToSpeakerStyle(2);
+				Singleton<ViewManager>.Instance.SwitchToView(View.TradingTopDown);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("WAIT!! YOUR SPELLBOOK IS FULL", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+				Tween.LocalPosition(component.transform, new Vector3(-1.8f, 5.75f, -2.15f), 0.13f, 0f, Tween.EaseInOut);
+				Tween.LocalRotation(component.transform, Quaternion.Euler(90, 0, 0), 0.13f, 0);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("GET RID OF ONE OF YOUR SPELLS, OR YOU WONT BE ABLE TO TAKE OUR POTION!!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+				yield return new WaitForSeconds(0.15f);
+				Tween.LocalPosition(Singleton<DeckSpellBook>.Instance.transform, new Vector3(0.75f, 5.65f, -1.75f), 0.35f, 0.15f, Tween.EaseIn);
+				yield return new WaitForSeconds(0.35f);
+
+				GameObject spellCards = Singleton<DeckSpellBook>.Instance.transform.Find("selectableSpells").gameObject;
+				potion = component;
+				component.coll.enabled = false;
+				for (int i = 0; i < spellCards.transform.childCount; i++)
+				{
+					SelectableCard component2 = spellCards.transform.GetChild(i).gameObject.GetComponent<SelectableCard>();
+
+					component2.Initialize(component2.Info, new Action<SelectableCard>(this.tradeCard), null, false, null);
+				}
+
+				yield break;
+			}
+
 			public IEnumerator spawnCards()
             {
 				List<CardInfo> deck = new List<CardInfo>();
@@ -2932,13 +2884,14 @@ namespace MagnificusMod
 				{
 					deck.Add(card);
 				}
-				deck.RemoveAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens) || x.HasAbility(Ability.RandomAbility) || x.HasAbility(Ability.EdaxioArms)  || x.HasAbility(Ability.EdaxioHead) || x.HasAbility(Ability.EdaxioLegs) || x.HasAbility(Ability.EdaxioTorso) || x.Abilities.Count < 1);
+				deck.RemoveAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens) || x.HasAbility(Ability.RandomAbility) || x.HasAbility(Ability.EdaxioArms)  || x.HasAbility(Ability.EdaxioHead) || x.HasAbility(Ability.EdaxioLegs) || x.HasAbility(Ability.EdaxioTorso) || x.HasAbility(Ability.PreventAttack) || x.Abilities.Count < 1);
 
 				Tween.LocalPosition(GameObject.Find("EventCauldron").transform, new Vector3(0, 5.88f, 2.5f), 0.5f, 0);
 
 				GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 				theDeck.transform.parent = GameObject.Find("GameTable").transform;
 				theDeck.transform.localPosition = new Vector3(0, 5.01f, -1f);
+				theDeck.transform.localScale = new Vector3(1, 1, 1);
 				Singleton<DeckReviewSequencer>.Instance.cardArray.InitializeGamepadGrid();
 				yield return Singleton<DeckReviewSequencer>.Instance.cardArray.SpawnAndPlaceCards(deck, null, Singleton<DeckReviewSequencer>.Instance.cardArray.GetNumRows(deck.Count), false, true);
 				yield return new WaitForSeconds(0.15f);
@@ -3034,6 +2987,7 @@ namespace MagnificusMod
 				GameObject.Instantiate(Resources.Load("prefabs\\specialnodesequences\\ConfirmStoneButton")).name = "TESTSTONE";
 				GameObject.Find("TESTSTONE").AddComponent<BoxCollider>().size = new Vector3(1.4f, 0.2f, 2.1f);
 				this.confirmStone = GameObject.Find("TESTSTONE").GetComponentInChildren<ConfirmStoneButton>();
+				GameObject.Find("TESTSTONE").transform.Find("Anim").Find("model").Find("ConfirmButton").Find("Quad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("wand_button.png");
 				GameObject.Find("TESTSTONE").transform.parent = GameObject.Find("GameTable").transform;
 				Tween.LocalPosition(GameObject.Find("TESTSTONE").transform, new Vector3(0, 5.03f, -2.6f), 0.15f, 0.1f, null, Tween.LoopType.None, null, null, true);
 				this.confirmStone.Enter();
@@ -3123,11 +3077,15 @@ namespace MagnificusMod
 						abilites.Add(choice2.Info.Abilities[i]);
                     }
 				}
+				potionMod.bloodCostAdjustment = 1;
 				if (abilites.Contains(Ability.PreventAttack))
-                {potionMod.bloodCostAdjustment = 1;}
+                {potionMod.bloodCostAdjustment++;}
 				potionMod.abilities.AddRange(abilites);
 				potion.mods.Add(potionMod);
 				component.SetInfo(potion);
+
+				GameObject.Destroy(choice1.gameObject);
+
 				Tween.LocalPosition(component.transform, new Vector3(0, 2.2f, 0.15f), 0.5f, 0);
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default);
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("IT IS DONE!!! GO TAKE IT!!", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
@@ -3182,7 +3140,9 @@ namespace MagnificusMod
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("A break from that endless darkness?", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Nevermind.. It's just potion making..", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return new WaitForSeconds(0.26f);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Oh, Hi Challenger!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						if (SavedVars.LearnedMechanics.Contains("beatlonely"))
+						{ yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Oh, Hi Challenger!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);} 
+						else { yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Wow, someone new!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null); }
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Just give me two cards of yours and we'll make a potion out of them!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You can later give this potion to your cards and they gain some silly effects!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Come on!! It will be fun!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
@@ -3202,7 +3162,7 @@ namespace MagnificusMod
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Woah.. What.. Is this place?", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("So bright..", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return new WaitForSeconds(0.26f);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Oh, Hi Challenger!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Oh, Hi there!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Let's make some potions!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Just hand over two cards and we'll be done with it..", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Come on!! It will be fun!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
@@ -3272,7 +3232,7 @@ namespace MagnificusMod
 				Singleton<GameFlowManager>.Instance.TransitionToGameState(GameState.Map, null);
 				copiedCard.gameObject.transform.localPosition = new Vector3(0.1396f, 1.2338f, 1.2726f);
 				GameObject.Find("CopyCardSequencer").transform.Find("EaselWithCard").Find("Easel").Find("EaselAnim").GetChild(3).gameObject.name = "SelectableCard";
-				GameObject.Find("CopyCardSequencer").transform.Find("EaselWithCard").Find("Easel").Find("EaselAnim").GetChild(3).gameObject.GetComponent<SelectableCard>().SetInfo(CardLoader.GetCardByName("mag_jrsage"));
+				GameObject.Find("CopyCardSequencer").transform.Find("EaselWithCard").Find("Easel").Find("EaselAnim").GetChild(3).gameObject.GetComponent<SelectableCard>().SetInfo(CardLoader.GetCardByName("JuniorSage"));
 				GameObject.Find("CopyCardSequencer").transform.Find("EaselWithCard").Find("Easel").Find("EaselAnim").GetChild(3).gameObject.GetComponent<SelectableCard>().renderInfo.baseInfo.abilities = new List<Ability>();
 				GameObject.Find("CopyCardSequencer").transform.Find("EaselWithCard").Find("Easel").Find("EaselAnim").GetChild(3).gameObject.GetComponent<SelectableCard>().renderInfo.baseInfo.displayedName = "";
 				GameObject.Find("CopyCardSequencer").transform.Find("EaselWithCard").Find("Easel").Find("EaselAnim").GetChild(3).gameObject.GetComponent<SelectableCard>().renderInfo.hidePortrait = true;
@@ -3323,6 +3283,7 @@ namespace MagnificusMod
 					GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 					theDeck.transform.parent = GameObject.Find("GameTable").transform;
 					theDeck.transform.localPosition = new Vector3(0, 5.01f, -1f);
+					theDeck.transform.localScale = new Vector3(1, 1, 1);
 					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<DeckReviewSequencer>.Instance.cardArray.SelectCardFrom(deck, null, new Action<SelectableCard>(this.removeselectablecardfromdeck)));
 					for (int i = 0; i < theDeck.transform.childCount; i++)
 					{
@@ -3348,12 +3309,13 @@ namespace MagnificusMod
 				GameObject.Find("CopyCardSequencer").transform.Find("EaselWithSlot").localPosition = new Vector3(1.69f, 6.55f, -0.39f);
 				GameObject.Find("CopyCardSequencer").transform.Find("EaselWithSlot").localRotation = Quaternion.Euler(0, 0, 0);
 				GameObject.Find("CopyCardSequencer").transform.Find("EaselWithSlot").gameObject.SetActive(true);
+				GameObject.Find("EaselWithSlot").transform.Find("SelectionSlot").localPosition = new Vector3(-0.175f, 0.25f, -0.3f);
 				GameObject.Find("EaselWithSlot").transform.Find("SelectionSlot").gameObject.GetComponent<SelectCardFromDeckSlot>().SetShown(true, true);
 				GameObject.Find("CopyCardSequencer").transform.Find("EaselWithCard").gameObject.SetActive(true);
 				if (GameObject.Find("CopyCardSequencer").transform.Find("EaselWithCard").Find("Easel").Find("EaselAnim").GetChild(3).gameObject.name == "SelectableCard")
 				{
-					GameObject.Find("CopyCardSequencer").transform.Find("EaselWithCard").Find("Easel").Find("EaselAnim").Find("SelectableCard").Find("Quad").Find("CardBase").Find("RenderStatsLayer").Find("BendableCard").Find("Mesh").gameObject.GetComponent<SkinnedMeshRenderer>().materials[0].mainTexture = Tools.getImage("magcardbackground.png");
-					GameObject.Find("CopyCardSequencer").transform.Find("EaselWithCard").Find("Easel").Find("EaselAnim").Find("SelectableCard").Find("Quad").Find("CardBase").Find("RenderStatsLayer").Find("BendableCard").Find("Mesh").gameObject.GetComponent<SkinnedMeshRenderer>().materials[1].mainTexture = Tools.getImage("magcardback.png");
+					GameObject.Find("CopyCardSequencer").transform.Find("EaselWithCard").Find("Easel").Find("EaselAnim").Find("SelectableCard").Find("Quad").Find("CardBase").Find("RenderStatsLayer").Find("BendableCard").Find("Mesh").gameObject.GetComponent<SkinnedMeshRenderer>().materials[0].mainTexture = Tools.getImage("finalecardback.png");
+					GameObject.Find("CopyCardSequencer").transform.Find("EaselWithCard").Find("Easel").Find("EaselAnim").Find("SelectableCard").Find("Quad").Find("CardBase").Find("RenderStatsLayer").Find("BendableCard").Find("Mesh").gameObject.GetComponent<SkinnedMeshRenderer>().materials[1].mainTexture = Tools.getImage("finalecardbacknobars.png");
 				}
 				component.transform.parent = GameObject.Find("EaselWithSlot").transform.Find("SelectionSlot");
 				component.transform.rotation = Quaternion.Euler(90, 0, 0);
@@ -3436,7 +3398,7 @@ namespace MagnificusMod
 						}
 						else
 						{
-							List<Ability> abilities = new List<Ability> { Ability.Sharp, Ability.Flying, Ability.Reach, Ability.ShieldGems, Ability.BuffNeighbours, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability, Ability.ExplodeOnDeath, Ability.SwapStats, SigilCode.MoxCycling.ability, Ability.GemDependant, SigilCode.FamiliarA.ability, Ability.GuardDog, Ability.DrawRabbits, Ability.RandomAbility };
+							List<Ability> abilities = new List<Ability> { Ability.Sharp, Ability.Flying, Ability.Reach, SigilCode.GemGuardianFix.ability, Ability.BuffNeighbours, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability, Ability.ExplodeOnDeath, Ability.SwapStats, SigilCode.MoxCycling.ability, Ability.GemDependant, SigilCode.FamiliarA.ability, Ability.GuardDog, Ability.DrawRabbits, Ability.RandomAbility };
 							mod.abilities.Add(abilities[Random.RandomRangeInt(0, abilities.Count)]);
 							if (!changedGemCost && component.Info.gemsCost.Count > 0)
 							{
@@ -3456,7 +3418,7 @@ namespace MagnificusMod
 
 							}
 						}
-						if (component.Info.name == "mag_gemfiend" && !gemfriend)
+						if (component.Info.name == "GemFiend" && !gemfriend)
 						{
 							random = Random.RandomRangeInt(0, 100);
 							if (random > 45)
@@ -3601,6 +3563,7 @@ namespace MagnificusMod
 				GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 				theDeck.transform.parent = GameObject.Find("GameTable").transform;
 				theDeck.transform.localPosition = new Vector3(0, 5.01f, -1f);
+				theDeck.transform.localScale = new Vector3(1, 1, 1);
 				Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<DeckReviewSequencer>.Instance.cardArray.SelectCardFrom(deck, null, new Action<SelectableCard>(this.removeselectablecardfromdeck)));
 				for (int i = 0; i < theDeck.transform.childCount; i++)
 				{
@@ -3672,10 +3635,11 @@ namespace MagnificusMod
 					{
 						listOfCards.Add(card);
 					}
-					listOfCards.RemoveAll((CardInfo x) => x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x.traits.Contains(Trait.Terrain));
+					listOfCards.RemoveAll((CardInfo x) => x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) );
 					GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 					theDeck.transform.parent = GameObject.Find("GameTable").transform;
 					theDeck.transform.localPosition = new Vector3(0, 5.01f, -2f);
+					theDeck.transform.localScale = new Vector3(1, 1, 1);
 					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<DeckReviewSequencer>.Instance.cardArray.SelectCardFrom(listOfCards, null, new Action<SelectableCard>(this.selectstatscard)));
 					for (int i = 0; i < theDeck.transform.childCount; i++)
 					{
@@ -3695,10 +3659,11 @@ namespace MagnificusMod
 				{
 					listOfCards.Add(card);
 				}
-				listOfCards.RemoveAll((CardInfo x) => x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x.traits.Contains(Trait.Terrain) || x == component.Info);
+				listOfCards.RemoveAll((CardInfo x) => x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x == component.Info);
 				GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 				theDeck.transform.parent = GameObject.Find("GameTable").transform;
 				theDeck.transform.localPosition = new Vector3(0, 5.01f, -2f);
+				theDeck.transform.localScale = new Vector3(1, 1, 1);
 				Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<DeckReviewSequencer>.Instance.cardArray.SelectCardFrom(listOfCards, null, new Action<SelectableCard>(this.removeselectablecardfromdeck)));
 				for (int i = 0; i < theDeck.transform.childCount; i++)
 				{
@@ -3730,7 +3695,11 @@ namespace MagnificusMod
 				GameObject.Instantiate(Resources.Load("prefabs\\specialnodesequences\\ConfirmStoneButton")).name = "TESTSTONE";
 				GameObject.Find("TESTSTONE").AddComponent<BoxCollider>().size = new Vector3(1.4f, 0.2f, 2.1f);
 				this.confirmStone = GameObject.Find("TESTSTONE").GetComponentInChildren<ConfirmStoneButton>();
+				GameObject.Find("TESTSTONE").transform.Find("Anim").Find("model").Find("ConfirmButton").Find("Quad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("mushroom_button.png");
 				Tween.Position(GameObject.Find("TESTSTONE").transform, new Vector3(table.transform.position.x, 14.75f, -2.6f + table.transform.position.z), 0.15f, 0.1f, null, Tween.LoopType.None, null, null, true);
+				this.confirmStone = GameObject.Find("TESTSTONE").GetComponentInChildren<ConfirmStoneButton>();
+				confirmStone.currentHighlightedColor = new Color(1, 0.666f, 0.05f, 1);
+				confirmStone.currentInteractableColor = new Color(0.75f, 0.666f, 0.05f, 1);
 				component.gameObject.GetComponent<BoxCollider>().enabled = true;
 				component.Initialize(component.Info, new Action<SelectableCard>(this.cardpickingupscropt));
 				firstComponent.gameObject.GetComponent<BoxCollider>().enabled = true;
@@ -3763,14 +3732,9 @@ namespace MagnificusMod
 						}
 					}
 				}
-				if (!SaveManager.saveFile.part3Data.deck.cardIdModInfos.ContainsKey("kill_" + component.Info.name))
-				{
-					SavedVars.KilledCards += component.Info.name + ";";
-					SaveManager.saveFile.part3Data.deck.cardIdModInfos.Add("kill_" + component.Info.name, component.Info.mods);
-				}
 				RunState.Run.playerDeck.RemoveCard(component.Info);
 				Tween.Position(firstComponent.transform, new Vector3(table.transform.position.x, 14.75f, -1f + table.transform.position.z), 0.15f, 0f, null, Tween.LoopType.None, null, null, true);
-				if (firstComponent.Info.name == "mag_bluemage" && component.Info.name == "mag_bluemage")
+				if (firstComponent.Info.name == "BlueMage" && component.Info.name == "BlueMage")
 				{
 					RunState.Run.playerDeck.RemoveCard(firstComponent.Info);
 					CardModificationInfo mods = new CardModificationInfo();
@@ -3781,7 +3745,7 @@ namespace MagnificusMod
 							mods.abilities.Add(ability);
 						}
 					}
-					firstComponent.SetInfo(CardLoader.GetCardByName("mag_sporebluemage"));
+					firstComponent.SetInfo(CardLoader.GetCardByName("BlueMage_Fused"));
 					RunState.Run.playerDeck.AddCard(firstComponent.Info);
 					RunState.Run.playerDeck.ModifyCard(firstComponent.Info, mods);
 					firstComponent.SetInfo(firstComponent.Info);
@@ -3805,6 +3769,7 @@ namespace MagnificusMod
 				GameObject.Find("TESTSTONE").GetComponent<BoxCollider>().size = new Vector3(0f, 0f, 0f);
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Twisted and warped by the fungi, a new card emerges. Only through pain can one grow…", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 				yield return new WaitForSeconds(0.3f);
+				this.confirmStone = null;
 				Destroy(GameObject.Find("TESTSTONE"));
 				yield break;
 			}
@@ -3813,17 +3778,18 @@ namespace MagnificusMod
 			{
 				done = false;
 				this.cd = 0;
-				yield return new WaitForSeconds(1f);
 				GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.Choices, false, false);
+				yield return new WaitForSeconds(1f);
 				List<CardInfo> listOfCards = new List<CardInfo>();
 				foreach (CardInfo card in RunState.Run.playerDeck.Cards)
 				{
 					listOfCards.Add(card);
 				}
-				listOfCards.RemoveAll((CardInfo x) => x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x.traits.Contains(Trait.Terrain));
+				listOfCards.RemoveAll((CardInfo x) => x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens));
 				GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 				theDeck.transform.parent = GameObject.Find("GameTable").transform;
 				theDeck.transform.localPosition = new Vector3(0, 5.01f, -2f);
+				theDeck.transform.localScale = new Vector3(1, 1, 1);
 				Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<DeckReviewSequencer>.Instance.cardArray.SelectCardFrom(listOfCards, null, new Action<SelectableCard>(this.selectstatscard)));
 				for (int i = 0; i < theDeck.transform.childCount; i++)
 				{
@@ -4335,6 +4301,8 @@ namespace MagnificusMod
 				{
 					Destroy(fireSlot);
 					Destroy(GameObject.Find("TBruins"));
+					confirmStone.Disable();
+					confirmStoneTwo.Disable();
 					Destroy(base.transform.Find("TESTSTONE").gameObject);
 					Destroy(base.transform.Find("TESTTWO").gameObject);
 					component.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
@@ -4361,15 +4329,12 @@ namespace MagnificusMod
 					GameObject.Find("TESTTWO").GetComponent<BoxCollider>().size = new Vector3(0f, 0f, 0f);
 					GameObject.Find("TESTTWO").SetActive(false);
 					List<CardInfo> deck = new List<CardInfo>(RunState.DeckList);
-					if (doneSacrifice)
-					{
-						deck.RemoveAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens));
-					}
-					deck.RemoveAll((CardInfo x) => x.Abilities.Count >= 4);
+					deck.RemoveAll((CardInfo x) => x.Abilities.Count >= 4 || x.HasTrait(Trait.EatsWarrens));
 					this.cardpickedfromdeck = new List<SelectableCard>();
 					GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 					theDeck.transform.parent = GameObject.Find("GameTable").transform;
 					theDeck.transform.localPosition = new Vector3(0, 5.01f, -1f);
+					theDeck.transform.localScale = new Vector3(1, 1, 1);
 					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<DeckReviewSequencer>.Instance.cardArray.SelectCardFrom(deck, null, new Action<SelectableCard>(this.removeselectablecardfromdeck)));
 					for (int i = 0; i < theDeck.transform.childCount; i++)
 					{
@@ -4388,6 +4353,8 @@ namespace MagnificusMod
 				SaveManager.SaveToFile();
 				Destroy(GameObject.Find("enchantmentSlot"));
 				Destroy(GameObject.Find("TBruins"));
+				confirmStone.Disable();
+				confirmStoneTwo.Disable();
 				Destroy(base.transform.Find("TESTSTONE").gameObject);
 				Destroy(base.transform.Find("TESTTWO").gameObject);
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
@@ -4430,54 +4397,43 @@ namespace MagnificusMod
 				if (component.Info.name == "mag_obelisk") { sacValue += 2; }
 
 				GameObject fireSlot = GameObject.Find("enchantmentSlot");
-				if (sacValue > 5)
-				{
-					sacValue = 5;
-				}
-				if (component.Info.HasTrait(Trait.EatsWarrens) && component.Info.Attack < 1) { sacValue = -1; } else if (component.Info.HasTrait(Trait.EatsWarrens) && component.Info.Attack >= 1) { sacValue = -2; }
+				if (sacValue > 5) sacValue = 5;
+				bool displeased = SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("DyingBreath");
 				fireSlot.GetComponent<Light>().intensity = 2;
+
+				Color color = new Color(1, 1, 1, 1);
+				string description = "";
+
+				if (displeased) ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.DyingBreath);
+
 				switch (sacValue)
 				{
-					case -1:
-						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("The Enchanted Grounds are displeased.", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-						fireSlot.transform.Find("Quad").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.6376f, 0.3f, 0.3f, 1);
-						fireSlot.transform.Find("FireAnim").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.6376f, 0.3f, 0.3f, 1);
-						fireSlot.GetComponent<Light>().color = new Color(1f, 0.3f, 0.3f, 1);
-						break;
-					case -2:
-						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("The Enchanted Grounds are very unhappy.", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-						fireSlot.transform.Find("Quad").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.6376f, 0, 0, 1);
-						fireSlot.transform.Find("FireAnim").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.6376f, 0, 0, 1);
-						fireSlot.GetComponent<Light>().color = new Color(1f, 0, 0, 1);
-						break;
 					case 2:
-						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("The Enchanted Grounds seem to be slightly improved.", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-						fireSlot.transform.Find("Quad").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.6376f, 1, 1, 1);
-						fireSlot.transform.Find("FireAnim").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.6376f, 1, 1, 1);
-						fireSlot.GetComponent<Light>().color = new Color(0.6376f, 1, 1, 1);
+						description = !displeased ? "seem to be slightly improved." : "are unsatisfied..";
+						color = !displeased ? new Color(0.65f, 1f, 1f, 1) : new Color(1, 0.175f, 0.175f, 1);
 						break;
 					case 3:
-						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("The Enchanted Grounds dimly light up with sacrifical energy.", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-						fireSlot.transform.Find("Quad").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.4f, 1, 1, 1);
-						fireSlot.transform.Find("FireAnim").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.4f, 1, 1, 1);
-						fireSlot.GetComponent<Light>().color = new Color(0.55f, 1, 1, 1);
+						description = !displeased ? "dimly light up with sacrifical energy." : "are displeased..";
+						color = !displeased ? new Color(0.45f, 1f, 1f, 1) : new Color(1f, 0.125f, 0.125f, 1);
 						break;
 					case 4:
-						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("The Enchanted Grounds light up with supernatural energy.", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-						fireSlot.transform.Find("Quad").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.25f, 1, 1, 1);
-						fireSlot.transform.Find("FireAnim").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.25f, 1, 1, 1);
-						fireSlot.GetComponent<Light>().color = new Color(0.25f, 1, 1, 1);
+						description = !displeased ? "light up with supernatural energy." : "are angered..";
+						color = !displeased ? new Color(0.25f, 1f, 1f, 1) : new Color(1f, 0.075f, 0.075f, 1);
 						break;
 					case 5:
-						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("The Enchanted Grounds are absolutely bursting with sacrifical energy.", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-						fireSlot.transform.Find("Quad").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0f, 1, 1, 1);
-						fireSlot.transform.Find("FireAnim").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0f, 1, 1, 1);
-						fireSlot.GetComponent<Light>().color = new Color(0f, 1, 1, 1);
+						description = !displeased ? "The Enchanted Grounds are absolutely bursting with sacrifical energy." : "The Enchanted Grounds are furious.";
+						color = !displeased ? new Color(0f, 1f, 1f, 1) : new Color(1f, 0f, 0f, 1);
 						break;
 				}
+
+				base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput(string.Format("The Enchanted Grounds {0}", description), -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
+				fireSlot.transform.Find("Quad").gameObject.GetComponent<MeshRenderer>().material.color = color;
+				fireSlot.transform.Find("FireAnim").gameObject.GetComponent<MeshRenderer>().material.color = color;
+				fireSlot.GetComponent<Light>().color = color;
+
 				List<CardModificationInfo> mods = component.Info.mods;
 				RunState.Run.playerDeck.RemoveCard(component.Info);
-				if (component.Info.name == "mag_crystalworm")
+				/*if (component.Info.name == "mag_crystalworm")
 				{
 					component.SetCardback(Tools.getImage("magcardback.png"));
 					component.Anim.SetFaceDown(true);
@@ -4487,8 +4443,8 @@ namespace MagnificusMod
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("But a tiny larva had emerged from the carcass.. You may keep it and add it to your deck..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 					component.Info.mods = mods;
 					RunState.Run.playerDeck.AddCard(component.Info);
-				}
-				else if (!component.Info.HasTrait(Trait.EatsWarrens))
+				}*/
+				if (!component.Info.HasTrait(Trait.EatsWarrens))
 				{
 
 					if (!SaveManager.saveFile.part3Data.deck.cardIdModInfos.ContainsKey("kill_" + component.Info.name))
@@ -4496,11 +4452,8 @@ namespace MagnificusMod
 						SavedVars.KilledCards += component.Info.name + ";";
 						SaveManager.saveFile.part3Data.deck.cardIdModInfos.Add("kill_" + component.Info.name, component.Info.mods);
 					}
-					component.Anim.PlayDeathAnimation();
-				} else
-                {
-					component.Anim.PlayDeathAnimation();
 				}
+				component.Anim.PlayDeathAnimation();
 				confirmStone.Exit();
 				confirmStoneTwo.Exit();
 				GameObject.Find("TESTSTONE").SetActive(false);
@@ -4617,36 +4570,20 @@ namespace MagnificusMod
 					this.confirmStoneTwo.Unpress();
 					Tween.LocalPosition(this.confirmStoneTwo.transform.parent.parent.parent, new Vector3(10f, 30.75f, -2.6f), 0.15f, 0.1f, null, Tween.LoopType.None, null, null, true);
 					Tween.LocalPosition(this.confirmStone.transform.parent.parent.parent, new Vector3(10f, 30.75f, -2.6f), 0.15f, 0.1f, null, Tween.LoopType.None, null, null, true);
-					List<List<Ability>> tier1 = new List<List<Ability>> { new List<Ability> { Ability.Flying, Ability.Reach, Ability.Submerge, Ability.ShieldGems, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability }, new List<Ability> { Ability.ExplodeOnDeath, Ability.ExplodeGems, Ability.GemDependant, SigilCode.FamiliarA.ability, Ability.EdaxioTorso, Ability.MoveBeside } };
-					List<List<Ability>> tier2 = new List<List<Ability>> { new List<Ability> { Ability.Sharp, Ability.Sniper, Ability.Flying, Ability.Reach, Ability.ShieldGems, Ability.BuffNeighbours, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability }, new List<Ability> { Ability.ExplodeOnDeath, Ability.SwapStats, Ability.EdaxioLegs, SigilCode.MoxCycling.ability, Ability.GemDependant, SigilCode.FamiliarA.ability, SigilCode.RandomPower.ability } };
-					List<List<Ability>> tier3 = new List<List<Ability>> { new List<Ability> { Ability.Sharp, Ability.Sniper, Ability.ShieldGems, Ability.BuffGems, Ability.DebuffEnemy, SigilCode.MagDropEmeraldOnDeath.ability, Ability.EdaxioHead, Ability.SplitStrike, SigilCode.FecundityCycle.ability }, new List<Ability> { Ability.EdaxioLegs, Ability.SwapStats, SigilCode.GemAbsorber.ability, SigilCode.MoxCycling.ability, SigilCode.MagDropSpear.ability, SigilCode.RandomPower.ability } };
-					List<List<Ability>> tier4 = new List<List<Ability>> { new List<Ability> { Ability.SplitStrike, Ability.Sniper, SigilCode.BlueMageDraw.ability, Ability.Deathtouch, Ability.EdaxioHead, SigilCode.FecundityCycle.ability }, new List<Ability> { SigilCode.MidasTouchA.ability, Ability.EdaxioArms, SigilCode.GemAbsorber.ability, Ability.DeleteFile, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability, SigilCode.RandomPower.ability } };
-					List<List<Ability>> tier5 = new List<List<Ability>> { new List<Ability> { Ability.SplitStrike, SigilCode.LifeSteal.ability, Ability.Tutor, Ability.VirtualReality, SigilCode.FecundityCycle.ability }, new List<Ability> { SigilCode.MidasTouchA.ability, Ability.DeleteFile, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability } };
-
-					List<List<Ability>> curses = new List<List<Ability>> { new List<Ability>(), new List<Ability> { Ability.ExplodeOnDeath, Ability.ExplodeGems, Ability.GemDependant, Ability.SwapStats, Ability.EdaxioLegs, Ability.MoveBeside, SigilCode.MoxCycling.ability, Ability.EdaxioTorso, SigilCode.RandomPower.ability } };
-					List<List<Ability>> curses2 = new List<List<Ability>> { new List<Ability>(), new List<Ability> { SigilCode.MidasTouchA.ability, Ability.DeleteFile, Ability.SwapStats, Ability.EdaxioArms, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability } };
+					List<List<Ability>> tier1 = new List<List<Ability>> { new List<Ability> { Ability.Flying, Ability.Reach, SigilCode.GemGuardianFix.ability, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability, SigilCode.MoxStrafe.ability }, new List<Ability> { Ability.ExplodeOnDeath, Ability.BuffEnemy, Ability.ExplodeGems, Ability.GemDependant, SigilCode.FamiliarA.ability, SigilCode.DiscardCards.ability, Ability.Submerge, Ability.MoveBeside, Ability.StrafePush, Ability.SwapStats } };
+					List<List<Ability>> tier2 = new List<List<Ability>> { new List<Ability> { Ability.Sharp, Ability.Sniper, Ability.Flying, Ability.Reach, SigilCode.GemGuardianFix.ability, Ability.BuffNeighbours, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability }, new List<Ability> { Ability.ExplodeOnDeath, Ability.SwapStats, Ability.EdaxioLegs, SigilCode.MoxCycling.ability, Ability.GemDependant, SigilCode.FamiliarA.ability, SigilCode.RandomPower.ability } };
+					List<List<Ability>> tier3 = new List<List<Ability>> { new List<Ability> { Ability.Sharp, Ability.Sniper, SigilCode.GemGuardianFix.ability, Ability.BuffGems, SigilCode.MagDropEmeraldOnDeath.ability, SigilCode.MagDropSapphireOnDeath.ability, Ability.EdaxioHead, Ability.SplitStrike, SigilCode.FecundityCycle.ability }, new List<Ability> { Ability.EdaxioLegs, Ability.SwapStats, SigilCode.GemAbsorber.ability, SigilCode.MoxCycling.ability, SigilCode.MagDropSpear.ability, SigilCode.RandomPower.ability } };
+					List<List<Ability>> tier4 = new List<List<Ability>> { new List<Ability> { Ability.SplitStrike, Ability.Sniper, SigilCode.BlueMageDraw.ability, SigilCode.OrluHit.ability, Ability.Deathtouch, Ability.EdaxioHead, SigilCode.FecundityCycle.ability, Ability.BuffGems, SigilCode.AstralProjection.ability, SigilCode.FrostyA.ability }, new List<Ability> { SigilCode.MidasTouchA.ability, Ability.EdaxioArms, SigilCode.GemAbsorber.ability, Ability.DeleteFile, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability, SigilCode.RandomPower.ability, SigilCode.WhirlwindSpell.ability, Ability.SwapStats } };
+					List<List<Ability>> tier5 = new List<List<Ability>> { new List<Ability> { Ability.SplitStrike, SigilCode.LifeSteal.ability, Ability.Tutor, SigilCode.OrluHit.ability, SigilCode.FrostyA.ability, SigilCode.FecundityCycle.ability, SigilCode.AstralProjection.ability }, new List<Ability> { SigilCode.MidasTouchA.ability, Ability.DeleteFile, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability, SigilCode.WhirlwindSpell.ability, SigilCode.RandomPower.ability,SigilCode.GemAbsorber.ability } };
 
 					var curseOrBless = SeededRandom.Range(0, 100, SaveManager.SaveFile.GetCurrentRandomSeed());
-					if (curseOrBless < 60)
-					{
-						curseOrBless = 0;
-					}
-					else
-					{
-						curseOrBless = 1;
-					}
+
+					curseOrBless = (curseOrBless >= 60 || SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("DyingBreath")) ? 1 : 0;
+
 					List<List<Ability>> tier = tier1;
 
 					switch (sacValue)
 					{
-						case -1:
-							tier = curses;
-							curseOrBless = 1;
-							break;
-						case -2:
-							tier = curses2;
-							curseOrBless = 1;
-							break;
 						case 1:
 							tier = tier1;
 							break;
@@ -4663,6 +4600,9 @@ namespace MagnificusMod
 							tier = tier5;
 							break;
 					}
+
+					if (component.Info.specialStatIcon != SpecialStatIcon.None ) { tier[0].RemoveAll((Ability x) => x == Ability.VirtualReality || x == Ability.EdaxioTorso || x == Ability.EdaxioArms || x == Ability.DeleteFile); tier[1].RemoveAll((Ability x) => x == Ability.VirtualReality || x == Ability.EdaxioTorso || x == Ability.EdaxioArms || x == Ability.DeleteFile); }
+
 					Ability selectedAbility = tier[curseOrBless][SeededRandom.Range(0, tier[curseOrBless].Count, SaveManager.SaveFile.GetCurrentRandomSeed())];
 					int hpChange = 0;
 					int atkChange = 0;
@@ -4692,12 +4632,9 @@ namespace MagnificusMod
 							}
 							else
 							{
-								hpChange = 2;
-								atkChange = 0;
-								if (component.Info.name != "mag_forcemage")
-								{
-									atkChange = 1;
-								}
+								bool doHp = (Random.RandomRangeInt(0, 100) > 45 || component.Info.name == "ForceMage");
+								hpChange = doHp ? 2 : 0;
+								atkChange = !doHp ? 1 : 0;
 								base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been blessed!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
 							}
 						}
@@ -4727,12 +4664,9 @@ namespace MagnificusMod
 							}
 							else
 							{
-								hpChange = 1;
-								atkChange = 0;
-								if (component.Info.name != "mag_forcemage")
-								{
-									atkChange = 1;
-								}
+								bool doHp = (Random.RandomRangeInt(0, 100) > 45 || component.Info.name == "ForceMage");
+								hpChange = doHp ? 1 : 0;
+								atkChange = !doHp ? 1 : 0;
 								base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been blessed!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
 							}
 						}
@@ -4740,12 +4674,9 @@ namespace MagnificusMod
 					else if (selectedAbility == Ability.EdaxioHead)
 					{
 						selectedAbility = Ability.None;
-						hpChange = 1;
-						atkChange = 0;
-						if (component.Info.name != "mag_forcemage")
-						{
-							atkChange = 1;
-						}
+						bool doHp = (Random.RandomRangeInt(0, 100) > 45 || component.Info.name == "ForceMage");
+						hpChange = doHp ? 2 : 0;
+						atkChange = !doHp ? 1 : 0;
 						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been blessed!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
 					}
 					else if (selectedAbility == Ability.EdaxioArms)
@@ -4758,17 +4689,7 @@ namespace MagnificusMod
 						hpChange = curHp;
 						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been cursed with Glass Cannon!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
 					}
-					else if (selectedAbility == Ability.VirtualReality)
-					{
-						selectedAbility = Ability.None;
-						hpChange = 3;
-						atkChange = 0;
-						if (component.Info.name != "mag_forcemage")
-						{
-							atkChange = 2;
-						}
-						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been blessed!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-					}
+
 					else if (selectedAbility == Ability.GemDependant)
 					{
 						if (component.Info.HasAbility(Ability.GemDependant))
@@ -4777,12 +4698,8 @@ namespace MagnificusMod
 						}
 						if (sacValue > 1)
 						{
-							hpChange = 2;
-							atkChange = 1;
-						}
-						if (component.Info.name == "mag_forcemage")
-						{
-							atkChange = 0;
+							hpChange = 1;
+							atkChange = (component.Info.name != "ForceMage") ? 1 : 0;
 						}
 						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been cursed!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
 
@@ -4795,10 +4712,10 @@ namespace MagnificusMod
 						}
 						if (sacValue > 1)
 						{
-							hpChange = 2;
-							atkChange = 1;
+							hpChange = 1;
+							atkChange = (component.Info.name != "ForceMage") ? 1 : 0;
 						}
-						if (component.Info.name == "mag_forcemage")
+						if (component.Info.name == "ForceMage")
 						{
 							atkChange = 0;
 						}
@@ -4841,6 +4758,8 @@ namespace MagnificusMod
 							base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been cursed!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
 						}
 					}
+
+
 
 					component.SetCardback(Tools.getImage("magcardback.png"));
 					component.Anim.PlayTransformAnimation();
@@ -4901,8 +4820,8 @@ namespace MagnificusMod
 				{
 					deck.Add(card);
 				}
-				//deck.RemoveAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens));
-				deck.RemoveAll((CardInfo x) => x.Abilities.Count >= 4);
+
+				deck.RemoveAll((CardInfo x) => x.Abilities.Count >= 4 || x.HasTrait(Trait.EatsWarrens));
 				/*
 				int dength = deck.Count;
 				bool flag = deck.Count > 12;
@@ -4934,10 +4853,17 @@ namespace MagnificusMod
 					gameObject = null;
 					component = null;
 					num = i;
+
+
+				 List<CardInfo> cards = new List<CardInfo> (RunState.Run.playerDeck.Cards);
+				cards.RemoveAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens));
+
+
 				}*/
 				GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 				theDeck.transform.parent = GameObject.Find("GameTable").transform;
 				theDeck.transform.localPosition = new Vector3(0, 5.01f, -1f);
+				theDeck.transform.localScale = new Vector3(1, 1, 1);
 				Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<DeckReviewSequencer>.Instance.cardArray.SelectCardFrom(deck, null, new Action<SelectableCard>(this.removeselectablecardfromdeck)));
 				for (int i = 0; i < theDeck.transform.childCount; i++)
 				{
@@ -5082,25 +5008,25 @@ namespace MagnificusMod
 				SaveManager.SaveToFile();
 				yield return new WaitForSeconds(1.5f);
 				magnificusAnimationController.SetHeadTrigger("brush_vertical_1");
-				AudioController.Instance.PlaySound2D("magnificus_brush_splatter_color", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
+				AudioController.Instance.PlaySound2D("magnificus_brush_splatter_color", MixerGroup.None, 0.125f, 0f, null, null, null, null, false);
 				yield return new WaitForSeconds(1.25f);
 				magnificusAnimationController.SetHeadTrigger("brush_vertical_2");
-				AudioController.Instance.PlaySound2D("magnificus_brush_splatter_bleach", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
+				AudioController.Instance.PlaySound2D("magnificus_brush_splatter_bleach", MixerGroup.None, 0.125f, 0f, null, null, null, null, false);
 				yield return new WaitForSeconds(1.25f);
 				magnificusAnimationController.SetHeadTrigger("brush_vertical_3");
-				AudioController.Instance.PlaySound2D("magnificus_brush_splatter_color", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
+				AudioController.Instance.PlaySound2D("magnificus_brush_splatter_color", MixerGroup.None, 0.125f, 0f, null, null, null, null, false);
 				yield return new WaitForSeconds(1.25f);
 				magnificusAnimationController.SetHeadTrigger("brush_vertical_4");
-				AudioController.Instance.PlaySound2D("magnificus_brush_splatter_bleach", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
+				AudioController.Instance.PlaySound2D("magnificus_brush_splatter_bleach", MixerGroup.None, 0.15f, 0f, null, null, null, null, false);
 				yield return new WaitForSeconds(0.75f);
 				magnificusAnimationController.SetHeadTrigger("brush_vertical_1");
-				AudioController.Instance.PlaySound2D("magnificus_brush_splatter_bleach", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
+				AudioController.Instance.PlaySound2D("magnificus_brush_splatter_bleach", MixerGroup.None, 0.15f, 0f, null, null, null, null, false);
 				yield return new WaitForSeconds(0.75f);
 				magnificusAnimationController.SetHeadTrigger("brush_vertical_2");
-				AudioController.Instance.PlaySound2D("magnificus_brush_splatter_color", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
+				AudioController.Instance.PlaySound2D("magnificus_brush_splatter_color", MixerGroup.None, 0.15f, 0f, null, null, null, null, false);
 				yield return new WaitForSeconds(1.5f);
 				magnificusAnimationController.SetHeadTrigger("brush_vertical_3");
-				AudioController.Instance.PlaySound2D("magnificus_brush_splatter_color", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
+				AudioController.Instance.PlaySound2D("magnificus_brush_splatter_color", MixerGroup.None, 0.15f, 0f, null, null, null, null, false);
 				File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(true, true)));
 				AudioController.Instance.StopAllLoops();
 				Singleton<InteractionCursor>.Instance.SetHidden(true);
@@ -5155,7 +5081,7 @@ namespace MagnificusMod
 						deck.Add(card);
 					}
 				}
-				deck.RemoveAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens));
+				deck.RemoveAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens) || x.name.Contains("edaxio"));
 				cardChoice = new List<SelectableCard>();
 				for (int i = 0; i < 3; i++)
 				{
@@ -5323,7 +5249,8 @@ namespace MagnificusMod
 			{
 				if (component.Anim.FaceDown)
 				{
-					component.Anim.SetFaceDown(false);
+					Tween.LocalRotation(component.transform, new Vector3(90, 0, 0), 0.1f, 0);
+					component.SetFaceDown(false);
 					if (!string.IsNullOrEmpty(component.Info.description) && !ProgressionData.IntroducedCard(component.Info))
 					{
 						base.StartCoroutine(tutorialtext(component));
@@ -5332,8 +5259,24 @@ namespace MagnificusMod
 				}
 				else
 				{
-					RunState.Run.playerDeck.AddCard(component.Info);
+					ViewManager instance = Singleton<ViewManager>.Instance;
+					instance.ViewChanged = (Action<View, View>)Delegate.Remove(instance.ViewChanged, new Action<View, View>(ViewChanged));
+
+					Singleton<ViewController>.Instance.LockState = ViewLockState.Locked;
+					Singleton<ViewController>.Instance.allowedViews = new List<View>();
+					component.coll.enabled = false;
 					cardpickedfromdeck.Remove(component);
+
+					if (RunState.Run.playerDeck.Cards.FindAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens)).Count >= ( (SaveManager.saveFile.ascensionActive && Generation.challenges.Contains("SmallSpellbook")) ? 4 : 8) )
+					{
+						base.StartCoroutine(tradeSequence(component));
+						return;
+					}
+					Singleton<ViewManager>.Instance.SwitchToView(View.Choices);
+
+					if (Singleton<DeckSpellBook>.Instance != null) 
+						GameObject.Destroy(Singleton<DeckSpellBook>.Instance.gameObject);
+					RunState.Run.playerDeck.AddCard(component.Info);
 					foreach (SelectableCard component2 in cardpickedfromdeck)
 					{
 						component2.ExitBoard(0.3f, new Vector3(0f, 0f, 6f));
@@ -5346,34 +5289,116 @@ namespace MagnificusMod
 			public static IEnumerator tutorialtext(SelectableCard component)
 			{
 				float savedPos = component.transform.localPosition.x;
+				component.coll.enabled = false;
 				Tween.LocalPosition(component.transform, new Vector3(0, 6.45f, -2.5f), 0.1f, 0);
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput(component.Info.description, -1.5f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 				Tween.LocalPosition(component.transform, new Vector3(savedPos, 5.01f, -1.5f), 0.1f, 0);
+				component.coll.enabled = true;
 			}
 
-			public static IEnumerator tookCard(SelectableCard component)
+			public IEnumerator tradeSequence(SelectableCard component)
 			{
-				component.Anim.SetFaceDown(true);
+				foreach (SelectableCard component2 in cardpickedfromdeck)
+				{
+					component2.ExitBoard(0.3f, new Vector3(0f, 0f, 6f));
+				}
+
+	
+
+				Singleton<ViewManager>.Instance.SwitchToView(View.TradingTopDown);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Ah, but your spell book is full..", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+				Tween.LocalPosition(component.transform, new Vector3(-1.8f, 5.75f, -2.15f), 0.13f, 0f, Tween.EaseInOut);
+				if (!SavedVars.LearnedMechanics.Contains("spelltrade"))
+                {
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Either discard this one...", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+				}
+				yield return new WaitForSeconds(0.15f);
+				Tween.LocalPosition(Singleton<DeckSpellBook>.Instance.transform, new Vector3(0.75f, 5.65f, -1.75f), 0.35f, 0.15f, Tween.EaseIn);
+				yield return new WaitForSeconds(0.35f);
+				if (!SavedVars.LearnedMechanics.Contains("spelltrade"))
+				{
+					SavedVars.LearnedMechanics += "spelltrade;";
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Or, remove one of your spells..", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+				}
+
+				GameObject spellCards = Singleton<DeckSpellBook>.Instance.transform.Find("selectableSpells").gameObject;
+
+				component.coll.enabled = true;
+				component.Initialize(component.Info, new Action<SelectableCard>(this.tradeCard), null, false, null);
+				toTake = component;
+				for (int i = 0; i < spellCards.transform.childCount; i++)
+				{
+					SelectableCard component2 = spellCards.transform.GetChild(i).gameObject.GetComponent<SelectableCard>();
+
+					component2.Initialize(component2.Info, new Action<SelectableCard>(this.tradeCard), null, false, null);
+				}
+
+				yield break;
+			}
+
+			public SelectableCard toTake;
+
+			public void tradeCard(SelectableCard component)
+            {
+				bool isReplace = component != toTake;
+				if (!isReplace) {
+
+					Tween.LocalPosition(Singleton<DeckSpellBook>.Instance.transform, new Vector3(0.75f, 5.65f, -7f), 0.35f, 0f, Tween.EaseInOut);
+					base.StartCoroutine(tookCard(toTake, false));
+					return;
+				}
+				component.ExitBoard(0.3f, new Vector3(0f, 0f, -6f));
+				RunState.Run.playerDeck.AddCard(toTake.Info);
+				RunState.Run.playerDeck.RemoveCard(component.Info);
+				Tween.LocalPosition(Singleton<DeckSpellBook>.Instance.transform, new Vector3(0.75f, 5.65f, -7f), 0.55f, 0.35f, Tween.EaseInOut);
+				base.StartCoroutine(tookCard(toTake, false, true));
+			}
+
+			public static IEnumerator tookCard(SelectableCard component, bool didTake = true, bool didDidTake = false)
+			{
+				component.coll.enabled = false;
+				component.SetFaceDown(true);
 				component.gameObject.GetComponent<BoxCollider>().size = new Vector3(0, 0, 0);
-				Tween.LocalPosition(component.transform, new Vector3(0, 5.65f, -2f), 0.1f, 0);
-				yield return new WaitForSeconds(0.5f);
-				Tween.LocalPosition(component.transform, new Vector3(0, 15f, 5f), 0.35f, 0);
+				if (didDidTake) { yield return new WaitForSeconds(0.7f); }
+				if (didTake)
+					Tween.LocalPosition(component.transform, new Vector3(0, 5.65f, -2f), 0.1f, 0);
+					yield return new WaitForSeconds(0.5f);
+					Tween.LocalPosition(component.transform, new Vector3(0, 15f, 5f), 0.35f, 0);
 				yield return new WaitForSeconds(0.36f);
+				if (Singleton<DeckSpellBook>.Instance != null)
+					GameObject.Destroy(Singleton<DeckSpellBook>.Instance.gameObject);
 				component.ExitBoard(0.3f, new Vector3(0f, 0f, -6f));
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
-				bool flag3 = Singleton<GameFlowManager>.Instance != null;
-				if (flag3)
-				{
+				if (Singleton<GameFlowManager>.Instance != null)
 					Singleton<GameFlowManager>.Instance.TransitionToGameState(GameState.Map, null);
-				}
 				SaveManager.SaveToFile(true);
 			}
 
 			public IEnumerator sequencer(SpellCardChoice tradeCardsData)
 			{
-				//Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine((Singleton<CardDrawPiles>.Instance as CardDrawPiles3D).Pile.SpawnCards(SaveManager.SaveFile.CurrentDeck.Cards.Count, 1f));
+				//Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine((Singleton<CardDrawPiles>.Instance as CardDrawPiles3D).Pile.SpawnCards(RunState.Run.playerDeck.Cards.Count, 1f));
 				Singleton<ViewManager>.Instance.SwitchToView(View.Choices, false, true);
 				yield return new WaitForSeconds(1f);
+
+				if (RunState.Run.playerDeck.Cards.FindAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens)).Count > 0)
+				{
+					Singleton<ViewManager>.Instance.Controller.SwitchToControlMode(ViewController.ControlMode.CardChoice);
+					Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Unlocked;
+					ViewManager instance = Singleton<ViewManager>.Instance;
+					instance.ViewChanged = (Action<View, View>)Delegate.Combine(instance.ViewChanged, new Action<View, View>(ViewChanged));
+
+					GameObject spellBook = new GameObject("DeckSpellBook");
+					spellBook.gameObject.AddComponent<MagnificusMod.DeckSpellBook>();
+					spellBook.transform.parent = GameObject.Find("GameTable").transform;
+					spellBook.transform.localPosition = new Vector3(4.5f, 27.5f, 3f);
+					spellBook.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
+					spellBook.transform.localRotation = Quaternion.Euler(65, 358, 0);
+
+					spellBook.GetComponent<DeckSpellBook>().initializeItems();
+					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(spellBook.GetComponent<DeckSpellBook>().initialize(new Vector3(0f, 5.65f, 3.5f), 0.1f, false));
+					spellBook.GetComponent<DeckSpellBook>().refreshSpellBookCards(RunState.Run.playerDeck.Cards.FindAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens)));
+				}
+
 				//float pauseTime = 0.25f;
 				List<CardInfo> spellCards = new List<CardInfo>();
 				foreach (CardInfo carde in CardLoader.allData)
@@ -5395,58 +5420,71 @@ namespace MagnificusMod
 					selectedCards.Add(spellCards[selected]);
 					spellCards.Remove(spellCards[selected]);
 				}
-				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("ItemSpells"))
-				{
-					ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.ItemSpells);
-					foreach(CardInfo spell in selectedCards)
-                    {
-						CardModificationInfo spellMod = new CardModificationInfo();
-						spellMod.bloodCostAdjustment = -spell.BloodCost;
-						spellMod.abilities.Add(SigilCode.OneTimeSpell.ability);
-						spell.mods.Add(spellMod);
-                    }
-				}
-				CardInfo card = CardLoader.GetCardByName("mag_jrsage");//Singleton<SelectableCardArray>.Instance.TweenInCard(component.transform, new Vector3(-1.5f + a, 5.03f, -1.5f), 0, true);
+
+				CardInfo card = CardLoader.GetCardByName("JuniorSage");//Singleton<SelectableCardArray>.Instance.TweenInCard(component.transform, new Vector3(-1.5f + a, 5.03f, -1.5f), 0, true);
 				for (int i = 0; i < 3; i++)
 				{
 					float a = 1.5f;
 					a *= i;
-					yield return new WaitForSeconds(Time.deltaTime);
-					yield return new WaitForSeconds(Time.deltaTime);
+
 					GameObject gameObject = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
 					gameObject.transform.SetParent(base.transform);
 					SelectableCard component = gameObject.GetComponent<SelectableCard>();
-					component.Anim.SetFaceDown(true);
 					component.Initialize(selectedCards[i], new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardSelected), null, false, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardInspected));
 					component.SetEnabled(false);
 					component.Anim.PlayQuickRiffleSound();
 					component.Initialize(selectedCards[i], new Action<SelectableCard>(this.cardpickingupscropt), null, false, null);
-					yield return new WaitForSeconds(Time.deltaTime);
+
 					component.GetComponent<Collider>().enabled = true;
 					Singleton<SelectableCardArray>.Instance.displayedCards.Add(component);
-					component.Anim.SetFaceDown(true);
+
+					component.SetFaceDown(true);
+					component.FaceDown = true;
 					component.SetCardback(Tools.getImage("magcardback.png"));
 					yield return new WaitForSeconds(0.1f);
 					Singleton<SelectableCardArray>.Instance.TweenInCard(component.transform, new Vector3(-1.5f + a, 5.03f, -1.5f), 0, true);
-					yield return new WaitForSeconds(Time.deltaTime * 0f);
 					this.cardpickedfromdeck.Add(component);
-					yield return new WaitForSeconds(Time.deltaTime);
 					this.cd++;
-					gameObject = null;
-					component = null;
+
+					component.CursorEntered = (Action<MainInputInteractable>)Delegate.Combine(component.CursorEntered, new Action<MainInputInteractable>(delegate (MainInputInteractable m)
+					{
+						if (component.FaceDown)
+						{
+							Tween.LocalRotation(component.transform, new Vector3(90, 3, 0), 0.1f, 0);
+						}
+						else
+						{
+							Tween.LocalPosition(component.transform.Find("Quad").Find("CardBase"), new Vector3(0, 0, -0.1f), 0.1f, 0);
+						}
+					}));
+
+					component.CursorExited = (Action<MainInputInteractable>)Delegate.Combine(component.CursorExited, new Action<MainInputInteractable>(delegate (MainInputInteractable m)
+					{
+						Tween.LocalRotation(component.transform, new Vector3(90, 0, 0), 0.1f, 0);
+						Tween.LocalPosition(component.transform.Find("Quad").Find("CardBase"), Vector3.zero, 0.1f, 0);
+					}));
+
 				}
 				yield break;
 			}
 
+			private void ViewChanged(View newView, View oldView)
+			{
+				if (Singleton<DeckSpellBook>.Instance == null) return;
+				if (newView != View.MapDeckReview)
+				{
+					Tween.LocalPosition(Singleton<DeckSpellBook>.Instance.transform, new Vector3(0f, 5.65f, 3.5f), 0.3f, 0);
+				}
+				else
+				{
+					Tween.LocalPosition(Singleton<DeckSpellBook>.Instance.transform, new Vector3(0f, 5.65f, 1.75f), 0.3f, 0);
+				}
+			}
+
+
 			public int i = 0;
 
 			public int cd = 0;
-
-			public int selectingoptions = 3;
-
-			public int timesDone = 0;
-
-			public int sacValue = 1;
 
 			public bool dead = false;
 
@@ -5455,10 +5493,6 @@ namespace MagnificusMod
 			public List<SelectableCard> cardpickedfromdeck = new List<SelectableCard>();
 
 			public List<SelectableCard> created = new List<SelectableCard>();
-
-			CardPile deckPile;
-
-			public int card;
 
 		}
 

@@ -28,13 +28,13 @@ namespace MagnificusMod
 	{
 
 		public readonly static SpecialTriggeredAbility ManaTutorial = SpecialTriggeredAbilityManager.Add(PluginGuid, "Mana Cost", typeof(SpecialAbilities.ManaCost)).Id;
-		public readonly static SpecialTriggeredAbility Romance = SpecialTriggeredAbilityManager.Add(PluginGuid, "Lesbians", typeof(SpecialAbilities.Lesbiane)).Id;
 		public readonly static SpecialTriggeredAbility OuroChange = SpecialTriggeredAbilityManager.Add(PluginGuid, "Ouro Random", typeof(SpecialAbilities.OuroRandomize)).Id;
 		public readonly static SpecialTriggeredAbility CustomPortrait = SpecialTriggeredAbilityManager.Add(PluginGuid, "Custom Portrait", typeof(SpecialAbilities.CustomPortraited)).Id;
 		public readonly static SpecialTriggeredAbility PotionStuff = SpecialTriggeredAbilityManager.Add(PluginGuid, "PotionStuff", typeof(SpecialAbilities.Potion)).Id;
 		public readonly static SpecialTriggeredAbility DeathCardPortrait = SpecialTriggeredAbilityManager.Add(PluginGuid, "DeathCardPortrait", typeof(SpecialAbilities.MagDeathCard)).Id;
 		public static int spellsPlayed = 0;
 		public static Sprite[] GBCmanaCostTextures = new Sprite[5];
+		public static Sprite[] ControlsHintFrames = new Sprite[2];
 		private void Start()
         {
 			if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("zorro.inscryption.infiniscryption.packmanager"))
@@ -61,6 +61,7 @@ namespace MagnificusMod
 			Sigils.BMDraw();
 			Sigils.DropRuby();
 			Sigils.DropEmerald();
+			Sigils.DropSapphire();
 			Sigils.DropSpear();
 			Sigils.GemGuard();
 			Sigils.GemAbsorb();
@@ -89,7 +90,11 @@ namespace MagnificusMod
 			Sigils.MoxStrf();
 			Sigils.PlatingWork();
 			Sigils.Animator();
+			Sigils.ProjectorSigil();
 			Sigils.AddLifeSteal();
+			Sigils.BoneMarrows();
+			Sigils.SelectMox();
+			Sigils.GemReckoning();
 
 			SigilCode.CounterBatteryPower.InitStatIconAndAbility();
 			SigilCode.SpellPower.InitStatIconAndAbility();
@@ -143,6 +148,9 @@ namespace MagnificusMod
 			Cards.AddMasterBG();
 			Cards.AddMasterOB();
 			Cards.AddMagnusMox();
+			Cards.AddSapphireMech();
+			Cards.AddMidasCard();
+			Cards.AddJoker();
 
 			Cards.AddMasterMagnus();
 			Cards.AddMasterMagnus2();
@@ -169,7 +177,6 @@ namespace MagnificusMod
 			Cards.ChangeStinkbug();
 			Cards.ChangeOuroboros();
 			Cards.AddDruid();
-			Cards.ChangeBullFrog();
 			Cards.ChangePackrat();
 			//Cards.ChangeAmalgam();
 			Cards.AddBossExclusive();
@@ -199,13 +206,23 @@ namespace MagnificusMod
 			Cards.AddRuneMage();
 			Cards.AddSnipeSage();
 			Cards.AddMaux();
+			Cards.AddGourmage();
 
-			Cards.AddRascalPack();
-			Cards.AddRascal();
+			//Cards.AddRascalPack();
+			//Cards.AddRascal();
+			Cards.AddDefaultAstralProjection();
+			Cards.AddAstralSorcererProjection();
+			Cards.AddAstralProjector();
 			Cards.AddGemboundRipper();
 			Cards.AddMoxMage();
 			Cards.AddErraticScholar();
 			Cards.AddValkyrie();
+			Cards.AddPrismaticShards();
+			Cards.AddTutorWorm();
+			Cards.AddRubyMenace();
+			Cards.AddBleenesMonster();
+			Cards.AddOrcUnderling();
+			Cards.AddCrystalSage();
 
 			/*
 			ChangeStump();
@@ -216,16 +233,14 @@ namespace MagnificusMod
 			Cards.AddGnome();
 			Cards.AddScubaGnome();
 
+			Sigils.FlameSpellAbility();
 			Sigils.HPSpellAbility();
 			Sigils.ATKSpellAbility();
 			Sigils.FrozenAbility();
 			Sigils.FrostSpellAbility();
-			Sigils.TargetFrostSpellAbility();
-			Sigils.GoldSpellAbility();
 			Sigils.WindSpellAbility();
 			Sigils.WhirlwindSpellAbility();
 			Sigils.WaterSpellAbility();
-			Sigils.FlameSpellAbility();
 			Sigils.TargetFlameSpellAbility();
 			Sigils.MagnusSpellAbility();
 			Sigils.VaseofGreedAbility();
@@ -236,15 +251,14 @@ namespace MagnificusMod
 			Sigils.RageAbility();
 			Sigils.CalculusAbility();
 
+
 			Cards.AddHPspell();
 			Cards.AddATKspell();
 			Cards.AddFrostspell();
-			Cards.AddTargetFrostSpell();
-			Cards.AddGoldspell();
 			Cards.AddWindspell();
 			Cards.AddWaterspell();
-			Cards.AddFlamespell();
 			Cards.AddTargetFlameSpell();
+			Cards.AddFlameSpell();
 			Cards.AddMagnusspell();
 			Cards.AddVaseofgreed();
 			Cards.AddTrasmogification();
@@ -259,11 +273,12 @@ namespace MagnificusMod
 			Cards.AddSeniorSage();
 			Cards.AddWhiteSmith();
 			Cards.AddPuppeteer();
-			Cards.AddCoffeMage();//<3
-			Cards.AddTeaMage();//<3
+			Cards.AddCoffeMage();//cider
+			Cards.AddTeaMage();//brewery
 			Cards.AddSodaMage();
+			Cards.AddMasterKraken();
 
-			Cards.AddDrake();
+			Cards.AddChaosMage();
 			Cards.AddPheonix();
 			Cards.AddBleenehound();
 			Cards.AddFire();
@@ -286,18 +301,12 @@ namespace MagnificusMod
 			Cards.AddSaturn();
 			Cards.AddEarth();
 
+
+
 			Cards.AddDeathCard();
 			try
 			{
-				bool isAscension = SaveFile.IsAscension;
-				if (isAscension)
-				{
-					KayceeStorage.IsKaycee = true;
-				}
-				else
-				{
-					KayceeStorage.IsKaycee = false;
-				}
+				KayceeStorage.IsKaycee = SaveFile.IsAscension;
 			}
 			catch
 			{
@@ -310,10 +319,17 @@ namespace MagnificusMod
 			Sprite mana1 = Tools.getSprite("mana_pixel cost 1.png");
 			Sprite mana2 = Tools.getSprite("mana_pixel cost 2.png");
 			GBCmanaCostTextures = new Sprite[5];
+			GBCmanaCostTextures[0] = null;
 			GBCmanaCostTextures[1] = mana1;
 			GBCmanaCostTextures[2] = mana2;
 			GBCmanaCostTextures[3] = mana2;
 			GBCmanaCostTextures[4] = mana2;
+
+			ControlsHintFrames = new Sprite[4];
+			ControlsHintFrames[0] = Tools.getSprite("controlshint_tab.png");
+			ControlsHintFrames[1] = Tools.getSprite("controlshint_tab_faded.png");
+			ControlsHintFrames[2] = Tools.getSprite("controlshint_qe.png");
+			ControlsHintFrames[3] = Tools.getSprite("controlshint_qe_faded.png");
 
 		}
 		public static bool specialBossSequence = false;
@@ -333,37 +349,31 @@ namespace MagnificusMod
 		{
 			try
 			{
-				bool flag = SceneLoader.ActiveSceneName == "finale_magnificus";
-				bool flag2 = flag;
-				if (flag2)
-				{
-					bool flag3 = !Generation.allcardssummoned;
-					bool flag4 = flag3;
-					List<Ability> bannedAbilites = new List<Ability> { Ability.QuadrupleBones, Ability.StrafePush, Ability.Strafe, Ability.Sentry, Ability.PermaDeath, Ability.CellTriStrike, Ability.CellDrawRandomCardOnDeath, Ability.CellBuffSelf, Ability.ConduitSpawnGems, Ability.ShieldGems, Ability.Transformer, Ability.DeleteFile, Ability.LatchBrittle, Ability.LatchDeathShield, Ability.LatchExplodeOnDeath, Ability.FileSizeDamage, Ability.GainBattery, Ability.ConduitNull, Ability.ConduitBuffAttack };
-					if (flag4)
-					{
-						Generation.allcardssummoned = true;
-						List<RuleBookPageInfo> list = new List<RuleBookPageInfo>();
-						try
-						{
-							foreach (PageRangeInfo pageRangeInfo in Singleton<RuleBookController>.Instance.bookInfo.pageRanges.FindAll((PageRangeInfo info) => info.type == PageRangeType.Abilities))
-							{
-								List<int> customAbilities = (from x in ScriptableObjectLoader<AbilityInfo>.AllData
-															 select (int)x.ability).ToList<int>();
-								int startIndex = customAbilities.AsQueryable<int>().Min<int>();
-								int num = customAbilities.AsQueryable<int>().Max<int>();
-								PageRangeInfo pageRangeInfo2 = pageRangeInfo;
-								pageRangeInfo2.type = PageRangeType.Abilities;
-								Func<int, bool> doAddPageFunc = (int index) => (customAbilities.Contains(index) && bannedAbilites.IndexOf(AbilitiesUtil.GetInfo((Ability)index).ability) < 0 && !AbilitiesUtil.GetInfo((Ability)index).metaCategories.Contains(AbilityMetaCategory.MagnificusRulebook) && AbilitiesUtil.GetInfo((Ability)index).metaCategories.Contains(AbilityMetaCategory.Part1Rulebook)) || (customAbilities.Contains(index) && bannedAbilites.IndexOf(AbilitiesUtil.GetInfo((Ability)index).ability) < 0 && AbilitiesUtil.GetInfo((Ability)index).metaCategories.Contains(AbilityMetaCategory.Part3Rulebook)) || (customAbilities.Contains(index) && bannedAbilites.IndexOf(AbilitiesUtil.GetInfo((Ability)index).ability) < 0 && AbilitiesUtil.GetInfo((Ability)index).metaCategories.Contains(AbilityMetaCategory.Part1Modular)) || (customAbilities.Contains(index) && bannedAbilites.IndexOf(AbilitiesUtil.GetInfo((Ability)index).ability) < 0 && AbilitiesUtil.GetInfo((Ability)index).metaCategories.Contains(AbilityMetaCategory.Part3Modular));
+				if (SceneLoader.ActiveSceneName != "finale_magnificus") { return; }
+				if (Generation.allcardssummoned) { return; }
 
-								list.AddRange(Singleton<RuleBookController>.Instance.bookInfo.ConstructPages(pageRangeInfo2, num + 1, startIndex, doAddPageFunc, new Action<RuleBookPageInfo, PageRangeInfo, int>(Singleton<RuleBookController>.Instance.bookInfo.FillAbilityPage), Localization.Translate("l")));
-							}
-							Singleton<RuleBookController>.Instance.PageData.AddRange(list);
-						}
-						finally
-						{
-						}
+				List<Ability> bannedAbilites = new List<Ability> { Ability.QuadrupleBones, Ability.Sentry, Ability.PermaDeath, Ability.CellTriStrike, Ability.CellDrawRandomCardOnDeath, Ability.CellBuffSelf, Ability.ConduitSpawnGems, SigilCode.GemGuardianFix.ability, Ability.Transformer, Ability.DeleteFile, Ability.LatchBrittle, Ability.LatchDeathShield, Ability.LatchExplodeOnDeath, Ability.FileSizeDamage, Ability.GainBattery, Ability.ConduitNull, Ability.ConduitBuffAttack, Ability.GemsDraw, Ability.DropRubyOnDeath };
+
+				Generation.allcardssummoned = true;
+				List<RuleBookPageInfo> list = new List<RuleBookPageInfo>();
+				try
+				{
+					foreach (PageRangeInfo pageRangeInfo in Singleton<RuleBookController>.Instance.bookInfo.pageRanges.FindAll((PageRangeInfo info) => info.type == PageRangeType.Abilities))
+					{
+						List<int> customAbilities = (from x in ScriptableObjectLoader<AbilityInfo>.AllData
+														select (int)x.ability).ToList<int>();
+						int startIndex = customAbilities.AsQueryable<int>().Min<int>();
+						int num = customAbilities.AsQueryable<int>().Max<int>();
+						PageRangeInfo pageRangeInfo2 = pageRangeInfo;
+						pageRangeInfo2.type = PageRangeType.Abilities;
+						Func<int, bool> doAddPageFunc = (int index) => (customAbilities.Contains(index) && bannedAbilites.IndexOf(AbilitiesUtil.GetInfo((Ability)index).ability) < 0 && !AbilitiesUtil.GetInfo((Ability)index).metaCategories.Contains(AbilityMetaCategory.MagnificusRulebook) && AbilitiesUtil.GetInfo((Ability)index).metaCategories.Contains(AbilityMetaCategory.Part1Rulebook)) || (customAbilities.Contains(index) && bannedAbilites.IndexOf(AbilitiesUtil.GetInfo((Ability)index).ability) < 0 && AbilitiesUtil.GetInfo((Ability)index).metaCategories.Contains(AbilityMetaCategory.Part3Rulebook)) || (customAbilities.Contains(index) && bannedAbilites.IndexOf(AbilitiesUtil.GetInfo((Ability)index).ability) < 0 && AbilitiesUtil.GetInfo((Ability)index).metaCategories.Contains(AbilityMetaCategory.Part1Modular)) || (customAbilities.Contains(index) && bannedAbilites.IndexOf(AbilitiesUtil.GetInfo((Ability)index).ability) < 0 && AbilitiesUtil.GetInfo((Ability)index).metaCategories.Contains(AbilityMetaCategory.Part3Modular));
+
+						list.AddRange(Singleton<RuleBookController>.Instance.bookInfo.ConstructPages(pageRangeInfo2, num + 1, startIndex, doAddPageFunc, new Action<RuleBookPageInfo, PageRangeInfo, int>(Singleton<RuleBookController>.Instance.bookInfo.FillAbilityPage), Localization.Translate("l")));
 					}
+					Singleton<RuleBookController>.Instance.PageData.AddRange(list);
+				}
+				finally
+				{
 				}
 			}
 			catch (NullReferenceException)
@@ -385,104 +395,25 @@ namespace MagnificusMod
 			}*/
 		}
 
-		private void RemoveAll()
-		{
-			List<string> list = new List<string>
-			{
-				"Wolf",
-				"RingWorm",
-				"Ant",
-				"AntQueen",
-				"Adder",
-				"Adder",
-				"Alpha",
-				"Amoeba",
-				"Bat",
-				"Bee",
-				"Beaver",
-				"Beehive",
-				"Bloodhound",
-				"Cat",
-				"Cockroach",
-				"Coyote",
-				"Daus",
-				"Elk",
-				"ElkCub",
-				"FieldMouse",
-				"Goat",
-				"Grizzly",
-				"JerseyDevil",
-				"Kingfisher",
-				"Maggots",
-				"Magpie",
-				"Mantis",
-				"MantisGod",
-				"Mole",
-				"MoleMan",
-				"Moose",
-				"Mothman_Stage1",
-				"Opossum",
-				"Otter",
-				"Porcupine",
-				"Pronghorn",
-				"RatKing",
-				"Rattler",
-				"Raven",
-				"RavenEgg",
-				"Shark",
-				"Skink",
-				"Skunk",
-				"Snapper",
-				"Snelk",
-				"Sparrow",
-				"SquidCards",
-				"SquidBell",
-				"SquidMirror",
-				"Urayuli",
-				"Vulture",
-				"Warren",
-				"WolfCub",
-				"PeltHare",
-				"PeltWolf",
-				"PeltGolden",
-				"Stinkbug_Talking",
-				"Stoat_Talking",
-				"Wolf_Talking",
-				"Geck",
-				"AquaSquirrel",
-				"Bull",
-				"DireWolfCub",
-				"Hodag",
-				"Hydra",
-				"Lammergeier",
-				"Lice",
-				"MealWorm",
-				"MudTurtle",
-				"Raccoon",
-				"RedHart",
-				"Wolverine",
-				"Stoat",
-				"Skink",
-				"Kraken"
-			};
-			for (int i = 0; i < list.Count; i++)
-			{
-				List<CardMetaCategory> metaCategories = new List<CardMetaCategory>();
-				CardInfo card = InscryptionAPI.Card.CardManager.BaseGameCards.CardByName(list[i]);
-				card.metaCategories = metaCategories;
-			}
-		}
-
-
 		
-
+		public static void unlockMost()
+        {
+			GameProgressConfig.SetPhase(GameProgressConfig.GamePhase.Part1Completed);
+			SaveManager.SaveFile.ResetGBCSaveData();
+			StoryEventsData.SetEventCompleted(StoryEvent.StartScreenNewGameUsed);
+			foreach (CardInfo cardInfo in CardLoader.allData)
+			{
+				ProgressionData.SetCardLearned(cardInfo);
+			}
+			SaveManager.saveFile.currentScene = "finale_magnificus";
+		}
 
 
 		public const string PluginGuid = "silenceman.inscryption.magnificusmod";
 
 		public const string PluginName = "MagnificusMod";
 
-		public const string PluginVersion = "3.0.1";
+		public const string PluginVersion = "3.6.0";
 
 		public static string lastMox = "";
 

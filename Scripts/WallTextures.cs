@@ -23,7 +23,7 @@ namespace MagnificusMod
         public static List<Sprite> runes = new List<Sprite>();
         public static Sprite minimapNode;
         public static List<Sprite> gridTiles = new List<Sprite>();
-
+        public static List<Texture2D> cardBackTextures = new List<Texture2D>();
         public static void getImages()
         {
             none = Tools.getImage("blank.png");
@@ -50,6 +50,10 @@ namespace MagnificusMod
             minimapNode = Tools.getSprite("node.png");
             gridTiles.Add(Tools.getSprite("gridtile.png"));
             gridTiles.Add(Tools.getSprite("gridtile1.png"));
+
+            cardBackTextures.Add(Tools.getImage("model_default.png"));
+            cardBackTextures.Add(Tools.getImage("model_rare.png"));
+            cardBackTextures.Add(Tools.getImage("model_terrain.png"));
         }
     }
 }

@@ -26,6 +26,8 @@ namespace MagnificusMod
 
     class MenuButtonFixes
     {
+		public static bool viewingDeck = false;
+
 		[HarmonyPatch(typeof(MenuController), "Start")]
 		public class MenuButoon
 		{
@@ -42,42 +44,7 @@ namespace MagnificusMod
 					{
 						KayceeStorage.IsMagRun = false;
 					}
-					if (!SavedVars.FinaleCardBacks)
-					{
-						SavedVars.FinaleCardBacks = false;
-					}
-					if (!SavedVars.PaintSplashes)
-					{
-						SavedVars.PaintSplashes = false;
-					}
-					SavedVars.LoadWithFinaleCardBacks = SavedVars.FinaleCardBacks;
-					GameObject.Find("StartMenu").transform.Find("OptionsUI").GetChild(0).Find("TabGroup_Gameplay").Find("Button_ApplyGraphics").transform.localPosition = new Vector3(0, -0.66f, 0);
-					GameObject finaleCardBackButton = GameObject.Instantiate(GameObject.Find("StartMenu").transform.Find("OptionsUI").GetChild(0).Find("TabGroup_Gameplay").Find("Button_ApplyGraphics").gameObject);
-					finaleCardBackButton.name = "FinaleCardButton";
-					finaleCardBackButton.transform.parent = GameObject.Find("StartMenu").transform.Find("OptionsUI").GetChild(0).Find("TabGroup_Gameplay");
-					finaleCardBackButton.transform.position = new Vector3(0f, -0.95f, 0);
-					string on = SavedVars.FinaleCardBacks ? "(ON)" : "(OFF)";
-					finaleCardBackButton.GetComponentInChildren<UnityEngine.UI.Text>().text = "FINALE CARD BACKS " + on;
-					finaleCardBackButton.GetComponentInChildren<GBC.GenericUIButton>().OnButtonDown = (Action<MainInputInteractable>)Delegate.Combine(finaleCardBackButton.GetComponentInChildren<GBC.GenericUIButton>().OnButtonDown, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
-					{
-						SavedVars.FinaleCardBacks = !SavedVars.FinaleCardBacks;
-						on = SavedVars.FinaleCardBacks ? "(ON)" : "(OFF)";
-						finaleCardBackButton.GetComponentInChildren<UnityEngine.UI.Text>().text = "FINALE CARD BACKS " + on;
-						SavedVars.LoadWithFinaleCardBacks = SavedVars.FinaleCardBacks;
-					}));
-					GameObject paintSplashesButton = GameObject.Instantiate(finaleCardBackButton);
-					paintSplashesButton.name = "SplashesButton";
-					paintSplashesButton.transform.parent = GameObject.Find("StartMenu").transform.Find("OptionsUI").GetChild(0).Find("TabGroup_Gameplay");
-					paintSplashesButton.transform.position = new Vector3(0f, -1.15f, 0);
-					string on2 = SavedVars.PaintSplashes ? "(ON)" : "(OFF)";
-					paintSplashesButton.GetComponentInChildren<UnityEngine.UI.Text>().text = "PAINT SPLASHES " + on2;
-					paintSplashesButton.GetComponentInChildren<GBC.GenericUIButton>().OnButtonDown = (Action<MainInputInteractable>)Delegate.Combine(paintSplashesButton.GetComponentInChildren<GBC.GenericUIButton>().OnButtonDown, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
-					{
-						SavedVars.PaintSplashes = !SavedVars.PaintSplashes;
-						on2 = SavedVars.PaintSplashes ? "(ON)" : "(OFF)";
-						paintSplashesButton.GetComponentInChildren<UnityEngine.UI.Text>().text = "PAINT SPLASHES " + on2;
-						SavedVars.LoadWithPaintSplashes = SavedVars.PaintSplashes;
-					}));
+
 					GameObject cardRow = __instance.transform.Find("CardRow").gameObject;
 					bool doesAscensionCardExist = cardRow.GetComponent<StartMenuAscensionCardInitializer>().menuCards.Count >= 6;
 
@@ -141,7 +108,7 @@ namespace MagnificusMod
 					return true;
 				}
 				__instance.cardLibraryUI.SetActive(true);
-				Singleton<GBC.CollectionUI>.Instance.Initialize(SaveManager.saveFile.CurrentDeck.Cards, GBC.CollectionUI.CardDisplayMode.Showcase);
+				Singleton<GBC.CollectionUI>.Instance.Initialize(RunState.Run.playerDeck.Cards, GBC.CollectionUI.CardDisplayMode.Showcase);
 				__instance.DisplayMenuCardTitle(null);
 				return false;
 			}
@@ -171,9 +138,10 @@ namespace MagnificusMod
 						{
 							if (choice == 0)
 							{
-								
-								MagnificusMod.Generation.minimap = false;
-								SavedVars.HasMap = false;
+								Plugin.unlockMost();
+
+								MagnificusMod.Generation.minimap = true;
+								SavedVars.HasMap = true;
 								SavedVars.HasMapIcons = false;
 								SaveManager.saveFile.ouroborosDeaths = 0;
 								RunState.Run.regionTier = 0;
@@ -196,8 +164,8 @@ namespace MagnificusMod
 					}
 					if (MagnificusMod.Generation.minimap)
 					{
-						MagnificusMod.Generation.minimap = false;
-						SavedVars.HasMap = false;
+						MagnificusMod.Generation.minimap = true;
+						SavedVars.HasMapIcons = false;
 						SaveManager.SaveToFile();
 					}
 					RunState.Run.regionTier = 0;
@@ -232,6 +200,9 @@ namespace MagnificusMod
 
 		public static IEnumerator ViewDeckbutton(MenuCard optionsCard, bool ignoreCard = false)
 		{
+			if (!SavedVars.LearnedMechanics.Contains("tabviewdeck")) { SavedVars.LearnedMechanics += "tabviewdeck;"; SaveManager.SaveToFile(); }
+			Singleton<UIManager>.Instance.SetControlsHintShown(shown: false);
+			Singleton<UIManager>.Instance.SetControlsHintShown(shown: false, right: false);
 			if (!ignoreCard)
 			{
 				Singleton<MenuController>.Instance.DoingCardTransition = true;
@@ -244,9 +215,10 @@ namespace MagnificusMod
 			} else { PauseMenu.pausingDisabled = true; }
 			if (Singleton<ViewManager>.Instance.CurrentView == View.FirstPerson && RunState.Run.regionTier < 5 && GameObject.Find("GameTable").transform.position.y < 1 && Singleton<FirstPersonController>.Instance.enabled)
 			{
+
+				viewingDeck = true;
 				Singleton<ViewManager>.Instance.SwitchToView(View.MapDeckReview);
 				MagnificusMod.Generation.lastView = GameObject.Find("Player").GetComponent<FirstPersonController>().LookDirection;
-				SaveManager.saveFile.randomSeed *= 2;
 				SaveManager.saveFile.randomSeed += 5;
 				MagnificusMod.MagNodes.CustomNodeDeck triggeringNodeData2 = new MagnificusMod.MagNodes.CustomNodeDeck();
 				GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, true);
@@ -266,27 +238,34 @@ namespace MagnificusMod
 					GameObject.Find("WallFigure").transform.Find("VisibleParent").Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0f);
 				}
 			}
-			else if (Singleton<ViewManager>.Instance.CurrentView == View.MapDeckReview && GameObject.Find("GameTable").transform.position.y > 0)
+			else if (viewingDeck && GameObject.Find("GameTable").transform.position.y > 0)
 			{
+				viewingDeck = false;
+				Singleton<ViewManager>.Instance.SwitchToView(View.MapDeckReview);
 				GameObject lifeCounter = GameObject.Find("GameTable").transform.Find("LifePainting").gameObject;
 				lifeCounter.GetComponent<SineWaveMovement>().enabled = false;
 				lifeCounter.transform.localPosition = new Vector3(7.5f, 16.72f, 3.5f);
 				lifeCounter.GetComponent<SineWaveMovement>().originalPosition = new Vector3(7.5f, 16.72f, 3.5f);
 				lifeCounter.SetActive(false);
+				if (Singleton<DeckSpellBook>.Instance != null)
+					GameObject.Destroy(Singleton<DeckSpellBook>.Instance.gameObject);
 				GameObject.Find("Player").GetComponentInChildren<ViewManager>().CurrentView = View.FirstPerson;
-				float x = GameObject.Find("PixelCameraParent").transform.position.x;
-				float z = GameObject.Find("PixelCameraParent").transform.position.z;
-				GameObject.Find("Player").transform.Find("PixelCameraParent").transform.localPosition = new Vector3(0, 7, -6.86f);
-				Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(0, 7, -6.86f), 0f, 0f, null, Tween.LoopType.None, null, null, true);
 				Tween.FieldOfView(GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>(), 65f, 0.5f, 0);
 				Tween.Position(GameObject.Find("GameTable").transform, new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x, -20f, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z), 0.2f, 0.2f, null, Tween.LoopType.None, null, null, true);
 				Tween.LocalPosition(GameObject.Find("tbPillar").transform, new Vector3(0, -5.01f, 0), 0.4f, 0.25f, null, Tween.LoopType.None, null, null, true);
 				if (config.isometricMode)
 				{
 					Singleton<FirstPersonController>.Instance.LookLocked = true;
-					Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(-40, 47.5f, -40), 0.25f, 0.4f);
-					Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30, 45, 0), 0.25f, 0.4f);
+					Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(0, 45, -50), 0.25f, 0.4f);
+					Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(40, 0, 0), 0.25f, 0.4f);
 					Tween.LocalRotation(GameObject.Find("Player").transform, Quaternion.Euler(0, (float)Generation.lastView * 90, 0), 0.2f, 0);
+				}
+				else
+                {
+					float x = GameObject.Find("PixelCameraParent").transform.position.x;
+					float z = GameObject.Find("PixelCameraParent").transform.position.z;
+					GameObject.Find("Player").transform.Find("PixelCameraParent").transform.localPosition = new Vector3(0, 7, -6.86f);
+					Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(0, 7, -6.86f), 0f, 0f, null, Tween.LoopType.None, null, null, true);
 				}
 				Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(enablePlayer());
 				if (RunState.Run.regionTier == 2)
@@ -305,6 +284,7 @@ namespace MagnificusMod
 			GameObject.Find("Player").GetComponentInChildren<ViewController>().allowedViews = new List<View>();
 			Singleton<FirstPersonController>.Instance.LookAtDirection(MagnificusMod.Generation.lastView, false); MagnificusMod.Generation.lastView = LookDirection.North;
 			GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = true;
+			Tween.FieldOfView(GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>(), 65f, 0.05f, 0);
 			if (config.isometricMode == true)
 			{
 				IsometricStuff.moveDisabled = false;
@@ -357,17 +337,18 @@ namespace MagnificusMod
 			{
 				if (SaveManager.saveFile.currentScene == "finale_magnificus" || SceneLoader.ActiveSceneName == "finale_magnificus")
 				{
-					if (SavedVars.LearnedMechanics.Contains("druid;"))
+					/*if (SavedVars.LearnedMechanics.Contains("druid;"))
 					{
 						__instance.AddCard(CardLoader.GetCardByName("mag_druid"));
 					}
 					else
 					{
 						__instance.AddCard(CardLoader.GetCardByName("mag_wolf"));
-					}
-					__instance.AddCard(CardLoader.GetCardByName("mag_stinkbug"));
-					__instance.AddCard(CardLoader.GetCardByName("mag_stoat"));
-					__instance.AddCard(CardLoader.GetCardByName("mag_hovermage"));
+					}*/
+					__instance.AddCard(CardLoader.GetCardByName("JuniorSage"));
+					__instance.AddCard(CardLoader.GetCardByName("RubyGolem"));
+					__instance.AddCard(CardLoader.GetCardByName("FlyingMage"));
+					__instance.AddCard(CardLoader.GetCardByName("Pupil"));
 					return false;
 				}
 				return true;
@@ -396,5 +377,27 @@ namespace MagnificusMod
 				}
 			}
 		}
+		/* maybe one day this will work
+		[HarmonyPatch(typeof(StartScreenThemeSetter), "Start")]
+		public class addMagnificusTheme
+		{
+			public static bool Prefix(ref StartScreenThemeSetter __instance)
+			{
+				if (SaveManager.saveFile.currentScene != "finale_magnificus") return true;
+				
+				var magTheme = __instance.themes[3];
+				magTheme.fillColor = new Color(0.752f, 0.2f, 0.427f);
+
+				magTheme.bgSpriteWide = Tools.getSprite("startscreen_background_magnificus.png");
+				magTheme.bgSpriteBottom = magTheme.bgSpriteWide;
+				magTheme.bgSpriteTop = magTheme.bgSpriteWide;
+				magTheme.slotSpriteDefault = Tools.getSprite("startscreen_slot_magnificus.png");
+				magTheme.slotSpriteMediumlight = Tools.getSprite("startscreen_slot_mediumlighted_magnificus.png");
+				magTheme.slotSpriteHighlight = Tools.getSprite("startscreen_slot_highlighted_magnificus.png");
+
+				__instance.SetTheme(magTheme);
+				return false;
+			}
+		}*/
 	}
 }

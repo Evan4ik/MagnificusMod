@@ -34,8 +34,8 @@ namespace MagnificusMod
 			public static bool Prefix(ref FirstPersonController __instance, LookDirection dir, bool immediate = false)
 			{
 				if (config.isometricMode == false || SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
-				GameObject.Find("PixelCameraParent").transform.localRotation = Quaternion.Euler(30f, 45f, 0);
-				GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(-40, 47.5f, -40);
+				GameObject.Find("PixelCameraParent").transform.localRotation = Quaternion.Euler(40f, 0, 0);
+				GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(0, 45, -50);
 				if (__instance.currentZone != null)
 				{
 					__instance.currentZone.OnLook(dir);
@@ -61,12 +61,29 @@ namespace MagnificusMod
 					Tween.LocalPosition(GameObject.Find("Player").transform.Find("figure"), new Vector3(0, -6.5f + UnityEngine.Random.Range(-0.50f, 0.50f), 0), 0.1f, 0);
 					Tween.LocalPosition(GameObject.Find("Player").transform.Find("figure"), new Vector3(0, -10f, 0), 0.1f, 0.1f);
 					GameObject uiFigure = GameObject.Find("WallFigure").transform.Find("VisibleParent").gameObject;
-					if (Physics.Raycast(zone.gameObject.transform.position + new Vector3(0, -20, 0), getRayDirection((float)Singleton<FirstPersonController>.Instance.LookDirection * 90), 45, 1))
+
+					string[] pos = zone.name.Split('y');
+					int xPos = Convert.ToInt32(pos[0].Split('x')[1]);
+					int yPos = Convert.ToInt32(pos[1]);
+					float rotation = (float)Singleton<FirstPersonController>.Instance.LookDirection * 90;
+					if (rotation == 0) { yPos += 1; }
+					else if (rotation == 90) { xPos -= 1; }
+					else if (rotation == 180) { yPos -= 1; }
+					else if (rotation == 270) { xPos += 1; }
+
+					try
 					{
-                           if (GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition == new Vector3(0, 0, -1)){__instance.StartCoroutine(showUiFigure(uiFigure.transform.Find("Header").Find("IconSprite").gameObject, true)); }
-					} else 
-					{
-						if (GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition == new Vector3(0, 0, 1)) {__instance.StartCoroutine(showUiFigure(uiFigure.transform.Find("Header").Find("IconSprite").gameObject, false));}
+						if (GameObject.Find("x" + xPos + " y" + yPos + " cover") != null)
+						{
+							if (GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition == new Vector3(0, 0, -1)) { __instance.StartCoroutine(showUiFigure(uiFigure.transform.Find("Header").Find("IconSprite").gameObject, true)); }
+						}
+						else
+						{
+							if (GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition == new Vector3(0, 0, 1)) { __instance.StartCoroutine(showUiFigure(uiFigure.transform.Find("Header").Find("IconSprite").gameObject, false)); }
+
+						}
+					} catch {
+						if (GameObject.Find("WallFigure").transform.Find("VisibleParent").transform.localPosition == new Vector3(0, 0, 1)) { __instance.StartCoroutine(showUiFigure(uiFigure.transform.Find("Header").Find("IconSprite").gameObject, false)); }
 					}
 					if (lastDir != "none")
                     {
@@ -150,12 +167,17 @@ namespace MagnificusMod
 		{
 			public static bool Prefix(ref NavigationZone3D __instance)
 			{
-				if (config.isometricMode == false || SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
+
+                if (config.isometricMode == false || SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
+
+				if (Singleton<UIManager>.Instance.rightHintShown) Singleton<UIManager>.Instance.SetControlsHintShown(false, true);
+
 				bool delete = false;
 				foreach (NavigationEvent navigationEvent in __instance.events)
 				{
 					if (__instance.ValidEvent(navigationEvent) && navigationEvent.triggerOnEnter)
 					{
+						Singleton<UIManager>.Instance.SetControlsHintShown(shown: false);
 						float delay = 0;
 						if (Generation.nodeEvents.Contains(navigationEvent))
                         {
@@ -205,8 +227,8 @@ namespace MagnificusMod
 			public static bool Prefix()
 			{
 				if (config.isometricMode == false || SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
-				GameObject.Find("PixelCameraParent").transform.localRotation = Quaternion.Euler(30f, 45f, 0);
-				GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(-40, 47.5f, -40);
+				GameObject.Find("PixelCameraParent").transform.localRotation = Quaternion.Euler(40f, 0f, 0);
+				GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(0, 45, -50);
 				return false;
 			}
 		}
@@ -225,8 +247,8 @@ namespace MagnificusMod
 					{
 						__instance.SetZoomed(false, false, 0.2f);
 						Singleton<FirstPersonController>.Instance.LookLocked = true;
-						Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(-40, 47.5f, -40), 0.25f, 0);
-						Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30, 45, 0), 0.25f, 0);
+						Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(0, 45, -50), 0.25f, 0);
+						Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(40, 0, 0), 0.25f, 0);
 					}
 				}
 				List<string> directions = new List<string> { "North", "East", "South", "West" };
@@ -259,6 +281,7 @@ namespace MagnificusMod
 					Tween.LocalRotation(GameObject.Find("Player").transform, Quaternion.Euler(0, 0, 0), 0.2f, 0);
 				} else
                 {
+					Tween.FieldOfView(GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>(), 65f, 0.05f, 0);
 					Tween.LocalRotation(GameObject.Find("Player").transform, Quaternion.Euler(0, (float)Generation.lastView * 90, 0), 0.2f, 0);
 					Generation.lastView = LookDirection.North; 
 
@@ -272,7 +295,7 @@ namespace MagnificusMod
 			public static bool Prefix(float transitionDuration)
 			{
 				if (config.isometricMode == false) { return true; }
-				GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(-40, 47.5f, -40);
+				GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(0, 45f, -50);
 				return false;
 			}
 		}
@@ -397,13 +420,19 @@ namespace MagnificusMod
 
 		public static IEnumerator rotateNodes()
         {
+			if (Singleton<UIManager>.Instance.leftHintShown && !SavedVars.LearnedMechanics.Contains("isometricTutorial"))
+			{
+				SavedVars.LearnedMechanics += "isometricTutorial;";
+				Singleton<UIManager>.Instance.SetControlsHintShown(false, false);
+			}
+
 			rotating = true;
 			foreach (GameObject gameObject in MagnificusMod.Generation.nodes)
 			{
 				if (gameObject == null) { continue; }
 				if (gameObject.name.Contains("nodeIcon"))
 				{
-					Tween.LocalRotation (gameObject.transform, Quaternion.Euler(30, 45 + (float)Singleton<FirstPersonController>.Instance.LookDirection * 90, 0), 0.2f, 0);
+					Tween.LocalRotation (gameObject.transform, Quaternion.Euler(30, (float)Singleton<FirstPersonController>.Instance.LookDirection * 90, 0), 0.2f, 0);
 					if (NavigationGrid.instance.GetZoneInDirection((LookDirection)((int)(Singleton<FirstPersonController>.Instance.LookDirection + 2) % 4), gameObject.transform.GetParent().gameObject.GetComponent<NavigationZone>()) == null)
 					{
 						string[] pos = gameObject.transform.GetParent().gameObject.name.Split('y');
@@ -418,7 +447,7 @@ namespace MagnificusMod
 						{
 							if (GameObject.Find("x" + xPos + " y" + yPos + " cover") != null)
 							{
-								Tween.LocalPosition(gameObject.transform, new Vector3(1f, 30.72f, 0), 0.2f, 0);
+								Tween.LocalPosition(gameObject.transform, new Vector3(1f, 32.72f, 0), 0.2f, 0);
 							}
 							else
 							{

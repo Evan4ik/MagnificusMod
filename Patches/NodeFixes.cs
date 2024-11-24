@@ -90,16 +90,27 @@ namespace MagnificusMod
 		[HarmonyPatch(typeof(NavigationZone3D), "OnEnter")]
 		public class NodesLol2
 		{
-			public static void Prefix()
+			public static void Prefix(ref NavigationZone3D __instance)
 			{
 				if (SceneLoader.ActiveSceneName == "finale_magnificus")
 				{
+					if (Singleton<UIManager>.Instance.leftHintShown || Singleton<UIManager>.Instance.rightHintShown) { 
+						foreach (NavigationEvent navigationEvent in __instance.events)
+						{
+							if (__instance.ValidEvent(navigationEvent) && navigationEvent.triggerOnEnter)
+							{
+								Singleton<UIManager>.Instance.SetControlsHintShown(shown: false);
+								Singleton<UIManager>.Instance.SetControlsHintShown(shown: false, right: false);
+							}
+						}
+					}
+
 					foreach (GameObject gameObject in MagnificusMod.Generation.nodes)
 					{
 						if (gameObject == null) { return; }
 						if (gameObject.name.Contains("nodeIcon") && config.isometricMode == true)
 						{
-							gameObject.transform.localRotation = Quaternion.Euler(30, 45 + (float)Singleton<FirstPersonController>.Instance.LookDirection * 90, 0);
+							gameObject.transform.localRotation = Quaternion.Euler(30, (float)Singleton<FirstPersonController>.Instance.LookDirection * 90, 0);
 							if (NavigationGrid.instance.GetZoneInDirection((LookDirection)((int)(Singleton<FirstPersonController>.Instance.LookDirection + 2) % 4), gameObject.transform.GetParent().gameObject.GetComponent<NavigationZone>()) == null)
                             {
 								string[] pos = gameObject.transform.GetParent().gameObject.name.Split('y');
@@ -114,7 +125,7 @@ namespace MagnificusMod
                                 {
 									if (GameObject.Find("x" + xPos + " y" + yPos + " cover") != null)
                                     {
-										gameObject.transform.localPosition = new Vector3(1f, 30.72f, 0);
+										gameObject.transform.localPosition = new Vector3(1f, 32.72f, 0);
                                     } else
                                     {
 										gameObject.transform.localPosition = new Vector3(1f, 22.72f, 0);
@@ -169,6 +180,20 @@ namespace MagnificusMod
 						Tween.LocalPosition(playerIcon.transform.Find("Header").Find("IconSprite"), new Vector3(-0.15f + xPos2, 0.15f - yPos2, 0), 0.25f, 0);
 					}
 				}
+			}
+		}
+
+
+		[HarmonyPatch(typeof(DeckReviewSequencer), "OnEnterDeckView")]
+		public class DeckReviewFix
+		{
+			public static bool Prefix(ref DeckReviewSequencer __instance, bool lockViewOnEnter = false)
+			{
+				List<CardInfo> cards = new List<CardInfo>(SaveManager.SaveFile.CurrentDeck.Cards);
+				if (SceneLoader.ActiveSceneName == "finale_magnificus")
+					cards.RemoveAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens));
+				__instance.ArrayDeck(cards, null, lockViewOnEnter);
+				return false;
 			}
 		}
 	}

@@ -44,11 +44,11 @@ namespace MagnificusMod
 				}
 				if (SceneLoader.ActiveSceneName == "finale_magnificus")
 				{
-					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(__state.deckPile.SpawnCards(SaveManager.SaveFile.CurrentDeck.Cards.Count, 1f));
+					Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(__state.deckPile.SpawnCards(RunState.Run.playerDeck.Cards.Count, 1f));
 					Singleton<ViewManager>.Instance.SwitchToView(__state.choicesView, false, true);
-					float pauseTime = CardPile.GetPauseBetweenCardTime(SaveManager.SaveFile.CurrentDeck.Cards.Count) * 1;
+					float pauseTime = CardPile.GetPauseBetweenCardTime(RunState.Run.playerDeck.Cards.Count) * 1;
 					yield return new WaitForSeconds(pauseTime + 0.015f);
-					for (int i = 2; i < SaveManager.SaveFile.CurrentDeck.Cards.Count + 2; i++)
+					for (int i = 2; i < RunState.Run.playerDeck.Cards.Count + 2; i++)
 					{
 						__state.deckPile.transform.GetChild(i).Find("BendableCard").Find("Mesh").gameObject.GetComponent<SkinnedMeshRenderer>().materials[1].mainTexture = Tools.getImage("magcardback.png");
 						yield return new WaitForSeconds(pauseTime + 0.015f);
@@ -69,7 +69,7 @@ namespace MagnificusMod
 				else
 				{
 					Singleton<TableRuleBook>.Instance.SetOnBoard(true);
-					__state.StartCoroutine(__state.deckPile.SpawnCards(SaveManager.SaveFile.CurrentDeck.Cards.Count, 1f));
+					__state.StartCoroutine(__state.deckPile.SpawnCards(RunState.Run.playerDeck.Cards.Count, 1f));
 					Singleton<ViewManager>.Instance.SwitchToView(__state.choicesView, false, true);
 					yield return __state.CardSelectionSequence(choicesData);
 					if (__state.gamepadGrid != null)
@@ -125,7 +125,7 @@ namespace MagnificusMod
 						"You gaze at a " + card.Info.displayedName + ". "
 					};
 					string introDialogue = intros[UnityEngine.Random.Range(0, intros.Count)];
-					if (card.Info.displayedName == "--~~--~~--" || card.Info.displayedName == "~-~-~-~-~-~" || card.Info.displayedName == "~~--~~--~~" || card.Info.name == "mag_mastergo" || card.Info.name == "mag_masterbg" || card.Info.name == "mag_masterob" || card.Info.name == "mag_masterkraken" || card.Info.name == "mag_goobert" || card.Info.name == "mag_espearara" || card.Info.name == "mag_lonelymage" || card.Info.HasTrait(Trait.EatsWarrens))
+					if (card.Info.displayedName == "--~~--~~--" || card.Info.displayedName == "~-~-~-~-~-~" || card.Info.displayedName == "~~--~~--~~" || card.Info.name == "MasterGoranj" || card.Info.name == "MasterBleene" || card.Info.name == "MasterOrlu" || card.Info.name == "mag_masterkraken" || card.Info.name == "mag_goobert" || card.Info.name == "mag_espearara" || card.Info.name == "mag_lonelymage" || card.Info.HasTrait(Trait.EatsWarrens))
 					{
 						introDialogue = "";
 					}
@@ -202,9 +202,8 @@ namespace MagnificusMod
 						}
 						else if ((int)cardChoice.resourceType > 0)
 						{
-							if (SceneLoader.ActiveSceneName == "finale_magnificus")
+							if (SceneLoader.ActiveSceneName == "finale_magnificus" && cardChoice.resourceType == ResourceType.Blood)
 							{
-								cardChoice.resourceType = ResourceType.Blood;
 								if (moxTypes.IndexOf((int)cardChoice.resourceAmount) < 0)
 								{
 									moxTypes.Add((int)cardChoice.resourceAmount);
@@ -217,6 +216,7 @@ namespace MagnificusMod
 									cardChoice.resourceType = ResourceType.Blood;
 								}
 							}
+							if (cardChoice.resourceType == ResourceType.Energy || cardChoice.resourceType == ResourceType.Gems) { cardChoice.resourceType = ResourceType.Bone; }
 							card.Initialize(__state.GetCardbackTexture(cardChoice), (Action<SelectableCard>)__state.OnRewardChosen, (Action<SelectableCard>)__state.OnCardFlipped, (Action<SelectableCard>)((CardChoicesSequencer)__state).OnCardInspected);
 						}
 						else if ((int)cardChoice.tribe > 0)
@@ -380,6 +380,9 @@ namespace MagnificusMod
 				{
 					return true;
 				}
+				CardChoice cardChoice2 = new CardChoice();
+				cardChoice2.resourceType = ResourceType.Bone;
+				cardChoice2.resourceAmount = 1;
 				List<CardChoice> list = new List<CardChoice>();
 				for (int i = 1; i <= 3; i++)
 				{
@@ -389,6 +392,8 @@ namespace MagnificusMod
 						resourceAmount = i
 					});
 				}
+				list.Add(cardChoice2);
+				list.Remove(list[Random.RandomRangeInt(0, list.Count)]);
 				__result = list;
 				return false;
 			}
@@ -397,7 +402,6 @@ namespace MagnificusMod
 		[HarmonyPatch(typeof(CardChoicesSequencer), "OnViewChanged")]
 		public class DeckFix
 		{
-			// Token: 0x06000106 RID: 262 RVA: 0x00019390 File Offset: 0x00017590
 			public static void Prefix(ref CardChoicesSequencer __instance, ref View newView, ref View oldView)
 			{
 				if (SceneLoader.ActiveSceneName == "finale_magnificus")
@@ -414,6 +418,7 @@ namespace MagnificusMod
 						GameObject theDeck = GameObject.Find("DeckReviewCardArray");
 						theDeck.transform.parent = GameObject.Find("GameTable").transform;
 						theDeck.transform.localPosition = new Vector3(0, 5.01f, 1.5f);
+						theDeck.transform.localScale = new Vector3(1, 1, 1);
 						__instance.SetCollidersEnabled(false);
 						Vector3 endValue = new Vector3(GameObject.Find("GameTable").transform.position.x - 5f, 9.72f, GameObject.Find("GameTable").transform.position.z - 2f);
 						Tween.Position(__instance.transform, endValue, 0.2f, 0.2f, null, Tween.LoopType.None, null, null, true);

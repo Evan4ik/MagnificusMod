@@ -33,8 +33,6 @@ namespace MagnificusMod
 
 		public static bool allcardssummoned = false;
 		public static int damageDoneThisTurn = 0;//ughhh
-		public static bool didDyingBreath = false;
-
 
 		public static NavigationEvent edaxioNode = new NavigationEvent();
 
@@ -91,12 +89,15 @@ namespace MagnificusMod
 		public static Texture2D spellUpgradeTex;
 		public static Texture2D cauldronTex;
 
+
+		public static NavigationEvent bleachBattle = new NavigationEvent();
+
 		public static NavigationEvent gooBattle = new NavigationEvent();
 		public static NavigationEvent pikeBattle = new NavigationEvent();
 		public static NavigationEvent stimBattle = new NavigationEvent();
 
-		public static List<NavigationEvent> nodeEvents = new List<NavigationEvent> { drafting, bleach, cardBattle, shop, edaxioNode, costChange, enchant, spellUpgrade, cauldronEvent, mergeCard, copyCard, removeCard, cardPainting, cardSelect, costSelect, spellSelect, gooBattle, pikeBattle, stimBattle };
-		public static List<NavigationEvent> transitionnodes = new List<NavigationEvent> { cardBattle, gooBattle, pikeBattle, stimBattle, cauldronEvent, cardPainting, copyCard, spellUpgrade };
+		public static List<NavigationEvent> nodeEvents = new List<NavigationEvent> { drafting, bleach, cardBattle, shop, edaxioNode, costChange, enchant, spellUpgrade, cauldronEvent, mergeCard, copyCard, removeCard, cardPainting, cardSelect, costSelect, spellSelect, gooBattle, pikeBattle, stimBattle, bleachBattle };
+		public static List<NavigationEvent> transitionnodes = new List<NavigationEvent> { cardBattle, gooBattle, pikeBattle, stimBattle, cauldronEvent, cardPainting, copyCard, spellUpgrade, bleachBattle };
 
 
 		public static NavigationEvent magBattle = new NavigationEvent();
@@ -104,7 +105,7 @@ namespace MagnificusMod
 
 		public static NavigationEvent deathCard = new NavigationEvent();
 
-
+		public static Texture2D bleachbattleTex;
 		public static Texture2D goobossTex;
 		public static Texture2D pikebossTex;
 		public static Texture2D stimbossTex;
@@ -122,6 +123,8 @@ namespace MagnificusMod
 
 		public static Sprite[] manaCostTextures = new Sprite[5];
 
+		public static Texture2D[] slotTextures = new Texture2D[6];
+
 		//bundlees
 
 		public static AssetBundle fontmanager;
@@ -138,43 +141,15 @@ namespace MagnificusMod
 
 		public static AssetBundle picnic;
 
-		public static AssetBundle marblestatues;
-
 		public static AssetBundle espeara;
 
 		public static AssetBundle towerwalls;
 
 		public static AssetBundle cauldron;
 
-		public static List<string> gbcMages = new List<string>
-				{
-					"BlueMage",
-					"BlueMage_Fused",
-					"FlyingMage",
-					"ForceMage",
-					"PracticeMage",
-					"GemFiend",
-					"MageKnight",
-					"JuniorSage",
-					"MarrowMage",
-					"GreenMage",
-					"MasterOrlu",
-					"MasterGoranj",
-					"MasterBleene",
-					"MoxDualGO",
-					"MoxDualBG",
-					"MoxDualOB",
-					"MoxEmerald",
-					"MoxRuby",
-					"MoxSapphire",
-					"MoxTriple",
-					"OrangeMage",
-					"MuscleMage",
-					"StimMage",
-					"PracticeMageSmall",
-					"Pupil",
-					"RubyGolem"
-				};
+		public static AssetBundle tablecloth;
+
+		public static AssetBundle cardframe;
 		public static void GetResources()
 		{
 
@@ -186,7 +161,9 @@ namespace MagnificusMod
 				{
 					assetBundle.LoadAsset<AudioClip>("School_of_Magicks"),
 					assetBundle.LoadAsset<AudioClip>("Goo_Mage"),
-					assetBundle.LoadAsset<AudioClip>("TheArtOfMagicks")
+					assetBundle.LoadAsset<AudioClip>("TheArtOfMagicks"),
+					assetBundle.LoadAsset<AudioClip>("Pike_Mage"),
+					assetBundle.LoadAsset<AudioClip>("Lonely_Mage")
 				};
 			}
 
@@ -202,6 +179,7 @@ namespace MagnificusMod
 					assetBundle.LoadAsset<AudioClip>("ambervoice_calm#1"),
 					assetBundle.LoadAsset<AudioClip>("ambervoice_calm#2"),
 					assetBundle.LoadAsset<AudioClip>("ambervoice_calm#3"),
+					assetBundle.LoadAsset<AudioClip>("pikespawn"),
 				};
 			}
 
@@ -235,11 +213,6 @@ namespace MagnificusMod
 				picnic = AssetBundle.LoadFromStream(s);
 			}
 
-			using (var s = Assembly.GetExecutingAssembly().GetManifestResourceStream("MagnificusMod.Resources.romanrobotstatues"))
-			{
-				marblestatues = AssetBundle.LoadFromStream(s);
-			}
-
 			using (var s = Assembly.GetExecutingAssembly().GetManifestResourceStream("MagnificusMod.Resources.moxbundle"))
 			{
 				espeara = AssetBundle.LoadFromStream(s);
@@ -258,6 +231,16 @@ namespace MagnificusMod
 			using (var s = Assembly.GetExecutingAssembly().GetManifestResourceStream("MagnificusMod.Resources.cauldron"))
 			{
 				cauldron = AssetBundle.LoadFromStream(s);
+			}
+
+			using (var s = Assembly.GetExecutingAssembly().GetManifestResourceStream("MagnificusMod.Resources.tablecloth"))
+			{
+				tablecloth = AssetBundle.LoadFromStream(s);
+			}
+
+			using (var s = Assembly.GetExecutingAssembly().GetManifestResourceStream("MagnificusMod.Resources.cardframe"))
+			{
+				cardframe = AssetBundle.LoadFromStream(s);
 			}
 		}
 
@@ -459,11 +442,7 @@ namespace MagnificusMod
 								colorE /= 10;
 								if (pedestalClues == 0)
 								{
-									pedestalSprite.transform.rotation = Quaternion.Euler(0, 0, 0);
-									int[] solution = SavedVars.BossTeleportSolution;
-									int solutionSprite = solution[pedestalClues];
-									pedestalSprite.transform.localScale = new Vector3(6, 6, 6);
-									pedestalSprite.GetComponent<SpriteRenderer>().sprite = Tools.getSprite(Singleton<GemPedestalRotator3D>.Instance.iconTextures[solutionSprite].name + ".png");
+									makePedestalClue(pedestalSprite, pedestalClues);
 								}
 								pedestalSprite.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1 - colorE);
 								for (int i = 1; i < 3; i++)
@@ -477,16 +456,26 @@ namespace MagnificusMod
 									pedestalSprite2.transform.rotation = Quaternion.Euler(0, 0, Random.RandomRangeInt(0, 360));
 									if (pedestalClues == i)
 									{
-										int[] solution = SavedVars.BossTeleportSolution;
-										int solutionSprite = solution[pedestalClues];
-										pedestalSprite2.transform.localScale = new Vector3(6, 6, 6);
-										pedestalSprite2.transform.rotation = Quaternion.Euler(0, 0, 0);
-										pedestalSprite2.GetComponent<SpriteRenderer>().sprite = Tools.getSprite(Singleton<GemPedestalRotator3D>.Instance.iconTextures[solutionSprite].name + ".png");
+										makePedestalClue(pedestalSprite2, pedestalClues);
 									}
 									colorE = Random.RandomRangeInt(0, 6);
 									colorE /= 10;
 									pedestalSprite2.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1 - colorE);
 								}
+
+								if(config.isometricMode)
+                                {
+									GameObject ceilPedestal = GameObject.Instantiate(pedestalSprite);
+									ceilPedestal.name = "ceilHint";
+									ceilPedestal.transform.parent = pedestalClue.transform;
+									ceilPedestal.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("puzzlehint_unknown.png");
+									ceilPedestal.transform.localScale = new Vector3(8, 8, 8);
+									ceilPedestal.transform.localPosition = new Vector3(0, 26, 10);
+									ceilPedestal.transform.rotation = Quaternion.Euler(90, 0, 0);
+
+								}
+
+
 								pedestalClues++;
 								break;
 							case '8':
@@ -1025,28 +1014,28 @@ namespace MagnificusMod
 						nodes.Add(runes);
 						continue;
 					}
-					else if (map[y][x] == "RUNEH")
+					else if (map[y][x].Contains("RUNEH"))
 					{
-						GameObject pedestalClue = new GameObject("pedestalClue");
+						string id = map[y][x].Split(';')[1];
+						Debug.Log("runeh id: " + id);
+						GameObject pedestalClue = new GameObject("pedestalClue" + id);
+						pedestalClue.AddComponent<RuneHint>();
 						pedestalClue.transform.parent = GameObject.Find("scenery").transform;
 						pedestalClue.transform.localRotation = Quaternion.Euler(0, 90, 0);
-						pedestalClue.transform.position = new Vector3((float)(x * 20), 4.5f, (float)(y * -20));
+						pedestalClue.transform.position = new Vector3((float)(x * 20), 2f, (float)(y * -20));
 						GameObject pedestalSprite = new GameObject("pedestalSprite");
 						pedestalSprite.transform.parent = pedestalClue.transform;
 						pedestalSprite.AddComponent<SpriteRenderer>();
-						pedestalSprite.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("pedestal_clue_dot.png");
-						pedestalSprite.transform.localScale = new Vector3(2, 2, 2);
+						pedestalSprite.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("puzzlehint_unknown.png");
+						pedestalSprite.transform.localScale = new Vector3(5.5f, 5.5f, 5.5f);
 						pedestalSprite.transform.localPosition = new Vector3(0, 18, 0);
-						pedestalSprite.transform.localRotation = Quaternion.Euler(0, 0, Random.RandomRangeInt(0, 360));
+						pedestalSprite.transform.localRotation = Quaternion.Euler(0, 0, Random.RandomRangeInt(-25, 25));
 						float colorE = Random.RandomRangeInt(0, 6);
 						colorE /= 10;
 						if (pedestalClues == 0)
 						{
-							pedestalSprite.transform.localRotation = Quaternion.Euler(0, 0, 0);
-							int[] solution = SavedVars.BossTeleportSolution;
-							int solutionSprite = solution[pedestalClues];
-							pedestalSprite.transform.localScale = new Vector3(6, 6, 6);
-							pedestalSprite.GetComponent<SpriteRenderer>().sprite = Tools.getSprite(Singleton<GemPedestalRotator3D>.Instance.iconTextures[solutionSprite].name + ".png");
+							pedestalClue.GetComponent<RuneHint>().solutionIdx = 0;
+							makePedestalClue(pedestalSprite, pedestalClues);
 						}
 						pedestalSprite.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1 - colorE);
 						for (int i = 1; i < 3; i++)
@@ -1054,17 +1043,14 @@ namespace MagnificusMod
 							GameObject pedestalSprite2 = GameObject.Instantiate(pedestalSprite);
 							pedestalSprite2.transform.parent = pedestalClue.transform;
 							int offset = 3 * i;
-							pedestalSprite2.transform.localScale = new Vector3(2, 2, 2);
+							pedestalSprite2.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("puzzlehint_unknown.png");
+							pedestalSprite2.transform.localScale = new Vector3(5.5f, 5.5f, 5.5f);
 							pedestalSprite2.transform.localPosition = new Vector3(0, 18 - offset, 0);
-							pedestalSprite2.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("pedestal_clue_dot.png");
-							pedestalSprite2.transform.localRotation = Quaternion.Euler(0, 0, Random.RandomRangeInt(0, 360));
+							pedestalSprite2.transform.localRotation = Quaternion.Euler(0, 0, Random.RandomRangeInt(-25, 25));
 							if (pedestalClues == i)
 							{
-								int[] solution = SavedVars.BossTeleportSolution;
-								int solutionSprite = solution[pedestalClues];
-								pedestalSprite2.transform.localScale = new Vector3(6, 6, 6);
-								pedestalSprite2.transform.localRotation = Quaternion.Euler(0, 0, 0);
-								pedestalSprite2.GetComponent<SpriteRenderer>().sprite = Tools.getSprite(Singleton<GemPedestalRotator3D>.Instance.iconTextures[solutionSprite].name + ".png");
+								pedestalClue.GetComponent<RuneHint>().solutionIdx = i;
+								makePedestalClue(pedestalSprite2, pedestalClues);
 							}
 							colorE = Random.RandomRangeInt(0, 6);
 							colorE /= 10;
@@ -1072,7 +1058,7 @@ namespace MagnificusMod
 						}
 						pedestalClues++;
 						pedestalClue.AddComponent<SineWaveMovement>();
-						pedestalClue.GetComponent<SineWaveMovement>().originalPosition = new Vector3((float)(x * 20), 3.5f, (float)(y * -20));
+						pedestalClue.GetComponent<SineWaveMovement>().originalPosition = new Vector3((float)(x * 20), 1.5f, (float)(y * -20));
 						pedestalClue.GetComponent<SineWaveMovement>().speed = 0.1f;
 						pedestalClue.GetComponent<SineWaveMovement>().yMagnitude = 1;
 						nodes.Add(pedestalClue);
@@ -1210,8 +1196,8 @@ namespace MagnificusMod
 								easel.transform.localScale = new Vector3(7.5f, 7.5f, 7.5f);
 								easel.transform.rotation = Quaternion.Euler(0, 222, 0);
 								easel.transform.Find("Easel").Find("EaselAnim").GetChild(3).gameObject.GetComponent<BoxCollider>().size = new Vector3(0, 0, 0);
-								easel.transform.Find("Easel").Find("EaselAnim").GetChild(3).Find("Quad").Find("CardBase").Find("RenderStatsLayer").Find("BendableCard").Find("Mesh").gameObject.GetComponent<SkinnedMeshRenderer>().materials[0].mainTexture = Tools.getImage("magcardbackground.png");
-								easel.transform.Find("Easel").Find("EaselAnim").GetChild(3).Find("Quad").Find("CardBase").Find("RenderStatsLayer").Find("BendableCard").Find("Mesh").gameObject.GetComponent<SkinnedMeshRenderer>().materials[1].mainTexture = Tools.getImage("magcardback.png");
+								easel.transform.Find("Easel").Find("EaselAnim").GetChild(3).Find("Quad").Find("CardBase").Find("RenderStatsLayer").Find("BendableCard").Find("Mesh").gameObject.GetComponent<SkinnedMeshRenderer>().materials[0].mainTexture = Tools.getImage("finalecardback.png");
+								easel.transform.Find("Easel").Find("EaselAnim").GetChild(3).Find("Quad").Find("CardBase").Find("RenderStatsLayer").Find("BendableCard").Find("Mesh").gameObject.GetComponent<SkinnedMeshRenderer>().materials[1].mainTexture = Tools.getImage("finalecardbacknobars.png");
 								easel.transform.parent = GameObject.Find("scenery").transform;
 								easel.transform.Find("Easel").Find("EaselAnim").GetChild(3).gameObject.name = "DeathCard";
 								break;
@@ -1242,7 +1228,7 @@ namespace MagnificusMod
 								NavigationZone3D navigationZone3D = node.AddComponent<NavigationZone3D>();
 								node.transform.position = new Vector3((float)(x * 20), -9.72f, (float)(y * -20));
 								navigationGrid.zones[x, y] = navigationZone3D;
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.deathCard };
+								node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.deathCard };
 								break;
 						}
 						continue;
@@ -1317,17 +1303,17 @@ namespace MagnificusMod
 								gameObject.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(1, 1);
 								gameObject.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTexture = WallTextures.trapdoor;
 								gameObject.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.SetTexture("_BumpMap", Tools.getImage("trapdoornormal.png"));
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.edaxioTrapdoor);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.edaxioTrapdoor);
 							} else if (map[y][x] == "EXA")
 							{
 								GameObject icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 								icon2.name = "nodeIcon";
 								icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = edaxioTex;
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+								icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 								nodes.Add(icon2);
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.edaxioNode);
-								icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+								icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.edaxioNode);
+								icon2.transform.parent = node.transform;
 							}
 						} else if (map[y][x] == "MRR")
 						{
@@ -1342,7 +1328,7 @@ namespace MagnificusMod
 							GameObject.Destroy(gameObject.transform.Find("BrickGround").gameObject);
 							GameObject mirrorFrame = new GameObject("mirrorFrame");
 							mirrorFrame.transform.parent = gameObject.transform;
-							mirrorFrame.transform.localPosition = new Vector3(0, 0, 0);
+							mirrorFrame.transform.localPosition = new Vector3(0, 0.015f, 0);
 							mirrorFrame.transform.localScale = new Vector3(0.825f, 0.54f, 1);
 							mirrorFrame.transform.rotation = Quaternion.Euler(0, 0, 0);
 							gameObject.transform.Find("mirrorFrame").gameObject.AddComponent<SpriteRenderer>();
@@ -1374,6 +1360,17 @@ namespace MagnificusMod
 								wallcover.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.SetTexture("_BumpMap", WallTextures.dungeonNormal);
 								wallcover.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().lightmapIndex = 1;
 								GameObject.Destroy(wallcover.transform.GetChild(3).gameObject);
+
+
+								GameObject ceiling = GameObject.Instantiate(GameObject.Find("DungeonFloor"));
+								ceiling.name = "mirrorCeiling";
+								ceiling.transform.parent = mirrorFrame.transform;
+
+								ceiling.transform.localRotation = Quaternion.Euler(90, 0, 0);
+								ceiling.transform.localPosition = new Vector3(-2.5f, 0.95f, 3);
+								ceiling.transform.localScale = new Vector3(6.5f, 4.5f, 1);
+								ceiling.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(5, 5);
+
 							}
 						} else if (map[y][x] == "MR1")
 						{
@@ -1409,6 +1406,13 @@ namespace MagnificusMod
 							{
 								nodesLoaded++;
 							}
+							if(map[y][x].Contains("BRUNE"))
+                            {
+								string id = map[y][x].Split(';')[1];
+								Debug.Log(id);
+								node.AddComponent<RuneBattle>().runes = GameObject.Find("pedestalClue" + (id)).GetComponent<RuneHint>();
+								node.GetComponent<RuneBattle>().runes.revealSolution();
+							}
 							continue;
 						}
 						switch (map[y][x])
@@ -1418,87 +1422,87 @@ namespace MagnificusMod
 								icon2.name = "nodeIcon";
 								icon2.transform.localRotation = Quaternion.Euler(0, 180, 0);
 								icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = shopTex;
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+								icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 								nodes.Add(icon2);
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.shop);
-								icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+								icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.shop);
+								icon2.transform.parent = node.transform;
 								break;
 							case "B":
 								icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 								icon2.name = "nodeIcon";
 								icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = battleTex;
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+								icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 								Generation.nodes.Add(icon2);
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.cardBattle);
-								icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+								icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.cardBattle);
+								icon2.transform.parent = node.transform;
 								if (RunState.Run.regionTier == 0 && MagSave.layout.Contains("3"))
 								{
-									icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 34.28f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+									icon2.transform.position = new Vector3(node.transform.position.x, 34.28f, node.transform.position.z);
 								}
 								break;
 							case "B1":
 								icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 								icon2.name = "nodeIcon";
 								icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = goobossTex;
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+								icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 								Generation.nodes.Add(icon2);
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.gooBattle);
-								icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+								icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.gooBattle);
+								icon2.transform.parent = node.transform;
 								break;
 							case "B2":
 								icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 								icon2.name = "nodeIcon";
 								icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = pikebossTex;
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+								icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 								Generation.nodes.Add(icon2);
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.pikeBattle);
-								icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+								icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.pikeBattle);
+								icon2.transform.parent = node.transform;
 								break;
 							case "B3":
 								icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 								icon2.name = "nodeIcon";
 								icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = stimbossTex;
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+								icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 								Generation.nodes.Add(icon2);
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.stimBattle);
-								icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+								icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.stimBattle);
+								icon2.transform.parent = node.transform;
 								break;
 							case "B4":
-								GameObject.Find("MagnificusAnim").transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 0.575f, 25.7f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z + 20);
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.magBattle);
+								GameObject.Find("MagnificusAnim").transform.position = new Vector3(node.transform.position.x + 0.575f, 25.7f, node.transform.position.z + 20);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.magBattle);
 								break;
 							case "E":
 								icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 								icon2.name = "nodeIcon";
 								icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = bleachTex;
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+								icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 								Generation.nodes.Add(icon2);
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.bleach);
-								icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+								icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.bleach);
+								icon2.transform.parent = node.transform;
 								break;
 							case "EN":
 								icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 								icon2.name = "nodeIcon";
 								icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = enchantTex;
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+								icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 								Generation.nodes.Add(icon2);
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.enchant);
-								icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+								icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.enchant);
+								icon2.transform.parent = node.transform;
 								break;
 							case "EVN":
 								icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 								icon2.name = "nodeIcon";
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+								icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 								Generation.nodes.Add(icon2);
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-								icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+								icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+								icon2.transform.parent = node.transform;
 
 								if (loading)
 								{
@@ -1506,35 +1510,35 @@ namespace MagnificusMod
 									{
 										default:
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = bleachTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.bleach);
+											node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.bleach);
 											break;
 										case "enchant":
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = enchantTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.enchant };
+											node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.enchant };
 											break;
 										case "costchng":
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = costchngTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.costChange };
+											node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.costChange };
 											break;
 										case "goobert":
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = copyTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.copyCard };
+											node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.copyCard };
 											break;
 										case "merge":
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = mergeTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.mergeCard };
+											node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.mergeCard };
 											break;
 										case "spellupgrade":
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = spellUpgradeTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.spellUpgrade };
+											node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.spellUpgrade };
 											break;
 										case "cauldron":
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = cauldronTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.cauldronEvent };
+											node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.cauldronEvent };
 											break;
 										case "painting":
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = paintTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.cardPainting };
+											node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.cardPainting };
 											break;
 									}
 									nodesLoaded++;
@@ -1543,57 +1547,51 @@ namespace MagnificusMod
 
 								int random = UnityEngine.Random.RandomRangeInt(0, 100);
 								icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = bleachTex;
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.bleach);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.bleach);
 								if (RunState.Run.regionTier == 1)
 								{
-									if (random < 42)
+									if (random < 33)
 									{
 										if (!loading) { SavedVars.GeneratedEvents += "bleach;"; }
 										icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = bleachTex;
-										GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.bleach };
+										node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.bleach };
 									}
-									else if (random < 72)
+									else if (random < 63)
 									{
 										if (!loading) { SavedVars.GeneratedEvents += "enchant;"; }
 										icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = enchantTex;
-										GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.enchant };
+										node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.enchant };
 									}
 									else if (random< 101)
 									{
-										random = 0;
-										if (SavedVars.LearnedMechanics.Contains("beatgoobert;"))
-                                        {
-											random = UnityEngine.Random.RandomRangeInt(0, 100);
-										}
-										if (random< 55)
+										random = UnityEngine.Random.RandomRangeInt(0, 100);
+										if (random< 45)
 										{
 											if (!loading) { SavedVars.GeneratedEvents += "costchng;"; }
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = costchngTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> {Generation.costChange };
+											node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> {Generation.costChange };
 										} else
                                         {
-											random = 0;//SHITTY NESTED CODE! BUT ITS NECCESSARY
+											random = UnityEngine.Random.RandomRangeInt(0, 66);//SHITTY NESTED CODE! BUT ITS NECCESSARY
 											if (SavedVars.LearnedMechanics.Contains("beatamber;"))
-											{ random = UnityEngine.Random.RandomRangeInt(0, 66); }
-											if (SavedVars.LearnedMechanics.Contains("beatlonely;"))
 											{ random = UnityEngine.Random.RandomRangeInt(0, 100); }
 											if (random < 35)
 											{
 												if (!loading) { SavedVars.GeneratedEvents += "goobert;"; }
 												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = copyTex;
-												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.copyCard };
+												node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.copyCard };
 											}
 											else if (random < 66)
 											{
 												if (!loading) { SavedVars.GeneratedEvents += "spellupgrade;"; }
 												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = spellUpgradeTex;
-												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.spellUpgrade };
+												node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.spellUpgrade };
 											}
 											else
 											{
 												if (!loading) { SavedVars.GeneratedEvents += "painting;"; }
 												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = paintTex;
-												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.cardPainting };
+												node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.cardPainting };
 											}
 										}
 									}
@@ -1603,13 +1601,13 @@ namespace MagnificusMod
 									{
 										if (!loading) { SavedVars.GeneratedEvents += "bleach;"; }
 										icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = bleachTex;
-										GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.bleach };
+										node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.bleach };
 									}
-									else if (random < 72)
+									else if (random < 62)
 									{
 										if (!loading) { SavedVars.GeneratedEvents += "enchant;"; }
 										icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = enchantTex;
-										GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.enchant };
+										node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.enchant };
 									}
 									else if (random < 101)
 									{
@@ -1619,94 +1617,88 @@ namespace MagnificusMod
 										{
 											if (!loading) { SavedVars.GeneratedEvents += "costchng;"; }
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = costchngTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.costChange };
+											node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.costChange };
 										}
-										else if (random < 77)
+										else if (random < 66)
                                         {
 											if (!loading) { SavedVars.GeneratedEvents += "merge;"; }
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = mergeTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.mergeCard };
+											node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.mergeCard };
 										} else
                                         {
-											random = 0;
-											if (SavedVars.LearnedMechanics.Contains("beatamber;"))
-											{random = UnityEngine.Random.RandomRangeInt(0, 66);}
+											random = UnityEngine.Random.RandomRangeInt(0, 66);
 											if (SavedVars.LearnedMechanics.Contains("beatlonely;"))
 											{random = UnityEngine.Random.RandomRangeInt(0, 100);}
 											if (random < 35)
 											{
 												if (!loading) { SavedVars.GeneratedEvents += "goobert;"; }
 												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = copyTex;
-												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.copyCard };
+												node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.copyCard };
 											}
 											else if (random < 66)
 											{
 												if (!loading) { SavedVars.GeneratedEvents += "spellupgrade;"; }
 												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = spellUpgradeTex;
-												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.spellUpgrade };
+												node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.spellUpgrade };
 											}
 											else
 											{
 												if (!loading) { SavedVars.GeneratedEvents += "cauldron;"; }
 												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = cauldronTex;
-												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.cauldronEvent };
+												node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.cauldronEvent };
 											}
 										}
 									}
 								}
 								else if (RunState.Run.regionTier == 3)
 								{
-									if (random < 31)
+									if (random < 28)
 									{
 										if (!loading) { SavedVars.GeneratedEvents += "bleach;"; }
 										icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = bleachTex;
-										GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.bleach };
+										node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.bleach };
 									}
-									else if (random < 60)
+									else if (random < 50)
 									{
 										if (!loading) { SavedVars.GeneratedEvents += "enchant;"; }
 										icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = enchantTex;
-										GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.enchant };
+										node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.enchant };
 									}
 									else if (random < 101)
 									{
 										random = UnityEngine.Random.RandomRangeInt(0, 100);
 
-										if (random < 42)
+										if (random < 32)
 										{
 											if (!loading) { SavedVars.GeneratedEvents += "costchng;"; }
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = costchngTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.costChange };
+											node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.costChange };
 										}
-										else if (random < 70)
+										else if (random < 60)
 										{
 											if (!loading) { SavedVars.GeneratedEvents += "painting;"; }
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = paintTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.cardPainting };
+											node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.cardPainting };
 										}
 										else
 										{
-											random = UnityEngine.Random.RandomRangeInt(0, 66);
-											if (SavedVars.LearnedMechanics.Contains("beatlonely;"))
-											{
-												random = UnityEngine.Random.RandomRangeInt(0, 100);
-											}
+											random = UnityEngine.Random.RandomRangeInt(0, 100);
 											if (random < 33)
 											{
 												if (!loading) { SavedVars.GeneratedEvents += "goobert;"; }
 												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = copyTex;
-												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.copyCard };
+												node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.copyCard };
 											}
 											else if (random < 66)
 											{
 												if (!loading) { SavedVars.GeneratedEvents += "spellupgrade;"; }
 												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = spellUpgradeTex;
-												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.spellUpgrade };
+												node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.spellUpgrade };
 											} else
                                             {
 												if (!loading) { SavedVars.GeneratedEvents += "cauldron;"; }
 												icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = cauldronTex;
-												GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.cauldronEvent };
+												node.GetComponentInChildren<NavigationZone3D>().events = new List<NavigationEvent> { Generation.cauldronEvent };
 											}
 										}
 									}
@@ -1719,21 +1711,21 @@ namespace MagnificusMod
 									icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 									icon2.name = "nodeIcon";
 									icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = draftingTex;
-									icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+									icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 									Generation.nodes.Add(icon2);
-									icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-									GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.drafting);
-									icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+									icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+									node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.drafting);
+									icon2.transform.parent = node.transform;
 								} else
                                 {
 									icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 									icon2.name = "nodeIcon";
 									icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = cardTex;
-									icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+									icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 									Generation.nodes.Add(icon2);
-									icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-									GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.cardSelect);
-									icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+									icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+									node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.cardSelect);
+									icon2.transform.parent = node.transform;
 								}
 								break;
 							case "N2":
@@ -1742,22 +1734,22 @@ namespace MagnificusMod
 									icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 									icon2.name = "nodeIcon";
 									icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = draftingTex;
-									icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+									icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 									Generation.nodes.Add(icon2);
-									icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-									GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.drafting);
-									icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+									icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+									node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.drafting);
+									icon2.transform.parent = node.transform;
 								}
 								break;
 							case "C":
 								icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 								icon2.name = "nodeIcon";
 								icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = cardTex;
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+								icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 								Generation.nodes.Add(icon2);
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.cardSelect);
-								icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+								icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.cardSelect);
+								icon2.transform.parent = node.transform;
 								break;
 							case "FC":
 								bool hasEdaxio = false;
@@ -1773,50 +1765,50 @@ namespace MagnificusMod
 									icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 									icon2.name = "nodeIcon";
 									icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = edaxioTex;
-									icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+									icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 									nodes.Add(icon2);
-									icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-									GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.edaxioNode);
-									icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+									icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+									node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.edaxioNode);
+									icon2.transform.parent = node.transform;
 								} else
                                 {
 									icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 									icon2.name = "nodeIcon";
-									icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = cardTex;
-									icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+									icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = spellTex;
+									icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 									Generation.nodes.Add(icon2);
-									icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-									GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.cardSelect);
-									icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+									icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+									node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.spellSelect);
+									icon2.transform.parent = node.transform;
 								}
 								break;
 							case "CC":
 								icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 								icon2.name = "nodeIcon";
 								icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = costTex;
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+								icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 								Generation.nodes.Add(icon2);
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.costSelect);
-								icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+								icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.costSelect);
+								icon2.transform.parent = node.transform;
 								break;
 							case "CS":
 								icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 								icon2.name = "nodeIcon";
 								icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = spellTex;
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+								icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 								Generation.nodes.Add(icon2);
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.spellSelect);
-								icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+								icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.spellSelect);
+								icon2.transform.parent = node.transform;
 								break;
 							case "CR":
 								icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 								icon2.name = "nodeIcon";
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+								icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 								Generation.nodes.Add(icon2);
-								icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-								icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+								icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+								icon2.transform.parent = node.transform;
 								int rand = UnityEngine.Random.RandomRangeInt(0, 100);
 								if (loading)
                                 {
@@ -1824,15 +1816,15 @@ namespace MagnificusMod
                                     {
 										case "spellselect":
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = spellTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.spellSelect);
+											node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.spellSelect);
 											break;
 										case "costselect":
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = costTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.costSelect);
+											node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.costSelect);
 											break;
 										default:
 											icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = cardTex;
-											GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.cardSelect);
+											node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.cardSelect);
 											break;
 									}
 									nodesLoaded++;
@@ -1841,18 +1833,18 @@ namespace MagnificusMod
 								if (rand < 7)
 								{
 									icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = spellTex;
-									GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.spellSelect);
+									node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.spellSelect);
 									if (!loading) { SavedVars.GeneratedEvents += "spellselect;"; }
-								} else if (rand < 57)
+								} else if (rand < 34)
 								{
 									icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = costTex;
-									GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.costSelect);
+									node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.costSelect);
 									if (!loading) { SavedVars.GeneratedEvents += "costselect;"; }
 								}
 								else if (rand < 101)
 								{
 									icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = cardTex;
-									GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.cardSelect);
+									node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.cardSelect);
 									if (!loading) { SavedVars.GeneratedEvents += "cardselect;"; }
 								}
 								nodesLoaded++;
@@ -1892,6 +1884,14 @@ namespace MagnificusMod
 									mox.transform.localScale = new Vector3(1.8f, 1.8f, 1.8f);
 								}
 								mox.transform.localPosition = new Vector3(0, 13.63f, 0);
+
+								GameObject frontMox = GameObject.Instantiate(mox);
+								frontMox.transform.parent = goobertWarp.transform;
+								frontMox.transform.localPosition = new Vector3(-2.15f, 5f, 0);
+								frontMox.transform.localRotation = Quaternion.Euler(new Vector3(0, 90, 0));
+								frontMox.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
+								frontMox.transform.Find("Gem").gameObject.GetComponent<MeshRenderer>().material = (Resources.Load("art/assets3d/gametable/robomodules/Unlit_Gems") as Material);
+
 								mox.AddComponent<SineWaveMovement>();
 								mox.GetComponent<SineWaveMovement>().originalPosition = new Vector3(0, 13.63f, 0);
 								mox.GetComponent<SineWaveMovement>().speed = 1;
@@ -1918,14 +1918,30 @@ namespace MagnificusMod
 								List<MagnificusMod.BossPedestalRotator> rotators2 = new List<MagnificusMod.BossPedestalRotator>();
 								for (int i = 0; i < 3; i++)
 								{
-									bossWarp.transform.Find("Rotators").GetChild(i).gameObject.AddComponent<MagnificusMod.BossPedestalRotator>();
-									bossWarp.transform.Find("Rotators").GetChild(i).gameObject.GetComponent<MagnificusMod.BossPedestalRotator>().iconTextures = instance.gameObject.transform.Find("Rotators").GetChild(i).gameObject.GetComponent<GemPedestalRotator3D>().iconTextures;
-									bossWarp.transform.Find("Rotators").GetChild(i).gameObject.GetComponent<MagnificusMod.BossPedestalRotator>().rotator = instance.gameObject.transform.Find("Rotators").GetChild(i).gameObject.GetComponent<GemPedestalRotator3D>().rotator;
-									bossWarp.transform.Find("Rotators").GetChild(i).gameObject.GetComponent<MagnificusMod.BossPedestalRotator>().iconRenderers = instance.gameObject.transform.Find("Rotators").GetChild(i).gameObject.GetComponent<GemPedestalRotator3D>().iconRenderers;
-									bossWarp.transform.Find("Rotators").GetChild(i).gameObject.GetComponent<MagnificusMod.BossPedestalRotator>().startIndex = instance.gameObject.transform.Find("Rotators").GetChild(i).gameObject.GetComponent<GemPedestalRotator3D>().startIndex;
-									bossWarp.transform.Find("Rotators").GetChild(i).gameObject.GetComponent<GemPedestalRotator3D>().enabled = false;
-									rotators2.Add(bossWarp.transform.Find("Rotators").GetChild(i).gameObject.GetComponent<MagnificusMod.BossPedestalRotator>());
-									bossWarp.transform.Find("Rotators").GetChild(i).gameObject.GetComponent<MagnificusMod.BossPedestalRotator>().IconIndex = i;
+									GameObject rotator = bossWarp.gameObject.transform.Find("Rotators").GetChild(i).gameObject;
+									rotator.AddComponent<MagnificusMod.BossPedestalRotator>();
+
+									List<Texture> textureOverrides = new List<Texture>(rotator.GetComponent<GemPedestalRotator3D>().iconTextures);
+
+									textureOverrides[1] = Singleton<MagnificusMod.BossTeleporter3D>.Instance.textureOverrides[0];
+									textureOverrides[6] = Singleton<MagnificusMod.BossTeleporter3D>.Instance.textureOverrides[1];
+									textureOverrides[7] = Singleton<MagnificusMod.BossTeleporter3D>.Instance.textureOverrides[2];
+									textureOverrides[9] = Singleton<MagnificusMod.BossTeleporter3D>.Instance.textureOverrides[3];
+									textureOverrides[11] = Singleton<MagnificusMod.BossTeleporter3D>.Instance.textureOverrides[4];
+
+									rotator.GetComponent<MagnificusMod.BossPedestalRotator>().iconTextures = textureOverrides;
+
+									rotator.GetComponent<MagnificusMod.BossPedestalRotator>().startIndex = Random.RandomRangeInt(0, rotator.GetComponent<MagnificusMod.BossPedestalRotator>().iconTextures.Count);
+									rotator.GetComponent<MagnificusMod.BossPedestalRotator>().IconIndex = rotator.GetComponent<MagnificusMod.BossPedestalRotator>().startIndex;
+
+									rotator.GetComponent<MagnificusMod.BossPedestalRotator>().rotator = instance.gameObject.transform.Find("Rotators").GetChild(i).gameObject.GetComponent<GemPedestalRotator3D>().rotator;
+									rotator.GetComponent<MagnificusMod.BossPedestalRotator>().iconRenderers = instance.gameObject.transform.Find("Rotators").GetChild(i).gameObject.GetComponent<GemPedestalRotator3D>().iconRenderers;
+									rotator.GetComponent<MagnificusMod.BossPedestalRotator>().startIndex = instance.gameObject.transform.Find("Rotators").GetChild(i).gameObject.GetComponent<GemPedestalRotator3D>().startIndex;
+									rotator.GetComponent<GemPedestalRotator3D>().enabled = false;
+
+									rotator.transform.Find("Icon_1").gameObject.GetComponent<MeshRenderer>().material.mainTexture = rotator.GetComponent<MagnificusMod.BossPedestalRotator>().iconTextures[rotator.GetComponent<MagnificusMod.BossPedestalRotator>().startIndex];
+
+									rotators2.Add(rotator.GetComponent<MagnificusMod.BossPedestalRotator>());
 								}
 								rotators2.ForEach(delegate (MagnificusMod.BossPedestalRotator x)
 								{
@@ -1967,29 +1983,29 @@ namespace MagnificusMod
 								nodeName.transform.parent = bossWarp.transform;
 								break;
 							case "TR1":
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.towerWarp);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.towerWarp);
 								break;
 							case "TR2":
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.towerWarpTwo);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.towerWarpTwo);
 								break;
 							case "TR3":
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.towerWarpThree);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.towerWarpThree);
 								break;
 							case "TR4":
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.finalWarp);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.finalWarp);
 								break;
 							case "1v1":
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.leshyCardDialogue);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.leshyCardDialogue);
 								break;
 							case "MXPDG":
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.pedestalGuide);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.pedestalGuide);
 								break;
 							case "SPWN":
 								node.AddComponent<OcclusionArea>();
 								break;
 							case "MAGNR":
 								
-								GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.gameOver);
+								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.gameOver);
 								break;
 							case "EXTD":
 								GameObject gameObject = GameObject.Instantiate(GameObject.Find("wall"));
@@ -2027,11 +2043,26 @@ namespace MagnificusMod
 							icon2.AddComponent<conectedNodes>();
 							icon2.GetComponent<conectedNodes>().group = int.Parse(group);
 							icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = battleTex;
-							icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
+							icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
 							Generation.nodes.Add(icon2);
-							icon2.transform.position = new Vector3(GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.x + 1f, 13f, GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform.position.z);
-							GameObject.Find("x" + x.ToString() + " y" + y.ToString()).GetComponentInChildren<NavigationZone3D>().events.Add(Generation.cardBattle);
-							icon2.transform.parent = GameObject.Find("x" + x.ToString() + " y" + y.ToString()).transform;
+							icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+							node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.cardBattle);
+							icon2.transform.parent = node.transform;
+						}
+						else if (map[y][x].Contains("BRUNE"))
+						{
+							string id = map[y][x].Split(';')[1];
+							Debug.Log("brune id: " + id);
+							GameObject icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
+							icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
+							icon2.name = "nodeIcon";
+							icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = bleachbattleTex;
+							icon2.transform.position = new Vector3(node.transform.position.x, 13f, node.transform.position.z);
+							Generation.nodes.Add(icon2);
+							icon2.transform.position = new Vector3(node.transform.position.x + 1f, 13f, node.transform.position.z);
+							node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.bleachBattle);
+							icon2.transform.parent = node.transform;
+							node.AddComponent<RuneBattle>().runes = GameObject.Find("pedestalClue" + (id)).GetComponent<RuneHint>();
 						}
 					}
 				}
@@ -2044,7 +2075,7 @@ namespace MagnificusMod
 				lanterns.transform.localPosition = new Vector3(0, 0, 0);
 				for (int y = 0; y < size[1] / 7; y++)
 				{
-					for (int x = 0; x < map[y].Count / 5; x++)
+					for (int x = 0; x < map[y].Count / 4; x++)
 					{
 						GameObject lantern = GameObject.Instantiate(GameObject.Find("LightSource"));
 						lantern.transform.parent = lanterns.transform;
@@ -2097,6 +2128,20 @@ namespace MagnificusMod
 			yield break;
 		}
 
+		public static void makePedestalClue(GameObject pedestalSprite, int pedestalClues)
+        {
+			pedestalSprite.transform.localRotation = Quaternion.Euler(0, 0, 0);
+			int[] solution = SavedVars.BossTeleportSolution;
+			int solutionSprite = solution[pedestalClues];
+			pedestalSprite.transform.localScale = new Vector3(6, 6, 6);
+			string solutionName = Singleton<GemPedestalRotator3D>.Instance.iconTextures[solutionSprite].name;
+			if (solutionName.Contains("_black"))
+			{
+				string[] splitName = solutionName.Split(new string[] { "_black" }, StringSplitOptions.None);
+				solutionName = splitName[0] + splitName[1];
+			}
+			pedestalSprite.GetComponent<SpriteRenderer>().sprite = (RunState.Run.regionTier != 3) ? Tools.getSprite(solutionName + ".png") : Tools.getSprite("puzzlehint_unknown.png");
+		}
 
 		public static void makeBattleRoom(List<List<string>> map)
 		{
@@ -2310,6 +2355,8 @@ namespace MagnificusMod
 			{
 				WeightUtil.part1Prefab = GameObject.Find("CurrencyBowl").transform.Find("Weights").Find("Weight").gameObject;
 				Singleton<CombatPhaseManager3D>.Instance.weightPrefab = GameObject.Find("CurrencyBowl").transform.Find("Weights").Find("Weight").gameObject;
+
+				
 			}
 		}
 		
@@ -2321,8 +2368,46 @@ namespace MagnificusMod
 		{
 			public static bool Prefix(ref MagnificusGameFlowManager __instance)
 			{
+				setupStuff setup = new setupStuff();
+
+				SaveManager.saveFile.currentScene = "finale_magnificus";
+
+				Dictionary<string, string> autocorrect = new Dictionary<string, string> { { "Wolf", "" }, { "Stinkbug_Talking", "" }, { "Bullfrog", "" }, { "mag_magepupil", "Pupil" }, { "mag_jrsage", "JuniorSage" }, { "mag_rubygolem", "RubyGolem" }, { "mag_hovermage", "FlyingMage" },
+				{"mag_bluemage", "BlueMage"}, {"mag_sporebluemage", "BlueMage_Fused"}, {"mag_musclemage", "MuscleMage"}, {"mag_greenmage", "GreenMage"}, {"mag_forcemage", "ForceMage"}, {"mag_gemfiend", "GemFiend"}, {"mag_knightmage", "MageKnight"}, {"mag_orangemage", "OrangeMage"}, {"mag_practicemage", "PracticeMage"}, {"mag_stimmage", "StimMage"}, 
+					{"mag_mastergo", "MasterGoranj"}, {"mag_masterbg", "MasterBleene"}, {"mag_masterob", "MasterOrlu"}, {"mag_bleenemox", "DualMoxBG"}, {"mag_goranjmox", "DualMoxGO"}, {"mag_gemfrog", "mag_moxmage"}, {"mag_orlumox", "DualMoxOB"}, { "mag_rascal", "mag_astralprojector" }, { "mag_drake", "MasterGoranj" } };
+	
+				for (int i = 0; i < RunState.Run.playerDeck.cardIds.Count; i++)
+				{
+					if (autocorrect.ContainsKey(RunState.Run.playerDeck.cardIds[i]))
+					{
+						
+						string name = (RunState.Run.playerDeck.cardIds[i]);
+						RunState.Run.playerDeck.cardIds.Remove(name);
+
+						if (autocorrect[name] == "") { continue; }
+
+						RunState.Run.playerDeck.cardIds.Add(autocorrect[name]);
+
+						int count = RunState.Run.playerDeck.cardIds.Where(x => x.Equals(autocorrect[name])).Count();
+
+						string keyName = name;
+						if (count > 1) { keyName += "#" + (count - 1); }
+
+						i--;
+						if (!RunState.Run.playerDeck.cardIdModInfos.ContainsKey(keyName)) { continue; }
+
+						List<CardModificationInfo> modValues = RunState.Run.playerDeck.cardIdModInfos[keyName];
+						RunState.Run.playerDeck.cardIdModInfos.Remove(keyName);
+
+						RunState.Run.playerDeck.cardIdModInfos.Add(autocorrect[name] + "#" + (count - 1), modValues);
+					}
+
+				}
+
 				IsometricStuff.moveDisabled = false;
 				CardPileFixes.setUpSacrificeMarker = false;
+				MenuButtonFixes.viewingDeck = false;
+
 				if (SaveManager.saveFile.currentScene == "Part1_Cabin") { return false; }
 				if (!setupSfx)
 				{
@@ -2338,60 +2423,9 @@ namespace MagnificusMod
 				}
 				allcardssummoned = false;
 				__instance.startInFirstPerson = false;
+
 				//load all the stuff
-				if (!SavedVars.FinaleCardBacks)
-				{
-					GameObject.Find("CardElements").transform.Find("Name").transform.position = new Vector3(80f, 3.3672f, 4.998f);
-					GameObject.Find("CardElements").transform.Find("Name").transform.localScale = new Vector3(1.5f, 1f, 1f);
-					GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").transform.position = new Vector3(80f, -2.6219f, 4.996f);
-					GameObject.Find("CardElements").transform.Find("Portrait").GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
-				}
-				GameObject.Find("CardElements").transform.Find("CardStatIcons_Part3").gameObject.SetActive(false);
-				GameObject.Instantiate(Resources.Load("prefabs/cards/cardsurfaceinteraction/CardStatIcons")).name = "CardStatIcons";
-				GameObject.Find("CardStatIcons").transform.parent = GameObject.Find("CardElements").transform;
-					
 
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_2Abilities").Find("Ability_1").transform.position = new Vector3(79.1f, -3.1631f, 1);
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_2Abilities").Find("Ability_1").transform.localScale = new Vector3(0.3f, 0.3f, 1);
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_2Abilities").Find("Ability_2").transform.position = new Vector3(80.6973f, -2.0819f, 1f);
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_2Abilities").Find("Ability_2").transform.localScale = new Vector3(0.3f, 0.3f, 1);
-
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_3Abilities").Find("Ability_1").transform.position = new Vector3(78.9f, -3.2619f, 4.996f);
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_3Abilities").Find("Ability_1").transform.localScale = new Vector3(0.23f, 0.23f, 1);
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_3Abilities").Find("Ability_2").transform.position = new Vector3(80.1f, -2.0807f, 4.996f);
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_3Abilities").Find("Ability_2").transform.localScale = new Vector3(0.23f, 0.23f, 1);
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_3Abilities").Find("Ability_3").transform.position = new Vector3(81.1f, -3.2219f, 4.996f);
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_3Abilities").Find("Ability_3").transform.localScale = new Vector3(0.23f, 0.23f, 1);
-
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_4Abilities").Find("Ability_1").transform.position = new Vector3(79.0139f, -2.0807f, 4.996f);
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_4Abilities").Find("Ability_1").transform.localScale = new Vector3(0.2f, 0.2f, 1);
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_4Abilities").Find("Ability_2").transform.position = new Vector3(79.0139f, -3.2713f, 4.996f);
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_4Abilities").Find("Ability_2").transform.localScale = new Vector3(0.2f, 0.2f, 1);
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_4Abilities").Find("Ability_3").transform.position = new Vector3(80.8218f, -2.0807f, 4.996f);
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_4Abilities").Find("Ability_3").transform.localScale = new Vector3(0.2f, 0.2f, 1);
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_4Abilities").Find("Ability_4").transform.position = new Vector3(80.8218f, -3.2713f, 4.996f);
-				GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_4Abilities").Find("Ability_4").transform.localScale = new Vector3(0.2f, 0.2f, 1);
-
-				GameObject.Find("CardElements").transform.Find("Cost").gameObject.GetComponent<SpriteRenderer>().sortingOrder = 2;
-				GameObject.Find("CardElements").transform.Find("Portrait").gameObject.GetComponent<SpriteRenderer>().sortingOrder = 1;
-				GameObject manaCostSprite = GameObject.Instantiate(GameObject.Find("CardElements").transform.Find("Cost").gameObject);
-				manaCostSprite.transform.parent = GameObject.Find("CardElements").transform;
-				manaCostSprite.name = "AdditionalManaCost";
-				manaCostSprite.transform.localPosition = new Vector3(0.2475f, 0.15f, 0);
-				manaCostSprite.transform.localScale = new Vector3(0.6351f, 0.4269f, 0.546f);
-				manaCostSprite.GetComponent<SpriteRenderer>().sprite = null;
-
-				GameObject paintSplotches = GameObject.Instantiate(GameObject.Find("CardElements").transform.Find("Cost").gameObject);
-				paintSplotches.transform.parent = GameObject.Find("CardElements").transform;
-				paintSplotches.name = "PaintSplashes";
-				paintSplotches.transform.localPosition = new Vector3(0f, 0f, 0);
-				paintSplotches.transform.localScale = new Vector3(0.6473f, 0.5f, 0.546f);
-				if (!SavedVars.LoadWithPaintSplashes)
-                {
-					paintSplotches.transform.localScale = new Vector3(0, 0f, 0f);
-				}
-				paintSplotches.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("paint splotches.png");
-				paintSplotches.GetComponent<SpriteRenderer>().sortingOrder = 0;
 
 				GameObject sacrificeMarker = GameObject.Instantiate(Resources.Load("prefabs/cards/SacrificeMarker") as GameObject);
 				sacrificeMarker.name = "MagSacrificeMarker";
@@ -2404,133 +2438,6 @@ namespace MagnificusMod
 				map.AddComponent<InscryptionAPI.Card.OpponentGemsManager>();
 				map.AddComponent<ConduitCircuitManager>();
 				map.SetActive(true);
-				GameObject newDamageRenderer = GameObject.Find("CardStatIcons").transform.Find("Damage_Icon").gameObject;
-				newDamageRenderer.name = "Damage_Graphic";
-				newDamageRenderer.transform.localScale = new Vector3(1.6f, 1.6f, 1);
-				newDamageRenderer.transform.position = new Vector3(78.0871f, -3.137f, 4.998f);
-				newDamageRenderer.GetComponent<MeshRenderer>().material.mainTexture = null;
-				newDamageRenderer.layer = 13;
-				GameObject newHealthRenderer = GameObject.Find("CardStatIcons").transform.Find("Health_Icon").gameObject;
-				newHealthRenderer.name = "Health_Graphic";
-				newHealthRenderer.transform.position = new Vector3(81.9128f, -3.137f, 5f);
-				newHealthRenderer.transform.localScale = new Vector3(1.6f, 1.6f, 1);
-				newHealthRenderer.GetComponent<MeshRenderer>().material.mainTexture = null;
-				newHealthRenderer.layer = 13;
-
-
-
-				//areaText.transform.Find("TextCanvas").Find("TextFitter").Find("DialogueText").Find("TextShadow").localPosition = new Vector3(0f, 4.25f, 1);
-
-				Sprite sprite = new Sprite();
-				Texture2D image = Tools.getImage("mana cost1.png");
-				sprite = Sprite.Create(image, new Rect(0f, 0f, 64f, 64f), new Vector2(0.5f, 0.5f));
-
-				Sprite sprite2 = new Sprite();
-				Texture2D image2 = Tools.getImage("mana cost2.png");
-				sprite2 = Sprite.Create(image2, new Rect(0f, 0f, 64f, 64f), new Vector2(0.5f, 0.5f));
-
-				Sprite sprite3 = new Sprite();
-				Texture2D image3 = Tools.getImage("mana cost3plz.png");
-				sprite3 = Sprite.Create(image3, new Rect(0f, 0f, 64f, 64f), new Vector2(0.5f, 0.5f));
-
-				manaCostTextures = new Sprite[5];
-				manaCostTextures[1] = sprite;
-				manaCostTextures[2] = sprite2;
-				manaCostTextures[3] = sprite3;
-				manaCostTextures[4] = sprite2;
-
-				Singleton<CardDisplayer>.Instance.costTextures = new Sprite[5];
-
-				for (int i = 1; i < 5; i++)
-                {
-					Sprite blood = Tools.convertToSprite(Resources.Load("art/cards/costs/cost_" + i + "blood") as Texture2D);
-					Singleton<CardDisplayer>.Instance.costTextures[i] = blood;
-				}
-
-				Singleton<CardDisplayer>.Instance.boneCostTextures = new Sprite[10];
-
-				for (int i = 0; i < 10; i++)
-				{
-					Sprite bone = Tools.convertToSprite(Resources.Load("art/cards/costs/cost_" + (i + 1) + "bone") as Texture2D);
-					Singleton<CardDisplayer>.Instance.boneCostTextures[i] = bone;
-				}
-
-				Singleton<CardDisplayer>.Instance.energyCostTextures = new Sprite[6];
-
-				for (int i = 0; i < 6; i++)
-				{
-					Sprite energy = Tools.getSprite("energy_cost_" + (i + 1) + ".png");
-					Singleton<CardDisplayer>.Instance.energyCostTextures[i] = energy;
-				}
-
-				Sprite greenCost = new Sprite();
-				Texture2D greenCost1 = (Resources.Load("art/cards/costs/cost_greengem") as Texture2D);
-				greenCost = Sprite.Create(greenCost1, new Rect(0f, 0f, 64f, 64f), new Vector2(0.5f, 0.5f));
-				greenCost.name = "cost_green";
-
-				Sprite blueCost = new Sprite();
-				Texture2D blueCost1 = (Resources.Load("art/cards/costs/cost_bluegem") as Texture2D);
-				blueCost = Sprite.Create(blueCost1, new Rect(0f, 0f, 64f, 64f), new Vector2(0.5f, 0.5f));
-				blueCost.name = "cost_blue";
-
-				Sprite orangeCost = new Sprite();
-				Texture2D orangeCost1 = (Resources.Load("art/cards/costs/cost_orangegem") as Texture2D);
-				orangeCost = Sprite.Create(orangeCost1, new Rect(0f, 0f, 64f, 64f), new Vector2(0.5f, 0.5f));
-				orangeCost.name = "cost_orange";
-
-				//double cost vanilla
-
-				Sprite goranjCost = new Sprite();
-				Texture2D goranjCost1 = Tools.getImage("cost_goranj.png");
-				goranjCost = Sprite.Create(goranjCost1, new Rect(0f, 0f, 64f, 64f), new Vector2(0.5f, 0.5f));
-				goranjCost.name = "cost_goranj";
-
-				Sprite bleenCost = new Sprite();
-				Texture2D bleenCost1 = Tools.getImage("cost_bleene.png");
-				bleenCost = Sprite.Create(bleenCost1, new Rect(0f, 0f, 64f, 64f), new Vector2(0.5f, 0.5f));
-				bleenCost.name = "cost_bleene";
-
-				Sprite orluCost = new Sprite();
-				Texture2D orluCost1 = Tools.getImage("cost_orlu.png");
-				orluCost = Sprite.Create(orluCost1, new Rect(0f, 0f, 64f, 64f), new Vector2(0.5f, 0.5f));
-				orluCost.name = "cost_orlu";
-
-				// double o de same
-
-				Sprite green2 = new Sprite();
-				Texture2D green21 = Tools.getImage("cost_2green.png");
-				green2 = Sprite.Create(green21, new Rect(0f, 0f, 64f, 64f), new Vector2(0.5f, 0.5f));
-				green2.name = "cost_green2";
-
-				Sprite blue2 = new Sprite();
-				Texture2D blue21 = Tools.getImage("cost_2blue.png");
-				blue2 = Sprite.Create(blue21, new Rect(0f, 0f, 64f, 64f), new Vector2(0.5f, 0.5f));
-				blue2.name = "cost_blue2";
-
-				Sprite orange2 = new Sprite();
-				Texture2D orange21 = Tools.getImage("cost_2orange.png");
-				orange2 = Sprite.Create(orange21, new Rect(0f, 0f, 64f, 64f), new Vector2(0.5f, 0.5f));
-				orange2.name = "cost_orange2";
-
-				// weird al yancovic cost
-
-				Sprite allMox = new Sprite();
-				Texture2D allMox1 = Tools.getImage("all mox.png");
-				allMox = Sprite.Create(allMox1, new Rect(0f, 0f, 64f, 64f), new Vector2(0.5f, 0.5f));
-				allMox.name = "cost_all";
-
-				Singleton<CardDisplayer>.Instance.gemCostTextures = new Sprite[10];
-				Singleton<CardDisplayer>.Instance.gemCostTextures[0] = greenCost;
-				Singleton<CardDisplayer>.Instance.gemCostTextures[1] = orangeCost;
-				Singleton<CardDisplayer>.Instance.gemCostTextures[2] = blueCost;
-				Singleton<CardDisplayer>.Instance.gemCostTextures[3] = goranjCost;
-				Singleton<CardDisplayer>.Instance.gemCostTextures[4] = orluCost;
-				Singleton<CardDisplayer>.Instance.gemCostTextures[5] = bleenCost;
-				Singleton<CardDisplayer>.Instance.gemCostTextures[6] = green2;
-				Singleton<CardDisplayer>.Instance.gemCostTextures[7] = orange2;
-				Singleton<CardDisplayer>.Instance.gemCostTextures[8] = blue2;
-				Singleton<CardDisplayer>.Instance.gemCostTextures[9] = allMox;
-
 
 				GameObject.Find("FirstPersonController").name = "Player";
 				GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = false;
@@ -2544,482 +2451,21 @@ namespace MagnificusMod
 				environment.name = "MagnificusEnvironment";//this goes above everything
 				Generation.nodes = new List<GameObject>();
 
-				GameObject.Instantiate(Resources.Load("prefabs/items/ItemsManager_Part3")).name = "hammerStuff";
-				Singleton<Part3ItemsManager>.Instance.hammerSlot.InitializeHammer();
-				GameObject.Find("hammerStuff").AddComponent<SineWaveMovement>();
-				GameObject.Find("hammerStuff").GetComponent<SineWaveMovement>().enabled = false;
 
-				/*
-				
+				//setup battle
+				setup.setupBattleStuff();
 
-				GameObject.Instantiate(Resources.Load("prefabs/finalemagnificus/CombatBell_Magnificus")).name = "BigBen";
-				GameObject.Find("BigBen").transform.localScale = new Vector3(0.35f, 0.35f, 0.35f);//sorry
-				GameObject.Find("BigBen").transform.parent = GameObject.Find("CombatBell").transform.Find("Anim").Find("Model");
-				GameObject.Find("CombatBell").gameObject.GetComponent<SphereCollider>().enabled = false;
-				GameObject.Find("CombatBell").gameObject.GetComponent<CombatBell3D>().enabled = false;
-				GameObject.Find("BigBen").gameObject.GetComponent<SphereCollider>().center = new Vector3(0f, -2.5f, 0f);
-				GameObject.Find("CombatBell").transform.Find("Anim").Find("Model").Find("BellFin").gameObject.SetActive(false);
-				GameObject.Find("BigBen").transform.localPosition = new Vector3(0f, 0f, 0f);
-				GameObject.Find("BigBen").GetComponent<SphereCollider>().radius = 2.3f;
-				GameObject.Find("CombatBell").transform.Find("Anim").transform.localPosition = new Vector3(0f, 2.08f, 0f);
-				GameObject.Find("CombatBell").transform.Find("Anim").Find("Shadow").gameObject.GetComponent<MeshRenderer>().enabled = false;
-				*/
+				//setup table
+				setup.setupTable();
 
-				for (int i = 0; i < GameObject.Find("CardBattle_Magnificus").transform.Find("3DPortraitSlots").Find("OpponentSlots").transform.childCount; i++)
-				{
-					GameObject portrait = GameObject.Find("CardBattle_Magnificus").transform.Find("3DPortraitSlots").Find("OpponentSlots").GetChild(i).GetChild(3).gameObject;
-					for (int j = 0;j < portrait.transform.GetChild(0).GetChild(0).GetChild(1).childCount; j++) {
-						portrait.transform.GetChild(0).GetChild(0).GetChild(1).GetChild(j).gameObject.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-					}
-					portrait.transform.GetChild(0).GetChild(0).GetChild(1).Find("canvas_low").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("LargeFrame_albedo.png");
-				}
-
-
-
-				//make mox prefab
-
-				for (int i = 0; i < 3; i++)
-				{
-					string str = "Emerald";
-					if (i == 1)
-					{
-						str = "Ruby";
-					}
-					else if (i == 2)
-					{
-						str = "Sapphire";
-					}
-					GameObject gameObject = GameObject.Instantiate<GameObject>(ResourceBank.Get<GameObject>("prefabs/finalemagnificus/Wizard3DPortrait_Mox" + str));
-					gameObject.transform.Find("SineWaveMove").Find("Anim").position = new Vector3(0f, -900f, 0f);
-					gameObject.transform.Find("SineWaveMove").gameObject.GetComponent<SineWaveMovement>().enabled = false;
-					gameObject.transform.Find("SineWaveMove").Find("Anim").gameObject.SetActive(true);
-					gameObject.transform.Find("SineWaveMove").position = new Vector3(0f, 0f, 0f);
-					gameObject.transform.Find("SineWaveMove").Find("Anim").gameObject.GetComponent<Animator>().enabled = false;
-					gameObject = gameObject.transform.Find("SineWaveMove").Find("Anim").gameObject;
-					switch (i)
-					{
-						case 0:
-							gameObject.name = "emeraldMoxPref";
-							break;
-						case 1:
-							gameObject.name = "rubyMoxPref";
-							break;
-						case 2:
-							gameObject.name = "sapphireMoxPref";
-							break;
-					}
-					gameObject.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				}
-
-				GameObject manaT = GameObject.Instantiate(GameObject.Find("emeraldMoxPref").transform.Find("Gem").gameObject);
-				manaT.name = "mana1";
-				manaT.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				manaT.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("mana.png");
-				manaT.transform.position = new Vector3(0, -90, 0);
-
-				GameObject manaS = GameObject.Instantiate(GameObject.Find("sapphireMoxPref").transform.Find("Gem").gameObject);
-				manaS.name = "mana2";
-				manaS.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				manaS.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("mana.png");
-				manaS.transform.position = new Vector3(0, -90, 0);
-
+				//setup nodes
+				setup.setupNodes();
 
 				//make the room deco objects
+				setup.setupCustomObjects();
 
-				GameObject crates = GameObject.Instantiate(Resources.Load("prefabs/environment/tableeffects/CratesTableEffects") as GameObject);
-				crates.name = "crates";
-				crates.transform.position = new Vector3(0, -90, 0);
-				GameObject.Destroy(crates.transform.Find("CratesLeft").gameObject);
-				crates.transform.Find("CratesRight").localPosition = new Vector3(0, 0, 0);
-				crates.transform.Find("CratesRight").localScale = new Vector3(1.5f, 1.5f, 1.5f);
-				crates.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-
-
-
-				GameObject gooBottle = GameObject.Instantiate(Resources.Load("prefabs/items/GooBottleItem") as GameObject);
-				gooBottle.name = "gooBottle";
-				gooBottle.transform.position = new Vector3(0, -90, 0);
-				gooBottle.GetComponent<Animator>().enabled = false;
-				gooBottle.GetComponent<GooBottleItem>().enabled = false;
-				gooBottle.transform.Find("GooWizardBottle").gameObject.GetComponent<Animator>().enabled = false;
-				gooBottle.transform.Find("GooWizardBottle").gameObject.GetComponent<GooWizardAnimationController>().enabled = false;
-				gooBottle.transform.localScale = new Vector3(3, 3, 3);
-				GameObject gooBottle2 = GameObject.Instantiate(gooBottle);
-				gooBottle2.name = "gooBottle2";
-				gooBottle2.transform.Find("GooWizardBottle").Find("GooWizard").Find("Bottle").gameObject.SetActive(false);
-				gooBottle2.transform.Find("GooWizardBottle").Find("GooWizard").Find("Cork").gameObject.SetActive(false);
-				gooBottle2.transform.rotation = Quaternion.Euler(0, 180, 0);
-				gooBottle2.transform.parent = gooBottle.transform;
-				gooBottle2.transform.localPosition = new Vector3(0, 0, 0.08f);
-				gooBottle.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-
-				GameObject floatingBook = GameObject.Instantiate(Resources.Load("prefabs/factoryindoors/FactoryFloatingBook") as GameObject);
-				floatingBook.name = "floatingBook";
-				floatingBook.transform.position = new Vector3(0, -90, 0);
-				floatingBook.GetComponent<ActiveIfHoloMapZone>().enabled = false;
-				floatingBook.transform.Find("Book").gameObject.SetActive(true);
-				floatingBook.transform.Find("Book").transform.localScale = new Vector3(0.49f, 0.33f, 0.09f);
-				GameObject book2 = GameObject.Instantiate(floatingBook.transform.Find("Book").gameObject);
-				book2.transform.parent = floatingBook.transform;
-				book2.transform.localPosition = new Vector3(-8.5f, 3, 0);
-				book2.transform.localRotation = Quaternion.Euler(11.9f, 80.5f, 302.9f);
-				book2.GetComponent<MeshRenderer>().material.color = new Color(0.65f, 1f, 0.65f, 1);
-				GameObject book3 = GameObject.Instantiate(floatingBook.transform.Find("Book").gameObject);
-				book3.transform.parent = floatingBook.transform;
-				book3.transform.localPosition = new Vector3(-4.25f, 5.5f, -4.18f);
-				book3.transform.localRotation = Quaternion.Euler(5.7f, 359.35f, 267.6f);
-				book3.GetComponent<MeshRenderer>().material.color = new Color(0.65f, 0.65f, 1, 1);
-				floatingBook.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-
-				GameObject shrooms = GameObject.Instantiate(Resources.Load("prefabs/specialnodesequences/Mushroom_CardChoice") as GameObject);
-				shrooms.name = "shroom";
-				shrooms.transform.localScale = new Vector3(5, 5, 5);
-				shrooms.transform.position = new Vector3(0, -90, 0);
-				shrooms.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-
-				GameObject eyes = GameObject.Instantiate(Resources.Load("prefabs/specialnodesequences/EyeBall") as GameObject);
-				eyes.name = "eyeball";
-				eyes.transform.localScale = new Vector3(15, 15, 15);
-				GameObject.Destroy(eyes.GetComponent<Rigidbody>());
-				GameObject.Destroy(eyes.GetComponent<EyeballInteractable>());
-				eyes.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				eyes.transform.localPosition = new Vector3(0, 0, 0);
-
-				//font break
-
-				fontmanager.LoadAllAssets();
-				var fontPrefab = fontmanager.LoadAssetWithSubAssets("Fonts")[0];
-				GameObject fontObj = GameObject.Instantiate((GameObject)fontPrefab);
-
-				fontObj.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				fontObj.transform.localPosition = new Vector3(0, 0, 0);
-				fontObj.name = "AmberFont";
-
-				var stimmyFont = fontmanager.LoadAssetWithSubAssets("StimFont")[0];
-				GameObject stimmyFontObj = GameObject.Instantiate((GameObject)stimmyFont);
-
-				stimmyFontObj.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				stimmyFontObj.transform.localPosition = new Vector3(0, 0, 0);
-				stimmyFontObj.name = "StimmyFont";
-
-				//custom ones
-
-				pike.LoadAllAssets();
-				var pikePrefab = pike.LoadAssetWithSubAssets("pikeModel")[0];
-				var pikeSPrefab = pike.LoadAssetWithSubAssets("pikeSpear")[0];
-				GameObject pikeStick = GameObject.Instantiate((GameObject)pikePrefab);
-				GameObject pikeSpear = GameObject.Instantiate((GameObject)pikeSPrefab);
-
-				pikeStick.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-				pikeSpear.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-				pikeSpear.transform.parent = pikeStick.transform;
-				pikeStick.name = "PikeModel";
-				pikeStick.transform.localScale = new Vector3(2, 2, 2);
-				pikeStick.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				pikeStick.transform.localPosition = new Vector3(0, 0, 0);
-
-				sword.LoadAllAssets();
-				var swordPrefab = sword.LoadAssetWithSubAssets("sword")[0];
-				GameObject swordObj = GameObject.Instantiate((GameObject)swordPrefab);
-
-				swordObj.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-				swordObj.name = "swordModel";
-				swordObj.transform.localScale = new Vector3(5, 5, 5);
-				swordObj.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				swordObj.transform.localPosition = new Vector3(0, 0, 0);
-
-				dummy.LoadAllAssets();
-				var dummyPrefab = dummy.LoadAssetWithSubAssets("danny")[0];
-				GameObject dummyObj = GameObject.Instantiate((GameObject)dummyPrefab);
-
-				dummyObj.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-				dummyObj.name = "trainingDummy";
-				dummyObj.transform.localScale = new Vector3(500, 500, 500);
-				dummyObj.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				dummyObj.transform.localPosition = new Vector3(0, 0, 0);
-
-				GameObject archeryDummy = GameObject.Instantiate(Resources.Load("art/assets3d/wizardbattle/practicemage/ArcheryTarget") as GameObject);
-				archeryDummy.name = "archeryDummy";
-				archeryDummy.transform.localScale = new Vector3(2.2f, 2.2f, 2.2f);
-				archeryDummy.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				archeryDummy.transform.localPosition = new Vector3(0, 0, 0);
-
-				cauldron.LoadAllAssets();
-				var cauldronPrefab = cauldron.LoadAssetWithSubAssets("cauldronModel")[0];
-				GameObject cauldronObj = GameObject.Instantiate((GameObject)cauldronPrefab);
-
-				cauldronObj.name = "cauldron";
-				for (int i = 0; i < cauldronObj.transform.childCount; i++)
-                {
-					cauldronObj.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-                }
-				for (int i = 0; i < cauldronObj.transform.GetChild(4).gameObject.GetComponent<MeshRenderer>().materials.Length; i++)
-                {
-					cauldronObj.transform.GetChild(4).gameObject.GetComponent<MeshRenderer>().materials[i].shader = Shader.Find("Standard");
-				}
-				cauldronObj.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				cauldronObj.transform.localPosition = new Vector3(0, 0, 0);
-
-				picnic.LoadAllAssets();
-				var hubert3D = picnic.LoadAssetWithSubAssets("hubert")[0];
-				var cloth = picnic.LoadAssetWithSubAssets("picnic")[0];
-				GameObject hubertObj = GameObject.Instantiate((GameObject)hubert3D);
-				GameObject clothObj = GameObject.Instantiate((GameObject)cloth);
-
-				for (int i = 0; i < hubertObj.transform.childCount; i++)
-                {
-					hubertObj.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-				}
-				
-				for (int i = 0; i < clothObj.transform.childCount; i++)
-				{
-					clothObj.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-				}
-				clothObj.name = "cloth3D";
-				hubertObj.transform.parent = clothObj.transform;
-				hubertObj.name = "hubert3D";
-				hubertObj.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
-				hubertObj.transform.rotation = Quaternion.Euler(0, 129, 0);
-				hubertObj.AddComponent<BoxCollider>();
-				hubertObj.GetComponent<BoxCollider>().center = new Vector3(0, 0.6f, 0);
-				hubertObj.GetComponent<BoxCollider>().size = new Vector3(5, 5, 5);
-				hubertObj.AddComponent<hubertbooper>();
-				clothObj.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				clothObj.transform.localPosition = new Vector3(0, 0, 0);
-				clothObj.transform.localScale = new Vector3(5, 5, 5);
-
-				marblestatues.LoadAllAssets();
-				//var me1 = marblestatues.LoadAssetWithSubAssets("me1")[0];
-				//var me2 = marblestatues.LoadAssetWithSubAssets("me2")[0];
-				var poeStatue = marblestatues.LoadAssetWithSubAssets("poestatue")[0];
-				var sheStatue = marblestatues.LoadAssetWithSubAssets("she")[0];
-				//GameObject me1Obj = GameObject.Instantiate((GameObject)me1);
-				//GameObject me2Obj = GameObject.Instantiate((GameObject)me2);
-
-				/*for (int i = 0; i < me1Obj.transform.childCount; i++)
-				{
-					me1Obj.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-				}
-
-				for (int i = 0; i < me2Obj.transform.childCount; i++)
-				{
-					me2Obj.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-				}
-				*/
-				GameObject poesObj = GameObject.Instantiate((GameObject)poeStatue);
-				GameObject shesObj = GameObject.Instantiate((GameObject)sheStatue);
-
-				for (int i = 0; i < poesObj.transform.childCount; i++)
-				{
-					poesObj.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-				}
-
-				for (int i = 0; i < shesObj.transform.childCount; i++)
-				{
-					shesObj.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-				}
-
-				/*me1Obj.name = "me1Statue";
-				me1Obj.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				me1Obj.transform.localScale = new Vector3(2, 2, 2);
-				me2Obj.name = "me2Statue";
-				me2Obj.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				me2Obj.transform.localScale = new Vector3(2, 2, 2);
-				me1Obj.transform.localPosition = new Vector3(0, 0, 0);
-				me2Obj.transform.localPosition = new Vector3(0, 0, 0);
-				*/
-				poesObj.name = "poeStatue";
-				poesObj.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				poesObj.transform.localScale = new Vector3(5, 5, 5);
-				shesObj.name = "sheStatue";
-				shesObj.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				shesObj.transform.localScale = new Vector3(2, 2, 2);
-				poesObj.transform.localPosition = new Vector3(0, 0, 0);
-				shesObj.transform.localPosition = new Vector3(0, 0, 0);
-
-				towerwalls.LoadAllAssets();
-				var towerRing = towerwalls.LoadAssetWithSubAssets("towerwalls")[0];
-				GameObject towerObj = GameObject.Instantiate((GameObject)towerRing);
-
-				towerObj.GetComponentInChildren<MeshRenderer>().material.shader = Shader.Find("Standard");
-				towerObj.name = "towerWalls";
-				towerObj.transform.localScale = new Vector3(5, 5, 5);
-				towerObj.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				towerObj.transform.localPosition = new Vector3(0, 0, 0);
-
-				var towerRing3 = towerwalls.LoadAssetWithSubAssets("towerwall3")[0];
-				GameObject towerObj3 = GameObject.Instantiate((GameObject)towerRing3);
-
-				towerObj3.GetComponentInChildren<MeshRenderer>().material.shader = Shader.Find("Standard");
-				towerObj3.name = "towerWall3";
-				towerObj3.transform.localScale = new Vector3(5, 5, 5);
-				towerObj3.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				towerObj3.transform.localPosition = new Vector3(0, 0, 0);
-
-				var finalfloor = towerwalls.LoadAssetWithSubAssets("towerwalls4")[0];
-				GameObject finalFloorObj = GameObject.Instantiate((GameObject)finalfloor);
-
-				finalFloorObj.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-				finalFloorObj.transform.GetChild(1).gameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-				finalFloorObj.transform.GetChild(1).localScale = new Vector3(100, 100, 102);
-				finalFloorObj.transform.GetChild(1).gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.8f, 0.8f, 0.8f, 1);
-				finalFloorObj.transform.GetChild(2).gameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-
-				finalFloorObj.transform.GetChild(2).localScale = new Vector3(230, 230, 350);
-				finalFloorObj.name = "towerWall4";
-				finalFloorObj.transform.localScale = new Vector3(0, 0, 0);
-				finalFloorObj.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				finalFloorObj.transform.localPosition = new Vector3(0, 0, 0);
-
-
-				//table stuff
-				GameObject.Instantiate(new GameObject()).name = "GameTable";
-				GameObject.Instantiate(new GameObject()).name = "SpecialNodeHandler";
-				GameObject.Instantiate(Resources.Load("prefabs/cardbattle/Deck")).name = "DeckReviewCardArray";
-				GameObject.Instantiate(Resources.Load("prefabs/specialnodesequences/CardChoiceSelector")).name = "CardChoiceSelector";
-				GameObject.Instantiate(Resources.Load("prefabs/specialnodesequences/RareCardChoiceSelector")).name = "RareCardChoiceSelector";
-				GameObject.Instantiate(Resources.Load("prefabs/specialnodesequences/BuyPeltsSequencer")).name = "BuyPeltsSequencer";
-				GameObject.Instantiate(Resources.Load("prefabs/specialnodesequences/TradePeltsSequencer")).name = "TradePeltsSequencer";
-				GameObject.Instantiate(Resources.Load("prefabs/specialnodesequences/CardStatBoostSequencer")).name = "CardStatBoostSequencer";
-				GameObject.Instantiate(Resources.Load("prefabs/specialnodesequences/DuplicateMerger")).name = "DuplicateMerger";
-				GameObject.Instantiate(Resources.Load("prefabs/specialnodesequences/CopyCardSequencer")).name = "CopyCardSequencer";
-				GameObject.Find("DeckReviewCardArray").transform.parent = GameObject.Find("GameTable").transform;
-				GameObject.Find("SpecialNodeHandler").transform.parent = GameObject.Find("GameTable").transform;
-				GameObject.Find("SpecialNodeHandler").AddComponent<SpecialNodeHandler>();
-				GameObject.Find("BuyPeltsSequencer").transform.parent = GameObject.Find("SpecialNodeHandler").transform;
-				GameObject.Find("TradePeltsSequencer").transform.parent = GameObject.Find("SpecialNodeHandler").transform;
-				GameObject.Find("CardStatBoostSequencer").transform.parent = GameObject.Find("SpecialNodeHandler").transform;
-				GameObject.Find("CardChoiceSelector").transform.parent = GameObject.Find("SpecialNodeHandler").transform;
-				GameObject.Find("RareCardChoiceSelector").transform.parent = GameObject.Find("SpecialNodeHandler").transform;
-				GameObject.Find("DuplicateMerger").transform.parent = GameObject.Find("SpecialNodeHandler").transform;
-				GameObject.Find("CopyCardSequencer").transform.parent = GameObject.Find("SpecialNodeHandler").transform;
-				__instance.cardbattleParent.transform.parent = GameObject.Find("GameTable").transform;
-				__instance.cardbattleParent.transform.Find("RuleBookRig_Magnificus").parent = GameObject.Find("GameTable").transform;
-
-				Singleton<SpecialNodeHandler>.Instance.buyPeltsSequencer = GameObject.Find("BuyPeltsSequencer").GetComponent<BuyPeltsSequencer>();
-				Singleton<SpecialNodeHandler>.Instance.tradePeltsSequencer = GameObject.Find("TradePeltsSequencer").GetComponent<TradePeltsSequencer>();
-				Singleton<SpecialNodeHandler>.Instance.cardChoiceSequencer = GameObject.Find("CardChoiceSelector").GetComponent<CardSingleChoicesSequencer>();
-				Singleton<SpecialNodeHandler>.Instance.rareCardChoiceSequencer = GameObject.Find("RareCardChoiceSelector").GetComponent<RareCardChoicesSequencer>();
-				Singleton<SpecialNodeHandler>.Instance.duplicateMerger = GameObject.Find("DuplicateMerger").GetComponent<DuplicateMergeSequencer>();
-
-				GameObject.Instantiate(Resources.Load("prefabs/finalemagnificus/MarbleColumn")).name = "tbPillar";
-				GameObject.Find("tbPillar").transform.parent = GameObject.Find("GameTable").transform;
-				GameObject.Find("tbPillar").transform.position = new Vector3(0.88f, -4.94f, -1f);
-				GameObject.Find("tbPillar").transform.localScale = new Vector3(2.25f, 1f, 2.25f);
-				//GameObject.Find("tbPillar").transform.GetChild(1).GetChild(1).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("MarbleColumn_Albedo.png");
-				//GameObject.Find("tbPillar").transform.GetChild(1).GetChild(1).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(3, 3);
-				//GameObject.Find("TableModel").SetActive(false);
-				//	GameObject.Find("TableModel").SetActive(false);
-				//	GameObject.Find("OpponentAnimController").SetActive(false);
-
-				
-				GameObject easel = GameObject.Instantiate(GameObject.Find("CopyCardSequencer").transform.Find("EaselWithCard").gameObject);
-				easel.name = "easel";
-				easel.transform.position = new Vector3(0, -90, 0);
-				easel.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-				easel.gameObject.SetActive(true);
-				easel.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				
-				GameObject light = GameObject.Instantiate(new GameObject());
-
-				light.AddComponent<Light>();
-				light.name = "light";
-				light.GetComponent<Light>().intensity = 0.6f;
-				light.GetComponent<Light>().shape = LightShape.Cone;
-				light.GetComponent<Light>().spotAngle = 30f;
-				light.GetComponent<Light>().range = 50f;
-				light.transform.localPosition = new Vector3(0f, 20.63f, -1f);
-				light.GetComponent<Light>().color = new Color(0.9137255f, 0.9137255f, 0.9137255f, 1f);
-				GameObject deckLight = GameObject.Instantiate(light);
-				deckLight.name = "deckLight";
-				deckLight.transform.parent = light.transform;
-				deckLight.GetComponent<Light>().intensity = 1.8f;
-				deckLight.transform.localPosition = new Vector3(0, 0, -15f);
-				light.transform.parent = GameObject.Find("GameTable").transform;
-				light.transform.localPosition = new Vector3(0, 0, 0);
-
-				//update stuff
-
-
-				//characters
-
-				goober.LoadAllAssets();
-
-				var gooberPrefab = goober.LoadAssetWithSubAssets("Goober")[0];
-
-				GameObject goob = GameObject.Instantiate((GameObject)gooberPrefab);
-				goob.transform.GetChild(0).localScale = new Vector3(1, 1, 1);
-				goob.transform.GetChild(0).gameObject.GetComponent<SkinnedMeshRenderer>().materials[0].shader = Shader.Find("Standard");
-				goob.transform.GetChild(0).gameObject.GetComponent<SkinnedMeshRenderer>().materials[1].shader = Shader.Find("Standard");
-
-				goob.name = "Goober";
-				goob.transform.localScale = new Vector3(5, 5, 5);
-				goob.transform.parent = GameObject.Find("GameTable").transform;
-				goob.transform.localPosition = new Vector3(0, 6, 26);
-				goob.transform.rotation = Quaternion.Euler(0, 180, 0);
-				goob.SetActive(false);
-
-				espeara.LoadAllAssets();
-
-				var espearaPrefab = espeara.LoadAssetWithSubAssets("PikeMage")[0];
-
-				GameObject pikeMage = GameObject.Instantiate((GameObject)espearaPrefab);
-				pikeMage.transform.localScale = new Vector3(1, 1, 1);
-				for (int i = 0; i < pikeMage.transform.childCount; i++)
-				{
-					if (pikeMage.transform.GetChild(i).gameObject.name != "Empty")
-					{
-						pikeMage.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-					}
-					if (pikeMage.transform.GetChild(i).gameObject.name == "Sphere")
-                    {
-						pikeMage.transform.GetChild(i).gameObject.GetComponent<MeshRenderer>().materials[1].shader = Shader.Find("Standard");
-					}
-				}
-
-				pikeMage.name = "Espeara";
-				pikeMage.transform.localScale = new Vector3(5, 5, 5);
-				pikeMage.transform.parent = GameObject.Find("GameTable").transform;
-				pikeMage.transform.localPosition = new Vector3(0, -10f, 45f);
-				pikeMage.transform.rotation = Quaternion.Euler(0, 270, 0);
-				pikeMage.SetActive(false);
-
-				stimothy.LoadAllAssets();
-
-				var stimothyPrefab = stimothy.LoadAssetWithSubAssets("Stimothy")[0];
-
-				GameObject lonelyMage = GameObject.Instantiate((GameObject)stimothyPrefab);
-				lonelyMage.name = "LonelyMage";
-				lonelyMage.transform.GetChild(1).gameObject.GetComponent<SkinnedMeshRenderer>().materials[0].shader = Shader.Find("Standard");
-				lonelyMage.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(1).GetChild(1).gameObject.GetComponent<MeshRenderer>().materials[0].shader = Shader.Find("Standard");
-				lonelyMage.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(1).GetChild(1).gameObject.GetComponent<MeshRenderer>().materials[1].shader = Shader.Find("Standard");
-				lonelyMage.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(2).GetChild(1).gameObject.GetComponent<MeshRenderer>().materials[0].shader = Shader.Find("Standard");
-				lonelyMage.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(2).GetChild(1).gameObject.GetComponent<MeshRenderer>().materials[1].shader = Shader.Find("Standard");
-				lonelyMage.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(4).gameObject.GetComponent<MeshRenderer>().materials[0].shader = Shader.Find("Standard");
-				
-				lonelyMage.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(3).GetChild(0).gameObject.GetComponent<MeshRenderer>().materials[0].shader = Shader.Find("Standard");
-				lonelyMage.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(3).GetChild(2).gameObject.GetComponent<MeshRenderer>().materials[0].shader = Shader.Find("Standard");
-				lonelyMage.transform.GetChild(2).GetChild(0).GetChild(0).GetChild(3).GetChild(2).gameObject.GetComponent<MeshRenderer>().materials[1].shader = Shader.Find("Standard");
-
-				lonelyMage.transform.localScale = new Vector3(3, 3, 3);
-				lonelyMage.transform.parent = GameObject.Find("GameTable").transform;
-				lonelyMage.transform.localPosition = new Vector3(0, 1, 15);
-				lonelyMage.transform.rotation = Quaternion.Euler(0, 0, 0);
-				lonelyMage.SetActive(false);
-
-				//setup nodeicon base
-				GameObject.Find("MagnificusEnvironment").transform.Find("GiantPainting").gameObject.SetActive(true);
-				GameObject.Find("GiantPainting").transform.position = new Vector3(349.1401f, -100f, -211.7801f);
-				GameObject.DestroyImmediate(GameObject.Find("GiantPainting").GetComponent<GiantPaintingAnim>());
-				GameObject.Find("GiantPainting").transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
-				GameObject.Find("GiantPainting").transform.Find("Frame").rotation = Quaternion.Euler(0f, 180f, 90f);
-				GameObject.Find("GiantPainting").transform.Find("Frame").localScale = new Vector3(13.8847f, 8.089f, 1f);
-				GameObject.Find("GiantPainting").transform.Find("Frame").localPosition = new Vector3(1.4f, 23f, 0f);
-				GameObject gameObject2 = GameObject.Find("GiantPainting");
-				gameObject2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().lightmapIndex = -1;
-				gameObject2.name = "nodeIconBase";
-				gameObject2.transform.Find("RenderCamera").gameObject.SetActive(false);
-				gameObject2.transform.Find("RenderCamera").parent = GameObject.Find("MagnificusEnvironment").transform;
+				//setup cardrenderer
+				setup.setupCardDisplayers();
 
 
 				//setup spell card pile
@@ -3031,726 +2477,6 @@ namespace MagnificusMod
 				spellCardDrawPile.AddComponent<SpellCardDrawPiles>();
 				*/
 
-				if (SavedVars.LearnedMechanics.Contains("liferace;") || SaveManager.saveFile.ascensionActive)
-				{ __instance.duelDiskParent.gameObject.transform.Find("Anim").gameObject.GetComponent<Animator>().speed = 999; }
-
-				//setup life manager
-
-				GameObject lifeCounter = GameObject.Instantiate(GameObject.Find("nodeIconBase"));
-				lifeCounter.name = "LifePainting";
-				lifeCounter.transform.Find("Frame").Find("canvas_low").gameObject.SetActive(false);
-				lifeCounter.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("lifepainting" + SaveManager.saveFile.currentRun.playerLives + ".png");
-				lifeCounter.transform.parent = GameObject.Find("GameTable").transform;
-				lifeCounter.transform.localPosition = new Vector3(7.5f, 6.72f, 3.5f);
-				lifeCounter.transform.localRotation = Quaternion.Euler(0, 45, 0);
-				lifeCounter.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-
-				GameObject lifeCounterB = GameObject.Instantiate(lifeCounter);
-				lifeCounterB.transform.parent = lifeCounter.transform;
-				lifeCounterB.transform.localPosition = new Vector3(0, 0, -0.1f);
-				lifeCounterB.transform.localRotation = Quaternion.Euler(0, 180, 0);
-				lifeCounterB.transform.localScale = new Vector3(1, 1, 1);
-				lifeCounterB.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("paintingback.png");
-
-				lifeCounter.transform.localPosition = new Vector3(7.5f, 16.72f, 3.5f);
-				lifeCounter.AddComponent<SineWaveMovement>();
-				lifeCounter.GetComponent<SineWaveMovement>().enabled = false;
-				lifeCounter.GetComponent<SineWaveMovement>().originalPosition = new Vector3(7.5f, 16.22f, 3.5f);
-				lifeCounter.GetComponent<SineWaveMovement>().speed = 1;
-				lifeCounter.GetComponent<SineWaveMovement>().yMagnitude = 0.5f;
-				lifeCounter.SetActive(false);
-
-				for (int i = 0; i < 4; i++)
-				{
-					float xOffset = 2.1f * i;
-					__instance.duelDiskParent.transform.Find("BoardManager").Find("OpponentSlots").GetChild(i).localPosition = new Vector3(-4f + xOffset, -23.2f, -1990);
-					__instance.duelDiskParent.transform.Find("BoardManager").Find("OpponentSlots").GetChild(i).gameObject.GetComponent<BoxCollider>().size = new Vector3(1.4f, 1f, 2.1f);
-				}
-				edaxioTex = Tools.getImage("edaxionode.png");
-
-				shopTex = Tools.getImage("moxshop.png");
-				battleTex = Tools.getImage("cardbattlenode.png");
-				cardTex = Tools.getImage("cardchoicenode.png");
-				costTex = Tools.getImage("cardcostchoice.png");
-				spellTex = Tools.getImage("cardspellchoice.png");
-				draftingTex = Tools.getImage("draftingmodnode.png");
-				bleachTex = Tools.getImage("bleachnode.png");
-				copyTex = Tools.getImage("copycardnode.png");
-				paintTex = Tools.getImage("paintingevent.png");
-				removeTex = Tools.getImage("removecardnode.png");
-				mergeTex = Tools.getImage("mergenode.png");
-				costchngTex = Tools.getImage("changecost.png");
-				enchantTex = Tools.getImage("enchantnode.png");
-				spellUpgradeTex = Tools.getImage("spellenchanter.png");
-				cauldronTex = Tools.getImage("cauldronnode.png");
-
-				goobossTex = Tools.getImage("boss goo.png");
-				pikebossTex = Tools.getImage("boss pike.png");
-				stimbossTex = Tools.getImage("boss stim.png");
-
-				//node loadin
-				MagnificusGameFlowManager instance = __instance;
-
-
-				edaxioNode.triggerOnEnter = true;
-				edaxioNode.eventToTrigger = delegate ()
-				{
-					MagNodes.EdaxioNode triggeringNodeData2 = new MagNodes.EdaxioNode();
-					Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North, true);
-					Singleton<FirstPersonController>.Instance.enabled = false;
-					Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North, true);
-					Singleton<FirstPersonController>.Instance.GetComponentInChildren<ViewManager>().enabled = true;
-					Singleton<FirstPersonController>.Instance.GetComponentInChildren<ViewController>().enabled = true;
-					Singleton<FirstPersonController>.Instance.GetComponentInChildren<ViewManager>().SwitchToView(View.Choices, false, false);
-					Tween.Position(GameObject.Find("GameTable").transform, new Vector3(Singleton<FirstPersonController>.Instance.currentZone.transform.position.x, 9.72f, Singleton<FirstPersonController>.Instance.currentZone.transform.position.z), 0.1f, 0.1f, null, Tween.LoopType.None, null, null, true);
-					instance.StartCoroutine(instance.TransitionTo(GameState.SpecialCardSequence, triggeringNodeData2, true, true));
-					NavigationZone3D currentZone2 = Singleton<FirstPersonController>.Instance.currentZone;
-					string name2 = currentZone2.name;
-					if (GameObject.Find(name2).transform.Find("nodeIcon") != null)
-					{
-						GameObject.Find(name2).transform.Find("nodeIcon").transform.position = new Vector3(0f, -900f, 0f);
-					}
-					GameObject.Find("Player").transform.position = new Vector3(Singleton<FirstPersonController>.Instance.currentZone.transform.position.x, 2f, Singleton<FirstPersonController>.Instance.currentZone.transform.position.z);
-				};
-
-				shop.triggerOnEnter = true;
-				shop.triggerOnLook = false;
-				shop.eventToTrigger = delegate ()
-				{
-					MagNodes.CustomNode2 triggeringNodeData2 = new MagNodes.CustomNode2();
-					Generation.lastView = GameObject.Find("Player").GetComponent<FirstPersonController>().LookDirection;
-					if (!config.isometricMode){Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North);}
-					Singleton<FirstPersonController>.Instance.enabled = false;
-					Singleton<FirstPersonController>.Instance.GetComponentInChildren<ViewManager>().enabled = true;
-					Singleton<FirstPersonController>.Instance.GetComponentInChildren<ViewController>().enabled = true;
-					Singleton<FirstPersonController>.Instance.GetComponentInChildren<ViewManager>().SwitchToView(View.Choices, false, false);
-					Tween.Position(GameObject.Find("GameTable").transform, new Vector3(Singleton<FirstPersonController>.Instance.currentZone.transform.position.x, 9.72f, Singleton<FirstPersonController>.Instance.currentZone.transform.position.z), 0.1f, 0.1f, null, Tween.LoopType.None, null, null, true);
-					instance.StartCoroutine(instance.TransitionTo(GameState.SpecialCardSequence, triggeringNodeData2, true, true));
-					NavigationZone3D currentZone2 = Singleton<FirstPersonController>.Instance.currentZone;
-					string name2 = currentZone2.name;
-					if (GameObject.Find(name2).transform.Find("nodeIcon") != null)
-					{
-						GameObject.Find(name2).transform.Find("nodeIcon").transform.position = new Vector3(0f, -900f, 0f);
-					}
-					GameObject.Find("Player").transform.position = new Vector3(Singleton<FirstPersonController>.Instance.currentZone.transform.position.x, 2f, Singleton<FirstPersonController>.Instance.currentZone.transform.position.z);
-					Tween.Rotation(GameObject.Find("Player").transform, Quaternion.Euler(0, 0, 0), 0.25f, 1);
-				};
-
-				Generation.cardSelect.triggerOnEnter = true;
-				Generation.cardSelect.eventToTrigger = delegate ()
-				{
-					setupNodeStuff(instance);
-
-					CardChoicesNodeData cardChoicesNodeData = new CardChoicesNodeData();
-					cardChoicesNodeData.choicesType = CardChoicesType.Random;
-					instance.StartCoroutine(instance.TransitionTo(GameState.SpecialCardSequence, cardChoicesNodeData, true, true));
-				};
-
-				Generation.costSelect.triggerOnEnter = true;
-				Generation.costSelect.eventToTrigger = delegate ()
-				{
-					setupNodeStuff(instance);
-
-					CardChoicesNodeData cardChoicesNodeData = new CardChoicesNodeData();
-					cardChoicesNodeData.choicesType = CardChoicesType.Cost;
-					instance.StartCoroutine(instance.TransitionTo(GameState.SpecialCardSequence, cardChoicesNodeData, true, true));
-		
-				};
-
-				Generation.spellSelect.triggerOnEnter = true;
-				Generation.spellSelect.eventToTrigger = delegate ()
-				{
-					setupNodeStuff(instance);
-
-					MagNodes.SpellCardChoice triggeringData = new MagNodes.SpellCardChoice();
-					instance.StartCoroutine(instance.TransitionTo(GameState.SpecialCardSequence, triggeringData, true, true));
-				};
-
-				Generation.drafting.triggerOnEnter = true;
-				Generation.drafting.eventToTrigger = delegate ()
-				{
-					setupNodeStuff(instance);
-
-					TradePeltsNodeData triggeringNodeData2 = new TradePeltsNodeData();
-					instance.StartCoroutine(instance.TransitionTo(GameState.SpecialCardSequence, triggeringNodeData2, true, true));
-				};
-
-				Generation.bleach.triggerOnEnter = true;
-				Generation.bleach.eventToTrigger = delegate ()
-				{
-					setupNodeStuff(instance);
-
-					MagNodes.CustomNode3 triggeringNodeData2 = new MagNodes.CustomNode3();
-					instance.StartCoroutine(instance.TransitionTo(GameState.SpecialCardSequence, triggeringNodeData2, true, true));
-				};
-
-				Generation.costChange.triggerOnEnter = true;
-				Generation.costChange.eventToTrigger = delegate ()
-				{
-					setupNodeStuff(instance);
-
-					MagNodes.CustomNode1 triggeringNodeData2 = new MagNodes.CustomNode1();
-					instance.StartCoroutine(instance.TransitionTo(GameState.SpecialCardSequence, triggeringNodeData2, true, true));
-				};
-
-
-				Generation.enchant.triggerOnEnter = true;
-				Generation.enchant.eventToTrigger = delegate ()
-				{
-					setupNodeStuff(instance);
-
-					MagNodes.CustomNode14 triggeringNodeData2 = new MagNodes.CustomNode14();
-					instance.StartCoroutine(instance.TransitionTo(GameState.SpecialCardSequence, triggeringNodeData2, true, true));
-				};
-
-				Generation.mergeCard.triggerOnEnter = true;
-				Generation.mergeCard.eventToTrigger = delegate ()
-				{
-					setupNodeStuff(instance);
-
-					MagNodes.MergeNode triggeringNodeData2 = new MagNodes.MergeNode();
-					instance.StartCoroutine(instance.TransitionTo(GameState.SpecialCardSequence, triggeringNodeData2, true, true));
-				};
-
-				Generation.copyCard.triggerOnEnter = true;
-				Generation.copyCard.eventToTrigger = delegate ()
-				{
-					setupNodeStuff(instance, true);
-
-					MagNodes.CopyNode triggeringNodeData2 = new MagNodes.CopyNode();
-					instance.StartCoroutine(instance.TransitionTo(GameState.SpecialCardSequence, triggeringNodeData2, true, true));
-				};
-
-				Generation.cardPainting.triggerOnEnter = true;
-				Generation.cardPainting.eventToTrigger = delegate ()
-				{
-					setupNodeStuff(instance, true);
-
-					MagNodes.PaintingEvent triggeringNodeData2 = new MagNodes.PaintingEvent();
-					instance.StartCoroutine(instance.TransitionTo(GameState.SpecialCardSequence, triggeringNodeData2, true, true));
-				};
-
-				Generation.spellUpgrade.triggerOnEnter = true;
-				Generation.spellUpgrade.eventToTrigger = delegate ()
-				{
-					setupNodeStuff(instance, true); 
-					
-					MagNodes.UpgradeSpellNode triggeringNodeData2 = new MagNodes.UpgradeSpellNode();
-					instance.StartCoroutine(instance.TransitionTo(GameState.SpecialCardSequence, triggeringNodeData2, true, true));
-				};
-
-				Generation.cauldronEvent.triggerOnEnter = true;
-				Generation.cauldronEvent.eventToTrigger = delegate ()
-				{
-					setupNodeStuff(instance, true); 
-					
-					MagNodes.Cauldron triggeringNodeData2 = new MagNodes.Cauldron();
-					instance.StartCoroutine(instance.TransitionTo(GameState.SpecialCardSequence, triggeringNodeData2, true, true));
-				};
-
-				Generation.cardBattle.triggerOnEnter = true;
-				Generation.cardBattle.eventToTrigger = delegate ()
-				{
-					if (GameObject.Find("GameTable").transform.position.y < 1)
-					{
-						GameObject.Find("walls").SetActive(false);
-						GameObject.Find("GameEnvironment").transform.Find("battleRoom").gameObject.SetActive(true);
-						GameObject.Find("GameEnvironment").transform.Find("battleRoom").position = new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x - 60, 0, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z + 100);
-						if (RunState.Run.regionTier == 0)
-                        {
-							GameObject.Find("roof").SetActive(false);
-							GameObject.Find("floor").SetActive(false);
-							GameObject.Find("towerWall3(Clone)").SetActive(false);
-						} else if (RunState.Run.regionTier == 2)
-                        {
-							Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().farClipPlane = 150f;
-							GameObject.Find("deckLight").GetComponent<Light>().intensity = 1.5f;
-							GameObject.Find("deckLight").transform.parent.gameObject.GetComponent<Light>().intensity = 1.5f;
-						}
-						else if (RunState.Run.regionTier == 1)
-						{
-							Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().farClipPlane = 150f;
-						}
-
-						Generation.lastView = GameObject.Find("Player").GetComponent<FirstPersonController>().LookDirection;
-						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, true);
-
-						CardBattleNodeData cardBattleNodeData = new CardBattleNodeData();
-						//EncounterBlueprintData blueprint = list3[SeededRandom.Range(0, list3.Count, SaveManager.saveFile.GetCurrentRandomSeed())];
-						BoardManager3D boardManager3D = GameObject.FindObjectOfType<BoardManager3D>();
-
-						List <List<EncounterBlueprintData>> blueprintData = new List<List<EncounterBlueprintData>>
-						{
-							new List<EncounterBlueprintData>
-							{
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region1blueprint1>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region1blueprint2>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region1blueprint3>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region1blueprint4>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region1blueprint5>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region1blueprint6>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region1blueprint7>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region1blueprint8>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region1blueprint9>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region1blueprint10>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region1blueprint11>()
-							},
-							new List<EncounterBlueprintData>
-							{
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint1>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint2>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint3>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint4>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint5>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint6>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint7>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint8>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint9>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint10>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region2blueprint11>()
-							},
-							new List<EncounterBlueprintData>
-							{
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint1>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint2>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint3>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint4>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint5>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint6>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint7>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint8>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint9>(),
-							ScriptableObject.CreateInstance<MagnificusMod.Blueprints.region3blueprint10>()
-							}
-						};
-						if (RunState.Run.regionTier > 0)
-						{
-							int tier = RunState.Run.regionTier - 1;
-							EncounterBlueprintData blueprint = blueprintData[tier][SeededRandom.Range(0, blueprintData[tier].Count, SaveManager.saveFile.GetCurrentRandomSeed())];
-							cardBattleNodeData.blueprint = blueprint;
-							SaveManager.saveFile.randomSeed += 9;
-						}
-
-                            if (RunState.Run.regionTier == 0 && MagSave.layout.Contains("3"))
-                        {
-							GameObject.Find("walls layer 2").transform.localPosition = new Vector3(0, -100, 0);
-							cardBattleNodeData.blueprint = ScriptableObject.CreateInstance<MagnificusMod.Blueprints.secretFightBlueprint>();
-                        }
-
-						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, true);
-						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = false;
-						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, true);
-						GameObject.Find("Player").GetComponentInChildren<ViewManager>().enabled = true;
-						GameObject.Find("Player").GetComponentInChildren<ViewController>().enabled = true;
-						GameObject.Find("Player").transform.Find("Directional Light").gameObject.SetActive(false);
-						GameObject.Find("GameTable").transform.position = new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x, 9.72f, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z);
-						GameObject.Find("tbPillar").transform.position = new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x, 9.72f - 6.83f, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z + 6.5f);
-
-						if (!instance.cardbattleParent.activeSelf)
-						{
-							instance.cardbattleParent.SetActive(true);
-							//instance.combatBell.anim.StopPlayback();
-						}
-
-						/*
-						foreach (GameObject item in kanyeWest)
-						{
-							item.transform.position = new Vector3(GameObject.Find("tbPillar").transform.position.x, -20f, GameObject.Find("tbPillar").transform.position.z);
-						}*/
-						//Tween.LocalPosition(GameObject.Find("Hand").transform, new Vector3(4.3555f, -11.0099f, 2.0401f), 0f, 0f);
-						GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.Default, true, false);
-						Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<MagnificusGameFlowManager>.Instance.TransitionTo(GameState.CardBattle, cardBattleNodeData, true, true));
-						List<string> list6 = new List<string>
-						{
-							"Wizard3DPortrait_JuniorSage",
-							"Wizard3DPortrait_OrangeMage",
-							"Wizard3DPortrait_BlueMage",
-							"Wizard3DPortrait_RubyGolem"
-						};
-						if (RunState.Run.regionTier != 0)
-						{
-							int index7 = UnityEngine.Random.Range(0, list6.Count);
-							try
-							{
-								GameObject.Find(list6[index7]).transform.position = new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x, 9.72f, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z + 16);
-							}
-							catch
-							{
-								GameObject.Instantiate(Resources.Load("Prefabs/finalemagnificus/" + list6[index7])).name = list6[index7];
-								GameObject.Find(list6[index7]).transform.position = new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x, 9.72f, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z + 16);
-								GameObject.Find(list6[index7]).transform.Find("Anim").gameObject.SetActive(true);
-								GameObject.Find(list6[index7]).transform.parent = GameObject.Find("GameTable").transform;
-							}
-
-
-							foreach (string text4 in list6)
-							{
-								bool flag118 = text4 != list6[index7];
-								if (flag118)
-								{
-									bool flag119 = GameObject.Find("GameTable").transform.Find(text4) != null;
-									if (flag119)
-									{
-										GameObject.Find("GameTable").transform.Find(text4).position = new Vector3(0f, -20f, 0f);
-									}
-								}
-							}
-							GameObject.Find(list6[index7]).transform.position = new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x, 9.72f, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z + 16);
-						}
-
-						NavigationZone3D currentZone2 = GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone;
-						string name2 = currentZone2.name;
-						if (GameObject.Find(name2).transform.Find("nodeIcon") != null)
-						{
-							nodes.Remove(GameObject.Find(name2).transform.Find("nodeIcon").gameObject);
-							GameObject.Destroy(GameObject.Find(name2).transform.Find("nodeIcon").gameObject);
-						} else if (GameObject.Find(name2).transform.GetChild(0).gameObject.name.Contains("nodeIconBL"))
-						{
-							string[] theSplit = GameObject.Find(name2).transform.GetChild(0).gameObject.name.Split(';');
-							for (int i = 1; i < 9; i++)
-                            {
-								try
-                                {
-									nodes.Remove(GameObject.Find(theSplit[0] + ";N" + i));
-									GameObject.Find(theSplit[0] + ";N" + i).transform.position = new Vector3(0, -900, 0);
-                                } catch { }
-                            }
-                        }
-
-						Singleton<ViewController>.Instance.SwitchToControlMode(ViewController.ControlMode.WizardBattleDefault);
-						Singleton<ViewManager>.Instance.SwitchToView(View.Default);
-						instance.duelDiskParent.SetActive(true);
-						GameObject.Find("hammerStuff").transform.parent = instance.duelDiskParent.transform;
-						GameObject.Find("hammerStuff").transform.localPosition = new Vector3(3.74f, 0.5f, 5.1599f);
-						GameObject.Find("hammerStuff").SetActive(false);
-						instance.StartCoroutine(startHammer());
-						instance.playerHand.SetActive(true);
-						instance.combatBell.transform.Find("Anim").localPosition = new Vector3(0, 0, 0);
-						GameObject.Find("Hand").transform.Find("Anim").Find("HandModel_Female").localPosition = new Vector3(4.349f, -11.0045f, 2.0401f);
-						GameObject.Find("Hand").transform.Find("Anim").Find("HandModel_Male").localPosition = new Vector3(4.349f, -11.0045f, 2.5801f);
-						instance.combatBell.transform.localPosition = new Vector3(-7.64f, 9.3f, 6.42f);
-						instance.combatBell.transform.Find("Anim").gameObject.SetActive(true);
-						instance.combatBell.gameObject.SetActive(true);
-						instance.combatBell.SetBesideBoard(false, false);
-
-						Singleton<MagnificusDuelDisk>.Instance.basePosition = new Vector3(0.89f, 4.2424f, -2.8576f);
-						instance.duelDiskParent.transform.localPosition = new Vector3(0.89f, 4.2424f, -2.8576f);
-						instance.playerHand.transform.localPosition = new Vector3(1.42f, 3.12f, -5.47f);
-						GameObject.Find("3DPortraitSlots").transform.localPosition = new Vector3(0, 3.62f, 4.14f);
-						GameObject.Find("3DPortraitSlots").transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
-						Singleton<ViewManager>.Instance.SwitchToView(View.WizardBattleSlots, false, false);
-						instance.cardbattleParent.gameObject.transform.Find("Part1Scales").gameObject.SetActive(true);
-						Singleton<MagnificusCardDrawPiles>.Instance.Awake();
-
-						Tween.Rotation(GameObject.Find("Player").transform, Quaternion.Euler(0, 0, 0), 0.25f, 1);
-						Tween.LocalPosition(GameObject.Find("tbPillar").transform, new Vector3(0, -6.83f, 6.5f), 0.25f, 1);
-
-					}
-				};
-
-				Generation.gooBattle.triggerOnEnter = true;
-				Generation.gooBattle.eventToTrigger = delegate ()
-				{
-					if (GameObject.Find("GameTable").transform.position.y < 1)
-					{
-						setupBattle(instance, true);
-
-						BossBattleNodeData bossBattleNodeData = new BossBattleNodeData();
-						bossBattleNodeData.specialBattleId = "GoobertSequencer";
-						if (SaveManager.saveFile.ascensionActive && challenges.Contains("MasterBosses"))
-                        {
-							bossBattleNodeData.specialBattleId = "GoranjSequencer";
-						}
-
-						instance.StartCoroutine(instance.TransitionTo(GameState.CardBattle, bossBattleNodeData, true, true));
-
-
-						GameObject gooOrbSpawner = GameObject.Instantiate(Resources.Load("prefabs/factoryindoors/gooplane3d/GooOrbSpawner") as GameObject);
-						gooOrbSpawner.transform.parent = GameObject.Find("GameTable").transform;
-						gooOrbSpawner.transform.localPosition = new Vector3(-16.25f, 0f, 9.5f);
-						gooOrbSpawner.GetComponent<GooOrbSpawner>().frequency = 1.5f;
-						gooOrbSpawner.GetComponent<GooOrbSpawner>().originalFrequency = 1.5f;
-						gooOrbSpawner.GetComponent<GooOrbSpawner>().orbScale = 1f;
-						gooOrbSpawner.name = "gooOrbSpawner1";
-
-						GameObject gooOrbSpawner2 = GameObject.Instantiate(gooOrbSpawner);
-						gooOrbSpawner2.transform.parent = GameObject.Find("GameTable").transform;
-						gooOrbSpawner2.transform.localPosition = new Vector3(16.25f, 0f, 9.5f);
-						gooOrbSpawner2.name = "gooOrbSpawner2";
-
-						GameObject.Find("bgStarParent").transform.localRotation = Quaternion.Euler(0, 0, 0);
-						Tween.Rotation(GameObject.Find("Player").transform, Quaternion.Euler(0, 0, 0), 0.25f, 1);
-						Tween.LocalPosition(GameObject.Find("walls").transform, new Vector3(0, -31, 9), 5f, 10f);
-						float height = config.isometricMode ? -30f : -43;
-						Tween.LocalPosition(GameObject.Find("bgStarParent").transform, new Vector3(0, height, 0), 5f, 10f);
-						Tween.LocalPosition(GameObject.Find("walls").transform, new Vector3(0, -255, 9), 0.25f, 15f);
-					}
-				};
-
-				Generation.pikeBattle.triggerOnEnter = true;
-				Generation.pikeBattle.eventToTrigger = delegate ()
-				{
-					if (GameObject.Find("GameTable").transform.position.y < 1)
-					{
-						setupBattle(instance, true);
-
-						BossBattleNodeData bossBattleNodeData = new BossBattleNodeData();
-						bossBattleNodeData.specialBattleId = "EspeararaSequencer";
-						if (SaveManager.saveFile.ascensionActive && challenges.Contains("MasterBosses"))
-						{
-							bossBattleNodeData.specialBattleId = "OrluSequencer";
-						}
-						
-						instance.StartCoroutine(instance.TransitionTo(GameState.CardBattle, bossBattleNodeData, true, true));
-
-						if (!challenges.Contains("MasterBosses"))
-						{
-							GameObject lavaOrbSpawner = GameObject.Instantiate(Resources.Load("prefabs/factoryindoors/gooplane3d/GooOrbSpawner") as GameObject);
-							lavaOrbSpawner.transform.parent = GameObject.Find("GameTable").transform;
-							lavaOrbSpawner.transform.localPosition = new Vector3(0, 2.18f, 43.32f);
-							lavaOrbSpawner.GetComponent<GooOrbSpawner>().enabled = false;
-							lavaOrbSpawner.AddComponent<LavaOrbSpawner>();
-							lavaOrbSpawner.GetComponent<LavaOrbSpawner>().frequency = 1.5f;
-							lavaOrbSpawner.GetComponent<LavaOrbSpawner>().originalFrequency = 1.5f;
-							lavaOrbSpawner.GetComponent<LavaOrbSpawner>().orbScale = 1f;
-							lavaOrbSpawner.name = "lavaOrbSpawner1";
-						}
-
-						Tween.Rotation(GameObject.Find("Player").transform, Quaternion.Euler(0, 0, 0), 0.25f, 1);
-						Tween.LocalPosition(GameObject.Find("walls").transform, new Vector3(0, -33, 9), 5f, 10f);
-						Tween.LocalPosition(GameObject.Find("ceiling").transform, new Vector3(340f, 250f, -600f), 5f, 10f);
-						Tween.LocalPosition(GameObject.Find("walls").transform, new Vector3(0, -255, 9), 0.25f, 15f);
-					}
-				};
-
-				Generation.stimBattle.triggerOnEnter = true;//FOR LONELY MAGE, DISABLE THE TBPILLAR SHADOW
-				Generation.stimBattle.eventToTrigger = delegate ()
-				{
-					if (GameObject.Find("GameTable").transform.position.y < 1)
-					{
-						setupBattle(instance, true);
-
-						BossBattleNodeData bossBattleNodeData = new BossBattleNodeData();
-						bossBattleNodeData.specialBattleId = "LonelyMageSequencer";
-						if (SaveManager.saveFile.ascensionActive && challenges.Contains("MasterBosses"))
-						{
-							bossBattleNodeData.specialBattleId = "BleeneSequencer";
-						}
-
-						instance.StartCoroutine(instance.TransitionTo(GameState.CardBattle, bossBattleNodeData, true, true));
-
-						GameObject.Find("tbPillar").transform.Find("Shadow").gameObject.SetActive(false);
-						GameObject.Find("floorLight").SetActive(false);
-
-						Tween.Rotation(GameObject.Find("Player").transform, Quaternion.Euler(0, 0, 0), 0.25f, 1);
-						Tween.LocalPosition(GameObject.Find("walls").transform, new Vector3(0, -900, 9), 0f, 0f);
-						
-					}
-				};
-
-				Generation.magBattle.triggerOnEnter = true;//FOR LONELY MAGE, DISABLE THE TBPILLAR SHADOW
-				Generation.magBattle.eventToTrigger = delegate ()
-				{
-					if (GameObject.Find("GameTable").transform.position.y < 1)
-					{
-						Generation.lastView = GameObject.Find("Player").GetComponent<FirstPersonController>().LookDirection;
-						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, true);
-						SaveManager.saveFile.randomSeed += 9;
-
-						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, true);
-						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = false;
-						GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().LookAtDirection(LookDirection.North, true);
-						GameObject.Find("Player").GetComponentInChildren<ViewManager>().enabled = true;
-						GameObject.Find("Player").GetComponentInChildren<ViewController>().enabled = true;
-
-						instance.StartCoroutine(FinalBossTime());
-
-					}
-				};
-
-				Generation.deathCard.triggerOnEnter = true;
-				Generation.deathCard.eventToTrigger = delegate ()
-				{
-					instance.StartCoroutine(deathCardEvent());
-				};
-				__instance.combatBell.gameObject.GetComponent<SphereCollider>().radius = 3;
-
-				GameObject.Find("FinaleDeletionCanvas").SetActive(false);
-
-				cardBattle.triggerOnLook = false;
-
-				towerWarp.triggerOnEnter = true;
-				towerWarp.eventToTrigger = delegate ()
-				{
-					if (Singleton<FirstPersonController>.Instance.LookDirection == LookDirection.North)
-					{
-						instance.StartCoroutine(transition("goobert", "spin"));
-					}
-				};
-
-				towerWarpTwo.triggerOnEnter = true;
-				towerWarpTwo.eventToTrigger = delegate ()
-				{
-					if (Singleton<FirstPersonController>.Instance.LookDirection == LookDirection.North)
-					{
-						instance.StartCoroutine(transition("espeara", "spin"));
-					}
-				};
-
-				towerWarpThree.triggerOnEnter = true;
-				towerWarpThree.eventToTrigger = delegate ()
-				{
-					if (Singleton<FirstPersonController>.Instance.LookDirection == LookDirection.North)
-					{
-						instance.StartCoroutine(transition("lonely", "spin"));
-					}
-				};
-
-				finalWarp.triggerOnEnter = true;
-				finalWarp.eventToTrigger = delegate ()
-				{
-					instance.StartCoroutine(magnificusPreFinalDialogue());
-				};
-
-				edaxioTrapdoor.triggerOnEnter = true;
-				edaxioTrapdoor.eventToTrigger = delegate ()
-				{
-					bool hasEdaxio = false;
-					foreach (CardInfo card in RunState.Run.playerDeck.Cards)
-					{
-						if (RunState.Run.regionTier == 1 && card.name == "mag_edaxiolegs" || RunState.Run.regionTier == 2 && card.name == "mag_edaxiotorso" || RunState.Run.regionTier == 3 && card.name == "mag_edaxioarms")
-						{
-							hasEdaxio = true;
-						}
-					}
-					if (!hasEdaxio)
-					{
-						string nodeName = Singleton<FirstPersonController>.Instance.currentZone.gameObject.name;
-						string[] x1 = nodeName.Split('x');
-						string[] x2 = x1[1].Split(' ');
-						int x = int.Parse(x2[0]);
-						string[] y = x2[1].Split('y');
-						x += 18;
-						instance.StartCoroutine(warp("x" + x + " y" + y[1], "blackout"));
-					}
-				};
-
-				leshyCardDialogue.triggerOnEnter = true;
-				leshyCardDialogue.eventToTrigger = delegate ()
-				{
-					Singleton<FirstPersonController>.Instance.currentZone.events.Clear();
-					instance.StartCoroutine(leshyDialogue());
-				};
-
-				pedestalGuide.triggerOnEnter = true;
-				pedestalGuide.eventToTrigger = delegate ()
-				{
-					Singleton<FirstPersonController>.Instance.currentZone.events.Clear();
-					instance.StartCoroutine(pedestalDialogue());
-				};
-
-				gameOver.triggerOnEnter = true;
-				gameOver.eventToTrigger = delegate ()
-				{
-					Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North);
-					Singleton<FirstPersonController>.Instance.enabled = false;
-					instance.StartCoroutine(gameoversequence());
-				};
-
-				mirrorClose.triggerOnEnter = true;
-				mirrorClose.eventToTrigger = delegate ()
-				{
-					GameObject reflection = GameObject.Find("reflection");
-					Vector3 pos = reflection.transform.position;
-					reflection.transform.position = new Vector3(pos.x, -1.5f, pos.z);
-					float mirrorPos = GameObject.Find("mirror").transform.position.x;
-					float reflectionPos = Singleton<FirstPersonController>.Instance.currentZone.gameObject.transform.position.x;
-					reflectionPos -= mirrorPos;
-					reflectionPos = -reflectionPos;
-					pos.x = mirrorPos + reflectionPos;
-					pos.x -= 20;
-					pos.z = Singleton<FirstPersonController>.Instance.currentZone.gameObject.transform.position.z;
-					pos.y = -1.5f;
-					if (config.isometricActive){instance.StartCoroutine(reflectionRotate(reflection));} else { reflection.transform.rotation = Quaternion.Euler(0, 270, 0); }
-					Tween.Position(reflection.transform, pos, 0.25f, 0);
-				};
-				mirrorExit.triggerOnEnter = true;
-				mirrorExit.eventToTrigger = delegate ()
-				{
-					GameObject reflection = GameObject.Find("reflection");
-					Vector3 pos = reflection.transform.position;
-					float mirrorPos = GameObject.Find("mirror").transform.position.x;
-					float reflectionPos = Singleton<FirstPersonController>.Instance.currentZone.gameObject.transform.position.x;
-					reflectionPos -= mirrorPos;
-					reflectionPos = -reflectionPos;
-					pos.x = mirrorPos + reflectionPos;
-					pos.x -= 20;
-					pos.z = Singleton<FirstPersonController>.Instance.currentZone.gameObject.transform.position.z;
-					if (config.isometricActive) { instance.StartCoroutine(reflectionRotate(reflection)); } else { reflection.transform.rotation = Quaternion.Euler(0, 270, 0); }
-					Tween.Position(reflection.transform, pos, 0.25f, 0);
-					if (config.isometricActive)
-					{
-						pos.y = -25;
-						Tween.Position(reflection.transform, pos, 0.01f, 0.25f);
-					}
-				};
-
-				mirrorIn.triggerOnEnter = true;
-				mirrorIn.eventToTrigger = delegate ()
-				{
-					string nodeName = GameObject.Find("mirrorFrame").transform.parent.gameObject.name;
-					string[] x1 = nodeName.Split('x');
-					string[] x2 = x1[1].Split(' ');
-					int x = int.Parse(x2[0]);
-					string[] y = x2[1].Split('y');
-					x -= 1;
-					if (config.isometricActive) { Tween.LocalRotation(GameObject.Find("reflection").transform, Quaternion.Euler(0, 270, 0), 0.15f, 0); }
-					instance.StartCoroutine(warp("x" + x + " y" + y[1], "spin"));
-				};
-
-				getMonocle.triggerOnEnter = true;
-				getMonocle.eventToTrigger = delegate ()
-				{
-					instance.StartCoroutine(getMonocleSequence());
-				};
-
-				dummyFight.triggerOnEnter = true;
-				dummyFight.eventToTrigger = delegate ()
-				{
-					if (Singleton<FirstPersonController>.Instance.LookDirection == LookDirection.North)
-					{
-						instance.StartCoroutine(dummyFightSequence());
-					} else
-                    {
-						//270.9999 180 180
-						GameObject.Find("x4 y1 dummy").transform.localRotation = Quaternion.Euler(270.9999f, 180f, 180);
-						Tween.LocalRotation(GameObject.Find("x4 y1 dummy").transform, Quaternion.Euler(290, 180, 180), 0.1f, 0);
-						Tween.LocalRotation(GameObject.Find("x4 y1 dummy").transform, Quaternion.Euler(270.9999f, 180f, 180), 0.2f, 0.1f);
-					}
-				};
-
-				//mana
-
-				WeightUtil.part1Prefab = ResourceBank.Get<GameObject>("Prefabs/Environment/ScaleWeights/Weight");
-
-				GameObject.Instantiate(Resources.Load("prefabs/finalemagnificus/Wizard3DPortrait_MoxRuby")).name = "rox";
-				GameObject gameObject3 = GameObject.Find("rox").transform.Find("SineWaveMove").Find("Anim").Find("Gem").gameObject;
-				gameObject3.transform.parent = GameObject.Find("MagnificusEnvironment").transform;
-				GameObject.Destroy(GameObject.Find("rox"));
-				gameObject3.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("mana.png");
-				gameObject3.transform.position = new Vector3(0f, -85f, 0f);
-				gameObject3.name = "mana";
-				WeightUtil.part1Prefab.gameObject.GetComponent<MeshFilter>().mesh = gameObject3.gameObject.GetComponent<MeshFilter>().mesh;
-				WeightUtil.part1Prefab.gameObject.GetComponent<MeshRenderer>().material = gameObject3.GetComponent<MeshRenderer>().material;
-				WeightUtil.part1Prefab.gameObject.GetComponent<BoxCollider>().size = new Vector3(0.3f, 0.3f, 0.3f);
-				WeightUtil.part1Prefab.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-				/*
-				foreach (Rigidbody rigidbody in GameObject.FindObjectOfType<CurrencyBowl>().weightObjects)
-				{
-					rigidbody.gameObject.GetComponent<MeshFilter>().mesh = gameObject3.gameObject.GetComponent<MeshFilter>().mesh;
-					rigidbody.gameObject.GetComponent<MeshRenderer>().material = gameObject3.GetComponent<MeshRenderer>().material;
-				}
-				*/
 				GameObject.Destroy(GameObject.Find("DeckReviewCardArray"));
 				GameObject.Instantiate(Resources.Load("prefabs/cards/DeckReviewCardArray_Part1")).name = "DeckReviewCardArray";
 				//generate tower
@@ -3791,34 +2517,49 @@ namespace MagnificusMod
 					challenges[0] = "none";
                 }
 
-				lifeCounter.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("lifepainting" + SaveManager.saveFile.currentRun.playerLives + ".png");
-
+				
 				GameObject.Find("MagnificusAnim").transform.position = new Vector3(0, -90, 0);
 
 				switch (RunState.Run.regionTier)
 				{
 					case 0:
+						setTableClothColor(new Color(0.5f, 0, 0.16f, 1));
 						__instance.StartCoroutine(getMap("tower", true));
 						makeLayer(2);
 						Singleton<FirstPersonController>.Instance.footstepSound = FirstPersonController.FootstepSound.Wood;
 						break;
 					case 1:
+						setTableClothColor(new Color(0f, 0.4f, 0f, 1));
 						__instance.StartCoroutine(getMap("goobert", true));
 						Singleton<FirstPersonController>.Instance.footstepSound = FirstPersonController.FootstepSound.Goo;
 						break;
 					case 2:
+						setTableClothColor(new Color(0.5f, 0.15f, 0, 1));
 						__instance.StartCoroutine(getMap("espeara", true));
 						Singleton<FirstPersonController>.Instance.footstepSound = FirstPersonController.FootstepSound.Stone;
 						break;
 					case 3:
+						setTableClothColor(new Color(0, 0.715f, 0.55f, 1));
 						__instance.StartCoroutine(getMap("lonely", true));
 						Singleton<FirstPersonController>.Instance.footstepSound = FirstPersonController.FootstepSound.Wood;
 						break;
 					case 4:
+						setTableClothColor(new Color(0.5f, 0, 0.4f, 1));
 						__instance.StartCoroutine(getMap("finale", true));
 						Singleton<FirstPersonController>.Instance.footstepSound = FirstPersonController.FootstepSound.Stone;
 						break;
 					case 972:
+
+						if (SaveManager.saveFile.ascensionActive)
+                        {
+							AscensionMenuScreens.ReturningFromSuccessfulRun = false;
+							AscensionMenuScreens.ReturningFromFailedRun = true;
+							KayceeStorage.IsMagRun = false;
+							SaveManager.SaveToFile(false);
+							SceneLoader.Load("Ascension_Configure");
+							break;
+						}
+
 						__instance.StartCoroutine(getMap("depths", true));
 						Singleton<FirstPersonController>.Instance.footstepSound = FirstPersonController.FootstepSound.Grass;
 						break;
@@ -3838,8 +2579,8 @@ namespace MagnificusMod
 				GameObject.Find("Player").transform.position = new Vector3(GameObject.Find(coords).transform.position.x, 9.5f, GameObject.Find(coords).transform.position.z);
 				if (config.isometricMode == true)
 				{
-					Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(-40f, 47.5f, -40), 1.7f, 0.5f);
-					Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30f, 45f, 0), 1.5f, 0.5f);
+					Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(0, 45, -50), 1.7f, 0.5f);
+					Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(40f, 0, 0), 1.5f, 0.5f);
 					GameObject figure = GameObject.Instantiate(Resources.Load("prefabs/map/CompositeFigurine") as GameObject);
 					figure.transform.parent = GameObject.Find("GameEnvironment").transform;
 					figure.name = "figure";
@@ -3868,7 +2609,7 @@ namespace MagnificusMod
 					uiFigure.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("walloverlay.png");
 					uiFigure.transform.Find("Header").Find("IconSprite").localScale = new Vector3(0.24f, 0.2f, 1);
 					GameObject.Destroy(uiFigure.transform.Find("Header").gameObject.GetComponent<ViewportRelativePosition>());
-					uiFigure.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(1.79f, -1.36f, 0);
+					uiFigure.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(1.79f, -1.03f, 0);
 					setUpClickToMove();
 					uiFigure.transform.position = new Vector3(0, 0, 0);
 				}
@@ -3880,13 +2621,21 @@ namespace MagnificusMod
 					Tween.Position(GameObject.Find("PixelCameraParent").transform, new Vector3(x, 16.5f, z), 0.1f, 0.5f);
 					Tween.Rotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(0, 0, 0), 0.1f, 0.5f);
 				}
-				instance.StartCoroutine(WAKEUP());
+				__instance.StartCoroutine(WAKEUP());
 				GameObject.Find("GameTable").transform.position = new Vector3(0, -900, 0);
 				GameObject.Find("DeckReviewCardArray").transform.parent = GameObject.Find("GameTable").transform;
 
 				GameObject cardSelector = GameObject.Instantiate(Singleton<SelectableCardArray>.Instance.gameObject);
 				cardSelector.name = "SelectableCardArray";
 				cardSelector.transform.parent = __instance.duelDiskParent.gameObject.transform.Find("BoardManager").transform;
+
+				if (cardSelector.GetComponent<SelectableCardPairArray>() != null)
+				{
+					GameObject.DestroyImmediate(cardSelector.GetComponent<SelectableCardPairArray>());
+					cardSelector.AddComponent<SelectableCardArray>().selectableCardPrefab = Singleton<SelectableCardArray>.Instance.selectableCardPrefab;
+				}
+
+
 				__instance.duelDiskParent.gameObject.transform.Find("BoardManager").gameObject.GetComponent<BoardManager>().cardSelector = cardSelector.GetComponent<SelectableCardArray>();
 
 
@@ -4012,11 +2761,11 @@ namespace MagnificusMod
 					}
 				}
 			}));
-			northMove.transform.localScale = new Vector3(0.75f, 1, 1.35f);
-			northMove.transform.localPosition = new Vector3(-5f, 0, 9f);
+			northMove.transform.localScale = new Vector3(1.25f, 1, 1.35f);
+			northMove.transform.localPosition = new Vector3(0f, 0, 9f);
 			GameObject southMove = GameObject.Find("clickSouth");
-			southMove.transform.localPosition = new Vector3(-5f, 0f, -22.5f);
-			southMove.transform.localScale = new Vector3(0.75f, 1f, 1.3f);
+			southMove.transform.localPosition = new Vector3(0f, 0f, -22.5f);
+			southMove.transform.localScale = new Vector3(1.25f, 1f, 1.3f);
 			southMove.GetComponent<MainInputInteractable>().CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(southMove.GetComponent<MainInputInteractable>().CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
 			{
 				if (GameObject.Find("Player").transform.Find("figure").gameObject.activeSelf) 
@@ -4037,8 +2786,8 @@ namespace MagnificusMod
 				}
 			}));
 			GameObject eastMove = GameObject.Find("clickEast");
-			eastMove.transform.localPosition = new Vector3(9.5f, 0, -4.5f);
-			eastMove.transform.localScale = new Vector3(1.1f, 1f, 1f);
+			eastMove.transform.localPosition = new Vector3(15f, 0, -8);
+			eastMove.transform.localScale = new Vector3(1.35f, 1f, 1f);
 			eastMove.GetComponent<MainInputInteractable>().CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(eastMove.GetComponent<MainInputInteractable>().CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
 			{
 				if (GameObject.Find("Player").transform.Find("figure").gameObject.activeSelf)
@@ -4082,8 +2831,8 @@ namespace MagnificusMod
 						{
 							xOffset = 5.175f * i;
 							boardManager.transform.Find("PlayerSlots").GetChild(i).localScale = new Vector3(2.75f, 2.75f, 2.75f);
-							boardManager.transform.Find("PlayerSlots").GetChild(i).localPosition = new Vector3(-8.75f + xOffset, -25f, 19.6f);
-							return;
+							boardManager.transform.Find("PlayerSlots").GetChild(i).localPosition = new Vector3(-8.75f + xOffset, -8f, 22f);
+							continue;
 						}
 						boardManager.transform.Find("PlayerSlots").GetChild(i).localPosition = new Vector3(-4.1f + xOffset, -23.2f, 7.85f);
 						boardManager.transform.Find("PlayerSlots").GetChild(i).gameObject.GetComponent<BoxCollider>().size = new Vector3(1.4f, y + 0.5f, 2.1f);
@@ -4097,11 +2846,18 @@ namespace MagnificusMod
 				}
 			}
 		}
-		public static void CreateMiniMap(bool wIcons = false)
+		public static void CreateMiniMap(bool wIcons = false, bool doAnimation = false)
         {
 			SavedVars.HasMap = true;
 			minimap = true;
-			if (wIcons) {SavedVars.HasMapIcons = true;}
+			if (wIcons) {
+				SavedVars.HasMapIcons = true;
+				try
+                {
+					if (GameObject.Find("MapParent") != null) { GameObject.DestroyImmediate(GameObject.Find("MapParent")); }
+                }
+                catch { }
+			}
 			GameObject mapParent = GameObject.Instantiate(GameObject.Find("ChallengeActivationUI"));
 			mapParent.transform.SetParent(GameObject.Find("PerspectiveUICamera").transform);
 			GameObject.Destroy(mapParent.GetComponentByName("DiskCardGame.ChallengeActivationUI"));
@@ -4119,6 +2875,7 @@ namespace MagnificusMod
 			mapNode.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<PixelSnapSprite>().enabled = false;
 			mapNode.transform.position = new Vector3(0, 0, 0);
 			mapNode.name = "mapNodeBase";
+
 			string[] allNodes = new string[0];
 			allNodes = SavedVars.GeneratedEvents.Split(';');
 			string text = File.ReadAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave");
@@ -4141,7 +2898,7 @@ namespace MagnificusMod
 						node.name = "mapnode x" + x + " y" + y;
 						if (x != map[y].Count - 1)
 						{
-							if (map[y][x + 1] != "-" && !Utility.IsNullOrWhiteSpace(map[y][x + 1]) && map[y][x + 1] != " ")
+							if (map[y][x + 1] != "-" && !Utility.IsNullOrWhiteSpace(map[y][x + 1]) && map[y][x + 1] != " " && map[y][x] != "e")
 							{
 								GameObject xBridge = GameObject.Instantiate(node.transform.Find("Header").gameObject);
 								xBridge.name = "xBridge";
@@ -4158,7 +2915,7 @@ namespace MagnificusMod
 						{
 							if (x < map[y + 1].Count)
 							{
-								if (map[y + 1][x] != "-" && !Utility.IsNullOrWhiteSpace(map[y + 1][x]) && map[y + 1][x] != " " && map[y + 1][x] != "e")
+								if (map[y + 1][x] != "-" && !Utility.IsNullOrWhiteSpace(map[y + 1][x]) && map[y + 1][x] != " " && map[y][x] != "e" && map[y + 1][x] != "e" && map[y + 1][x] != "p0")
 								{
 									GameObject yBridge = GameObject.Instantiate(node.transform.Find("Header").gameObject);
 									yBridge.name = "yBridge";
@@ -4182,9 +2939,12 @@ namespace MagnificusMod
 							mapIcon.name = "shopIcon";
 							mapIcon.transform.SetParent(GameObject.Find("MapParent").transform);
 							mapIcon.transform.position = new Vector3(0, 0, 1);
+							mapIcon.transform.localScale = (doAnimation) ? Vector3.zero : new Vector3(1, 1, 1);
 							mapIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("shop_icon.png");
 							mapIcon.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(-0.15f + xPos, 0.15f - yPos, 0);
 							mapIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+							if (doAnimation)
+								Tween.LocalScale(mapIcon.transform, new Vector3(1f, 1f, 1f), 0.75f, 1f, Tween.EaseIn);
 						}
 						else if (map[y][x] == "e")
 						{
@@ -4196,9 +2956,13 @@ namespace MagnificusMod
 							mapIcon.name = "gemPillarRoom";
 							mapIcon.transform.SetParent(GameObject.Find("MapParent").transform);
 							mapIcon.transform.position = new Vector3(0, 0, 1);
+							mapIcon.transform.localScale = (doAnimation) ? Vector3.zero : new Vector3(1, 1, 1);
 							mapIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("puzzleicon0.png");
 							mapIcon.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(-0.15f + xPos, 0.15f - yPos, 0);
 							mapIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+
+							if (doAnimation)
+								Tween.LocalScale(mapIcon.transform, new Vector3(1f, 1f, 1f), 0.75f, 1f, Tween.EaseIn);
 						}
 						else if (map[y][x].Contains("p") && RunState.Run.eyeState == EyeballState.Wizard)
 						{
@@ -4206,44 +2970,41 @@ namespace MagnificusMod
 							mapIcon.name = "gemSigilRoom";
 							mapIcon.transform.SetParent(GameObject.Find("MapParent").transform);
 							mapIcon.transform.position = new Vector3(0, 0, 1);
+							mapIcon.transform.localScale = (doAnimation) ? Vector3.zero : new Vector3(1, 1, 1);
 							mapIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("puzzleicon1.png");
 							mapIcon.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(-0.15f + xPos, 0.15f - yPos, 0);
 							mapIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+
+							if (doAnimation)
+								Tween.LocalScale(mapIcon.transform, new Vector3(1f, 1f, 1f), 0.75f, 1f, Tween.EaseIn);
 						}
 						else if (map[y][x] == "b")
 						{
+							GameObject mapIcon = GameObject.Instantiate(mapNode);
+							mapIcon.name = "gooBossIcon";
+							mapIcon.transform.SetParent(GameObject.Find("MapParent").transform);
+							mapIcon.transform.position = new Vector3(0, 0, 1);
+							mapIcon.transform.localScale = (doAnimation) ? Vector3.zero : new Vector3(1, 1, 1);
+							mapIcon.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(-0.15f + xPos, 0.15f - yPos, 0);
+							mapIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
 							if (RunState.Run.regionTier == 1)
 							{
 								node.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(0, 1f, 0, 1);
-								GameObject mapIcon = GameObject.Instantiate(mapNode);
-								mapIcon.name = "gooBossIcon";
-								mapIcon.transform.SetParent(GameObject.Find("MapParent").transform);
-								mapIcon.transform.position = new Vector3(0, 0, 1);
 								mapIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("boss goo_icon.png");
-								mapIcon.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(-0.15f + xPos, 0.15f - yPos, 0);
-								mapIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
-							} else if (RunState.Run.regionTier == 2)
+							} else if  (RunState.Run.regionTier == 2)
                             {
-								node.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 0f, 0, 1);
-								GameObject mapIcon = GameObject.Instantiate(mapNode);
-								mapIcon.name = "pikeBossIcon";
-								mapIcon.transform.SetParent(GameObject.Find("MapParent").transform);
-								mapIcon.transform.position = new Vector3(0, 0, 1);
+								node.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1, 0, 0, 1);
 								mapIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("boss pike_icon.png");
-								mapIcon.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(-0.15f + xPos, 0.15f - yPos, 0);
-								mapIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
 							}
 							else if (RunState.Run.regionTier == 3)
 							{
-								node.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(0, 0f, 0, 1);
-								GameObject mapIcon = GameObject.Instantiate(mapNode);
-								mapIcon.name = "pikeBossIcon";
-								mapIcon.transform.SetParent(GameObject.Find("MapParent").transform);
-								mapIcon.transform.position = new Vector3(0, 0, 1);
+								node.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(0, 0.5f, 1f, 1);
 								mapIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("boss stim_icon.png");
-								mapIcon.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(-0.15f + xPos, 0.15f - yPos, 0);
-								mapIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
 							}
+
+							if (doAnimation)
+								Tween.LocalScale(mapIcon.transform, new Vector3(1f, 1f, 1f), 0.75f, 1f, Tween.EaseIn);
+
 						} else if (SavedVars.HasMapIcons == true || wIcons)
                         {
 							string mapId = map[y][x];
@@ -4287,6 +3048,7 @@ namespace MagnificusMod
 								mapIcon.name = "nodeIcon";
 								mapIcon.transform.SetParent(GameObject.Find("MapParent").transform);
 								mapIcon.transform.position = new Vector3(0, 0, 1);
+								mapIcon.transform.Find("Header").Find("IconSprite").localScale = new Vector3(0.275f, 0.25f, 1);
 								mapIcon.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(-0.15f + xPos, 0.15f - yPos, 0);
 								mapIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
 								if (cevent.Contains(enchant))
@@ -4328,6 +3090,9 @@ namespace MagnificusMod
 								}
 							}
                         }
+						node.transform.localScale = doAnimation ? new Vector3(0, 0, 1) : new Vector3(1, 1, 1);
+						if (doAnimation)
+							Tween.LocalScale(node.transform, new Vector3(1, 1, 1), 0.75f, y * 0.15f, Tween.EaseIn);
 					}
                 }
             }
@@ -4348,45 +3113,16 @@ namespace MagnificusMod
 			playerIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().sprite = Tools.getSprite("mapplayer.png");
 			playerIcon.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(-0.15f + xPos2, 0.15f - yPos2, 0);
 			playerIcon.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 1f);
+
+			playerIcon.transform.localScale = doAnimation ? new Vector3(0, 0, 1) : new Vector3(1, 1, 1);
+			if (doAnimation)
+				Tween.LocalScale(playerIcon.transform, new Vector3(1, 1, 1), 0.75f, 1f, Tween.EaseIn);
 		}
 
 		//coroutines
 		private static IEnumerator WAKEUP()
 		{
-			List<string> cardNamesToAdd = new List<string>();
-			for (int i = 0; i < SaveManager.saveFile.CurrentDeck.Cards.Count; i++)
-            {
-				if (SaveManager.saveFile.CurrentDeck.Cards[i].name == "Wolf")
-                {
-					SaveManager.saveFile.CurrentDeck.RemoveCardByName("Wolf");
-					if (SavedVars.LearnedMechanics.Contains("druid;"))
-					{
-						SaveManager.saveFile.CurrentDeck.AddCard(CardLoader.GetCardByName("mag_druid"));
-					}
-					else
-					{
-						SaveManager.saveFile.CurrentDeck.AddCard(CardLoader.GetCardByName("mag_wolf"));
-					}
-					i--;
-				} else if (SaveManager.saveFile.CurrentDeck.Cards[i].name == "Stinkbug_Talking")
-				{
-					SaveManager.saveFile.CurrentDeck.RemoveCardByName("Stinkbug_Talking");
-					SaveManager.saveFile.CurrentDeck.AddCard(CardLoader.GetCardByName("mag_stinkbug"));
-					i--;
-				}
-				else if (SaveManager.saveFile.CurrentDeck.Cards[i].name == "Stoat_Talking")
-				{
-					SaveManager.saveFile.CurrentDeck.RemoveCardByName("Stoat_Talking");
-					SaveManager.saveFile.CurrentDeck.AddCard(CardLoader.GetCardByName("mag_stoat"));
-					i--;
-				}
-				else if (SaveManager.saveFile.CurrentDeck.Cards[i].name == "Bullfrog")
-				{
-					SaveManager.saveFile.CurrentDeck.RemoveCardByName("Bullfrog");
-					SaveManager.saveFile.CurrentDeck.AddCard(CardLoader.GetCardByName("mag_hovermage"));
-					i--;
-				}
-			}
+			
 			AudioController.Instance.StopAllLoops();
 			IsometricStuff.moveDisabled = false;
 			Singleton<FirstPersonController>.Instance.enabled = false;
@@ -4401,8 +3137,8 @@ namespace MagnificusMod
 			//Tween.Rotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(0, 0, 0), 1.5f, 0.5f);
 			if (config.isometricMode == true)
             {
-				Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(-40f, 47.5f, -40), 1.7f, 0.5f);
-				Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30f, 45f, 0), 1.5f, 0.5f);
+				Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(0, 45, -50), 1.7f, 0.5f);
+				Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(40f, 0, 0), 1.5f, 0.5f);
 			} else
             {
 				Tween.Position(GameObject.Find("PixelCameraParent").transform, new Vector3(x, 16.5f, z), 1.7f, 0.5f);
@@ -4429,7 +3165,7 @@ namespace MagnificusMod
 				SavedVars.NodesCleared = 0;
 				SaveManager.saveFile.part3Data.deck.cardIdModInfos = new Dictionary<string, List<CardModificationInfo>>();
 				SavedVars.KilledCards = "";
-				SavedVars.HasMap = false;
+				SavedVars.HasMap = true;
 				SavedVars.HasMapIcons = false;
 				Singleton<FirstPersonController>.Instance.enabled = false;
 				SavedVars.KilledCards = "";
@@ -4447,25 +3183,45 @@ namespace MagnificusMod
 					Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North);
 					Singleton<FirstPersonController>.Instance.enabled = false;
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("If you are ready to proceed, you may step forth and enter into the unknown.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-				} else
-                {
-					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hmm. Another student appears.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I do not have the patience to teach you.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You may proceed forth and learn on your own..", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Or you can perish.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				}
+				else if(!SavedVars.LearnedMechanics.Contains("beatgoobert"))
+				{
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hmm.. A young student appears,", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("So foolish, your predesscor didn't even manage to get past my [c:g1]Goo Mage[c:].", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Ah well.. Maybe you will manage such a feat.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					SaveManager.SaveToFile();
+				}
+				else if (!SavedVars.LearnedMechanics.Contains("beatamber"))
+				{
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Another appears.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Maybe you will manage to get further than those before you.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You young understudies still have much to learn.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					SaveManager.SaveToFile();
+				}
+				else if (!SavedVars.LearnedMechanics.Contains("beatlonely"))
+				{
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Ah. I had expectations for my previous mage,", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("They even managed to get past my [c:g2]Pike Mage[c:].", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("A great feat, it seems now you must follow in their footsteps...", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					SaveManager.SaveToFile();
+				}
+				else if (!SavedVars.LearnedMechanics.Contains("finalintrodialogue"))
+				{
+					SavedVars.LearnedMechanics += "finalintrodialogue;";
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("So, yet another steps up to be my student.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You must learn yourself, to overcome my many obstacles and challenges.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("If you do succeed, I shall bestow upon you a great honour..", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 					SaveManager.SaveToFile();
 				}
 				Singleton<FirstPersonController>.Instance.enabled = true;
 			} else if (RunState.Run.regionTier == 0 && SaveManager.saveFile.ascensionActive && MagSave.layout.Contains("1"))
             {
 				SavedVars.NodesCleared = 0;
-				KayceeStorage.FleetingLife = 66;
-				SavedVars.HasMap = false;
+				KayceeStorage.FleetingLife = 75;
+				SavedVars.HasMap = true;
 				SavedVars.HasMapIcons = false;
 				if (SaveManager.saveFile.ascensionActive && challenges.Contains("FadingMox"))
-				{
 					RunState.Run.playerLives = 1;
-				}
 				SaveManager.saveFile.part3Data.deck.cardIdModInfos = new Dictionary<string, List<CardModificationInfo>>();
 				SavedVars.KilledCards = "";
 				if (!KayceeStorage.DialogueEvent1)
@@ -4480,38 +3236,19 @@ namespace MagnificusMod
 				}
 			} else if (RunState.Run.regionTier == 0 && !MagSave.layout.Contains("1") && !MagSave.layout.Contains("4") && !MagSave.layout.Contains("5"))
             {
-				Singleton<TextDisplayer>.Instance.ShowMessage("~ Tower of Magicks ~");
-				Singleton<TextDisplayer>.Instance.SetTextColor(new Color(1, 1, 1, 0.5f));
-				for (float i = 0.01f; i < 0.51f; i += 0.03f)
-				{
-					Singleton<TextDisplayer>.Instance.SetTextColor(new Color(1, 1, 1, 0.5f + i));
-					yield return new WaitForSeconds(0.01f);
-				}
-				Singleton<TextDisplayer>.Instance.SetTextColor(new Color(1, 1, 1, 1));
-				yield return new WaitForSeconds(0.5f);
-				for (float i = 0.01f; i < 1.01f; i += 0.03f)
-				{
-					Singleton<TextDisplayer>.Instance.SetTextColor(new Color(1, 1, 1, 1f - i));
-					yield return new WaitForSeconds(0.01f);
-				}
-				Singleton<TextDisplayer>.Instance.SetTextColor(new Color(1, 1, 1, 0));
-				Singleton<TextDisplayer>.Instance.Clear();
+				yield return fadeText("~ Tower of Magicks ~");
 			}
 			if (SaveManager.saveFile.ascensionActive) { KayceeStorage.IsKaycee = true; KayceeStorage.IsMagRun = true;  } else { KayceeStorage.IsKaycee = false; }
 			if (!KayceeStorage.IsMagRun && SaveManager.saveFile.ascensionActive) { KayceeStorage.IsMagRun = true; }
-			if (SavedVars.LoadWithFinaleCardBacks != SavedVars.FinaleCardBacks) { SavedVars.FinaleCardBacks = SavedVars.LoadWithFinaleCardBacks; }
-			if (SavedVars.LoadWithPaintSplashes != SavedVars.PaintSplashes) { SavedVars.PaintSplashes = SavedVars.LoadWithPaintSplashes; }
 			SaveManager.SaveToFile();
 			yield break;
 		}
 
-		private static IEnumerator gameoversequence()
+		public static IEnumerator gameoversequence()
 		{
 			yield return new WaitForSeconds(0.5f);
 			if (!SavedVars.LearnedMechanics.Contains("died"))
-			{
 				SavedVars.LearnedMechanics += "died;";
-			}
 			yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Greetings, challenger.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 			yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("It appears that all of your mox has been erased.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 			switch (RunState.Run.currentNodeId)
@@ -4586,21 +3323,21 @@ namespace MagnificusMod
 			GameObject.Find("Player").GetComponentInChildren<ViewController>().enabled = true;
 			GameObject.Find("GameTable").transform.position = new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x, 9.72f, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z);
 			GameObject.Find("tbPillar").transform.position = new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x, 9.72f - 6.83f, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z + 6.5f);
-
+			
 			if (MagnificusMod.Generation.minimap && removeMap)
 			{
-				MagnificusMod.Generation.minimap = false;
-				SavedVars.HasMap = false;
+				MagnificusMod.Generation.minimap = true;
+				SavedVars.HasMap = true;
 				SavedVars.HasMapIcons = false;
 				GameObject.Destroy(GameObject.Find("MapParent"));
 			}
-
+			
 			if (!instance.cardbattleParent.activeSelf)
 			{
 				instance.cardbattleParent.SetActive(true);
 			}
-
-			GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.Default, true, false);
+			
+			GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.WizardBattleUnits, true, false);
 			NavigationZone3D currentZone2 = GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone;
 			string name2 = currentZone2.name;
 			bool flag120 = GameObject.Find(name2).transform.Find("nodeIcon") != null;
@@ -4610,10 +3347,10 @@ namespace MagnificusMod
 				GameObject.Destroy(GameObject.Find(name2).transform.Find("nodeIcon").gameObject);
 			}
 
-			GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.Default, true, false);
+			GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.WizardBattleUnits, true, false);
 
 			Singleton<ViewController>.Instance.SwitchToControlMode(ViewController.ControlMode.WizardBattleDefault);
-			Singleton<ViewManager>.Instance.SwitchToView(View.Default);
+			Singleton<ViewManager>.Instance.SwitchToView(View.WizardBattleUnits);
 			instance.duelDiskParent.SetActive(true);
 			GameObject.Find("hammerStuff").transform.parent = instance.duelDiskParent.transform;
 			GameObject.Find("hammerStuff").transform.localPosition = new Vector3(3.74f, 0.5f, 5.1599f);
@@ -4623,10 +3360,12 @@ namespace MagnificusMod
 			instance.combatBell.transform.Find("Anim").localPosition = new Vector3(0, 0, 0);
 			GameObject.Find("Hand").transform.Find("Anim").Find("HandModel_Female").localPosition = new Vector3(4.349f, -11.0045f, 2.0401f);
 			GameObject.Find("Hand").transform.Find("Anim").Find("HandModel_Male").localPosition = new Vector3(4.349f, -11.0045f, 2.5801f);
-			instance.combatBell.transform.localPosition = new Vector3(-7.64f, 8.52f, 6.42f);
+			instance.combatBell.transform.localPosition = new Vector3(-7.64f, 9.75f, 6.42f);
 			instance.combatBell.transform.Find("Anim").gameObject.SetActive(true);
 			instance.combatBell.gameObject.SetActive(true);
 			instance.combatBell.SetBesideBoard(false, true);
+
+			Tween.Rotation(GameObject.Find("Player").transform, Quaternion.Euler(0, 0, 0), 0.25f, 1);
 
 			Singleton<MagnificusDuelDisk>.Instance.basePosition = new Vector3(0.89f, 4.2424f, -2.8576f);
 			instance.duelDiskParent.transform.localPosition = new Vector3(0.89f, 4.2424f, -2.8576f);
@@ -4666,6 +3405,13 @@ namespace MagnificusMod
 				GameObject.Destroy(GameObject.Find(name2).transform.Find("nodeIcon").gameObject);
 			}
 			Tween.Rotation(GameObject.Find("Player").transform, Quaternion.Euler(0, 0, 0), 0.25f, 1);
+		}
+
+		public static void updateDuelDiskGems(bool reset = false)
+		{
+			MagnificusResourcesManager resourceManager = Singleton<MagnificusResourcesManager>.Instance;
+			List<GemType> gems = new List<GemType> { GemType.Green, GemType.Orange, GemType.Blue };
+			foreach (GemType gem in gems) resourceManager.SetGemLit(gem, lit: reset ? false : resourceManager.HasGem(gem));
 		}
 
 		public static IEnumerator isometricTransition(Texture icon, bool doPainting = true)
@@ -4712,7 +3458,9 @@ namespace MagnificusMod
         }
 		public static IEnumerator unIsometricTransition(float delay = 0f, bool doPainting = true)
 		{
+			Singleton<FirstPersonController>.Instance.enabled = false;
 			GameObject.Find("Player").GetComponentInChildren<ViewController>().allowedViews = new List<View>();
+			Singleton<FirstPersonController>.Instance.enabled = false;
 			yield return new WaitForSeconds(delay);
 			if(Singleton<ViewManager>.Instance.CurrentView == View.Candles) { yield break; }
 			if (doPainting)
@@ -4726,8 +3474,8 @@ namespace MagnificusMod
 				Tween.FieldOfView(GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>(), 65f, 0.25f, 0.3f);
 			} else
             {
-				Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(-40, 47.5f, -40), 0.25f, 0.5f);
-				Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(30, 45, 0), 0.25f, 0.5f);
+				Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(0, 45, -50), 0.25f, 0.5f);
+				Tween.LocalRotation(GameObject.Find("PixelCameraParent").transform, Quaternion.Euler(40, 0, 0), 0.25f, 0.5f);
 				Tween.FieldOfView(GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>(), 65f, 0.25f, 0.5f);
 			}
 			GameObject.Find("GameTable").transform.Find("light").Find("deckLight").gameObject.GetComponent<Light>().enabled = false;
@@ -4736,26 +3484,24 @@ namespace MagnificusMod
 			if (Singleton<ViewManager>.Instance.CurrentView == View.Candles) { yield break; }
 			GameObject.Find("Player").GetComponentInChildren<ViewController>().allowedViews = new List<View>();
 			GameObject.Find("Player").GetComponentInChildren<ViewManager>().CurrentView = View.FirstPerson;
-			GameObject.Find("PixelCameraParent").GetComponent<SineWaveMovement>().originalPosition = new Vector3(-40, 47.5f, -40);
-			GameObject.Find("PixelCameraParent").GetComponent<SineWaveRotation>().originalRotation = new Vector3(30, 45, 0);
 			foreach (GameObject gameObject in MagnificusMod.Generation.nodes)
 			{
 				if (gameObject == null) { continue; }
 				if (gameObject.name.Contains("nodeIcon"))
 				{
-					gameObject.transform.localRotation = Quaternion.Euler(30, 45 + (float)Singleton<FirstPersonController>.Instance.LookDirection * 90, 0);
+					gameObject.transform.localRotation = Quaternion.Euler(30, (float)Singleton<FirstPersonController>.Instance.LookDirection * 90, 0);
 				}
 			}
 			yield return new WaitForSeconds(0.1f);
 			GameObject.Find("Player").transform.localRotation = Quaternion.Euler(0, (float)lastView * 90, 0);
-			GameObject.Destroy(GameObject.Find("PixelCameraParent").GetComponent<SineWaveMovement>());
-			GameObject.Destroy(GameObject.Find("PixelCameraParent").GetComponent<SineWaveRotation>());
-			GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(-40, 47.5f, -40);
-			GameObject.Find("PixelCameraParent").transform.localRotation = Quaternion.Euler(30, 45, 0);
+			Singleton<FirstPersonController>.Instance.enabled = true;
+			GameObject.Find("PixelCameraParent").transform.localPosition = new Vector3(0, 45, -50);
+			GameObject.Find("PixelCameraParent").transform.localRotation = Quaternion.Euler(40, 0, 0);
 			IsometricStuff.moveDisabled = false;
 			if (doPainting) 
 				yield return new WaitForSeconds(0.45f);
 			lastView = LookDirection.North;
+			Tween.LocalPosition(GameObject.Find("PixelCameraParent").transform, new Vector3(0, 45, -50), 0f, 0.15f);
 			GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(true);
 			GameObject.Find("Player").transform.Find("clickToMove").gameObject.SetActive(true);
 			Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
@@ -4773,11 +3519,49 @@ namespace MagnificusMod
 			SaveManager.saveFile.currentScene = "finale_magnificus";
 			SaveManager.saveFile.currentRun.maxPlayerLives = 3;
 			SaveManager.saveFile.currentRun.playerLives = 3;
-			minimap = false;
-			SavedVars.HasMap = false;
+			minimap = true;
+			SavedVars.HasMap = true;
 			SavedVars.HasMapIcons = false;
+
+			KayceeStorage.IsKaycee = false;
+			AscensionSaveData.Data.currentRun = null;
+			SaveManager.SaveFile.NewPart1Run();
+			SaveManager.saveFile.currentRun.playerDeck.InitializeAsPlayerDeck();
+
+			SaveManager.SaveFile.deathCardMods = DefaultDeathCards.CreateDefaultCardMods();
+
+			MagSave.SaveLayout("1");
+			RunState.Run.regionTier = 0;
 			SaveManager.SaveToFile(false);
+
+
 			SceneLoader.Load("finale_magnificus");
+		}
+
+		public static IEnumerator fadeText(string message)
+        {
+			Singleton<TextDisplayer>.Instance.ShowMessage(message, Emotion.Laughter, TextDisplayer.LetterAnimation.WavyJitter);
+			Singleton<TextDisplayer>.Instance.SetTextColor(new Color(1, 1, 1, 0.5f));
+			AudioController.Instance.PlaySound2D("dueldisk_snap_shut", MixerGroup.ExplorationSFX, 0.25f, 0f);
+			for (float i = 0.01f; i < 0.51f; i += 0.01f)
+			{
+				Singleton<TextDisplayer>.Instance.SetTextColor(new Color(1, 1, 1, 0.5f + i));
+				yield return new WaitForSeconds(0.01f);
+			}
+
+			yield return new WaitForSeconds(0.5f);
+			for (float i = 0.01f; i < 1.01f; i += 0.01f)
+			{
+				if (!Singleton<TextDisplayer>.Instance.textMesh.text.ToLower().Contains(message.ToLower())) { Singleton<TextDisplayer>.Instance.SetTextColor(new Color(1, 1, 1, 1f)); yield break; }
+				Singleton<TextDisplayer>.Instance.SetTextColor(new Color(1, 1, 1, 1f - i));
+				yield return new WaitForSeconds(0.01f);
+			}
+			yield return new WaitForSeconds(0.5f);
+
+			if (!Singleton<TextDisplayer>.Instance.textMesh.text.ToLower().Contains(message.ToLower())) { Singleton<TextDisplayer>.Instance.SetTextColor(new Color(1, 1, 1, 1f)); yield break; }
+
+			Singleton<TextDisplayer>.Instance.Clear();
+			yield break;
 		}
 
 		public static IEnumerator setBg()
@@ -4822,7 +3606,7 @@ namespace MagnificusMod
 			yield break;
 		}
 
-		private static IEnumerator deathCardEvent()
+		public static IEnumerator deathCardEvent()
 		{
 			GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = false;
 			yield return new WaitForSeconds(2.5f);
@@ -4851,7 +3635,7 @@ namespace MagnificusMod
 			yield break;
 		}
 
-		private static IEnumerator FinalBossTime()
+		public static IEnumerator FinalBossTime()
 		{
 			yield return new WaitForSeconds(0.25f);
 			bool isPainting = false;
@@ -4924,7 +3708,7 @@ namespace MagnificusMod
 
 			Tween.Position(PlayerColum.transform, new Vector3(80f, 25f, -25f), 6, 0);
 			Tween.Position(GameObject.Find("Player").transform, new Vector3(80f, 15.9f, -20f), 6, 0);
-			Tween.Position(PlayerColum.transform, new Vector3(80f, 31.1f, -38f), 6, 6);
+			Tween.Position(PlayerColum.transform, new Vector3(80f, 27.5f, -38f), 6, 6);
 			Tween.Position(GameObject.Find("Player").transform, new Vector3(80f, 22f, -32f), 6, 6);
 			Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Generation.setBg());
 			yield return new WaitForSeconds(12f);
@@ -4974,7 +3758,7 @@ namespace MagnificusMod
 			Singleton<MagnificusGameFlowManager>.Instance.combatBell.transform.Find("Anim").localPosition = new Vector3(0, 0, 0);
 			GameObject.Find("Hand").transform.Find("Anim").Find("HandModel_Female").localPosition = new Vector3(4.349f, -11.0045f, 2.0401f);
 			GameObject.Find("Hand").transform.Find("Anim").Find("HandModel_Male").localPosition = new Vector3(4.349f, -11.0045f, 2.5801f);
-			Singleton<MagnificusGameFlowManager>.Instance.combatBell.transform.localPosition = new Vector3(-9.95f, 8.52f, 6.4f);
+			Singleton<MagnificusGameFlowManager>.Instance.combatBell.transform.localPosition = new Vector3(-9.95f, 9.75f, 6.4f);
 			Singleton<MagnificusGameFlowManager>.Instance.combatBell.transform.Find("Anim").gameObject.SetActive(true);
 			Singleton<MagnificusGameFlowManager>.Instance.combatBell.gameObject.SetActive(true);
 			Singleton<MagnificusGameFlowManager>.Instance.combatBell.SetBesideBoard(false, true);
@@ -4993,7 +3777,7 @@ namespace MagnificusMod
 			yield break;
 		}
 
-		private static IEnumerator leshyDialogue()
+		public static IEnumerator leshyDialogue()
 		{
 			if (!SavedVars.LearnedMechanics.Contains("secretfight") && !SaveManager.saveFile.ascensionActive)
 			{
@@ -5028,7 +3812,7 @@ namespace MagnificusMod
 			}
 		}
 
-		private static IEnumerator magnificusPreFinalDialogue()
+		public static IEnumerator magnificusPreFinalDialogue()
 		{
 			Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North);
 			Singleton<FirstPersonController>.Instance.enabled = false;
@@ -5071,10 +3855,13 @@ namespace MagnificusMod
 			switch (which)
 			{
 				case "tower":
+
+					bool dOoor = true;
+
 					map =
 					new List<List<string>> {
 						new List<string>{ " ", " ", " ", "CRT", "TO2", "CRT", " ", " ", " " },
-						new List<string>{ " ", "CRT1", "MCL",  "-",   "TO2",   "CRTG",    "N1",  "CRT1", " " },
+						new List<string>{ " ", "CRT1", "MCL",  "-",   "TO2",   "CRTG",    "CC",  "CRT1", " " },
 						new List<string>{ " ", "CRTG", "TO2",  "-",   "-",   "TO1",    "-",  "CRT", " " },
 						new List<string>{ "-", "TO1", "-",  "-",   "-",   "-",    "-",  "-", "-" },
 						new List<string>{ "-", "-", "-",  "-",   "T1",   "-",    "-",  "-", "TO1" },
@@ -5085,14 +3872,15 @@ namespace MagnificusMod
 						new List<string>{ " ", " ", " ",     " ", " ", " ", " ", " ", " " }
 					};
 					string towerLevel = MagSave.layout;
-					Debug.Log(towerLevel);
 					if (towerLevel.Contains("2")) 
 					{
+						dOoor = false;
+
 						map = new List<List<string>> {
 						new List<string>{ " ", " ", " ", "CRT", "CRT", "CRT", " ", " ", " " },
 						new List<string>{ " ", "-", "TO2",  "PK",   "A1N",   "PK",    "TO2",  "-", " " },
 						new List<string>{ " ", "SWR", "-",  "-",   "DMY",   "-",    "-",  "SWR", " " },
-						new List<string>{ "-", "N2", "-",  "-",   "-",   "-",    "-",  "-", "CRT" },
+						new List<string>{ "-", "-", "-",  "-",   "-",   "-",    "-",  "-", "CRT" },
 						new List<string>{ "-", "-", "-",  "-",   "T2",   "-",    "-",  "-", "TO2" },
 						new List<string>{ "-", "-", "-",  "-",   "TR2",   "-",    "-",  "-", "-" },
 						new List<string>{ " ", "TO2", "-",  "-",   "-",   "-",    "-",  "-", " " },
@@ -5103,33 +3891,11 @@ namespace MagnificusMod
 					}
 					else if (towerLevel.Contains("3"))
                     {
-						if (!SavedVars.LearnedMechanics.Contains("druid;") && !SaveManager.saveFile.ascensionActive)
-						{
-							map =
-					new List<List<string>> {
+						dOoor = false;
+
+						map = new List<List<string>> {
 						new List<string>{ " ", " ", " ", "-", "-", "-", " ", " ", " " },
 						new List<string>{ " ", "-", "-",  "-",   "-",   "-", "-",  "-", " " },
-						new List<string>{ " ", "-", "-",  "-",   "-",   "-",    "-",  "-", " " },
-						new List<string>{ "-", "-", "-",  "-",   "-",   "-",    "-",  "-", "-" },
-						new List<string>{ "-", "-", "-",  "-",   "T3",   "-",    "-",  "-", "-" },
-						new List<string>{ "-", "-", "-",  "-",   "TR3",   "-",    "-",  "-", "-" },
-						new List<string>{ " ", "-", "-",  "-",   "-",   "-",    "-",  "-", " " },
-						new List<string>{ " ", "-", "-",  "-",   "-",   "-",    "-",  "-", " " },
-						new List<string>{ " ", " ", " ", "-", "S", "-", "W0N", "-", "WnW" },
-						new List<string>{ " ",     " ", " ",   " ", " ", " ", "WnE", "-", "WnW" },
-						new List<string>{ " ",     " ", " ",     " ", " ",    " ", "WnE", "-", "WnW" },
-						new List<string>{ " ",      " ", " ",     " ", " ",    "-", "WnE", "-", "WnW" },
-						new List<string>{ " ",      " ", " ",     " ", " ",		"-", "WnE", "-", "WnW" },
-						new List<string>{ " ",      " ", " ",     " ", " ",    "-", "WnE", "1v1", "WnW" },
-						new List<string>{ " ",      " ", " ",     " ", " ",		"-", "WnE", "B", "WnW" },
-						new List<string>{ " ",      " ", " ",     " ", " ",		"-", "WnE", "-", "WnW" },
-						new List<string>{ " ",      " ", " ",     " ", " ",		"-", "WnE", " ", "WnW" }
-					};
-						} else
-                        {
-							map = new List<List<string>> {
-						new List<string>{ " ", " ", " ", "-", "-", "-", " ", " ", " " },
-						new List<string>{ " ", "-", "-",  "-",   "N2",   "-", "-",  "-", " " },
 						new List<string>{ " ", "-", "-",  "-",   "-",   "-",    "-",  "-", " " },
 						new List<string>{ "-", "-", "-",  "-",   "-",   "-",    "-",  "-", "-" },
 						new List<string>{ "-", "-", "-",  "-",   "T3",   "-",    "-",  "-", "-" },
@@ -5137,9 +3903,7 @@ namespace MagnificusMod
 						new List<string>{ " ", "-", "-",  "-",   "-",   "-",    "-",  "-", " " },
 						new List<string>{ " ", "-", "-",  "-",   "-",   "-",    "-",  "-", " " },
 						new List<string>{ " ", " ", " ", "-", "S", "-", " ", " ", " " },
-						new List<string>{ " ",     " ", " ",   " ", " ", " ", "-", "-", " " }
-					};
-						}
+						new List<string>{ " ",     " ", " ",   " ", " ", " ", "-", "-", " " } };
 					} else if (towerLevel.Contains("4") || towerLevel.Contains("5"))
 					{
 						map = new List<List<string>> {
@@ -5212,6 +3976,43 @@ namespace MagnificusMod
 					towerLight.GetComponent<Light>().type = LightType.Directional;
 					towerLight.transform.rotation = Quaternion.Euler(90, 0, 0);
 					towerLight.GetComponent<Light>().range = 1000;
+
+					if (dOoor)
+					{
+						GameObject door = GameObject.Instantiate(Resources.Load("prefabs/cabinindoors/Door") as GameObject);
+						door.name = "Door";
+						door.transform.parent = environment.transform;
+						door.transform.localPosition = (towerLevel.Contains("1")) ? new Vector3(-9.3f, -0.7f, -79.75f) : new Vector3(169.3f, -0.7f, -80f);
+						door.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+						door.transform.localRotation = (towerLevel.Contains("1")) ? Quaternion.Euler(0, 180, 0) : Quaternion.Euler(0, 0, 0);
+						door.transform.Find("FlickerAnim").Find("Objects").GetChild(2).gameObject.SetActive(false);
+						door.transform.Find("HingeAnim").GetChild(0).GetChild(0).gameObject.GetComponent<MeshRenderer>().lightmapIndex = 0;
+						GameObject.DestroyImmediate(door.transform.Find("HingeAnim").GetChild(0).GetChild(0).Find("PastVictoryDeathcards").gameObject);
+
+						if (towerLevel.Contains("1"))
+							door.transform.Find("FlickerAnim").gameObject.SetActive(false);
+
+						for (int i = 0; i < door.transform.Find("HingeAnim").GetChild(0).GetChild(0).childCount; i++)
+						{
+							door.transform.Find("HingeAnim").GetChild(0).GetChild(0).GetChild(i).gameObject.GetComponent<MeshRenderer>().lightmapIndex = 0;
+						}
+
+						door.transform.Find("Shadow").gameObject.SetActive(false);
+
+						door.transform.Find("HingeAnim").GetChild(0).GetChild(0).GetChild(2).transform.localScale = new Vector3(1, 1.5f, 1);
+						door.transform.Find("HingeAnim").GetChild(0).GetChild(0).GetChild(2).transform.localPosition = new Vector3(0, -42, 0);
+
+						if (towerLevel.Contains("1"))
+                        {
+							GameObject shopDoor = GameObject.Instantiate(door);
+							shopDoor.name = "shopDoor";
+							shopDoor.transform.parent = environment.transform;
+							shopDoor.transform.localPosition = new Vector3(80.1f, -0.7f, -169.3f);
+							shopDoor.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+							shopDoor.transform.localRotation = Quaternion.Euler(0, 90, 0);
+						}
+
+					}
 
 					GameObject.Find("GameTable").transform.Find("light").localPosition = new Vector3(0, 17, 0);
 					GameObject.Find("GameTable").transform.Find("light").gameObject.GetComponent<Light>().intensity = 1.2f;
@@ -5535,8 +4336,6 @@ namespace MagnificusMod
 						mapId = RoomGen.generateMapId("espeara");
 					}
 
-					Debug.Log(mapId);
-
 					map = RoomGen.generateMap(mapId, "espeara");
 
 					battleRoom = new List<List<string>>
@@ -5632,8 +4431,6 @@ namespace MagnificusMod
 					{
 						mapId = RoomGen.generateMapId("lonely");
 					}
-
-					Debug.Log(mapId);
 
 					map = RoomGen.generateMap(mapId, "lonely");
 
@@ -5964,6 +4761,18 @@ namespace MagnificusMod
 			if (location == "tower") { RunState.Run.regionTier = 0; SavedVars.HasMap = false; SavedVars.HasMapIcons = false; }
 			if (location == "depths") {
 				Singleton<TextDisplayer>.Instance.Clear();
+
+				if (SaveManager.saveFile.ascensionActive)
+				{
+					yield return new WaitForSeconds(1.5f);
+					AscensionMenuScreens.ReturningFromSuccessfulRun = false;
+					AscensionMenuScreens.ReturningFromFailedRun = true;
+					KayceeStorage.IsMagRun = false;
+					SaveManager.SaveToFile(false);
+					SceneLoader.Load("Ascension_Configure");
+					yield break;
+				}
+
 				if (RunState.Run.currentNodeId == 4 || RunState.Run.currentNodeId == 104)
 				{
 					GameObject.Find("DungeonFloor").SetActive(false);
@@ -6007,6 +4816,7 @@ namespace MagnificusMod
 			{
 				case "tower":
 					//GameObject.Find("GameEnvironment").transform.position = new Vector3(0, -7, 0);
+					setTableClothColor(new Color(0.5f, 0, 0.16f, 1));
 					RunState.Run.regionTier = 0;
 					coords = "x4 y6";
 					spawn = new Vector3(80, 9.5f, -120f);
@@ -6026,6 +4836,7 @@ namespace MagnificusMod
 					break;
 				case "goobert":
 					RunState.Run.regionTier = 1;
+					setTableClothColor(new Color(0f, 0.4f, 0f, 1));
 					coords = GameObject.Find("NavigationGrid").GetComponentInChildren<OcclusionArea>().gameObject.name;
 					GameObject spawnObj = GameObject.Find("NavigationGrid").GetComponentInChildren<OcclusionArea>().gameObject;
 					spawn = new Vector3(spawnObj.transform.position.x, 9.5f, spawnObj.transform.position.z);
@@ -6033,6 +4844,7 @@ namespace MagnificusMod
 					break;
 				case "espeara":
 					RunState.Run.regionTier = 2;
+					setTableClothColor(new Color(0.5f, 0.15f, 0, 1));
 					coords = GameObject.Find("NavigationGrid").GetComponentInChildren<OcclusionArea>().gameObject.name;
 					spawnObj = GameObject.Find("NavigationGrid").GetComponentInChildren<OcclusionArea>().gameObject;
 					spawn = new Vector3(spawnObj.transform.position.x, 9.5f, spawnObj.transform.position.z);
@@ -6040,6 +4852,7 @@ namespace MagnificusMod
 					break;
 				case "lonely":
 					RunState.Run.regionTier = 3;
+					setTableClothColor(new Color(0, 0.715f, 0.55f, 1));
 					coords = GameObject.Find("NavigationGrid").GetComponentInChildren<OcclusionArea>().gameObject.name;
 					spawnObj = GameObject.Find("NavigationGrid").GetComponentInChildren<OcclusionArea>().gameObject;
 					spawn = new Vector3(spawnObj.transform.position.x, 9.5f, spawnObj.transform.position.z);
@@ -6047,6 +4860,7 @@ namespace MagnificusMod
 					break;
 				case "finale":
 					RunState.Run.regionTier = 4;
+					setTableClothColor(new Color(0.5f, 0, 0.4f, 1));
 					coords = GameObject.Find("NavigationGrid").GetComponentInChildren<OcclusionArea>().gameObject.name;
 					spawnObj = GameObject.Find("NavigationGrid").GetComponentInChildren<OcclusionArea>().gameObject;
 					spawn = new Vector3(spawnObj.transform.position.x, 9.5f, spawnObj.transform.position.z);
@@ -6087,17 +4901,17 @@ namespace MagnificusMod
 						{
 							GameObject icon2 = GameObject.Instantiate<GameObject>(GameObject.Find("nodeIconBase"));
 							icon2.name = "nodeIcon";
-							icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = cardTex;
+							icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = spellTex;
 							icon2.transform.position = new Vector3(GameObject.Find("x4 y8").transform.position.x, 13f, GameObject.Find("x4 y8").transform.position.z);
 							Generation.nodes.Add(icon2);
 							icon2.transform.position = new Vector3(GameObject.Find("x4 y8").transform.position.x, 13f, GameObject.Find("x4 y8").transform.position.z);
-							GameObject.Find("x4 y8").GetComponentInChildren<NavigationZone3D>().events.Add(Generation.cardSelect);
+							GameObject.Find("x4 y8").GetComponentInChildren<NavigationZone3D>().events.Add(Generation.spellSelect);
 							icon2.transform.parent = GameObject.Find("x4 y8").transform;
 						}
 					}
+					GameObject.Find("MagnificusAnim").transform.position = new Vector3(GameObject.Find("x4 y1").transform.position.x + 0.575f, 10f, GameObject.Find("x4 y1").transform.position.z + 20);
 					if (GameObject.Find("x4 y1").GetComponentInChildren<NavigationZone3D>().events.Count < 1)
                     {
-						GameObject.Find("MagnificusAnim").transform.position = new Vector3(GameObject.Find("x4 y1").transform.position.x + 0.575f, 10.7f, GameObject.Find("x4 y1").transform.position.z + 20);
 						GameObject.Find("x4 y1").GetComponentInChildren<NavigationZone3D>().events.Add(Generation.magBattle);
 					}
 					break;
@@ -6130,7 +4944,6 @@ namespace MagnificusMod
 				figureThruWalls.transform.SetParent(GameObject.Find("PerspectiveUICamera").transform);
 				GameObject.Destroy(figureThruWalls.GetComponentByName("DiskCardGame.ChallengeActivationUI"));
 				figureThruWalls.name = "WallFigure";
-				figureThruWalls.name = "WallFigure";
 				GameObject uiFigure = GameObject.Find("WallFigure").transform.Find("VisibleParent").gameObject;
 				uiFigure.SetActive(true);
 				uiFigure.transform.Find("Footer").gameObject.SetActive(false);
@@ -6142,14 +4955,18 @@ namespace MagnificusMod
 				uiFigure.transform.Find("Header").Find("IconSprite").localScale = new Vector3(0.24f, 0.2f, 1);
 				GameObject.Destroy(uiFigure.transform.Find("Header").gameObject.GetComponent<ViewportRelativePosition>());
 				setUpClickToMove();
-				uiFigure.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(1.79f, -1.36f, 0);
+				uiFigure.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(1.79f, -1.03f, 0);
 				uiFigure.transform.Find("Header").localPosition = new Vector3(-3.5356f, 1.77f, 0);
 				uiFigure.transform.position = new Vector3(0, 0, 0);
 				GameObject.Find("Player").transform.localRotation = Quaternion.Euler(0, 0, 0);
 				Singleton<FirstPersonController>.Instance.LookDirection = LookDirection.North;
+
+				GameObject.Find("Pixel Camera").transform.localPosition = new Vector3(0, 3, -38.14f);
+				GameObject.Find("Pixel Camera").transform.localRotation = Quaternion.Euler(3, 0, 0);
 			}
 			MagSave.SaveNode(coords);
 			MagSave.clearedNode = new List<string>();
+			SavedVars.LastBlueprint = 0;
 			File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(false, false)));
 			GameObject.Find("Player").transform.position = spawn;
 			GameObject.Find("Player").transform.Find("PixelCameraParent").transform.localPosition = new Vector3(0, 7, -6.86f);
@@ -6188,7 +5005,6 @@ namespace MagnificusMod
 							Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetColor(GameColors.Instance.brightNearWhite);
 							Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(1 - modify, float.MaxValue);
 							yield return new WaitForSeconds(0.085f + modify / 3);
-							Singleton<FirstPersonController>.Instance.enabled = true;
 						}
 					}
 					break;
@@ -6230,13 +5046,11 @@ namespace MagnificusMod
 							Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(1 - modify, float.MaxValue);
 						}
 						yield return new WaitForSeconds(0.085f + modify / 3);
-						Singleton<FirstPersonController>.Instance.enabled = true;
 					}
 					break;
 			}
 			Singleton<FirstPersonController>.Instance.currentZone = GameObject.Find(coords).GetComponent<NavigationZone3D>();
 			yield return new WaitForSeconds(0.2f);
-			Singleton<FirstPersonController>.Instance.enabled = true;
 			SaveManager.SaveToFile();
 			string text = File.ReadAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave");
 			string[] array = text.Split(new char[]
@@ -6253,6 +5067,8 @@ namespace MagnificusMod
 					','
 			});
 			yield return new WaitForSeconds(0.2f);
+			string levelTitle = "~ ~";
+
 			if (config.isometricActive && (location == "goobert" || location == "espeara" || location == "lonely"))
 			{
 				IsometricStuff.moveDisabled = false;
@@ -6261,7 +5077,7 @@ namespace MagnificusMod
 			}
 			if (location == "goobert")
 			{
-				Singleton<TextDisplayer>.Instance.ShowMessage("~ Goo Dungeon ~");
+				levelTitle = "~ Goo Dungeon ~";
 				if (!config.isometricActive)
 				{ Tween.LocalRotation(GameObject.Find("bgStarParent").transform, Quaternion.Euler(0, 0, 0), 0.5f, 0); } 
 				else
@@ -6269,13 +5085,38 @@ namespace MagnificusMod
 					Tween.LocalRotation(GameObject.Find("bgStarParent").transform, Quaternion.Euler(0, 45, 0), 0.5f, 0);
 					Tween.LocalPosition(GameObject.Find("bgStarParent").transform, new Vector3(0, 0, -100), 0.5f, 0);
 				}
+
+				if (!SavedVars.LearnedMechanics.Contains("goodungeonintro;"))
+				{
+					Singleton<FirstPersonController>.Instance.enabled = false;
+					SavedVars.LearnedMechanics += "goodungeonintro;";
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You land in a sticky puddle of goo, stretching out into what seems like an endless void..", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Ruined pillars and ancient walls surround your vision, overtaken by yet more slime..", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("The glistening heavens above shine brightly unto you.", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You arrive in the..", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return new WaitForSeconds(0.15f);
+					Singleton<FirstPersonController>.Instance.enabled = true;
+				}
+
 			} else if (location == "espeara")
 			{
-				Singleton<TextDisplayer>.Instance.ShowMessage("~ Lava Dungeon ~");
+				levelTitle = "~ Lava Dungeon ~";
+
+				if (!SavedVars.LearnedMechanics.Contains("lavadungeonintro"))
+				{
+					Singleton<FirstPersonController>.Instance.enabled = false;
+					SavedVars.LearnedMechanics += "lavadungeonintro;";
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("A sudden influx of heat surrounds you..", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Dimly lit and dingy chambers spread out as far as you can see.", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Long forgotten echoes of ancient sparring fill the room.", -0.15f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You find yourself in the..", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return new WaitForSeconds(0.15f);
+					Singleton<FirstPersonController>.Instance.enabled = true;
+				}
 			}
 			else if (location == "lonely")
 			{
-				Singleton<TextDisplayer>.Instance.ShowMessage("~ Void Dungeon ~");
+				levelTitle = "~ Void Dungeon ~";
 				GameObject.Find("bgStarParent").transform.localPosition = new Vector3(0, 500, 125);
 				if (!config.isometricActive) { 
 					Tween.LocalRotation(GameObject.Find("bgStarParent").transform, Quaternion.Euler(0, 0, 0), 0.5f, 0);
@@ -6287,14 +5128,27 @@ namespace MagnificusMod
 					Tween.LocalPosition(GameObject.Find("bgStarParent").transform, new Vector3(50, 0, 50), 0.5f, 0);
 					Tween.LocalPosition(GameObject.Find("starFade").transform, new Vector3(0, 0, 0), 0.5f, 0);
 				}
+
+				if (!SavedVars.LearnedMechanics.Contains("voiddungeonintro"))
+				{
+					Singleton<FirstPersonController>.Instance.enabled = false;
+					SavedVars.LearnedMechanics += "voiddungeonintro;";
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("A dusty old smell fills your nostrills..", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hundreds of walls containing books, laying untouched for eons, fill the quiet landscape.", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Ethereal runes, containing lost, forbidden knowledge surround you.", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You awake in the..", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return new WaitForSeconds(0.15f);
+					Singleton<FirstPersonController>.Instance.enabled = true;
+				}
+
 			}
 			else if (location == "finale")
 			{
-				Singleton<TextDisplayer>.Instance.ShowMessage("~ ??? ~");
-				
+				levelTitle = "~ ??? ~";
+
 				if (SaveManager.saveFile.ascensionActive) {
 					int cards = 0;
-					foreach (CardInfo card in SaveManager.saveFile.CurrentDeck.Cards)
+					foreach (CardInfo card in RunState.Run.playerDeck.Cards)
                     {
 						if (!card.HasTrait(Trait.EatsWarrens)) { cards++; }
                     }
@@ -6306,12 +5160,13 @@ namespace MagnificusMod
 				SceneLoader.Load(SceneLoader.ActiveSceneName);
 			} else if (location == "depths")
 			{
+				levelTitle = SaveManager.saveFile.ascensionActive ? "~ ~" : "~ ??? ~";
+
 				if (!SaveManager.saveFile.ascensionActive)
 				{
 					WaitThenEnablePlayer(0f);
 					GameObject.Find("x4 y1").GetComponentInChildren<NavigationZone3D>().events.Add(Generation.gameOver);
 					GameObject.Find("MagnificusAnim").transform.position = new Vector3(80.3f, 9.72f, -12);
-					Singleton<TextDisplayer>.Instance.ShowMessage("~ ??? ~");
 					Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North, false);
 					Singleton<ViewManager>.Instance.SwitchToView(View.FirstPerson, false);
 				} else
@@ -6320,30 +5175,36 @@ namespace MagnificusMod
 				}
 			}
 
-			Singleton<TextDisplayer>.Instance.SetTextColor(new Color(1, 1, 1, 0.5f));
-			for (float i = 0.01f; i < 0.51f; i += 0.01f)
+			if (config.isometricMode && !SavedVars.LearnedMechanics.Contains("isometricTutorial") && RunState.Run.regionTier < 4)
 			{
-				Singleton<TextDisplayer>.Instance.SetTextColor(new Color(1, 1, 1, 0.5f + i));
-				yield return new WaitForSeconds(0.01f);
+				GameObject.Find("ControlsHint_Left").GetComponent<AnimatingSprite>().frames = new List<Sprite> { Plugin.ControlsHintFrames[2], Plugin.ControlsHintFrames[3] };
+				Singleton<UIManager>.Instance.SetControlsHintShown(shown: true, false);
+				Singleton<UIManager>.Instance.leftHintShown = true;
+				GameObject.Find("ControlsHint_Right").GetComponent<AnimatingSprite>().frames = new List<Sprite> { Tools.convertToSprite(Resources.Load("art/ui/controlshint_wasd") as Texture2D), Tools.convertToSprite(Resources.Load("art/ui/controlshint_wasd") as Texture2D) };
+				Singleton<UIManager>.Instance.SetControlsHintShown(shown: true);
 			}
-			yield return new WaitForSeconds(0.5f);
-			for (float i = 0.01f; i < 1.01f; i += 0.01f)
+
+			Singleton<FirstPersonController>.Instance.enabled = true;
+
+			if (config.isometricActive)
 			{
-				Singleton<TextDisplayer>.Instance.SetTextColor(new Color(1, 1, 1, 1f - i));
-				yield return new WaitForSeconds(0.01f);
+				GameObject.Find("Pixel Camera").transform.localPosition = Vector3.zero;
+				GameObject.Find("Pixel Camera").transform.localRotation = Quaternion.Euler(Vector3.zero);
 			}
-			yield return new WaitForSeconds(0.5f);
-			if (GameObject.Find("GameTable").transform.position.y <= 0)
+
+			if (levelTitle != "~ ~") yield return fadeText(levelTitle);
+			else yield return new WaitForSeconds(2.5f);
+
+			if (GameObject.Find("GameTable").transform.position.y <= 0 && !config.isometricMode)
 			{
 				GameObject.Find("Player").transform.Find("PixelCameraParent").transform.localPosition = new Vector3(0, 7, -6.86f);
 			}
-			if (SaveManager.saveFile.ascensionActive && challenges.Contains("FreeMap") && location != "finale" && location != "tower")
+			if (location != "finale" && location != "tower" && location != "depths")
             {
 				minimap = true;
-				CreateMiniMap();
+				CreateMiniMap(false, true);
 				SaveManager.SaveToFile();
             }
-			Singleton<TextDisplayer>.Instance.Clear();
 			yield break;
 		}
 
@@ -6405,11 +5266,13 @@ namespace MagnificusMod
 						Singleton<UIManager>.Instance.Effects.GetEffect<ScreenColorEffect>().SetIntensity(modify, float.MaxValue);
 						if (i == 50)
 						{
+							GameObject.Find("walls").transform.position = new Vector3(0, 0, 9);
+							AudioController.Instance.SetLoopAndPlay("School_of_Magicks", 0, true, true);
+							AudioController.Instance.SetLoopVolumeImmediate(0.55f);
+							GameObject.Find("GameTable").transform.Find("tbPillar").Find("tableCloth").gameObject.SetActive(true);
+							GameObject.Find("GameTable").transform.Find("tbPillar").Find("Anim").gameObject.SetActive(true);
 							if (RunState.Run.regionTier == 1)
 							{
-								GameObject.Find("walls").transform.position = new Vector3(0, 0, 9);
-								AudioController.Instance.SetLoopAndPlay("School_of_Magicks", 0, true, true);
-								AudioController.Instance.SetLoopVolumeImmediate(0.55f);
 								GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>().backgroundColor = new Color(0, 0, 0, 1f);
 								GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>().farClipPlane = 320 - getClippingPlaneQualityAdjustment();
 								GameObject.Find("DungeonFloor").transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.5f, 1f, 0.5f);
@@ -6421,9 +5284,6 @@ namespace MagnificusMod
 							}
 							else if (RunState.Run.regionTier == 2)
                             {
-								GameObject.Find("walls").transform.position = new Vector3(0, 0, 9);
-								AudioController.Instance.SetLoopAndPlay("School_of_Magicks", 0, true, true);
-								AudioController.Instance.SetLoopVolumeImmediate(0.55f);
 								GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>().backgroundColor = new Color(0.07843138f, 0.1023529f, 0.2180392f, 1f);
 								GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>().farClipPlane = 325f - getClippingPlaneQualityAdjustment();
 								GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>().backgroundColor = new Color(0.0784f, 0.1024f, 0.058f, 1);
@@ -6436,9 +5296,6 @@ namespace MagnificusMod
 							}
 							else if (RunState.Run.regionTier == 3)
 							{
-								GameObject.Find("walls").transform.position = new Vector3(0, 0, 9);
-								AudioController.Instance.SetLoopAndPlay("School_of_Magicks", 0, true, true);
-								AudioController.Instance.SetLoopVolumeImmediate(0.55f);
 								Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().farClipPlane = 175 - (getClippingPlaneQualityAdjustment() / 2);
 								Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().backgroundColor = new Color(0f, 0f, 0f, 1f);
 								GameObject.Find("DungeonFloor").transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.6f, 0.6f, 0.8f);
@@ -6467,7 +5324,8 @@ namespace MagnificusMod
 							GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>().farClipPlane = 140;
 							GameObject.Find("DungeonFloor").transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.color = new Color(0, 0, 0.25f);
 							GameObject.Find("DungeonFloor").transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTexture = (Tools.getImage("sandtexture.png"));
-							GameObject.Find("Player").transform.Find("Directional Light").gameObject.SetActive(false);
+							GameObject.Find("GameTable").transform.Find("tbPillar").Find("tableCloth").gameObject.SetActive(false);
+							GameObject.Find("GameTable").transform.Find("tbPillar").Find("Anim").gameObject.SetActive(false);
 							Singleton<FirstPersonController>.Instance.footstepSound = FirstPersonController.FootstepSound.Grass;
 							if (RunState.Run.regionTier == 1)
                             {
@@ -6484,20 +5342,23 @@ namespace MagnificusMod
 				case "unspin":
 					for (int i = 0; i < 11; i++)
 					{
-						switch (Singleton<FirstPersonController>.Instance.LookDirection)
+						if (!config.isometricMode)
 						{
-							case LookDirection.North:
-								Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.East);
-								break;
-							case LookDirection.East:
-								Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.South);
-								break;
-							case LookDirection.South:
-								Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.West);
-								break;
-							case LookDirection.West:
-								Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North);
-								break;
+							switch (Singleton<FirstPersonController>.Instance.LookDirection)
+							{
+								case LookDirection.North:
+									Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.East);
+									break;
+								case LookDirection.East:
+									Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.South);
+									break;
+								case LookDirection.South:
+									Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.West);
+									break;
+								case LookDirection.West:
+									Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North);
+									break;
+							}
 						}
 						float modify = 0.1f * i;
 						GameObject.Find("Player").transform.position = new Vector3(GameObject.Find("Player").transform.position.x, 9.5f - modify, GameObject.Find("Player").transform.position.z);
@@ -6562,20 +5423,23 @@ namespace MagnificusMod
 				case "unspin":
 					for (int i = 0; i < 11; i++)
 					{
-						switch (Singleton<FirstPersonController>.Instance.LookDirection)
+						if (!config.isometricMode)
 						{
-							case LookDirection.North:
-								Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.West);
-								break;
-							case LookDirection.West:
-								Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.South);
-								break;
-							case LookDirection.South:
-								Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.East);
-								break;
-							case LookDirection.East:
-								Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North);
-								break;
+							switch (Singleton<FirstPersonController>.Instance.LookDirection)
+							{
+								case LookDirection.North:
+									Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.West);
+									break;
+								case LookDirection.West:
+									Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.South);
+									break;
+								case LookDirection.South:
+									Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.East);
+									break;
+								case LookDirection.East:
+									Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.North);
+									break;
+							}
 						}
 						float modify = 0.1f * i;
 						GameObject.Find("Player").transform.position = new Vector3(GameObject.Find("Player").transform.position.x, 10.5f - modify, GameObject.Find("Player").transform.position.z);
@@ -6588,14 +5452,19 @@ namespace MagnificusMod
 			}
 			yield return new WaitForSeconds(0.2f);
 			GameObject.Find("Player").transform.position = new Vector3(GameObject.Find(location).transform.position.x, 9.5f, GameObject.Find(location).transform.position.z);
-			Singleton<FirstPersonController>.Instance.enabled = true;
-			if (transition != "spin")
+			Singleton<FirstPersonController>.Instance.enabled = false;
+			if (!config.isometricMode)
 			{
-				Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.East);
-			} else
-            {
-				Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.West);
+				if (transition != "spin")
+				{
+					Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.East);
+				}
+				else
+				{
+					Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.West);
+				}
 			}
+			Singleton<FirstPersonController>.Instance.enabled = true;
 			yield break;
 		}
 
@@ -6613,7 +5482,7 @@ namespace MagnificusMod
 		}
 
 
-		private static IEnumerator startHammer()
+		public static IEnumerator startHammer()
 		{
 			yield return new WaitForSeconds(2f);
 			if (!SavedVars.LearnedMechanics.Contains("liferace;") && !SaveManager.saveFile.ascensionActive)
@@ -6634,6 +5503,14 @@ namespace MagnificusMod
 
 			}
 			yield break;
+		}
+
+		public static void setTableClothColor(Color color)
+        {
+			GameObject tableclothObj = GameObject.Find("tableCloth");
+
+			tableclothObj.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = color;
+			tableclothObj.transform.GetChild(0).gameObject.GetComponent<MeshRenderer>().materials[1].color = color;
 		}
 
 
@@ -6711,7 +5588,7 @@ namespace MagnificusMod
 			yield break;
         }
 
-		private static IEnumerator getMonocleSequence()
+		public static IEnumerator getMonocleSequence()
 		{
 			if (!SavedVars.LearnedMechanics.Contains("monoclemove;"))
 			{
@@ -6730,6 +5607,7 @@ namespace MagnificusMod
 			Singleton<FirstPersonController>.Instance.enabled = false;
 			if (Singleton<ViewManager>.Instance.CurrentView == View.Candles) { yield break; }
 			Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
+			Singleton<FirstPersonController>.Instance.enabled = false;
 			yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("The dummy's hinges creak back into position, and it returns to it's lifeless stare.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 			Singleton<FirstPersonController>.Instance.enabled = false;
 			Tween.Position(GameObject.Find("Monocle").transform, new Vector3(81f, 16.65f, -45.8f), 0.5f, 0);
@@ -6744,8 +5622,9 @@ namespace MagnificusMod
 			yield break;
 		}
 
-		private static IEnumerator dummyFightSequence()
+		public static IEnumerator dummyFightSequence()
 		{
+			Singleton<FirstPersonController>.Instance.enabled = false;
 			yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("The dummy stares lifelessly back at you.", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 			yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Then, suddenly it springs to motion!", -1.5f, 0.5f, Emotion.Anger, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 			GameObject.Find("x4 y1 dummy").transform.localRotation = Quaternion.Euler(270.9999f, 180f, 180);
@@ -6759,8 +5638,10 @@ namespace MagnificusMod
 
 			cardBattleNodeData.blueprint = ScriptableObject.CreateInstance<MagnificusMod.BossBlueprints.DummyBlueprint>();
 
-			GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.Default, true, false);
+			GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.FirstPerson, true, false);
 			Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<MagnificusGameFlowManager>.Instance.TransitionTo(GameState.CardBattle, cardBattleNodeData, true, true));
+			yield return new WaitForSeconds(0.35f);
+			GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.Default, false, false);
 			yield break;
 		}
 
@@ -6859,12 +5740,18 @@ namespace MagnificusMod
 
 		public static IEnumerator spellBookTutorial()
         {
-			if (!SavedVars.LearnedMechanics.Contains("spellbook") && !SaveManager.saveFile.ascensionActive)
+			if (!SavedVars.LearnedMechanics.Contains("spellbook"))
 			{
+				Singleton<ViewManager>.Instance.SwitchToView(View.Consumables, false, true);
+				Singleton<SpellPile>.Instance.initializing = true;
 				SavedVars.LearnedMechanics += "spellbook;";
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hmm?", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Are you wondering what this book is for?", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("That is your [c:g1]spell book[c:]. You may use it to draw one of your [c:g3]spell cards[c:].", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("But only [c:g1]one[c:] per turn..", -2.5f, 0.15f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+				Singleton<SpellPile>.Instance.initializing = false;
+				Singleton<ViewManager>.Instance.SwitchToView(View.WizardBattleUnits, false, false);
+				Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
 			}
 			yield break;
         }
@@ -6888,19 +5775,6 @@ namespace MagnificusMod
 				LoadingScreenManager.LoadScene("finale_magnificus");
 				Time.timeScale = 1f;
 				FrameLoopManager.Instance.SetIterationDisabled(false);
-				SaveManager.saveFile.CurrentDeck.Cards.Clear();
-				bool flag = SavedVars.LearnedMechanics.Contains("druid");
-				if (flag)
-				{
-					SaveManager.saveFile.CurrentDeck.Cards.Add(CardLoader.GetCardByName("mag_druid"));
-				}
-				else
-				{
-					SaveManager.saveFile.CurrentDeck.Cards.Add(CardLoader.GetCardByName("mag_wolf"));
-				}
-				SaveManager.saveFile.CurrentDeck.Cards.Add(CardLoader.GetCardByName("mag_stinkbug"));
-				SaveManager.saveFile.CurrentDeck.Cards.Add(CardLoader.GetCardByName("mag_stoat"));
-				SaveManager.saveFile.CurrentDeck.Cards.Add(CardLoader.GetCardByName("mag_hovermage"));
 				RunState.Run.maxPlayerLives = 3;
 				RunState.Run.playerLives = 3;
 				SaveManager.SaveToFile();
@@ -6932,10 +5806,14 @@ namespace MagnificusMod
 			if (Singleton<ViewManager>.Instance.CurrentView != View.Candles)
 			{
 				GameObject.Find("Player").GetComponentInChildren<ViewManager>().CurrentView = View.FirstPerson;
-				float x = GameObject.Find("PixelCameraParent").transform.position.x;
-				float z = GameObject.Find("PixelCameraParent").transform.position.z;
-				GameObject.Find("PixelCameraParent").transform.position = new Vector3(x, 16.5f, z);
-				Tween.Position(GameObject.Find("PixelCameraParent").transform, new Vector3(x, 16.5f, z), 0f, 0f, null, Tween.LoopType.None, null, null, true);
+				if (!config.isometricMode)
+				{
+					float x = GameObject.Find("PixelCameraParent").transform.position.x;
+					float z = GameObject.Find("PixelCameraParent").transform.position.z;
+					GameObject.Find("PixelCameraParent").transform.position = new Vector3(x, 16.5f, z);
+					Tween.Position(GameObject.Find("PixelCameraParent").transform, new Vector3(x, 16.5f, z), 0f, 0f, null, Tween.LoopType.None, null, null, true);
+				}
+				Tween.FieldOfView(GameObject.Find("PixelCameraParent").transform.Find("Pixel Camera").gameObject.GetComponent<Camera>(), 65f, 0.05f, 0);
 				GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().enabled = true;
 				GameObject.Find("Player").GetComponentInChildren<ViewController>().allowedViews = new List<View>();
 			}
@@ -6950,8 +5828,11 @@ namespace MagnificusMod
             {
 				card = card.transform.parent.GetChild(6).gameObject;
             }
+
 			if (card != null)
 			{
+				AudioController.Instance.PlaySound3D("wizard_cast", MixerGroup.TableObjectsSFX, card.transform.position, 0.25f, 0f, new AudioParams.Pitch(AudioParams.Pitch.Variation.Medium), null, new AudioParams.Randomization(noRepeating: false)).spatialBlend = 0.05f;
+
 				Color flashcolor = new Color(1, 1, 1);
 				switch (color)
 				{
@@ -7044,41 +5925,29 @@ namespace MagnificusMod
 				Tween.LocalRotation(cardModel2.transform, Quaternion.Euler(61, 0, 0), 0.5f, 0);
 				yield return new WaitForSeconds(0.25f);
 			}
-
+			card.gameObject.transform.localRotation = Quaternion.Euler(90, 0, 0);
 			
 			
 
 			instance.transform.localPosition = new Vector3(instance.transform.localPosition.x, 0, 0);
 			instance.transform.Find("Border").localPosition = new Vector3(instance.transform.Find("Border").localPosition.x, 0, -0.205f);
 			if (!card.OpponentCard)
-            {
+			{
 				cardModel2.transform.localPosition = new Vector3(0, 1.435f, -0.2076f);
-			} else
-            {
+			}
+			else
+			{
 				instance.queueCardParent.transform.localPosition = new Vector3(instance.queueCardParent.localPosition.x, 7.02f, instance.queueCardParent.localPosition.z);
 				instance.queueCard.gameObject.SetActive(true);
-				if (!card.HasTrait(Trait.Giant))
-				{
-					cardModel2.transform.localPosition = new Vector3(0, 4.435f, -0.9f);
-				} else
-                {
-					cardModel2.transform.localPosition = new Vector3(12.1f, 7.715f, 8.5f);
-
-				}
+				cardModel2.transform.localPosition = (!card.HasTrait(Trait.Giant)) ? new Vector3(0, 4.435f, -0.9f) : new Vector3(12.1f, 7.715f, 8.5f);
 			}
 
-			if (card.Info.HasAbility(Ability.Flying) || card.Info.ModAbilities.Contains(Ability.Flying))
+			if (card.HasAbility(Ability.Flying))
             {
 				Vector3 flight = cardModel2.transform.position;
-				flight.y += 0.75f;
+				flight.y += (0.75f + ((RunState.Run.regionTier == 4) ?  2.5f : 0f) );
 				Tween.Position(cardModel2.transform, flight, 0.65f, 0);
-				if (!card.OpponentCard)
-				{
-					Tween.Rotation(cardModel2.transform, Quaternion.Euler(45, 0, 0), 0.35f, 0);
-				} else
-                {
-					Tween.Rotation(cardModel2.transform, Quaternion.Euler(41, 0, 0), 0.35f, 0);
-				}
+				Tween.Rotation(cardModel2.transform, Quaternion.Euler((!card.OpponentCard) ? 45 : 41, 0, 0), 0.35f, 0);
 				yield return new WaitForSeconds(0.35f);
 				cardModel2.AddComponent<SineWaveMovement>();
 				cardModel2.GetComponent<SineWaveMovement>().originalPosition = cardModel2.transform.localPosition;
@@ -7086,93 +5955,30 @@ namespace MagnificusMod
 				cardModel2.GetComponent<SineWaveMovement>().yMagnitude = 0.46f;
 
 			}
-			cardModel2.GetComponent<Card>().renderInfo = card.renderInfo;
 			cardModel2.GetComponent<Card>().RenderCard();
 			yield break;
 		}
 
-		[HarmonyPatch(typeof(WizardBattlePortraitSlot), "ManagedUpdate")]//this is staying here because its evil I THINK I CLEANSED IT!@!! YAY
-		public class FinaleRenderFix
-		{
-		public static bool Prefix(ref WizardBattlePortraitSlot __instance)
-		{
-			if (__instance.cardSlot.Card != null && __instance.gameObject.transform.childCount > 5)
-			{
-					//string slotName = Singleton<WizardPortraitSlotManager>.Instance.playerSlots.Contains(__instance) ? "PlayerSlots" : "OpponentSlots";
-					//int dex = slotName == "PlayerSlots" ? Singleton<WizardPortraitSlotManager>.Instance.playerSlots.IndexOf(__instance) : Singleton<WizardPortraitSlotManager>.Instance.opponentSlots.IndexOf(__instance);
-				if (__instance.gameObject.transform.GetChild(5).gameObject.name != "Wizard3DPortrait_Glitched(Clone)" && __instance.gameObject.transform.GetChild(5).gameObject.name != "ProjectileImpactEffects(Clone)")
-				{
-						string slotName = Singleton<WizardPortraitSlotManager>.Instance.playerSlots.Contains(__instance) ? "PlayerSlots" : "OpponentSlots";
-						int dex = slotName == "PlayerSlots" ? Singleton<WizardPortraitSlotManager>.Instance.playerSlots.IndexOf(__instance) : Singleton<WizardPortraitSlotManager>.Instance.opponentSlots.IndexOf(__instance);
-						PlayableCard cardLol = Singleton<MagnificusBoardManager>.Instance.transform.Find(slotName).GetChild(dex).GetChild(1).gameObject.GetComponent<PlayableCard>();
-						GameObject card = __instance.gameObject.transform.GetChild(5).gameObject;
-						if (card.name == "Wizard3DPortrait_Glitched(Clone)") { card = __instance.gameObject.transform.GetChild(6).gameObject; }
-						if (card.GetComponent<MagnificusMod.DisplayedStats>() == null)
-                        {
-							card.GetComponent<Card>().renderInfo = cardLol.renderInfo;
-							card.GetComponent<Card>().RenderCard();
-							return false;
-						}
-						if (card.GetComponent<MagnificusMod.DisplayedStats>().displayedRenderInfo == null) {
-							card.GetComponent<MagnificusMod.DisplayedStats>().displayedRenderInfo = setDisplayedInfo(cardLol.renderInfo);
-							card.GetComponent<Card>().renderInfo.baseInfo = cardLol.Info;
-							card.GetComponent<Card>().renderInfo = cardLol.renderInfo;
-							card.GetComponent<Card>().RenderCard();
-						}
-						if (!compareDetails(card.GetComponent<MagnificusMod.DisplayedStats>().displayedRenderInfo, cardLol))
-						{
-							card.GetComponent<Card>().renderInfo = cardLol.renderInfo;
-							card.GetComponent<Card>().renderInfo.baseInfo = cardLol.Info;
-							card.GetComponent<Card>().RenderCard();
-							card.GetComponent<MagnificusMod.DisplayedStats>().displayedRenderInfo = setDisplayedInfo(cardLol.renderInfo);
-							card.GetComponent<MagnificusMod.DisplayedStats>().displayedRenderInfo.baseInfo = cardLol.Info;
-							/*
-							if (card.GetComponent<Card>().Info.Mods.Count < 1)
-							{
-								card.GetComponent<Card>().renderInfo = cardLol.renderInfo;
-								card.GetComponent<Card>().RenderCard();
-							}
-							else if (card.GetComponent<Card>().Info.Mods.Count > 0 && card.GetComponent<Card>().renderInfo.attack != cardLol.Attack || card.GetComponent<Card>().Info.Mods.Count > 0 && card.GetComponent<Card>().renderInfo.health != cardLol.Health )
-							{
-								card.GetComponent<Card>().renderInfo = cardLol.renderInfo;
-								card.GetComponent<Card>().renderInfo.portraitOverride = cardLol.renderInfo.portraitOverride;
-								card.GetComponent<Card>().RenderCard();
-								card.GetComponent<Card>().SetInfo(cardLol.Info);
-							}
-							*/
-						}
-				}
-			}
-				return false;
-			}
-		}
 
-		public static bool compareDetails(CardRenderInfo card, PlayableCard cardLol)
-		{
-			return card.attack == cardLol.renderInfo.attack && card.health == cardLol.renderInfo.health && card.healthTextColor == cardLol.renderInfo.healthTextColor && card.attackTextColor == cardLol.renderInfo.attackTextColor && card.portraitOverride == cardLol.renderInfo.portraitOverride && card.portraitOverride == cardLol.renderInfo.portraitOverride && card.hiddenHealth == cardLol.renderInfo.hiddenHealth && card.baseInfo == cardLol.Info && card.baseInfo != null;
-		}
-
-		public static CardRenderInfo setDisplayedInfo(CardRenderInfo card)
-		{
-			CardRenderInfo instantiatedInfo = new CardRenderInfo();
-			instantiatedInfo.attack = card.attack; instantiatedInfo.health = card.health; instantiatedInfo.attackTextColor = card.attackTextColor; instantiatedInfo.healthTextColor = card.healthTextColor; instantiatedInfo.portraitOverride = card.portraitOverride; instantiatedInfo.hiddenAttack = card.hiddenAttack; instantiatedInfo.hiddenHealth = card.hiddenHealth;
-			return instantiatedInfo;
-		}
 
 		public static IEnumerator WizardDeathAnim(GameObject model)
 		{
 			yield return new WaitForSeconds(0.51f);
 			for (int i = 5; i < model.transform.parent.childCount; i++)
-            {
+			{
 				if (model.transform.parent.GetChild(i).gameObject.GetComponent<Card>() != null)
-                {
+				{
 					model = model.transform.parent.GetChild(i).gameObject;
 
 				}
-            }
+			}
 			model.transform.Find("RenderStatsLayer").Find("Quad").gameObject.SetActive(true);
 			model.transform.Find("RenderStatsLayer").Find("Quad").GetComponent<MeshRenderer>().material.color = new Color(0.9333f, 0.9569f, 0.7765f, 1f);
 			Tween.LocalPosition(model.transform, new Vector3(0, 8, 0.9924f), 0.15f, 0);
+			Tween.LocalScale(model.transform.Find("RenderStatsLayer"), new Vector3(0.835f, 1.3f, 0.4378f), 0.15f, 0, null, Tween.LoopType.None, new Action(delegate {
+				if (!config.oldCardDesigns) model.transform.Find("RenderStatsLayer").Find("cardFrame").gameObject.SetActive(false); 
+			})
+				);
 			//yield return new WaitForSeconds(0.4f);
 			//GameObject.Destroy(model.gameObject);
 			yield break;
@@ -7193,9 +5999,11 @@ namespace MagnificusMod
 		public static int getClippingPlaneQualityAdjustment(int qualityOverride = -5)
         {
 			int quality = QualitySettings.GetQualityLevel();
-			if (qualityOverride > -5){quality = qualityOverride;}
+			if (qualityOverride > -5)
+				quality = qualityOverride;
 			quality -= 2;
-			if (quality < 0){quality *= -1;}
+			if (quality < 0)
+				quality *= -1;
 			quality *= 50;
 			return quality;
         }

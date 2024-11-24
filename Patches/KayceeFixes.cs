@@ -140,10 +140,6 @@ namespace MagnificusMod
 			{
 				KayceeStorage.ActiveChallenges += "MoreHpOpponent,";
 			}
-			if (AscensionSaveData.Data.ChallengeIsActive(ChallengeManagement.ItemSpells))
-			{
-				KayceeStorage.ActiveChallenges += "ItemSpells,";
-			}
 			if (AscensionSaveData.Data.ChallengeIsActive(ChallengeManagement.DyingBreath))
 			{
 				KayceeStorage.ActiveChallenges += "DyingBreath,";
@@ -168,13 +164,17 @@ namespace MagnificusMod
 			{
 				KayceeStorage.ActiveChallenges += "FadingMox,";
 			}
-			if (AscensionSaveData.Data.ChallengeIsActive(ChallengeManagement.FreeMap))
+			if (AscensionSaveData.Data.ChallengeIsActive(ChallengeManagement.IronMaiden))
 			{
-				KayceeStorage.ActiveChallenges += "FreeMap,";
+				KayceeStorage.ActiveChallenges += "IronMaiden,";
 			}
-			if (AscensionSaveData.Data.ChallengeIsActive(ChallengeManagement.Mana))
+			if (AscensionSaveData.Data.ChallengeIsActive(ChallengeManagement.PaintedSigils))
 			{
-				KayceeStorage.ActiveChallenges += "AllMana,";
+				KayceeStorage.ActiveChallenges += "PaintedSigils,";
+			}
+			if (AscensionSaveData.Data.ChallengeIsActive(ChallengeManagement.ItemSpells))
+			{
+				KayceeStorage.ActiveChallenges += "SmallSpellbook,";
 			}
 			if (AscensionSaveData.Data.activeChallenges.Count < 1)
 			{
@@ -204,6 +204,7 @@ namespace MagnificusMod
 			{
 				StarterDeckInfo starterDeckInfo = ScriptableObject.CreateInstance<StarterDeckInfo>();
 				starterDeckInfo.iconSprite = Tools.getSprite(path);
+				starterDeckInfo.title = title;
 				starterDeckInfo.name = "Magnificus_" + title;
 				starterDeckInfo.cards = Enumerable.ToList<CardInfo>(Enumerable.Select<string, CardInfo>(cards, new Func<string, CardInfo>(CardLoader.GetCardByName)));
 				return starterDeckInfo;
@@ -211,58 +212,63 @@ namespace MagnificusMod
 
 			public static void RegisterStarterDecks()
 			{
-				StarterDeckManager.FullStarterDeck starterDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("MagVanilla", "starterdeck_icon_vanilla.png", new string[]
+				StarterDeckManager.FullStarterDeck starterDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("MagVanilla;0", "starterdeck_icon_vanilla.png", new string[]
 				{
-					"mag_jrsage",
-					"mag_wolf",
-					"mag_hovermage"
+					"JuniorSage",
+					"RubyGolem",
+					"FlyingMage",
+					"Pupil"
 				}), 0);
 				StarterDecks.DEFAULT_STARTER_DECK = starterDeck.Info.name;
-				StarterDeckManager.FullStarterDeck emeraldDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Goranj", "starterdeck_icon_emerald.png", new string[]
+				StarterDeckManager.FullStarterDeck emeraldDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Goranj;1", "starterdeck_icon_emerald.png", new string[]
 				{
-					"mag_musclemage",
+					"MuscleMage",
 					"mag_alchemist",
-					"mag_orangemage",
-					"mag_crystalworm"
-				}), 1);
-				StarterDeckManager.FullStarterDeck rubyDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Orlu", "starterdeck_icon_ruby.png", new string[]
+					"OrangeMage",
+					"RubyGolem"
+				}), 0);
+				StarterDeckManager.FullStarterDeck rubyDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Orlu;1", "starterdeck_icon_ruby.png", new string[]
 				{
-					"mag_rubygolem",
-					"mag_knightmage",
+					"MageKnight",
+					"mag_snipesage",
 					"mag_magimorph",
-					"mag_forcemage"
-				}), 1);
-				StarterDeckManager.FullStarterDeck sapphireDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Bleene", "starterdeck_icon_sapphire.png", new string[]
+					"ForceMage"
+				}), 0);
+				StarterDeckManager.FullStarterDeck sapphireDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Bleene;1", "starterdeck_icon_sapphire.png", new string[]
 				{
-					"mag_rascal",
-					"mag_bluemage",
-					"mag_stimmage",
-					"mag_greenmage"
-				}), 1);
-				StarterDeckManager.FullStarterDeck manaDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Mana", "starterdeck_icon_mana.png", new string[]
+					"GemFiend",
+					"BlueMage",
+					"GreenMage",
+					"mag_emeraldfiend"
+				}), 0);
+				StarterDeckManager.FullStarterDeck manaDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Mana;2", "starterdeck_icon_mana.png", new string[]
 				{
 					"mag_erraticscholar",
 					"mag_gemabsorber",
-					"mag_gemboundripper"
-				}), 2);
-				StarterDeckManager.FullStarterDeck spellDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Spell", "starterdeck_icon_spell.png", new string[]
+					"mag_gemboundripper",
+					"mag_crystalsage"
+				}), 0);
+				StarterDeckManager.FullStarterDeck spellDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Spell;2", "starterdeck_icon_spell.png", new string[]
 				{
 					"mag_spellcaster",
-					"mag_rubygolem",
+					"mag_rubyfiend",
+					"mag_bunnymage",
 					"mag_gnomespell"
-				}), 2);
-				StarterDeckManager.FullStarterDeck freeDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Free", "starterdeck_icon_free.png", new string[]
+				}), 0);
+				StarterDeckManager.FullStarterDeck freeDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Free;3", "starterdeck_icon_free.png", new string[]
 				{
-					"mag_magepupil",
+					"Pupil",
 					"mag_homunculus",
-					"mag_moxlarva"
-				}), 3);
-				StarterDeckManager.FullStarterDeck obeliskDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Obelisk", "starterdeck_icon_obelisk.png", new string[]
+					"mag_moxlarva",
+					"mag_maux"
+				}), 0);
+				StarterDeckManager.FullStarterDeck triMoxDeck = StarterDeckManager.Add("silenceman.inscryption.magnificusmodstarterdecks", StarterDecks.CreateStarterDeckInfo("Trimox;4", "starterdeck_icon_obelisk.png", new string[]
 				{
-					"mag_obelisk",
-					"mag_obelisk",
-					"mag_obelisk"
-				}), 4);
+					"mag_multiplymage",
+					"mag_multiplymage",
+					"mag_jester",
+					"mag_erraticscholar"
+				}), 0);
 				StarterDeckManager.ModifyDeckList += delegate (List<StarterDeckManager.FullStarterDeck> decks)
 				{
 					CardTemple acceptableTemple = KayceeStorage.ScreenState;
@@ -273,7 +279,9 @@ namespace MagnificusMod
 						{
 							for (int i = 0; i < decks.Count; i++)
 							{
-								if (decks[i].UnlockLevel > KayceeStorage.ChallengeLevel)
+								int level = int.Parse(decks[i].Info.title.Split(';')[1]);
+
+								if (level > KayceeStorage.ChallengeLevel)
 								{
 									decks.Remove(decks[i]);
 									i--;
@@ -285,6 +293,7 @@ namespace MagnificusMod
 							}
 						}
 					}
+
 					return decks;
 				};
 			}
@@ -314,21 +323,15 @@ namespace MagnificusMod
 
 			public static AscensionChallenge GemDependantDeck { get; private set; }
 
-			public static AscensionChallenge FreeMap { get; private set; }
+			public static AscensionChallenge IronMaiden { get; private set; }
 
-			public static AscensionChallenge Mana { get; private set; }
+			public static AscensionChallenge PaintedSigils { get; private set; }
 
 			[HarmonyPatch(typeof(AscensionIconInteractable), "AssignInfo")]
 			[HarmonyPostfix]
 			private static void ColorsPlease(ref AscensionIconInteractable __instance, AscensionChallengeInfo info)
 			{
-				if (ChallengeManagement.AntiChallenges.Contains(info.challengeType))
-				{
-					Color color = new Color(0f, 1f, 0.1f, 1);
-					ColorUtility.TryParseHtmlString("#00FF19", out color);
-					__instance.iconRenderer.color = color;
-					__instance.blinkEffect.blinkOffColor = color;
-				} else if (currentState == CardTemple.Wizard || SceneLoader.ActiveSceneName == "finale_magnificus")
+				if (currentState == CardTemple.Wizard || SceneLoader.ActiveSceneName == "finale_magnificus")
                 {
 					Color color = new Color(0.75f, 0, 1, 1);
 					ColorUtility.TryParseHtmlString("#BF00FF", out color);
@@ -348,15 +351,15 @@ namespace MagnificusMod
 				ChallengeManagement.ShieldedMox = GuidManager.GetEnumValue<AscensionChallenge>("silenceman.inscryption.magnificusmodstarterdecks", "ShieldedMox");
 				ChallengeManagement.FadingMox = GuidManager.GetEnumValue<AscensionChallenge>("silenceman.inscryption.magnificusmodstarterdecks", "FadingMox");
 				ChallengeManagement.GemDependantDeck = GuidManager.GetEnumValue<AscensionChallenge>("silenceman.inscryption.magnificusmodstarterdecks", "GemDependantDeck");
+				ChallengeManagement.IronMaiden = GuidManager.GetEnumValue<AscensionChallenge>("silenceman.inscryption.magnificusmodstarterdecks", "IronMaiden");
+				ChallengeManagement.PaintedSigils = GuidManager.GetEnumValue<AscensionChallenge>("silenceman.inscryption.magnificusmodstarterdecks", "PaintedSigils");
 				ChallengeManagement.MasterMagnus = GuidManager.GetEnumValue<AscensionChallenge>("silenceman.inscryption.magnificusmodstarterdecks", "MasterMagnus");
 				ChallengeManagement.MasterBosses = GuidManager.GetEnumValue<AscensionChallenge>("silenceman.inscryption.magnificusmodstarterdecks", "MasterBosses");
-				ChallengeManagement.FreeMap = GuidManager.GetEnumValue<AscensionChallenge>("silenceman.inscryption.magnificusmodstarterdecks", "FreeMap");
-				ChallengeManagement.Mana = GuidManager.GetEnumValue<AscensionChallenge>("silenceman.inscryption.magnificusmodstarterdecks", "AllMana");
 				ChallengeManagement.PatchedChallengesReference = new Dictionary<AscensionChallenge, AscensionChallengeInfo>();
 				ChallengeManagement.PatchedChallengesReference.Add(AscensionChallenge.NoHook, new AscensionChallengeInfo
 				{
 					challengeType = ChallengeManagement.RandomSidedeck,
-					title = "Random Sidedeck",
+					title = "Blank Mox",
 					description = "Your sidedeck's mox is completely random.",
 					iconSprite = Tools.getSprite("challenge_randommox.png"),
 					activatedSprite = Tools.getSprite("challenge_base_active.png"),
@@ -392,8 +395,8 @@ namespace MagnificusMod
 				ChallengeManagement.PatchedChallengesReference.Add(AscensionChallenge.NoClover, new AscensionChallengeInfo
 				{
 					challengeType = ChallengeManagement.ItemSpells,
-					title = "Magnum Opus",
-					description = "All spells are free, but gain the One Time Spell sigil.",
+					title = "Tiny Spellbook",
+					description = "Your spellbook can only hold 4 spells instead of 8.",
 					iconSprite = Tools.getSprite("challenge_itemspells.png"),
 					activatedSprite = Tools.getSprite("challenge_base_active.png"),
 					pointValue = 10
@@ -401,23 +404,12 @@ namespace MagnificusMod
 				ChallengeManagement.PatchedChallengesReference.Add(AscensionChallenge.ExpensivePelts, new AscensionChallengeInfo
 				{
 					challengeType = ChallengeManagement.DyingBreath,
-					title = "Dying Breath",
-					description = "If your opponent were to die, they hang on with 1 health remaining.",
+					title = "Displeased Spirits",
+					description = "The enchanted grounds will always be displeased.",
 					iconSprite = Tools.getSprite("challenge_dyingbreath.png"),
 					activatedSprite = Tools.getSprite("challenge_base_active.png"),
 					pointValue = 15
 				});
-				/*
-				ChallengeManagement.PatchedChallengesReference.Add(AscensionChallenge.AllTotems, new AscensionChallengeInfo
-				{
-					challengeType = ChallengeManagement.TwoLives,
-					title = "Two Lives",
-					description = "Your life painting starts with only 2 mox.",
-					iconSprite = Tools.getSprite("challenge_2lives.png"),
-					activatedSprite = Tools.getSprite("challenge_2lives_active.png"),
-					pointValue = 10
-				});
-				*/
 				ChallengeManagement.PatchedChallengesReference.Add(AscensionChallenge.AllTotems, new AscensionChallengeInfo
 				{
 					challengeType = ChallengeManagement.ShieldedMox,
@@ -427,16 +419,34 @@ namespace MagnificusMod
 					activatedSprite = Tools.getSprite("challenge_base_active.png"),
 					pointValue = 20
 				});
+				ChallengeManagement.PatchedChallengesReference.Add(AscensionChallenge.WeakStarterDeck, new AscensionChallengeInfo
+				{
+					challengeType = ChallengeManagement.IronMaiden,
+					title = "Iron Maiden",
+					description = "Every turn, each mox on your side of the board takes 1 damage.",
+					iconSprite = Tools.getSprite("challenge_ironmaiden.png"),
+					activatedSprite = Tools.getSprite("challenge_base_active.png"),
+					pointValue = 30
+				});
 				ChallengeManagement.PatchedChallengesReference.Add(AscensionChallenge.LessLives, new AscensionChallengeInfo
+				{
+					challengeType = ChallengeManagement.PaintedSigils,
+					title = "Magickal Paint",
+					description = "Queued cards will occasionally get additional sigils painted on them.",
+					iconSprite = Tools.getSprite("challenge_paintedsigils.png"),
+					activatedSprite = Tools.getSprite("challenge_paintedsigils_active.png"),
+					pointValue = 25
+				});
+				ChallengeManagement.PatchedChallengesReference.Add(AscensionChallenge.SubmergeSquirrels, new AscensionChallengeInfo
 				{
 					challengeType = ChallengeManagement.FadingMox,
 					title = "Fleeting Life",
-					description = "You have 66 health, but it does not replenish inbetween battles.",
+					description = "You have 75 health, but it does not replenish inbetween battles.",
 					iconSprite = Tools.getSprite("challenge_fadingmox.png"),
 					activatedSprite = Tools.getSprite("challenge_fadingmox_active.png"),
 					pointValue = 30
 				});
-				ChallengeManagement.PatchedChallengesReference.Add(AscensionChallenge.WeakStarterDeck, new AscensionChallengeInfo
+				ChallengeManagement.PatchedChallengesReference.Add(AscensionChallenge.GrizzlyMode, new AscensionChallengeInfo
 				{
 					challengeType = ChallengeManagement.MasterMagnus,
 					title = "Intrusive Presence",
@@ -463,24 +473,6 @@ namespace MagnificusMod
 					activatedSprite = Tools.getSprite("challenge_base_active.png"),
 					pointValue = 20
 				});
-				ChallengeManagement.PatchedChallengesReference.Add(AscensionChallenge.SubmergeSquirrels, new AscensionChallengeInfo
-				{
-					challengeType = ChallengeManagement.FreeMap,
-					title = "Free Map",
-					description = "You start each dungeon with the map displayed. It does not display events.",
-					iconSprite = Tools.getSprite("antichallenge_map.png"),
-					activatedSprite = Tools.getSprite("challenge_base_active.png"),
-					pointValue = -5
-				});
-				ChallengeManagement.PatchedChallengesReference.Add(AscensionChallenge.GrizzlyMode, new AscensionChallengeInfo
-				{
-					challengeType = ChallengeManagement.Mana,
-					title = "Mana Heart",
-					description = "All cards can be sacrificed for mana.",
-					iconSprite = Tools.getSprite("antichallenge_mana.png"),
-					activatedSprite = Tools.getSprite("challenge_base_active.png"),
-					pointValue = -10
-				});
 				ChallengeManagement.ValidChallenges = new List<AscensionChallenge>
 				{
 					ChallengeManagement.RandomSidedeck,
@@ -494,13 +486,9 @@ namespace MagnificusMod
 					ChallengeManagement.ShieldedMox,
 					ChallengeManagement.FadingMox,
 					ChallengeManagement.GemDependantDeck,
-					ChallengeManagement.FreeMap,
-					ChallengeManagement.Mana
-				};
-				ChallengeManagement.AntiChallenges = new List<AscensionChallenge>
-				{
-					ChallengeManagement.FreeMap,
-					ChallengeManagement.Mana
+					ChallengeManagement.IronMaiden,
+					ChallengeManagement.PaintedSigils
+
 				};
 				ChallengeManager.ModifyChallenges += delegate (List<ChallengeManager.FullChallenge> challenges)
 				{
@@ -523,6 +511,7 @@ namespace MagnificusMod
 										Challenge = ChallengeManagement.PatchedChallengesReference[challenges[i].Challenge.challengeType],
 										AppearancesInChallengeScreen = 1,
 										UnlockLevel = challenges[i].UnlockLevel
+										
 									};
 								}
 							}
@@ -652,10 +641,10 @@ namespace MagnificusMod
 				if (__instance.RunExists)
 				{
 					Singleton<AscensionMenuScreens>.Instance.SwitchToScreen(AscensionMenuScreens.Screen.NewRunConfirm);
-					__instance.newRunConfirmButton.screenToReturnTo = (AscensionUnlockSchedule.NumStarterDecksUnlocked(AscensionSaveData.Data.challengeLevel) > 0 ? AscensionMenuScreens.Screen.StarterDeckSelect : AscensionMenuScreens.Screen.SelectChallenges);
+					__instance.newRunConfirmButton.screenToReturnTo = ( (AscensionUnlockSchedule.NumStarterDecksUnlocked(1) > 0 || KayceeStorage.ScreenState == CardTemple.Wizard) ? AscensionMenuScreens.Screen.StarterDeckSelect : AscensionMenuScreens.Screen.SelectChallenges);
 					return false;
 				}
-				if (AscensionUnlockSchedule.NumStarterDecksUnlocked(AscensionSaveData.Data.challengeLevel) > 0)
+				if (AscensionUnlockSchedule.NumStarterDecksUnlocked(1) > 0 || KayceeStorage.ScreenState == CardTemple.Wizard)
 				{
 					Singleton<AscensionMenuScreens>.Instance.SwitchToScreen(AscensionMenuScreens.Screen.StarterDeckSelect);
 					return false;
@@ -667,7 +656,6 @@ namespace MagnificusMod
 
 		public static IEnumerator leshyInterveneDialogue()
         {
-			Debug.Log("forkload");
 			if (SceneLoader.ActiveSceneName != "finale_magnificus")
 			{
 				foreach (CardInfo card in CardLoader.allData)
@@ -730,7 +718,14 @@ namespace MagnificusMod
 						__instance.StartCoroutine(leshyInterveneDialogue());
 
 					}
-                }
+
+					GameObject liveRenderer = Singleton<CardRenderCamera>.Instance.liveCardCameraPrefab.gameObject;
+					liveRenderer.transform.Find("EmissionRenderCamera").gameObject.SetActive(true);
+					liveRenderer.transform.Find("CardsPlane").GetChild(0).GetChild(0).gameObject.GetComponent<CardDisplayer>().enabled = true;
+					liveRenderer.transform.Find("CardsPlane").GetChild(0).gameObject.SetActive(true);
+
+
+				}
 			}
 		}
 
@@ -746,7 +741,7 @@ namespace MagnificusMod
 				}
 				else
 				{
-					__result = SaveManager.saveFile.CurrentDeck;
+					__result = RunState.Run.playerDeck;
 				}
 				return false;
 			}
@@ -754,50 +749,7 @@ namespace MagnificusMod
 			return true;
 		}
 
-		public static void getDraftPools(string firstCardName)
-        {//gets starter deck based on the first card LOL!
-			switch (firstCardName)
-            {
-				case "mag_jrsage":
-				case "mag_obelisk":
-					List<CardInfo> unlockedCards;
-					unlockedCards = CardLoader.GetUnlockedCards(CardMetaCategory.ChoiceNode, CardTemple.Wizard);
-					List<CardInfo> list2 = new List<CardInfo>();
-					int seed = Random.RandomRangeInt(0, 10000);
-					while (list2.Count < 8 && unlockedCards.Count > 0)
-					{
-						CardInfo cardInfo = unlockedCards[SeededRandom.Range(0, unlockedCards.Count, seed++)];
-						CardInfo cardInfo2 = CardLoader.Clone(cardInfo);
-						list2.Add(cardInfo2);
-						unlockedCards.Remove(cardInfo);
-					}
-					string draftCards = "";
-					for (int i = 0; i < list2.Count; i++) { 
-						draftCards += list2[i].name;
-						if(i < list2.Count - 1) { draftCards += ";"; }
-					}
-					KayceeStorage.draftcards = draftCards;
-					break;
-				case "mag_musclemage":
-					KayceeStorage.draftcards = "mag_greenmage;mag_jrsage;mag_sabesage;mag_magepupil;mag_rubygolem;mag_practicemage;mag_knightmage;mag_moxmage";
-					break;
-				case "mag_rubygolem":
-					KayceeStorage.draftcards = "mag_orangemage;mag_wolf;mag_snipesage;mag_mismagius;mag_magimorph;mag_bluemage;mag_gemfiend;mag_maux";
-					break;
-				case "mag_rascal":
-					KayceeStorage.draftcards = "mag_bunnymage;mag_auspex;mag_hovermage;mag_almondcookie;mag_emeraldfiend;mag_musclemage;mag_jrsage;mag_runemage";
-					break;
-				case "mag_erraticscholar":
-					KayceeStorage.draftcards = "mag_magepupil;mag_runemage;mag_jester;mag_gemdetonator;mag_skelemage;mag_mismagius;mag_skelejrsage;mag_gemshield";
-					break;
-				case "mag_spellcaster":
-					KayceeStorage.draftcards = "mag_knightmage;mag_orangemage;mag_spellsquid;mag_frostspell;mag_alchemist;mag_gemfiend;mag_hovermage;mag_tarflamespell";
-					break;
-				case "mag_magepupil":
-					KayceeStorage.draftcards = "mag_duncemage;mag_stimmage;mag_auspex;mag_maux;mag_bluemage;mag_orangemage;mag_wolf;mag_runemage";
-					break;
-			}
-        }
+	
 
 		[HarmonyPatch(typeof(AscensionSaveData), "NewRun")]
 		public class DraftObeliskFix
@@ -828,12 +780,7 @@ namespace MagnificusMod
 				{
 					__instance.currentRun.playerDeck.AddCard(CardLoader.GetCardByName("Opossum"));
 					__instance.currentRun.playerDeck.AddCard(CardLoader.GetCardByName("RingWorm"));
-				} else if (KayceeStorage.ScreenState == CardTemple.Wizard)
-				{
-					__instance.currentRun.playerDeck.AddCard(CardLoader.GetCardByName("mag_obelisk"));
-					__instance.currentRun.playerDeck.AddCard(CardLoader.GetCardByName("mag_obelisk"));
-					getDraftPools(starterDeck[0].name);
-				}
+				} 
 				if (KayceeStorage.ScreenState != CardTemple.Wizard)
 				{
 					__instance.currentRun.consumables.Add("SquirrelBottle");
@@ -923,42 +870,36 @@ namespace MagnificusMod
 							string text = button.GetComponentInChildren<PixelText>().Text.Replace("- NEW ", "").Replace(" RUN -", "");
 							string text2 = text;
 							string a = text2;
-							if (!(a == "GRIMORA"))
-							{
-								if (!(a == "MAGNIFICUS"))
-								{
-									if (!(a == "P03"))
-									{
-										if (a == "LESHY")
-										{
-											KayceeStorage.ScreenState = CardTemple.Nature;
-											KayceeFixes.currentState = CardTemple.Nature;
-											KayceeStorage.IsMagRun = false;
-										}
-									}
-									else
-									{
-										KayceeStorage.ScreenState = CardTemple.Tech;
-										KayceeFixes.currentState = CardTemple.Tech;
-										KayceeStorage.IsMagRun = false;
-									}
-								}
-								else
-								{
+							switch(a)
+                            {
+								case "GRIMORA":
+									KayceeStorage.ScreenState = CardTemple.Undead;
+									KayceeFixes.currentState = CardTemple.Undead;
+									KayceeStorage.IsMagRun = false;
+									break;
+								case "P03":
+									KayceeStorage.ScreenState = CardTemple.Tech;
+									KayceeFixes.currentState = CardTemple.Tech;
+									KayceeStorage.IsMagRun = false;
+									break;
+								case "LESHY":
+									KayceeStorage.ScreenState = CardTemple.Nature;
+									KayceeFixes.currentState = CardTemple.Nature;
+									KayceeStorage.IsMagRun = false;
+									break;
+								case "MAGNIFICUS":
+									Plugin.unlockMost();
+
 									KayceeStorage.ScreenState = CardTemple.Wizard;
 									KayceeFixes.currentState = CardTemple.Wizard;
 									KayceeStorage.IsMagRun = true;
 									KayceeStorage.IsKaycee = true;
 									SaveManager.SaveToFile(false);
 									ChallengeManager.SyncChallengeList();
-								}
+									break;
+
 							}
-							else
-							{
-								KayceeStorage.ScreenState = CardTemple.Undead;
-								KayceeFixes.currentState = CardTemple.Undead;
-								KayceeStorage.IsMagRun = false;
-							}
+
 							ChallengeManager.SyncChallengeList();
 						}));
 					}
@@ -972,6 +913,17 @@ namespace MagnificusMod
 				{
 					StarterDecks.RegisterStarterDecks();
 				}
+			}
+		}
+
+		[HarmonyPatch(typeof(ConceptProgressionTree), "CardUnlocked")]
+		public class unlockallmagcards
+		{
+			public static void Postfix(ref bool __result, CardInfo card, bool andAbilitiesLearned = false)
+			{
+				bool res = __result;
+				if (SceneLoader.ActiveSceneName == "finale_magnificus") { res = true; }
+				__result = res;
 			}
 		}
 
@@ -989,7 +941,8 @@ namespace MagnificusMod
 					File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(false, false)));
 				}
 			}
-		}
+		}//CardUnlocked
+
 
 		[HarmonyPatch(typeof(AscensionChallengeConfirmScreen), "Start")]
 		public class setupgamevars2
@@ -1282,8 +1235,10 @@ namespace MagnificusMod
 		{
 			public static void Prefix(ref MenuController __instance, MenuCard card, bool skipTween = false)
 			{
+
 				if (card.TitleText == "New Magnificus Run")
 				{
+					Plugin.unlockMost();
 					KayceeStorage.IsKaycee = false;
 					AscensionSaveData.Data.currentRun = null;
 					SaveManager.SaveFile.NewPart1Run();
@@ -1291,6 +1246,16 @@ namespace MagnificusMod
 					SaveManager.SaveFile.currentRun.maxPlayerLives = 3;
 					SaveManager.SaveFile.currentRun.playerLives = 3;
 				}
+			}
+		}
+
+		[HarmonyPatch(typeof(RunState), "InitializeStarterDeckAndItems")]
+		public class fixShitBeingInsertedIntoDeckMaybe
+		{
+			public static bool Prefix()
+			{
+				if (SceneLoader.ActiveSceneName == "finale_magnificus") { return false; }
+				return true;
 			}
 		}
 
@@ -1313,74 +1278,6 @@ namespace MagnificusMod
 			}
 		}
 
-		[HarmonyPatch(typeof(DefaultDeathCards), "CreateDefaultCardMods")]
-		public class newDeathCards
-		{
-			public static bool Prefix(ref List<CardModificationInfo> __result)
-			{
-				__result = new List<CardModificationInfo>
-				{
-					new CardModificationInfo(1, 1)
-					{
-						nameReplacement = "Frabb",
-						abilities =
-						{
-							Ability.ExplodeOnDeath,
-							Ability.Brittle
-						},
-						bonesCostAdjustment = 0,
-						bloodCostAdjustment = 1,
-						deathCardInfo = new DeathCardInfo(CompositeFigurine.FigurineType.Enchantress, 1, 1)
-					},
-					new CardModificationInfo(1, 3)
-					{
-						nameReplacement = "DUO",
-						abilities =
-						{
-							Ability.SplitStrike
-						},
-						bloodCostAdjustment = 2,
-						deathCardInfo = new DeathCardInfo(CompositeFigurine.FigurineType.Chief, 1, 5)
-					},
-					new CardModificationInfo(1, 1)
-					{
-						nameReplacement = "Mute",
-						abilities =
-						{
-							Ability.Tutor
-						},
-						bloodCostAdjustment = 1,
-						deathCardInfo = new DeathCardInfo(CompositeFigurine.FigurineType.Gravedigger, 2, 2)
-					},
-					new CardModificationInfo(0, 1)
-					{
-						nameReplacement = "Captain",
-						abilities =
-						{
-							Ability.BuffGems,
-							Ability.GemDependant
-						},
-						bloodCostAdjustment = 0,
-						deathCardInfo = new DeathCardInfo(CompositeFigurine.FigurineType.Prospector, 3, 1)
-					},
-					new CardModificationInfo(1, 1)
-					{
-						nameReplacement = "Never",
-						abilities =
-						{
-							Ability.DebuffEnemy,
-							Ability.BuffNeighbours
-						},
-						addGemCost = new List<GemType>
-						{
-							GemType.Blue
-						},
-						deathCardInfo = new DeathCardInfo(CompositeFigurine.FigurineType.Robot, 4, 4)
-					}
-				};
-				return false;
-			}
-		}
 
 		/*
 		[HarmonyPatch(typeof(Infiniscryption.PackManagement.PackManager), "ScreenState", MethodType.Getter))]

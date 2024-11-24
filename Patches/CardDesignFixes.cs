@@ -29,7 +29,12 @@ namespace MagnificusMod
 		{
 			public static void Postfix(ref CardDisplayer3D __instance)
 			{
-				if (SceneLoader.ActiveSceneName == "finale_magnificus" && !SavedVars.LoadWithFinaleCardBacks)
+				if (SceneLoader.ActiveSceneName == "finale_magnificus" && !config.oldCardDesigns)
+				{
+					__instance.defaultCardBackground = Tools.getImage("finalecardback.png");
+					__instance.defaultPortraitPos = new Vector2(0, 0.0855f);
+					__instance.portraitRenderer.transform.position = new Vector3(0, 0.0855f, 0);
+				} else if (SceneLoader.ActiveSceneName == "finale_magnificus" && config.oldCardDesigns)
 				{
 					__instance.defaultCardBackground = Tools.getImage("magcardbackground.png");
 					__instance.defaultPortraitScale = new Vector2(0.699f, 0.45f);
@@ -38,12 +43,7 @@ namespace MagnificusMod
 					__instance.defaultPortraitPos = new Vector2(0, 0.084f);
 					__instance.portraitRenderer.transform.position = new Vector3(0, 0.084f, 0);
 					__instance.portraitRenderer.color = Color.white;
-				} else if (SavedVars.FinaleCardBacks && SceneLoader.ActiveSceneName == "finale_magnificus" || SavedVars.LoadWithFinaleCardBacks && SceneLoader.ActiveSceneName == "finale_magnificus")
-				{
-					__instance.defaultCardBackground = Tools.getImage("finalecardback.png");
-					__instance.defaultPortraitPos = new Vector2(0, 0.0855f);
-					__instance.portraitRenderer.transform.position = new Vector3(0, 0.0855f, 0);
-				}
+				} 
 			}
 		}
 		[HarmonyPatch(typeof(CardDisplayer3D), "DisplayInfo")]
@@ -56,6 +56,20 @@ namespace MagnificusMod
 					renderInfo.defaultAbilityColor = Color.white;
 					renderInfo.portraitColor = Color.white;
 					__instance.portraitRenderer.color = Color.white;
+				}
+			}
+		}
+
+		[HarmonyPatch(typeof(CardDisplayer3D), "DisplayInfo")]
+		public class animatedPortraitFix
+		{
+			public static void Postfix(ref CardDisplayer3D __instance, CardRenderInfo renderInfo, PlayableCard playableCard)
+			{
+				if (SceneLoader.ActiveSceneName != "finale_magnificus") return;
+
+				if (__instance.portraitPrefab != null)
+				{
+					__instance.instantiatedPortraitObj.transform.localPosition = new Vector3(0f, 0.125f, 0);
 				}
 			}
 		}
@@ -90,21 +104,17 @@ namespace MagnificusMod
 			// Token: 0x06000108 RID: 264 RVA: 0x00019420 File Offset: 0x00017620
 			public static bool Prefix(ref RareCardBackground __instance)
 			{
-				if (SceneLoader.ActiveSceneName != "finale_magnificus")
+				if (SceneLoader.ActiveSceneName != "finale_magnificus") return true;
+
+				__instance.Card.RenderInfo.baseTextureOverride = (!__instance.Card.Info.HasTrait(Trait.Gem)) ? Tools.getImage("magrarecardbackground.png") : Tools.getImage("magraremoxback.png");
+
+				if (!config.oldCardDesigns)
+					__instance.Card.RenderInfo.baseTextureOverride = Tools.getImage("finalecardback.png");
+
+				if (__instance.Card.gameObject.GetComponentInChildren<MagCardFrame>() != null)
 				{
-					return true;
-				}
-				if (__instance.Card.Info.displayedName.ToLower().Contains("mox"))
-				{
-					__instance.Card.RenderInfo.baseTextureOverride = Tools.getImage("magrarecardbackground.png");
-				}
-				else
-				{
-					__instance.Card.RenderInfo.baseTextureOverride = Tools.getImage("magraremoxback.png");
-				}
-				if (SavedVars.LoadWithFinaleCardBacks)
-				{
-					__instance.Card.RenderInfo.baseTextureOverride = Tools.getImage("finalerarecard.png");
+					__instance.Card.gameObject.GetComponentInChildren<MagCardFrame>().setTheme("rare");
+					__instance.Card.gameObject.GetComponentInChildren<MagCardFrame>().setGems(__instance.Card.Info.HasTrait(Trait.Gem));
 				}
 				return false;
 			}
@@ -119,14 +129,15 @@ namespace MagnificusMod
 				{
 					return true;
 				}
-				if (SavedVars.LoadWithFinaleCardBacks) { __instance.Card.RenderInfo.baseTextureOverride = Tools.getImage("finalecardback.png"); return false; }
-				if (!__instance.Card.Info.displayedName.ToLower().Contains("mox") && !__instance.Card.Info.HasTrait(Trait.Gem))
-				{
-					__instance.Card.RenderInfo.baseTextureOverride = Tools.getImage("magterraincardbackground.png");
-				}
-				else
-				{
-					__instance.Card.RenderInfo.baseTextureOverride = Tools.getImage("magmoxcardback.png");
+
+				__instance.Card.RenderInfo.baseTextureOverride = (!__instance.Card.Info.HasTrait(Trait.Gem)) ? Tools.getImage("magterraincardbackground.png") : Tools.getImage("magmoxcardback.png");
+
+				if (!config.oldCardDesigns)
+					__instance.Card.RenderInfo.baseTextureOverride = Tools.getImage("finalecardback.png");
+
+				if (__instance.Card.gameObject.GetComponentInChildren<MagCardFrame>() != null) { 
+					__instance.Card.gameObject.GetComponentInChildren<MagCardFrame>().setTheme("terrain");
+					__instance.Card.gameObject.GetComponentInChildren<MagCardFrame>().setGems(__instance.Card.Info.HasTrait(Trait.Gem));
 				}
 				return false;
 			}
@@ -139,24 +150,29 @@ namespace MagnificusMod
 			{
 				if (__instance.Card.Info.traits.Contains(Trait.EatsWarrens))
 				{
-					__instance.Card.renderInfo.hiddenHealth = true;
+					__instance.Card.renderInfo.hiddenHealth = __instance.Card.Info.Health <= 0 || __instance.Card.Info.Health > 0 && __instance.Card.Info.name != "mag_potion";
 					__instance.Card.RenderInfo.baseTextureOverride = Tools.getImage("spellcardback.png");
 					if (__instance.Card.Info.metaCategories.Contains(CardMetaCategory.Rare))
 					{
 						__instance.Card.RenderInfo.baseTextureOverride = Tools.getImage("spellcardbackrare.png");
 					}
-					if (SavedVars.LoadWithFinaleCardBacks)
-					{
-						__instance.Card.RenderInfo.baseTextureOverride = Tools.getImage("finalespellback.png");
+
+					if (!config.oldCardDesigns)  
+						__instance.Card.RenderInfo.baseTextureOverride = Tools.getImage("finalecardbacknobars.png");
+					if (__instance.Card.gameObject.GetComponentInChildren<MagCardFrame>() != null)
+					{ 
+						__instance.Card.gameObject.GetComponentInChildren<MagCardFrame>().setCardBars(false);
+						__instance.Card.gameObject.GetComponentInChildren<MagCardFrame>().setTheme("spell");
+						__instance.Card.gameObject.GetComponentInChildren<MagCardFrame>().setGems(__instance.Card.Info.HasTrait(Trait.Gem));
 					}
 				}
 			}
 		}
 
-		public static Sprite upgradedSpell = Tools.getPortraitSprite("spellupgrade.png");
+		public static List<Sprite> upgradedSpells = new List<Sprite> { Tools.getPortraitSprite("spellupgrade.png"), Tools.getPortraitSprite("permanentspell.png") };
 
 		[HarmonyPatch(typeof(TerrainLayout), "ApplyAppearance")]
-		public class spellShit2ftAra
+		public class spellShit2
 		{
 			public static bool Prefix(ref TerrainLayout __instance)
 			{
@@ -166,16 +182,19 @@ namespace MagnificusMod
 				}
 				__instance.UpdateAttackHidden();
 				__instance.Card.RenderInfo.healthTextOffset = new Vector2(-0.11f, 0f);
-				if (__instance.Card.Info.HasTrait(Trait.EatsWarrens) && __instance.Card.Info.Attack > 0)
+				if (__instance.Card.Info.HasTrait(Trait.EatsWarrens) && (__instance.Card.Info.Attack > 0 || __instance.Card.Info.Health > 1))
                 {
-					switch (__instance.Card.Info.name)
-                    {
-						case "mag_hpspell":
-							__instance.Card.renderInfo.portraitOverride = Tools.getPortraitSprite("health_spellbuff.png");
-							break;
-						case "mag_atkspell":
-							__instance.Card.renderInfo.portraitOverride = Tools.getPortraitSprite("attack_spellbuff.png");
-							break;
+					if (__instance.Card.Info.Attack > 0)
+					{
+						switch (__instance.Card.Info.name)
+						{
+							case "mag_hpspell":
+								__instance.Card.renderInfo.portraitOverride = Tools.getPortraitSprite("health_spellbuff.png");
+								break;
+							case "mag_atkspell":
+								__instance.Card.renderInfo.portraitOverride = Tools.getPortraitSprite("attack_spellbuff.png");
+								break;
+						}
 					}
 					GameObject upgradeTex = GameObject.Instantiate(new GameObject());
 					upgradeTex.name = "upgradeDecal";
@@ -201,7 +220,7 @@ namespace MagnificusMod
 						upgradeTex.transform.localRotation = Quaternion.Euler(0, 0, 0);
 						upgradeTex.transform.localPosition = new Vector3(0f, -0.01f, 0.12f);
 					}
-					upgradeTex.AddComponent<SpriteRenderer>().sprite = upgradedSpell;
+					upgradeTex.AddComponent<SpriteRenderer>().sprite = upgradedSpells[(__instance.Card.Info.Attack > 0) ? 0 : 1];
 				}
 				//__instance.Card.RenderInfo.defaultAbilitiesOffset = this.ABILITIES_OFFSET;
 				//__instance.Card.AbilityIcons.OffsetDefaultIconsPosition(this.ABILITIES_OFFSET);
@@ -227,5 +246,27 @@ namespace MagnificusMod
 				return false;
 			}
 		}
+
+		[HarmonyPatch(typeof(SexyGoat), "ApplyAppearance")]
+		public class invisibleMage
+		{
+			public static bool Prefix(ref SexyGoat __instance)
+			{
+				if (__instance.Card.Info.name == "Goat" && RunState.Run.eyeState == EyeballState.Goat)
+				{
+					Texture2D texture2D = Tools.getImage("mognus mox.png");
+
+					List<Texture> list = new List<Texture>();
+					list.Add(texture2D);
+					__instance.Card.Info.decals = list;
+				}
+				else if (__instance.Card.Info.name == "mag_invisimage" && RunState.Run.eyeState == EyeballState.Wizard)
+				{
+					__instance.Card.renderInfo.portraitOverride = Tools.getPortraitSprite("visiinvisimage.png");
+				}
+				return false;
+			}
+		}
+
 	}
 }

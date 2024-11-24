@@ -35,15 +35,15 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -64,14 +64,14 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -85,14 +85,14 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_jrsage")
+						card = CardLoader.GetCardByName("JuniorSage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -103,7 +103,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -117,18 +117,18 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -142,14 +142,14 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				for (int i = 8; i < 100; i++)
@@ -160,7 +160,7 @@ namespace MagnificusMod
 						{
 							new EncounterBlueprintData.CardBlueprint
 							{
-								card = CardLoader.GetCardByName("mag_jrsage")
+								card = CardLoader.GetCardByName("JuniorSage")
 							}
 						});
 					}
@@ -179,40 +179,40 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_jrsage")
+						card = CardLoader.GetCardByName("JuniorSage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -237,46 +237,46 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				for (int i = 8; i < 100; i++)
@@ -285,7 +285,7 @@ namespace MagnificusMod
 					{
 						new EncounterBlueprintData.CardBlueprint
 						{
-							card = CardLoader.GetCardByName("mag_jrsage")
+							card = CardLoader.GetCardByName("JuniorSage")
 						}
 					});
 				}
@@ -321,7 +321,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
@@ -339,7 +339,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_musclemage")
+						card = CardLoader.GetCardByName("MuscleMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -360,7 +360,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_stimmage")
+						card = CardLoader.GetCardByName("StimMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -381,29 +381,29 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_musclemage")
+						card = CardLoader.GetCardByName("MuscleMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -417,7 +417,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				for (int i = 8; i < 100; i++)
@@ -469,7 +469,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -483,7 +483,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_musclemage")
+						card = CardLoader.GetCardByName("MuscleMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -494,7 +494,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -508,43 +508,43 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_musclemage")
+						card = CardLoader.GetCardByName("MuscleMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				for (int i = 8; i < 100; i++)
@@ -570,15 +570,15 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubymox")
+						card = CardLoader.GetCardByName("MoxRuby")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_knightmage")
+						card = CardLoader.GetCardByName("MageKnight")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubygolem")
+						card = CardLoader.GetCardByName("RubyGolem")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -599,7 +599,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubygolem")
+						card = CardLoader.GetCardByName("RubyGolem")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -620,14 +620,14 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubymox")
+						card = CardLoader.GetCardByName("MoxRuby")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -655,7 +655,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -680,7 +680,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				for (int i = 8; i < 100; i++)
@@ -718,11 +718,11 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubymox")
+						card = CardLoader.GetCardByName("MoxRuby")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_knightmage")
+						card = CardLoader.GetCardByName("MageKnight")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -736,21 +736,21 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubygolem")
+						card = CardLoader.GetCardByName("RubyGolem")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubymox")
+						card = CardLoader.GetCardByName("MoxRuby")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -764,14 +764,14 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubymox")
+						card = CardLoader.GetCardByName("MoxRuby")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -785,14 +785,14 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_knightmage")
+						card = CardLoader.GetCardByName("MageKnight")
 					}
 				});
 				for (int i = 8; i < 100; i++)
@@ -860,14 +860,14 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubymox")
+						card = CardLoader.GetCardByName("MoxRuby")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
@@ -900,7 +900,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -933,7 +933,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				for (int i = 8; i < 100; i++)
@@ -1001,21 +1001,14 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubymox")
+						card = CardLoader.GetCardByName("MoxRuby")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
-					}
-				});
-				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
-				{
-					new EncounterBlueprintData.CardBlueprint
-					{
-						card = CardLoader.GetCardByName("mag_scarecrow")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1029,11 +1022,18 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_knightmage")
+						card = CardLoader.GetCardByName("mag_scarecrow")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("MageKnight")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubymox")
+						card = CardLoader.GetCardByName("MoxRuby")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1047,7 +1047,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				for (int i = 8; i < 100; i++)
@@ -1086,23 +1086,19 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_hovermage")
+						card = CardLoader.GetCardByName("FlyingMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_gemfiend")
+						card = CardLoader.GetCardByName("GemFiend")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
-					new EncounterBlueprintData.CardBlueprint
-					{
-						card = CardLoader.GetCardByName("mag_hovermage")
-					},
 					new EncounterBlueprintData.CardBlueprint
 					{
 						card = CardLoader.GetCardByName("mag_BOSSstimmage")
@@ -1127,18 +1123,18 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_stimmage")
+						card = CardLoader.GetCardByName("StimMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_gemfiend")
+						card = CardLoader.GetCardByName("GemFiend")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1156,7 +1152,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
@@ -1171,7 +1167,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_gemfiend")
+						card = CardLoader.GetCardByName("GemFiend")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
@@ -1193,18 +1189,18 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_stimmage")
+						card = CardLoader.GetCardByName("StimMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_hovermage")
+						card = CardLoader.GetCardByName("FlyingMage")
 					}
 				});
 				for (int i = 8; i < 100; i++)
@@ -1239,11 +1235,11 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_gemfiend")
+						card = CardLoader.GetCardByName("GemFiend")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1264,25 +1260,25 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_stimmage")
+						card = CardLoader.GetCardByName("StimMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_gemfiend")
+						card = CardLoader.GetCardByName("GemFiend")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1303,18 +1299,18 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_stimmage")
+						card = CardLoader.GetCardByName("StimMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_hovermage")
+						card = CardLoader.GetCardByName("FlyingMage")
 					}
 				});
 				for (int i = 8; i < 100; i++)
@@ -1323,7 +1319,7 @@ namespace MagnificusMod
 					{
 						new EncounterBlueprintData.CardBlueprint
 						{
-							card = CardLoader.GetCardByName("mag_hovermage")
+							card = CardLoader.GetCardByName("FlyingMage")
 						}
 					});
 				}
@@ -1340,11 +1336,11 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1355,11 +1351,11 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_gemfiend")
+						card = CardLoader.GetCardByName("GemFiend")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1370,7 +1366,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_gemfiend")
+						card = CardLoader.GetCardByName("GemFiend")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
@@ -1378,7 +1374,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1393,7 +1389,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_hovermage")
+						card = CardLoader.GetCardByName("FlyingMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1415,30 +1411,30 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemage")
+						card = CardLoader.GetCardByName("BlueMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1456,7 +1452,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_stimmage")
+						card = CardLoader.GetCardByName("StimMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
@@ -1465,7 +1461,10 @@ namespace MagnificusMod
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
-					new EncounterBlueprintData.CardBlueprint()
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("MoxSapphire")
+					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
@@ -1498,11 +1497,11 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					}
 				});
 			}
@@ -1518,11 +1517,11 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
@@ -1533,7 +1532,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_gemfiend")
+						card = CardLoader.GetCardByName("GemFiend")
 					}
 					
 				});
@@ -1555,14 +1554,14 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_goranjmox")
+						card = CardLoader.GetCardByName("MoxDualGO")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_mastergo")
+						card = CardLoader.GetCardByName("MasterGoranj")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1619,7 +1618,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_mastergo")
+						card = CardLoader.GetCardByName("MasterGoranj")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1666,22 +1665,22 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_goranjmox")
+						card = CardLoader.GetCardByName("MoxDualGO")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					},
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_drake")
+						card = CardLoader.GetCardByName("mag_alchemist")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_mastergo")
+						card = CardLoader.GetCardByName("MasterGoranj")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1713,7 +1712,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubymox")
+						card = CardLoader.GetCardByName("MoxRuby")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
@@ -1721,7 +1720,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_gemfiend")
+						card = CardLoader.GetCardByName("GemFiend")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
@@ -1732,11 +1731,11 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1788,18 +1787,18 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_mastergo")
+						card = CardLoader.GetCardByName("MasterGoranj")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1830,22 +1829,22 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_goranjmox")
+						card = CardLoader.GetCardByName("MoxDualGO")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubymox")
+						card = CardLoader.GetCardByName("MoxRuby")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1859,25 +1858,25 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubygolem")
+						card = CardLoader.GetCardByName("RubyGolem")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubymox")
+						card = CardLoader.GetCardByName("MoxRuby")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1891,7 +1890,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
@@ -1909,29 +1908,29 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_musclemage")
+						card = CardLoader.GetCardByName("MuscleMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -1945,14 +1944,14 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				for (int i = 8; i < 100; i++)
@@ -1963,7 +1962,7 @@ namespace MagnificusMod
 						{
 							new EncounterBlueprintData.CardBlueprint
 							{
-								card = CardLoader.GetCardByName("mag_jrsage")
+								card = CardLoader.GetCardByName("JuniorSage")
 							}
 						});
 					}
@@ -2000,11 +1999,11 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubymox")
+						card = CardLoader.GetCardByName("MoxRuby")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
@@ -2022,11 +2021,25 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_musclemage")
+
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("MuscleMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
 						card = CardLoader.GetCardByName("mag_alchemist")
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2040,32 +2053,39 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_stimmage")
+						card = CardLoader.GetCardByName("StimMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+
+					}
+				});
+				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
+				{
+					new EncounterBlueprintData.CardBlueprint
+					{
+						card = CardLoader.GetCardByName("GreenMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_jrsage")
+						card = CardLoader.GetCardByName("JuniorSage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_musclemage")
+						card = CardLoader.GetCardByName("MuscleMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
@@ -2083,22 +2103,22 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubymox")
+						card = CardLoader.GetCardByName("MoxRuby")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubymox")
+						card = CardLoader.GetCardByName("MoxRuby")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2112,7 +2132,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 			}
@@ -2129,22 +2149,22 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orlumox")
+						card = CardLoader.GetCardByName("MoxDualOB")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_hovermage")
+						card = CardLoader.GetCardByName("FlyingMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubygolem")
+						card = CardLoader.GetCardByName("RubyGolem")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2158,11 +2178,11 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_gemfiend")
+						card = CardLoader.GetCardByName("GemFiend")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2194,14 +2214,14 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_gemfiend")
+						card = CardLoader.GetCardByName("GemFiend")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2215,7 +2235,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2239,22 +2259,22 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orlumox")
+						card = CardLoader.GetCardByName("MoxDualOB")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_hovermage")
+						card = CardLoader.GetCardByName("FlyingMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubygolem")
+						card = CardLoader.GetCardByName("RubyGolem")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orlumox")
+						card = CardLoader.GetCardByName("MoxDualOB")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
@@ -2265,7 +2285,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_gemfiend")
+						card = CardLoader.GetCardByName("GemFiend")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2276,7 +2296,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_hovermage")
+						card = CardLoader.GetCardByName("FlyingMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2290,18 +2310,18 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_knightmage")
+						card = CardLoader.GetCardByName("MageKnight")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_practicemage")
+						card = CardLoader.GetCardByName("PracticeMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_practicemage")
+						card = CardLoader.GetCardByName("PracticeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2312,7 +2332,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2333,14 +2353,14 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_practicemage")
+						card = CardLoader.GetCardByName("PracticeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_knightmage")
+						card = CardLoader.GetCardByName("MageKnight")
 					}
 				});
 			}
@@ -2357,15 +2377,15 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bleenemox")
+						card = CardLoader.GetCardByName("MoxDualBG")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_gemfiend")
+						card = CardLoader.GetCardByName("GemFiend")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_stimmage")
+						card = CardLoader.GetCardByName("StimMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2376,7 +2396,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2411,18 +2431,18 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_hovermage")
+						card = CardLoader.GetCardByName("FlyingMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bluemox")
+						card = CardLoader.GetCardByName("MoxSapphire")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bullfrog")
+						card = CardLoader.GetCardByName("mag_homunculus")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2436,11 +2456,11 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2454,7 +2474,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_stimmage")
+						card = CardLoader.GetCardByName("StimMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2465,21 +2485,21 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_musclemage")
+						card = CardLoader.GetCardByName("MuscleMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_gemfiend")
+						card = CardLoader.GetCardByName("GemFiend")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_jrsage")
+						card = CardLoader.GetCardByName("JuniorSage")
 					}
 				});
 			}
@@ -2510,11 +2530,11 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bleenemox")
+						card = CardLoader.GetCardByName("MoxDualBG")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 
 				});
@@ -2529,7 +2549,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_stimmage")
+						card = CardLoader.GetCardByName("StimMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2547,7 +2567,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2568,11 +2588,11 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_musclemage")
+						card = CardLoader.GetCardByName("MuscleMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmox")
+						card = CardLoader.GetCardByName("MoxEmerald")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2597,7 +2617,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_musclemage")
+						card = CardLoader.GetCardByName("MuscleMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2611,7 +2631,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_jrsage")
+						card = CardLoader.GetCardByName("JuniorSage")
 					}
 				});
 			}
@@ -2627,11 +2647,11 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orangemage")
+						card = CardLoader.GetCardByName("OrangeMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_musclemage")
+						card = CardLoader.GetCardByName("MuscleMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
@@ -2657,25 +2677,25 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubymox")
+						card = CardLoader.GetCardByName("MoxRuby")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_knightmage")
+						card = CardLoader.GetCardByName("MageKnight")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubygolem")
+						card = CardLoader.GetCardByName("RubyGolem")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2689,11 +2709,11 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_goranjmox")
+						card = CardLoader.GetCardByName("MoxDualGO")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_mastergo")
+						card = CardLoader.GetCardByName("MasterGoranj")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2725,7 +2745,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_rubygolem")
+						card = CardLoader.GetCardByName("RubyGolem")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2797,11 +2817,11 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_orlumox")
+						card = CardLoader.GetCardByName("MoxDualOB")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_hovermage")
+						card = CardLoader.GetCardByName("FlyingMage")
 					},
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2840,11 +2860,11 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_bleenemox")
+						card = CardLoader.GetCardByName("MoxDualBG")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_stimmage")
+						card = CardLoader.GetCardByName("StimMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
@@ -2863,7 +2883,7 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_greenmage")
+						card = CardLoader.GetCardByName("GreenMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2886,18 +2906,11 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_practicemage")
+						card = CardLoader.GetCardByName("PracticeMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_forcemage")
-					}
-				});
-				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
-				{
-					new EncounterBlueprintData.CardBlueprint
-					{
-
+						card = CardLoader.GetCardByName("ForceMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2908,15 +2921,12 @@ namespace MagnificusMod
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_practicemage")
+						card = CardLoader.GetCardByName("PracticeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
-					new EncounterBlueprintData.CardBlueprint
-					{
-						card = CardLoader.GetCardByName("mag_hpspell")
-					}
+					new EncounterBlueprintData.CardBlueprint()
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
@@ -2929,14 +2939,14 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_practicemage")
+						card = CardLoader.GetCardByName("PracticeMage")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_almondcookie")
+						card = CardLoader.GetCardByName("mag_crystalworm")
 					}
 				});
 				this.turns.Add(new List<EncounterBlueprintData.CardBlueprint>
@@ -2954,7 +2964,7 @@ namespace MagnificusMod
 				{
 					new EncounterBlueprintData.CardBlueprint
 					{
-						card = CardLoader.GetCardByName("mag_practicemage")
+						card = CardLoader.GetCardByName("PracticeMage")
 					},
 					new EncounterBlueprintData.CardBlueprint
 					{
