@@ -219,7 +219,7 @@ namespace MagnificusMod
 
 		public static void ReRoll()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Rerolls", "At the end of every turn, a card bearing this sigils' power will be a random value between 0 and 3.", typeof(SigilCode.RandomPower), Tools.getImage("diceability.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Rerolls", "At the end of every turn, a card bearing this sigils' base power will be increased by a random value between 0 and 3.", typeof(SigilCode.RandomPower), Tools.getImage("diceability.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("diceability.png"));
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
@@ -246,7 +246,6 @@ namespace MagnificusMod
 			newAbility.powerLevel = 2;
 			SigilCode.GemGuardianFix.ability = newAbility.ability;
 		}
-
 		public static void PlatingWork()
 		{
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Plating Work", "While a card bearing this sigil is on the board, all gems on your side of the board gain the Sharp Quills sigil, and 2 health.", typeof(SigilCode.PlatingWork), Tools.getImage("whitesmith_A.png"))
@@ -458,6 +457,16 @@ namespace MagnificusMod
 			newAbility.powerLevel = 3;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.DrawSpell.ability = newAbility.ability;
+		}
+
+		public static void ScholarSigil()
+		{
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Scholar", "When a card bearing this sigil is played, draw a random one of Bleene's Books.", typeof(SigilCode.DrawBook), Tools.getImage("scholarsigil.png"))
+				.SetDefaultPart1Ability()
+				.SetIcon(Tools.getImage("scholarsigil.png"));
+			newAbility.powerLevel = 3;
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			SigilCode.DrawBook.ability = newAbility.ability;
 		}
 
 		public static void MidasTouch()

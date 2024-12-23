@@ -114,7 +114,7 @@ namespace MagnificusMod
 				base.StartCoroutine(GameObject.Find("TextDisplayer").GetComponent<TextDisplayer>().ShowThenClear("ARRGH!!!", 1.5f, 0f, Emotion.Anger, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Goo, null));
 				yield return new WaitForSeconds(0.7f);
 				AudioController.Instance.SetLoopAndPlay("Goo_Mage", 0, true, true);
-				AudioController.Instance.SetLoopVolume(0.25f, 4f, 1, true);
+				AudioController.Instance.SetLoopVolume(0.35f, 0.25f, 0, true);
 				yield return new WaitForSeconds(0.81f);
 				CustomTextDisplayerStuff.setBaseTextDisplayerOn(false);
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
@@ -284,7 +284,7 @@ namespace MagnificusMod
 
 				CustomTextDisplayerStuff.switchToSpeakerStyle(1);
 				AudioController.Instance.SetLoopAndPlay("Pike_Mage", 0, true, true);
-				AudioController.Instance.SetLoopVolume(0.65f, 4f, 1, true);
+				AudioController.Instance.SetLoopVolume(0.85f, 0.25f, 0, true);
 				yield return new WaitForSeconds(1.55f);
 				GameObject.Find("GameTable").transform.Find("Espeara").transform.localPosition = new Vector3(0, -10f, 36f);
 				GameObject.Find("GameTable").transform.Find("Espeara").transform.localScale = new Vector3(5, 0, 5);
@@ -444,7 +444,7 @@ namespace MagnificusMod
 				yield return new WaitForSeconds(0.26f);
 				Singleton<ViewManager>.Instance.SwitchToView(View.BossCloseup, false, true);
 				AudioController.Instance.SetLoopAndPlay("Lonely_Mage", 0, true, true);
-				AudioController.Instance.SetLoopVolume(0.25f, 4f, 1, true);
+				AudioController.Instance.SetLoopVolume(0.85f, 0.25f, 0, true);
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("FINALLY!! STIMULATION!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 				yield return new WaitForSeconds(1f);
 				CustomTextDisplayerStuff.switchToSpeakerStyle(0);
@@ -560,13 +560,12 @@ namespace MagnificusMod
 
 			public override IEnumerator IntroSequence(EncounterData encounter)
 			{
-				edaxioSummoned = false;
 				Plugin.specialBossSequence = false;
 				AudioController.Instance.FadeOutLoop(0.75f, Array.Empty<int>());
 				yield return base.IntroSequence(encounter);
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
 				AudioController.Instance.SetLoopAndPlay("TheArtOfMagicks", 0, true, true);//"RapSong"
-				AudioController.Instance.SetLoopVolume(0.25f, 4f, 1, true);
+				AudioController.Instance.SetLoopVolume(0.85f, 0.25f, 0, true);
 				yield return new WaitForSeconds(1.55f);
 				this.SetSceneEffectsShown(true);
 				yield return new WaitForSeconds(0.5f);
@@ -673,7 +672,6 @@ namespace MagnificusMod
 				}
 			}
 
-			public bool edaxioSummoned = false;
 			public List<CardSlot> BuffedAtkSlots = new();
 			public List<CardSlot> BuffedHpSlots = new List<CardSlot>();
 			public override IEnumerator StartNewPhaseSequence()
@@ -739,20 +737,11 @@ namespace MagnificusMod
 
 					AudioController.Instance.FadeOutLoop(0.75f, Array.Empty<int>());
 
-					if (!hasEdaxio)
-					{
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You have impressed me, you truly have..", 0f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("2 lives down now.", 0f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Unfortunately for you, I still have a few tricks up my sleeve.", 0f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-					} else
-                    {
-						edaxioSummoned = true;
-						Singleton<MagnificusSequencer>.Instance.killedPlanets = -5;
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You've cheated me..", 0f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Summoning that [c:g1]tyrant[c:].", 0f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You give me no option but to also cheat..", 0f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 
-					}
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You have impressed me, you truly have..", 0f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("2 lives down now.", 0f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Unfortunately for you, I still have a few tricks up my sleeve.", 0f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+
 
 					GameObject MagnificusColum = GameObject.Find("MarbleColumn_Opponent");
 					GameObject Magnificus = GameObject.Find("MagnificusAnim");
@@ -780,17 +769,17 @@ namespace MagnificusMod
 					painting.name = "MoonPainting";
 					GiantPaintingAnim giantPainting = painting.GetComponent<GiantPaintingAnim>();
 					MagnificusAnimationController magnificusAnimationController = Magnificus.GetComponent<MagnificusAnimationController>();
-					if (hasEdaxio)
+					/*if (hasEdaxio)
 					{
 						GameObject.Find("Moon").GetComponent<SpriteRenderer>().material = painting.transform.Find("RenderCamera").GetChild(0).Find("Streaks").GetChild(3).gameObject.GetComponent<SpriteRenderer>().material;
 						GameObject.Find("Moon").GetComponent<SpriteRenderer>().sprite = Tools.getSprite("earth_portrait.png");
 						GameObject.Find("Moon").transform.localScale = new Vector3(4.5f, 4.5f, 4.5f);
 						GameObject.Find("Moon").GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
-					}
+					}*/
 					yield return new WaitForSeconds(1.5f);
 					giantPainting.Show();
 					AudioController.Instance.SetLoopAndPlay("wind_blow", 0, true, true);
-					AudioController.Instance.SetLoopVolume(0.25f, 4f, 1, true);
+					AudioController.Instance.SetLoopVolume(0.25f, 4f, 0, true);
 					yield return new WaitForSeconds(4f);
 					magnificusAnimationController.SetHeadTrigger("brush_vertical_1");
 					giantPainting.PaintBlackStreak(0);
@@ -860,13 +849,8 @@ namespace MagnificusMod
 					Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
 					yield return new WaitForSeconds(0.4f);
 					painting.transform.Find("RenderCamera").localScale = new Vector3(0, 0, 0);
-					if (!hasEdaxio)
-					{
-						yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName("mag_giantmoon"), Singleton<BoardManager>.Instance.OpponentSlotsCopy[0], 0.1f, true);
-					} else
-                    {
-						yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName("mag_giantearth"), Singleton<BoardManager>.Instance.OpponentSlotsCopy[0], 0.1f, true);
-					}
+					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName("mag_giantmoon"), Singleton<BoardManager>.Instance.OpponentSlotsCopy[0], 0.1f, true);
+
 					yield return new WaitForSeconds(0.65f);
 					GameObject.Destroy(painting);
 					MagnificusAnimationController.Instance.SetHeadTrigger("idle");
@@ -875,73 +859,169 @@ namespace MagnificusMod
 				yield break;
 			}
 
-			public IEnumerator NewPhaseSequence()
+			public IEnumerator edaxioSummoned()
 			{
-				base.TurnPlan.Clear();
-				bool doneDat = false;
-				List<CardSlot> list = Singleton<BoardManager>.Instance.opponentSlots.FindAll((CardSlot x) => x.opposingSlot.Card != null);
-				foreach (CardSlot slot in list)
+				AudioController.Instance.StopAllLoops();
+				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
+				Singleton<ViewController>.Instance.enabled = false;
+				Singleton<CombatBell>.Instance.Pressable = false;
+				Singleton<TurnManager>.Instance.IsPlayerTurn = false;
+				Singleton<MagnificusSequencer>.Instance.killedPlanets = -5;
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I'm afraid you've doomed us all, challenger..", 2f, 0f, Emotion.Quiet, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Magnificus, null);
+				AudioController.Instance.SetLoopAndPlay("part1_finale_intro", 0, true, true);
+				AudioController.Instance.SetLoopVolume(0.85f, 0.25f, 0, true);
+				Tween.Position(GameObject.Find("CombatBell_Magnificus").transform, new Vector3(-9.95f, 21.25f, 6.4f), 1.5f, 0);
+				Tween.Rotation(Singleton<MagnificusLifeManager>.Instance.gameObject.transform, Quaternion.Euler(25, 12, 52), 3.5f, 0);
+				Tween.LocalPosition(Singleton<MagnificusLifeManager>.Instance.gameObject.transform, new Vector3(40f, -32f, -6), 3.5f, 0);
+				CardSlot[] bodySlots = new CardSlot[4];//head, arms, torso, legs
+				foreach (CardSlot slot in Singleton<BoardManager>.Instance.PlayerSlotsCopy)
+                {
+					switch (slot.Card.Info.name)
+                    {
+						case "mag_edaxiolegs":
+							bodySlots[3] = Singleton<BoardManager>.Instance.playerSlots[slot.Index];
+							break;
+						case "mag_edaxiotorso":
+							bodySlots[2] = Singleton<BoardManager>.Instance.playerSlots[slot.Index];
+							break;
+						case "mag_edaxioarms":
+							bodySlots[1] = Singleton<BoardManager>.Instance.playerSlots[slot.Index];
+							break;
+						case "mag_edaxiohead":
+							bodySlots[0] = Singleton<BoardManager>.Instance.playerSlots[slot.Index];
+							break;
+					}
+                }
+				List<PlayableCard> list = Singleton<PlayerHand>.Instance.CardsInHand.FindAll((PlayableCard x) => x != Singleton<PlayerHand>.Instance.ChoosingSlotCard);
+				while (list.Count > 0)
 				{
-					bool flag = !doneDat;
-					if (flag)
+					list[0].SetInteractionEnabled(false);
+					list[0].Anim.PlayDeathAnimation(true);
+					UnityEngine.Object.Destroy(list[0].gameObject, 1f);
+					Singleton<PlayerHand>.Instance.RemoveCardFromHand(list[0]);
+					list.RemoveAt(0);
+				}
+				Tween.LocalRotation(GameObject.Find("WizardBattleDuelDisk").transform, new Vector3(0, 75, 0), 1.25f, 0);
+				Tween.LocalPosition(GameObject.Find("WizardBattleDuelDisk").transform, new Vector3(0.9f, 4.5f, -12.5f), 1.5f, 0.15f);
+				foreach (CardSlot slot in Singleton<BoardManager>.Instance.OpponentSlotsCopy)
+				{
+					if (slot.Card != null)
 					{
-						yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName("mag_BOSSgoobert"), slot, 0.2f, true);
-						doneDat = true;
-						yield return new WaitForSeconds(0.25f);
-						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowThenClear("You managed to defeat my students once, but can you do it twice?", 1.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null));
-						yield return new WaitForSeconds(1.5f);
+						yield return slot.Card.Die(false);
 					}
 				}
-				List<CardSlot>.Enumerator enumerator = default(List<CardSlot>.Enumerator);
-				yield break;
-			}
-
-			public IEnumerator bignificus()
-			{
-				AudioController.Instance.SetLoopAndPlay("finalemagnificus", 0, true, true);
-				AudioController.Instance.SetLoopVolume(0.25f, 4f, 1, true);
+				Tween.Shake(GameObject.Find("PixelCameraParent").transform, GameObject.Find("PixelCameraParent").transform.localPosition, new Vector3(1, 1, 0), 0.25f, 0);
 				yield return new WaitForSeconds(0.2f);
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Lets see how you face off against your own deck.", 1.5f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+				if (Singleton<BoardManager>.Instance.OpponentSlotsCopy.FindAll((CardSlot x) => x.Card != null).Count > 0)
+				{
+					foreach (CardSlot slot in Singleton<BoardManager>.Instance.OpponentSlotsCopy)
+					{
+						if (slot.Card != null)
+						{
+							yield return slot.Card.Die(false);
+						}
+					}
+				}
+				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
+				GameObject[] portraits = new GameObject[4];
+				for (int i = 0; i < bodySlots.Length; i++)
+                {
+					portraits[i] = GameObject.Find("PlayerSlots").transform.GetChild(bodySlots[i].Index).GetChild(5).gameObject;
+					GameObject.Find("PlayerSlots").transform.GetChild(bodySlots[i].Index).Find("Border").gameObject.SetActive(false);
+
+				}
+				AudioController.Instance.PlaySound2D("whoosh2", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
+				Tween.Shake(GameObject.Find("PixelCameraParent").transform, GameObject.Find("PixelCameraParent").transform.localPosition, new Vector3(1, 1, 0), 0.25f, 0.25f);
+				Tween.Position(portraits[0].transform, new Vector3(80f, 31.5f, -6), 0.75f, 0f, Tween.EaseInBack);
+				Tween.LocalRotation(portraits[0].transform, Quaternion.Euler(5, 180, 0), 0.75f, 0f, Tween.EaseInStrong);
+				Tween.Position(portraits[1].transform, new Vector3(79.93f, 29f, -6.8f), 0.75f, 0.15f, Tween.EaseInBack);
+				Tween.LocalRotation(portraits[1].transform, Quaternion.Euler(25, 180, 180), 0.75f, 0.15f, Tween.EaseInStrong);
+				Tween.Position(portraits[2].transform, new Vector3(80f, 26f, -7f), 0.75f, 0.3f, Tween.EaseInBack);
+				Tween.LocalRotation(portraits[2].transform, Quaternion.Euler(10, 180, 0), 0.75f, 0.3f, Tween.EaseInStrong);
+				Tween.Position(portraits[3].transform, new Vector3(80f, 22f, -8.4f), 0.75f, 0.45f, Tween.EaseInBack);
+				Tween.LocalRotation(portraits[3].transform, Quaternion.Euler(20, 180, 0), 0.75f, 0.45f, Tween.EaseInStrong);
+				Tween.Shake(GameObject.Find("PixelCameraParent").transform, GameObject.Find("PixelCameraParent").transform.localPosition, new Vector3(1, 1, 0), 0.25f, 0.75f);
 				yield return new WaitForSeconds(1.5f);
-				List<CardSlot> list = Singleton<BoardManager>.Instance.OpponentSlotsCopy.FindAll((CardSlot x) => x.opposingSlot.Card != null);
-				foreach (CardSlot slot2 in list)
+				yield return Singleton<MagnificusOpponnent>.Instance.ClearQueue();
+				Tween.Shake(GameObject.Find("MarbleColumn_Opponent").transform, GameObject.Find("MarbleColumn_Opponent").transform.localPosition, new Vector3(1, 1, 1), 6.5f, 0);
+				Tween.Shake(GameObject.Find("MagnificusAnim").transform, GameObject.Find("MagnificusAnim").transform.localPosition, new Vector3(0.5f, 0.5f, 0.5f), 6.5f, 0);
+				GameObject.Find("PlayerSlots").transform.parent = GameObject.Find("GameTable").transform;
+				Tween.LocalPosition(GameObject.Find("PlayerSlots").transform, new Vector3(-5.5f, -2.5f, 14.75f), 1.45f, 0, Tween.EaseIn);
+				yield return new WaitForSeconds(3.5f);
+				AudioController.Instance.PlaySound2D("glitch_error", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
+				yield return Singleton<TextDisplayer>.Instance.ShowThenClear("Au Revoir", 0.5f, 0f, Emotion.Anger, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Magnificus, null);
+				Tween.LocalScale(GameObject.Find("MagnificusAnim").transform, new Vector3(0, 1, 0), 0.25f, 0.25f);
+				Tween.Shake(GameObject.Find("Pixel Camera").transform, GameObject.Find("Pixel Camera").transform.localPosition, new Vector3(1, 1, 0), 0.25f, 0f);
+				yield return new WaitForSeconds(3.5f);
+				AudioController.Instance.PlaySound2D("whoosh2", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
+				Tween.LocalRotation(GameObject.Find("PlayerSlots").transform, new Vector3(0, 340, 0), 1.5f, 0, Tween.EaseLinear);
+				Tween.LocalPosition(GameObject.Find("PlayerSlots").transform, new Vector3(-5.5f, 52.5f, 14.75f), 0.45f, 0, Tween.EaseInBack);
+				Tween.Shake(GameObject.Find("Pixel Camera").transform, GameObject.Find("Pixel Camera").transform.localPosition, new Vector3(1, 1, 0), 0.25f, 0f);
+				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
+				Tween.Position(GameObject.Find("Player").transform, new Vector3(93.95f, 22f, -55f), 15f, 0);
+				GameObject ruins = GameObject.Find("Ruins");
+				ruins.GetComponent<SineWaveMovement>().enabled = false;
+				ruins.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+				ruins.transform.position = new Vector3(80.575f, 8.6187f, 34.8342f);
+				ruins.transform.localRotation = Quaternion.Euler(5f, 69f, 0);
+				GameObject MagnificusColum = GameObject.Find("MarbleColumn_Opponent");
+				Tween.Rotation(MagnificusColum.transform, Quaternion.Euler(15, 21, 12), 3f, 0);
+				Tween.Position(MagnificusColum.transform, new Vector3(80.5f, -32, 52), 15, 0);
+				GameObject.Find("bossPainting").GetComponent<SineWaveMovement>().enabled = false;
+				Tween.Position(GameObject.Find("bossPainting").transform, new Vector3(44.5f, 18.6f, -33.5f), 9f, 0);
+				Tween.Position(Singleton<MagnificusDuelDisk>.Instance.gameObject.transform, new Vector3(0.89f, -15.5f, -4.85f), 4f, 0);
+				GameObject.Find("CardBattle_Magnificus").transform.Find("Hand").position = new Vector3(0, -900, 0);
+				Tween.LocalPosition(GameObject.Find("CardBattle_Magnificus").transform, new Vector3(0, -150f, 0), 60f, 0);
+				Tween.Rotation(GameObject.Find("tbPillar").transform, Quaternion.Euler(5.2f, 4.3f, 7.5f), 1.25f, 0);//135.7913 22 -107.6007
+				Tween.Position(GameObject.Find("tbPillar").transform, new Vector3(80f, -5.3f, -13.5f), 9f, 0);
+				Tween.Position(GameObject.Find("3DPortraitSlots").transform, new Vector3(80f, -3.1383f, -14f), 9f, 0);
+				Tween.LocalRotation(GameObject.Find("Player").transform, Quaternion.Euler(2.88f, 337f, 352.65f), 45f, 0.1f);
+				Tween.Position(GameObject.Find("Player").transform, new Vector3(135.8f, 22f, -107f), 45f, 15f);
+				GameObject.Find("crates").transform.position = new Vector3(104.76f, 13.85f, 47.85f);
+				GameObject.Find("swordModel").transform.rotation = Quaternion.Euler(55f, 12.3f, 10.82f);
+				GameObject.Find("swordModel").transform.position = new Vector3(26.9f, 13.85f, 41f);
+				GameObject.Find("floatingBook").transform.position = new Vector3(84.7f, 18.14f, 112.5f);
+				GameObject.Find("PikeModel").transform.position = new Vector3(125.3f, 37.3f, 58);
+				GameObject.Find("PikeModel").transform.rotation = Quaternion.Euler(350.8f, 354.2f, 90);
+				GameObject.Find("cloth3D").transform.position = new Vector3(80.575f, 41.8f, 28.25f);
+				GameObject.Find("cloth3D").transform.rotation = Quaternion.Euler(0, 90, 0);
+				GameObject.Find("cloth3D").transform.localScale = new Vector3(1, 1, 1);
+				Tween.LocalRotation(GameObject.Find("crates").transform, Quaternion.Euler(53, 12, 96), 20f, 0);
+				GameObject.Find("easel").transform.position = new Vector3(106, 13.85f, -9.3f);
+				GameObject.Find("easel").transform.Find("Easel").Find("EaselAnim").GetChild(3).gameObject.GetComponent<BoxCollider>().size = new Vector3(0, 0, 0);
+				GameObject.Find("easel").transform.Find("Easel").Find("EaselAnim").GetChild(3).Find("Quad").Find("CardBase").Find("RenderStatsLayer").Find("BendableCard").Find("Mesh").gameObject.GetComponent<SkinnedMeshRenderer>().materials[0].mainTexture = Tools.getImage("magcardbackground.png");
+				GameObject.Find("easel").transform.Find("Easel").Find("EaselAnim").GetChild(3).Find("Quad").Find("CardBase").Find("RenderStatsLayer").Find("BendableCard").Find("Mesh").gameObject.GetComponent<SkinnedMeshRenderer>().materials[1].mainTexture = Tools.getImage("magcardback.png");
+				Tween.LocalRotation(GameObject.Find("easel").transform, Quaternion.Euler(15, 64, 61), 20f, 0);
+				GameObject.Find("MagnificusEnvironment").transform.Find("gooBottle").gameObject.SetActive(true);
+				GameObject.Find("MagnificusEnvironment").transform.Find("gooBottle").position = new Vector3(112.6f, 13.85f, -17.57f);
+				yield return new WaitForSeconds(60f);
+				Singleton<TextDisplayer>.Instance.Clear();
+				GameObject newGame = Instantiate(Resources.Load("prefabs/environment/sanctum/NewGameCard_Sanctum") as GameObject);
+				newGame.name = "newGameCard";
+				newGame.transform.position = new Vector3(136.4f, 35.5f, -105f);
+				newGame.transform.localRotation = Quaternion.Euler(0, 0, 0);
+				newGame.transform.Find("RectangleParticles").gameObject.SetActive(false);
+				newGame.AddComponent<BoxCollider>().size = new Vector3(0.5f, 0.75f, 2);
+				newGame.AddComponent<MainInputInteractable>().CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(newGame.AddComponent<MainInputInteractable>().CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
 				{
-					PlayableCard yourCard = slot2.opposingSlot.Card;
-					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(yourCard.Info, slot2, 0.2f, true);
-					CardModificationInfo cardModificationInfo = new CardModificationInfo();
-					List<Ability> ability = new List<Ability>();
-					ability.Add(Ability.Reach);
-					cardModificationInfo.nonCopyable = true;
-					cardModificationInfo.singletonId = "zeroout";
-					cardModificationInfo.attackAdjustment = 1;
-					cardModificationInfo.healthAdjustment = slot2.opposingSlot.Card.Attack;
-					cardModificationInfo.abilities = ability;
-					slot2.Card.AddTemporaryMod(cardModificationInfo);
-					this.mod = new CardModificationInfo();
-					this.mod.nonCopyable = true;
-					this.mod.singletonId = "statswap";
-					this.mod.attackAdjustment = 0;
-					this.mod.healthAdjustment = 0;
-					slot2.Card.SetInfo(slot2.Card.Info);
-					slot2.Card.AddTemporaryMod(this.mod);
-					yield return new WaitForSeconds(0.25f);
-					yourCard = null;
-					cardModificationInfo = null;
-					ability = null;
-				}
-				List<CardSlot>.Enumerator enumerator = default(List<CardSlot>.Enumerator);
-				List<CardSlot> list2 = Singleton<BoardManager>.Instance.OpponentSlotsCopy.FindAll((CardSlot x) => x.opposingSlot.Card == null);
-				foreach (CardSlot slot3 in list2)
+					StoryEventsData.SetEventCompleted(StoryEvent.StartScreenNewGameUnlocked, true, false);
+					newGame.GetComponent<BoxCollider>().size = new Vector3(0, 0, 0);
+					AudioController.Instance.PlaySound3D("newgame_card_taken", MixerGroup.ExplorationSFX, newGame.transform.position, 1f, 0f, null, null, null, null, false);
+					newGame.transform.Find("RectangleParticles").gameObject.SetActive(true);
+					SaveManager.SaveToFile();
+				}));
+				Tween.Position(newGame.transform, new Vector3(136.4f, 28.5f, -105f), 5f, 0);
+				while (true)
 				{
-					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName("mag_BOSSmagnusmox"), slot3, 0.2f, true);
+					if (newGame.transform.Find("RectangleParticles").gameObject.activeSelf)
+					{
+						yield return new WaitForSeconds(0.5f);
+						newGame.SetActive(false);
+					}
+					yield return new WaitForSeconds(1f);
 				}
-				List<CardSlot>.Enumerator enumerator2 = default(List<CardSlot>.Enumerator);
-				base.Blueprint = ScriptableObject.CreateInstance<BossBlueprints.MagnificusFinalBlueprint>();
-				List<List<CardInfo>> plan = EncounterBuilder.BuildOpponentTurnPlan(base.Blueprint, 0, false);
-				base.ReplaceAndAppendTurnPlan(plan);
 				yield break;
-				yield break;
-			}
+            }
 
 
 			public bool outOfCardsLine = false;
@@ -1006,7 +1086,7 @@ namespace MagnificusMod
 				bossPainting.GetComponent<SineWaveMovement>().enabled = true;
 				yield return new WaitForSeconds(0.5f);
 				AudioController.Instance.SetLoopAndPlay("Goo_Mage", 0, true, true);
-				AudioController.Instance.SetLoopVolume(0.25f, 4f, 1, true);
+				AudioController.Instance.SetLoopVolume(0.35f, 0.25f, 0, true);
 				yield return new WaitForSeconds(0.15f);
 				yield break;
 			}
@@ -1125,7 +1205,7 @@ namespace MagnificusMod
 				GameObject.Find("deckLight").transform.parent.gameObject.GetComponent<Light>().intensity = 3f;
 				GameObject.Find("deckLight").transform.parent.gameObject.GetComponent<Light>().color = new Color(0.25f, 0f, 0.25f, 1);
 				AudioController.Instance.SetLoopAndPlay("Pike_Mage", 0, true, true);
-				AudioController.Instance.SetLoopVolume(0.65f, 4f, 1, true);
+				AudioController.Instance.SetLoopVolume(0.85f, 0.25f, 0, true);
 				CustomTextDisplayerStuff.switchToSpeakerStyle(4);
 				yield return new WaitForSeconds(0.35f);
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g2]Hmm?[c:] [c:g3]An[c:] [c:g2]opponent..?[c:]", 2f, 0f, Emotion.Curious, TextDisplayer.LetterAnimation.WavyJitter);
@@ -1372,7 +1452,7 @@ namespace MagnificusMod
 				bossPainting.GetComponent<SineWaveMovement>().enabled = true;
 				yield return new WaitForSeconds(0.5f);
 				AudioController.Instance.SetLoopAndPlay("Lonely_Mage", 0, true, true);
-				AudioController.Instance.SetLoopVolume(0.3f, 4f, 1, true);
+				AudioController.Instance.SetLoopVolume(0.85f, 0.25f, 0, true);
 				yield return new WaitForSeconds(0.15f);
 				yield break;
 			}
@@ -1536,7 +1616,7 @@ namespace MagnificusMod
 				GameObject.Find("DungeonFloor").transform.Find("Background").gameObject.AddComponent<UVScroller>().XscrollSpeed = -0.0025f;
 				GameObject.Find("DungeonFloor").transform.localScale = new Vector3(1, 1, 1);
 				AudioController.Instance.SetLoopAndPlay("TheArtOfMagicks", 0, true, true);
-				AudioController.Instance.SetLoopVolume(0.3f, 4f, 1, true);
+				AudioController.Instance.SetLoopVolume(0.65f, 0.25f, 0, true);
 				yield break;
 			}
 
@@ -2626,27 +2706,16 @@ namespace MagnificusMod
 
 			public override bool RespondsToOtherCardDie(PlayableCard card, CardSlot deathSlot, bool fromCombat, PlayableCard killer)
 			{
-				return (card.Info.name == "mag_scarecrow" && (deathSlot.Card == null || deathSlot.Card.Dead)) || (card.Info.name == "mag_triplescarecrow" && (deathSlot.Card == null || deathSlot.Card.Dead)) || (card.Info.name == "mag_BOSStrapspear" && (deathSlot.Card == null || deathSlot.Card.Dead));
+				return (card.Info.name == "mag_BOSStrapspear" && (deathSlot.Card == null || deathSlot.Card.Dead));
 			}
 
 
 			public override IEnumerator OnOtherCardDie(PlayableCard card, CardSlot deathSlot, bool fromCombat, PlayableCard killer)
 			{
-				if (card.Info.name != "mag_BOSStrapspear")
-				{
-					CardInfo cardByName = CardLoader.GetCardByName("mag_BOSSspear");
-					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(cardByName, deathSlot, 0.1f, true);
-					yield return new WaitForSeconds(0.25f);
-					yield return new WaitForSeconds(0.1f);
-					cardByName = null;
-				}
-				else
-				{
-					Singleton<EspeararaOpponnent>.Instance.triggeredEnchantedSpear = true;
-					yield return new WaitForSeconds(0.1f);
-					Singleton<ViewManager>.Instance.SwitchToView(View.Default);
-					yield return Singleton<MagnificusLifeManager>.Instance.ShowLifeLoss(true, 1);
-				}
+				Singleton<EspeararaOpponnent>.Instance.triggeredEnchantedSpear = true;
+				yield return new WaitForSeconds(0.1f);
+				Singleton<ViewManager>.Instance.SwitchToView(View.Default);
+				yield return Singleton<MagnificusLifeManager>.Instance.ShowLifeLoss(true, 1);
 				yield break;
 			}
 
@@ -3152,7 +3221,7 @@ namespace MagnificusMod
 					bool hasLegs = !otherCard.HasAbility(Ability.EdaxioLegs) && Singleton<BoardManager>.Instance.GetSlots(true).Find((CardSlot x) => x.Card != null && x.Card.Info.HasAbility(Ability.EdaxioLegs)) != null;
 					bool hasTorso = !otherCard.HasAbility(Ability.EdaxioTorso) && Singleton<BoardManager>.Instance.GetSlots(true).Find((CardSlot x) => x.Card != null && x.Card.Info.HasAbility(Ability.EdaxioTorso)) != null;
 					bool hasHead = !otherCard.HasAbility(Ability.EdaxioHead) && Singleton<BoardManager>.Instance.GetSlots(true).Find((CardSlot x) => x.Card != null && x.Card.Info.HasAbility(Ability.EdaxioHead)) != null;
-					bool hasEdaxio = false;
+					bool hasEdaxio = otherCard.HasAbility(Ability.EdaxioHead) && hasArms && hasTorso && hasLegs;
 					if (hasArms)
                     {
 						CardModificationInfo tempMod = new CardModificationInfo();
@@ -3195,7 +3264,6 @@ namespace MagnificusMod
 							tempMod.abilities = new List<Ability> { Ability.GainAttackOnKill };
 							otherCard.AddTemporaryMod(tempMod);
 						}
-						if (hasLegs && hasTorso && hasArms) { hasEdaxio = true; }
 					}
 					List<CardSlot> list = Singleton<BoardManager>.Instance.GetSlots(true);
 					string slotName = "PlayerSlots";
@@ -3212,12 +3280,9 @@ namespace MagnificusMod
 							}
 						}
 					}
-					if (hasEdaxio && Singleton<MagnificusOpponnent>.Instance.NumLives < 2)
+					if (hasEdaxio)
                     {
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Unfortunately though.. you are already too late.", 1.5f, 0.4f, Emotion.Laughter, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("That trick wont do anything against me now.", 1.5f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-						planets = new List<string> { "mag_neptune", "mag_mercury", "mag_jupiter", "mag_saturn" };
-						killedPlanets = 0;
+						yield return Singleton<MagnificusOpponnent>.Instance.edaxioSummoned();
 					}
 				}
 				yield break;
@@ -3225,12 +3290,13 @@ namespace MagnificusMod
 
 			public override bool RespondsToOtherCardDie(PlayableCard card, CardSlot deathSlot, bool fromCombat, PlayableCard killer)
 			{
-				return card.Info.name == "mag_giantmoon" && (deathSlot.Card == null || deathSlot.Card.Dead) || card.Info.name == "mag_giantearth" && (deathSlot.Card == null || deathSlot.Card.Dead) || Singleton<MagnificusOpponnent>.Instance.NumLives < 2 && killedPlanets < 2 && killedPlanets >= 0 && !deathSlot.IsPlayerSlot;
+				return card.Info.name == "mag_giantmoon" && (deathSlot.Card == null || deathSlot.Card.Dead) || card.Info.name == "mag_giantearth" && (deathSlot.Card == null || deathSlot.Card.Dead) || Singleton<MagnificusOpponnent>.Instance.NumLives < 2 && killedPlanets < 5 && killedPlanets >= 0 && !deathSlot.IsPlayerSlot;
 			}
 
 			public static List<string> planets = new List<string> { "mag_neptune", "mag_mercury" };
 			public int killedPlanets = -1;
 			public static bool removePlanetMods = false;
+			public static bool edaxioDialogue = false;
 
 			public override IEnumerator OnOtherCardDie(PlayableCard card, CardSlot deathSlot, bool fromCombat, PlayableCard killer)
 			{
@@ -3247,7 +3313,7 @@ namespace MagnificusMod
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I could never allow myself to go down that easily.", 1.5f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 
 					AudioController.Instance.SetLoopAndPlay("TheArtOfMagicks", 0, true, true);
-					AudioController.Instance.SetLoopVolume(0.25f, 4f, 1, true);
+					AudioController.Instance.SetLoopVolume(0.85f, 0.25f, 0, true);
 
 					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName("mag_venus"), Singleton<BoardManager>.Instance.OpponentSlotsCopy[1], 0.1f, true);
 					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName("mag_mars"), Singleton<BoardManager>.Instance.OpponentSlotsCopy[2], 0.1f, true);
@@ -3265,83 +3331,37 @@ namespace MagnificusMod
 					Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
 					yield return new WaitForSeconds(0.25f);
 					yield return new WaitForSeconds(0.1f);
-				} else if (card.Info.name != "mag_giantearth")
-                {
-					yield return new WaitForSeconds(0.2f);
-					int planetId = UnityEngine.Random.RandomRangeInt(0, planets.Count);
-					killedPlanets++;
-					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName(planets[planetId]), deathSlot, 0.1f, true);
-					planets.RemoveAt(planetId);
-					yield return new WaitForSeconds(0.25f);
-				} else
-                {
-					AudioController.Instance.StopAllLoops();
-					Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
-					yield return new WaitForSeconds(0.5f);
-					GameObject ruins = GameObject.Find("Ruins");
-					ruins.GetComponent<SineWaveMovement>().enabled = false;
-					ruins.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
-					ruins.transform.position = new Vector3(80.575f, 8.6187f, 34.8342f);
-					ruins.transform.localRotation = Quaternion.Euler(5f, 69f, 0);
-					GameObject MagnificusColum = GameObject.Find("MarbleColumn_Opponent");
-					GameObject Magnificus = GameObject.Find("MagnificusAnim");
-					Magnificus.transform.parent = MagnificusColum.transform;
-					Tween.Rotation(MagnificusColum.transform, Quaternion.Euler(15, 21, 12), 3f, 0);
-					Tween.Position(MagnificusColum.transform, new Vector3(80.5f, -32, 52), 15, 0);
-					Tween.Rotation(Singleton<MagnificusLifeManager>.Instance.gameObject.transform, Quaternion.Euler(25, 12, 52), 3.5f, 0);
-					Tween.LocalPosition(Singleton<MagnificusLifeManager>.Instance.gameObject.transform, new Vector3(40f, -32f, -6), 15, 0);
-					GameObject.Find("bossPainting").GetComponent<SineWaveMovement>().enabled = false;
-					Tween.Position(GameObject.Find("bossPainting").transform, new Vector3(44.5f, 18.6f, -33.5f), 9f, 0);
-					Tween.Position(GameObject.Find("CombatBell_Magnificus").transform, new Vector3(-9.95f, 21.25f, 6.4f), 6f, 0);
-					Tween.Position(Singleton<MagnificusDuelDisk>.Instance.gameObject.transform, new Vector3(0.89f, -15.5f, -4.85f), 4f, 0);
-					GameObject.Find("CardBattle_Magnificus").transform.Find("Hand").position = new Vector3(0, -900, 0);
-					Tween.Rotation(GameObject.Find("tbPillar").transform, Quaternion.Euler(5.2f, 4.3f, 7.5f), 1.25f, 0);
-					Tween.Position(GameObject.Find("tbPillar").transform, new Vector3(80f, -5.3f, -13.5f), 9f, 0);
-					Tween.Position(GameObject.Find("3DPortraitSlots").transform, new Vector3(80f, -3.1383f, -14f), 9f, 0);
-					Tween.LocalRotation(GameObject.Find("Player").transform, Quaternion.Euler(3.8f, 4.7f, -7.35f), 2f, 0.1f);
-					Tween.Position(GameObject.Find("Player").transform, new Vector3(112.2f, 22f, -32f), 60f, 0);
-					GameObject.Find("crates").transform.position = new Vector3(104.76f, 13.85f, 47.85f);
-					GameObject.Find("swordModel").transform.rotation = Quaternion.Euler(55f, 12.3f, 10.82f);
-					GameObject.Find("swordModel").transform.position = new Vector3(26.9f, 13.85f, 41f);
-					GameObject.Find("floatingBook").transform.position = new Vector3(84.7f, 18.14f, 112.5f);
-					GameObject.Find("PikeModel").transform.position = new Vector3(125.3f, 37.3f, 58);
-					GameObject.Find("PikeModel").transform.rotation = Quaternion.Euler(350.8f, 354.2f, 90);
-					GameObject.Find("cloth3D").transform.position = new Vector3(80.575f, 41.8f, 28.25f);
-					GameObject.Find("cloth3D").transform.rotation = Quaternion.Euler(0, 90, 0);
-					GameObject.Find("cloth3D").transform.localScale = new Vector3(1, 1, 1);
-					GameObject.Find("easel").transform.position = new Vector3(106, 13.85f, -9.3f);
-					GameObject.Find("easel").transform.Find("Easel").Find("EaselAnim").GetChild(3).gameObject.GetComponent<BoxCollider>().size = new Vector3(0, 0, 0);
-					GameObject.Find("easel").transform.Find("Easel").Find("EaselAnim").GetChild(3).Find("Quad").Find("CardBase").Find("RenderStatsLayer").Find("BendableCard").Find("Mesh").gameObject.GetComponent<SkinnedMeshRenderer>().materials[0].mainTexture = Tools.getImage("magcardbackground.png");
-					GameObject.Find("easel").transform.Find("Easel").Find("EaselAnim").GetChild(3).Find("Quad").Find("CardBase").Find("RenderStatsLayer").Find("BendableCard").Find("Mesh").gameObject.GetComponent<SkinnedMeshRenderer>().materials[1].mainTexture = Tools.getImage("magcardback.png");
-					GameObject.Find("MagnificusEnvironment").transform.Find("gooBottle").gameObject.SetActive(true);
-					GameObject.Find("MagnificusEnvironment").transform.Find("gooBottle").position = new Vector3(112.6f, 13.85f, -17.57f);
-					base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput(".. I may have not thought this through..", 1.5f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-					yield return new WaitForSeconds(60f);
-					Singleton<TextDisplayer>.Instance.Clear();
-					GameObject newGame = Instantiate(Resources.Load("prefabs/environment/sanctum/NewGameCard_Sanctum") as GameObject);
-					newGame.name = "newGameCard";
-					newGame.transform.position = new Vector3(112.2f, 37f, -27.8f);
-					newGame.transform.localRotation = Quaternion.Euler(0, 0, 0);
-					newGame.transform.Find("RectangleParticles").gameObject.SetActive(false);
-					newGame.AddComponent<BoxCollider>().size = new Vector3(0.5f, 0.75f, 2);
-					newGame.AddComponent<MainInputInteractable>().CursorSelectStarted = (Action<MainInputInteractable>)Delegate.Combine(newGame.AddComponent<MainInputInteractable>().CursorSelectStarted, new Action<MainInputInteractable>(delegate (MainInputInteractable i)
+				}
+				else if (!deathSlot.IsPlayerSlot)
+				{
+					List<string> edaxioParts = new List<string> { "mag_edaxiolegs", "mag_edaxiotorso", "mag_edaxioarms", "mag_edaxiohead" };
+					if (RunState.Run.playerDeck.cardIds.Contains("mag_edaxiohead"))
 					{
-						StoryEventsData.SetEventCompleted(StoryEvent.StartScreenNewGameUnlocked, true, false);
-						newGame.GetComponent<BoxCollider>().size = new Vector3(0, 0, 0);
-						AudioController.Instance.PlaySound3D("newgame_card_taken", MixerGroup.ExplorationSFX, newGame.transform.position, 1f, 0f, null, null, null, null, false);
-						newGame.transform.Find("RectangleParticles").gameObject.SetActive(true);
-						SaveManager.SaveToFile();
-					}));
-					Tween.Position(newGame.transform, new Vector3(112.2f, 28.5f, -27.8127f), 5f, 0);
-					while (true)
-                    {
-						if (newGame.transform.Find("RectangleParticles").gameObject.activeSelf)
-                        {
-							yield return new WaitForSeconds(0.5f);
-							newGame.SetActive(false);
-                        }
-						yield return new WaitForSeconds(1f);
-                    }
+						if (killedPlanets >= edaxioParts.Count) killedPlanets = edaxioParts.Count - 1;
+						CardInfo edaxioPiece = Singleton<Deck>.Instance.GetCardByName(edaxioParts[killedPlanets]);
+						if (edaxioPiece != null)
+						{
+							Singleton<Deck>.Instance.cards.Remove(edaxioPiece);
+							yield return Singleton<CardSpawner>.Instance.SpawnCardToHand(edaxioPiece, 0.25f);
+							base.StartCoroutine((Singleton<CardDrawPiles>.Instance as CardDrawPiles3D).Pile.SpawnCards(Singleton<Deck>.Instance.cards.Count, 1f));
+							if (!edaxioDialogue)
+                            {
+								edaxioDialogue = true;
+								Singleton<ViewManager>.Instance.SwitchToView(View.Hand);
+								yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Utter folly.. Getting outside assitance, are we?", 1.5f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+
+							}
+						}
+					}
+					if (killedPlanets < 2)
+					{
+						yield return new WaitForSeconds(0.2f);
+						int planetId = UnityEngine.Random.RandomRangeInt(0, planets.Count);
+						yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName(planets[planetId]), deathSlot, 0.1f, true);
+						planets.RemoveAt(planetId);
+						yield return new WaitForSeconds(0.25f);
+					}
+					killedPlanets++;
 				}
 				yield break;
 			}
@@ -3424,7 +3444,7 @@ namespace MagnificusMod
 
 			public override IEnumerator OutroSequence(bool wasDefeated)
 			{
-				Generation.lastView = LookDirection.North;
+				if (!config.isometricMode) Generation.lastView = LookDirection.North;
 				if (!SavedVars.LearnedMechanics.Contains("bleachbattlewin"))
 				{
 					SavedVars.LearnedMechanics += "bleachbattlewin;";

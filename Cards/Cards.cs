@@ -574,7 +574,6 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", "mag_stinkbug", "Necro Mage", 1, 2, "sponsored by me again")
 					.AddAbilities(Ability.DebuffEnemy)
 					.SetPortrait(Tools.getImage("necro mage.png"))
-					.AddSpecialAbilities(MagMod.ManaTutorial)
 					.SetCost(bloodCost: 1);
 			myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
@@ -927,9 +926,10 @@ namespace MagnificusMod
 			List<CardMetaCategory> list = new List<CardMetaCategory> { CardMetaCategory.ChoiceNode };
 			List<GemType> gemCost = new List<GemType> { GemType.Blue, GemType.Green };
 
-			CardInfo myCard = CardManager.New("mag", "mag_bleenesmonster", "Bleene's Scholar", 1, 5, "Still in training, though, adept in using powerful shielding techniques.")
+			CardInfo myCard = CardManager.New("mag", "mag_bleenesmonster", "Bleene's Scholar", 1, 5, "A scholar in training, currently studying the works of Master Bleene.")
 
 					.SetPortrait(Tools.getImage("BleeneScholar.png"))
+					.AddAbilities(SigilCode.DrawBook.ability)
 					.SetCost(bloodCost: 0, gemsCost: gemCost);
 			myCard.metaCategories = list;
 			myCard.temple = CardTemple.Wizard;
@@ -1335,7 +1335,6 @@ namespace MagnificusMod
 							.SetPixelPortrait(Tools.convertToSprite(Resources.Load("art/gbc/cards/pixelportraits/pixelportrait_skeletonmage") as Texture2D))
 							.AddAbilities(list2[0], list2[1])
 							.SetPixelPortrait(pixelTex)
-							.AddSpecialAbilities(MagMod.ManaTutorial)
 							.AddMetaCategories(list[0]);
 			myCard.SetExtendedProperty("ManaCost", true);
 			myCard.temple = CardTemple.Wizard;
@@ -1600,7 +1599,6 @@ namespace MagnificusMod
 								.SetCost(bloodCost: 1)
 								.SetPortrait(Tools.getImage("almond cookie.png"))
 								.AddAbilities(list2[0])
-								.AddSpecialAbilities(MagMod.ManaTutorial)
 								.AddMetaCategories(list[0]);
 			myCard.SetExtendedProperty("ManaCost", true);
 			myCard.temple = CardTemple.Wizard;
@@ -1617,7 +1615,6 @@ namespace MagnificusMod
 								.SetCost(bloodCost: 1)
 								.SetPortrait(Tools.getImage("runemage.png"))
 								.AddAbilities(list2[0])
-								.AddSpecialAbilities(MagMod.ManaTutorial)
 								.AddMetaCategories(list[0]);
 			myCard.SetExtendedProperty("ManaCost", true);
 			myCard.temple = CardTemple.Wizard;
@@ -1911,13 +1908,13 @@ namespace MagnificusMod
 					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Orange })
 					.AddAbilities(Ability.BuffGems);
 			buffgems.metaCategories = list;
-			CardInfo impaled = CardManager.New("mag", "mag_bleenebookimpaled", "The art of Surprise", 1, 1, "[c:g2]The art of Surprise[c:]\n[c:g3]Looks[c:] [c:g1]like[c:] [c:g3]a[c:] [c:g1]frustrated[c:] [c:g3]mage[c:] [c:g1]stabbed[c:] [c:g3]it.[c:]")
+			CardInfo impaled = CardManager.New("mag", "mag_bleenebookimpaled", "Art of Surprise", 1, 1, "[c:g2]The art of Surprise[c:]\n[c:g3]Looks[c:] [c:g1]like[c:] [c:g3]a[c:] [c:g1]frustrated[c:] [c:g3]mage[c:] [c:g1]stabbed[c:] [c:g3]it.[c:]")
 
 					.SetPortrait(Tools.getImage("bleenebook_impaled.png"))
 					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Orange })
 					.AddAbilities(SigilCode.MagDropSpear.ability);
 			impaled.metaCategories = list;
-			CardInfo repulsive = CardManager.New("mag", "mag_bleenebookrepulsive", "Tome of Forbidden Secrets", 0, 1, "[c:g2]The Tome of Forbidden Secrets[c:]\n[c:g3]Quite[c:] [c:g1]tough[c:] [c:g3]to[c:] [c:g1]open.[c:]")
+			CardInfo repulsive = CardManager.New("mag", "mag_bleenebookrepulsive", " Forbidden Secrets", 0, 1, "[c:g2]The Tome of Forbidden Secrets[c:]\n[c:g3]Quite[c:] [c:g1]tough[c:] [c:g3]to[c:] [c:g1]open.[c:]")
 
 					.SetPortrait(Tools.getImage("bleenebook_repulsive.png"))
 					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Blue })
@@ -1935,7 +1932,7 @@ namespace MagnificusMod
 					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Orange })
 					.AddAbilities(Ability.Sharp);
 			sharp.metaCategories = list;
-			CardInfo gold = CardManager.New("mag", "mag_bleenebookgold", "Gold-Encrusted Codex", 0, 4, "[c:g2]Gold-Encrusted Codex[c:]\n[c:g3]Possibly[c:] [c:g1]the[c:] [c:g3]most[c:] [c:g1]valueable[c:] [c:g3]book[c:] [c:g1]I[c:] [c:g3]own.[c:]")
+			CardInfo gold = CardManager.New("mag", "mag_bleenebookgold", "Gilded Codex", 0, 4, "[c:g2]Gold-Encrusted Codex[c:]\n[c:g3]Possibly[c:] [c:g1]the[c:] [c:g3]most[c:] [c:g1]valueable[c:] [c:g3]book[c:] [c:g1]I[c:] [c:g3]own.[c:]")
 
 					.SetPortrait(Tools.getImage("bleenebook_gold.png"))
 					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Orange })
@@ -1947,7 +1944,7 @@ namespace MagnificusMod
 					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Blue })
 					.AddAbilities(Ability.ExplodeOnDeath);
 			runes.metaCategories = list;
-			CardInfo slime = CardManager.New("mag", "mag_bleenebookslime", "Goo Covered Book", 0, 2, "[c:g2]A Brief Hist-[c:] [c:g3]Wait[c:] [c:g1]a[c:] [c:g3]minute..[c:] [c:g1]Some[c:] [c:g3]vandal[c:] [c:g1]ruined[c:] [c:g3]this[c:] [c:g1]one![c:]")
+			CardInfo slime = CardManager.New("mag", "mag_bleenebookslime", "Gooey Book", 0, 2, "[c:g2]A Brief Hist-[c:] [c:g3]Wait[c:] [c:g1]a[c:] [c:g3]minute..[c:] [c:g1]Some[c:] [c:g3]vandal[c:] [c:g1]ruined[c:] [c:g3]this[c:] [c:g1]one![c:]")
 
 					.SetPortrait(Tools.getImage("bleenebook_slime.png"))
 					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Green })
@@ -1971,7 +1968,7 @@ namespace MagnificusMod
 					.AddTraits(Trait.Gem)
 					.AddAbilities(Ability.GainGemTriple, SigilCode.LifeUpOmega.ability);
 			horde.metaCategories = list;
-			CardInfo animator = CardManager.New("mag", "mag_bleenebookanimator", "The Art of Possesion", 0, 5, "[c:g2]The Art of Possesion[c:]\n[c:g3]Animating[c:] [c:g1]other[c:] [c:g3]mages[c:] [c:g1]was[c:] [c:g3]considered[c:] [c:g1]taboo[c:] [c:g3]back[c:] [c:g1]when[c:] [c:g3]I[c:] [c:g1]was[c:] [c:g3]around.[c:]")
+			CardInfo animator = CardManager.New("mag", "mag_bleenebookanimator", "Art of Possesion", 0, 5, "[c:g2]The Art of Possesion[c:]\n[c:g3]Animating[c:] [c:g1]other[c:] [c:g3]mages[c:] [c:g1]was[c:] [c:g3]considered[c:] [c:g1]taboo[c:] [c:g3]back[c:] [c:g1]when[c:] [c:g3]I[c:] [c:g1]was[c:] [c:g3]around.[c:]")
 
 					.SetPortrait(Tools.getImage("bleenebook_animator.png"))
 					.AddAbilities(SigilCode.Animator.ability)
@@ -2381,7 +2378,7 @@ namespace MagnificusMod
 
 					.SetCost()
 					.SetPortrait(Tools.getImage("mag_scarecrow.png"))
-					.AddAbilities()
+					.AddAbilities(SigilCode.MagDropSpear.ability)
 					.AddMetaCategories();
 			myCard2.metaCategories = new List<CardMetaCategory>();
 			string text5 = "mag_BOSSspear";
@@ -2421,7 +2418,7 @@ namespace MagnificusMod
 
 					.SetCost()
 					.SetPortrait(Tools.getImage("mag_threescarecrow.png"))
-					.AddAbilities()
+					.AddAbilities(SigilCode.MagDropSpear.ability)
 					.AddMetaCategories();
 			myCard4.metaCategories = new List<CardMetaCategory>();
 			List<GemType> gemcoststim = new List<GemType> { GemType.Blue };
@@ -2511,7 +2508,6 @@ namespace MagnificusMod
 					.AddAbilities(list5[0])
 					.SetBloodCost(0)
 					.AddTraits(traits[0])
-					.AddSpecialAbilities(MagMod.ManaTutorial)
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
@@ -2533,7 +2529,6 @@ namespace MagnificusMod
 					.AddAbilities(list5[0])
 					.SetBloodCost(1)
 					.AddTraits(traits[0])
-					.AddSpecialAbilities(MagMod.ManaTutorial)
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
@@ -2557,7 +2552,6 @@ namespace MagnificusMod
 					.AddAbilities(list5[0])
 					.AddTraits(traits[0])
 					.SetBloodCost(0)
-					.AddSpecialAbilities(MagMod.ManaTutorial)
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
@@ -2580,7 +2574,7 @@ namespace MagnificusMod
 					.AddAbilities(list5[0])
 					.AddTraits(traits[0])
 					.SetBloodCost(0)
-					.AddSpecialAbilities(MagMod.ManaTutorial)
+					
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
@@ -2603,7 +2597,7 @@ namespace MagnificusMod
 					.AddAbilities(list5[0])
 					.AddTraits(traits[0])
 					.SetBloodCost(0)
-					.AddSpecialAbilities(MagMod.ManaTutorial)
+					
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
@@ -2621,7 +2615,7 @@ namespace MagnificusMod
 					.AddAbilities(SigilCode.TargetFlame.ability)
 					.AddTraits(traits[0])
 					.SetBloodCost(0)
-					.AddSpecialAbilities(MagMod.ManaTutorial)
+					
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("TargetedSpell", true);
 			myCard.SetExtendedProperty("TargetAllSpell", true);
@@ -2644,7 +2638,7 @@ namespace MagnificusMod
 					.AddAbilities(list5[0])
 					.AddTraits(traits[0])
 					.SetBloodCost(0)
-					.AddSpecialAbilities(MagMod.ManaTutorial)
+					
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
@@ -2670,7 +2664,7 @@ namespace MagnificusMod
 					.AddAbilities(SigilCode.MagGainGemTriple.ability)
 					.AddTraits(traits[0], traits[1])
 					.SetBloodCost(0)
-					.AddSpecialAbilities(MagMod.ManaTutorial)
+					
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("ManaCost", true);
 			myCard.SetExtendedProperty("PhysicalSpell", true);
@@ -2694,7 +2688,7 @@ namespace MagnificusMod
 					.AddAbilities(list5[0])
 					.AddTraits(traits[0])
 					.SetBloodCost(0)
-					.AddSpecialAbilities(MagMod.ManaTutorial)
+					
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
@@ -2718,7 +2712,7 @@ namespace MagnificusMod
 					.AddAbilities(list5[0])
 					.AddTraits(traits[0])
 					.SetBloodCost(0)
-					.AddSpecialAbilities(MagMod.ManaTutorial)
+					
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("TargetedSpell", true);
 			myCard.SetExtendedProperty("TargetAllSpell", true);
@@ -2740,7 +2734,7 @@ namespace MagnificusMod
 					.AddAbilities(Ability.ExplodeOnDeath)
 					.AddTraits(traits[0])
 					.SetBloodCost(0)
-					.AddSpecialAbilities(MagMod.ManaTutorial)
+					
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
@@ -2761,7 +2755,7 @@ namespace MagnificusMod
 					.AddAbilities(list5[0])
 					.AddTraits(traits[0])
 					.SetBloodCost(0)
-					.AddSpecialAbilities(MagMod.ManaTutorial)
+					
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("TargetedSpell", true);
 			myCard.SetExtendedProperty("ManaCost", true);
@@ -2783,7 +2777,7 @@ namespace MagnificusMod
 					.AddAbilities(list5[0])
 					.AddTraits(traits[0])
 					.SetBloodCost(0)
-					.AddSpecialAbilities(MagMod.ManaTutorial)
+					
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("TargetedSpell", true);
 			myCard.SetExtendedProperty("TargetAllSpell", true);
@@ -2806,7 +2800,7 @@ namespace MagnificusMod
 					.AddAbilities(list5[0])
 					.AddTraits(traits[0])
 					.SetBloodCost(0)
-					.AddSpecialAbilities(MagMod.ManaTutorial)
+					
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("TargetedSpell", true);
 			myCard.SetExtendedProperty("TargetAllSpell", true);
@@ -2829,7 +2823,7 @@ namespace MagnificusMod
 					.AddAbilities(list5[0])
 					.AddTraits(traits[0])
 					.SetBloodCost(0)
-					.AddSpecialAbilities(MagMod.ManaTutorial)
+					
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("TargetedSpell", true);
 			myCard.SetExtendedProperty("TargetAllSpell", true);

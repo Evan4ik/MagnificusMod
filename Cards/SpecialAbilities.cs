@@ -24,28 +24,6 @@ namespace MagnificusMod
 {
     class SpecialAbilities
     {
-		public class ManaCost : SpecialCardBehaviour
-		{
-			public override bool RespondsToDrawn()
-			{
-				return !SavedVars.LearnedMechanics.Contains("mana;");
-			}
-
-			public override IEnumerator OnDrawn()
-			{
-				(Singleton<PlayerHand>.Instance as PlayerHand3D).MoveCardAboveHand(base.PlayableCard);
-				Singleton<ViewManager>.Instance.SwitchToView(View.Default);
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Ah.. It appears you have drawn a card with a [c:g3]special cost[c:].", -1.5f, 0f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("These cards require [c:g1]mana shards[c:] to play..", -1.5f, 0f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g1]Mana shards[c:] are gained from 'Sacrificing' mox cards..", -3.5f, 0f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput(".. So, when played you will need to destroy " + base.Card.Info.BloodCost + " mox.", -3.5f, 0f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("It's all quite simple..", -1.5f, 0f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-				yield return new WaitForSeconds(0.4f);
-				SavedVars.LearnedMechanics += "mana;";
-				yield break;
-			}
-		}
-
 
 
 		public class OuroRandomize : SpecialCardBehaviour

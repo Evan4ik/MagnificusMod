@@ -22,6 +22,7 @@ namespace MagnificusMod
     {
 		//Hello, User! This file intends to add functionality to the API, The functions being: Making the API not cause crashes or softlocks in this mod! 
 		//This is definetly per fault of Magnificus' Mod and in NO way part of the API.
+		//Sorry for zee rudeness
 
 
 		[HarmonyAfter(new string[] { "community.inscryption.patch" })]
@@ -46,7 +47,5 @@ namespace MagnificusMod
 				return false;
 			}
 		}
-
-		//TODO: FIND A FIX FOR MULTIPLE ABILITY STACKS SOFTLOCKING THE GAME ON SPELLS SOMETIMES IDK
 	}
 }

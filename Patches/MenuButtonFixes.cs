@@ -146,7 +146,7 @@ namespace MagnificusMod
 								SaveManager.saveFile.ouroborosDeaths = 0;
 								RunState.Run.regionTier = 0;
 								File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(true, true)));
-								MagSave.SaveNode("x4 y6");
+								MagSave.SaveNode("x4 y7");
 								MagSave.SaveLayout("1");
 								File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(false, false)));
 								//__instance.DoingCardTransition = false;
@@ -170,7 +170,7 @@ namespace MagnificusMod
 					}
 					RunState.Run.regionTier = 0;
 					File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(true, true)));
-					MagSave.SaveNode("x4 y6");
+					MagSave.SaveNode("x4 y7");
 					MagSave.SaveLayout("1");
 					File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(false, false)));
 					//__instance.DoingCardTransition = false;

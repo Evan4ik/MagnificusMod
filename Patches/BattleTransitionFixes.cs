@@ -241,7 +241,7 @@ namespace MagnificusMod
 							Singleton<FirstPersonController>.Instance.LookAtDirection(LookDirection.South);
 							Singleton<FirstPersonController>.Instance.enabled = false;
 							Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
-							MagSave.SaveNode("x4 y6");
+							MagSave.SaveNode("x4 y7");
 							File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(false, false)));
 							SaveManager.SaveToFile();
                             Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Generation.leshyCardGetSequence());

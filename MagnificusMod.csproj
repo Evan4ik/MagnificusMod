@@ -195,6 +195,10 @@
     <None Remove="Resources\energy_cost_4.png" />
     <None Remove="Resources\energy_cost_5.png" />
     <None Remove="Resources\energy_cost_6.png" />
+    <None Remove="Resources\environment\templerug1.png" />
+    <None Remove="Resources\environment\templerug2.png" />
+    <None Remove="Resources\environment\templerug3.png" />
+    <None Remove="Resources\environment\templerug_normal.png" />
     <None Remove="Resources\erraticscholar.png" />
     <None Remove="Resources\espeara1life.png" />
     <None Remove="Resources\espeara2life.png" />
@@ -399,6 +403,7 @@
     <None Remove="Resources\School_of_Magicks.mp3" />
     <None Remove="Resources\shadow_glow.png" />
     <None Remove="Resources\shop_icon.png" />
+    <None Remove="Resources\sigils\ability_deathshield.png" />
     <None Remove="Resources\sigils\ability_gemreckoning.png" />
     <None Remove="Resources\sigils\bonemarrow.png" />
     <None Remove="Resources\sigils\mag_bluemagedraw.png" />
@@ -407,6 +412,7 @@
     <None Remove="Resources\sigils\pixelability_gemreckoning.png" />
     <None Remove="Resources\sigils\pixelability_moxcycle.png" />
     <None Remove="Resources\sigils\projector.png" />
+    <None Remove="Resources\sigils\scholarsigil.png" />
     <None Remove="Resources\smallpaint.png" />
     <None Remove="Resources\snipesage.png" />
     <None Remove="Resources\sodermage.png" />
@@ -515,6 +521,10 @@
     <EmbeddedResource Include="Resources\cards\SapphireMech.png" />
     <EmbeddedResource Include="Resources\cards\tutorworm.png" />
     <EmbeddedResource Include="Resources\costs\manashard.png" />
+    <EmbeddedResource Include="Resources\environment\templerug1.png" />
+    <EmbeddedResource Include="Resources\environment\templerug2.png" />
+    <EmbeddedResource Include="Resources\environment\templerug3.png" />
+    <EmbeddedResource Include="Resources\environment\templerug_normal.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_ironmaiden.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_paintedsigils.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_paintedsigils_active.png" />
@@ -537,6 +547,7 @@
     <EmbeddedResource Include="Resources\pillarpuzzlesigils\ability_tripleblood_scratched_black.png" />
     <EmbeddedResource Include="Resources\pillarpuzzlesigils\ability_whackamole_scratched_black.png" />
     <EmbeddedResource Include="Resources\pillarpuzzlesigils\puzzlehint_unknown.png" />
+    <EmbeddedResource Include="Resources\sigils\ability_deathshield.png" />
     <EmbeddedResource Include="Resources\sigils\ability_gemreckoning.png" />
     <EmbeddedResource Include="Resources\sigils\bonemarrow.png" />
     <EmbeddedResource Include="Resources\sigils\frozen.png" />
@@ -917,6 +928,7 @@
     <EmbeddedResource Include="Resources\nodeassets\smallpaint.png" />
     <EmbeddedResource Include="Resources\cards\snipesage.png" />
     <EmbeddedResource Include="Resources\cards\sodermage.png" />
+    <EmbeddedResource Include="Resources\sigils\scholarsigil.png" />
     <EmbeddedResource Include="Resources\sigils\spawnrunes.png" />
     <EmbeddedResource Include="Resources\cards\spell of flame.png" />
     <EmbeddedResource Include="Resources\sigils\spell of flame_ability.png" />

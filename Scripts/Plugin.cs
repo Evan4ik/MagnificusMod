@@ -27,7 +27,6 @@ namespace MagnificusMod
 	public class Plugin : BaseUnityPlugin
 	{
 
-		public readonly static SpecialTriggeredAbility ManaTutorial = SpecialTriggeredAbilityManager.Add(PluginGuid, "Mana Cost", typeof(SpecialAbilities.ManaCost)).Id;
 		public readonly static SpecialTriggeredAbility OuroChange = SpecialTriggeredAbilityManager.Add(PluginGuid, "Ouro Random", typeof(SpecialAbilities.OuroRandomize)).Id;
 		public readonly static SpecialTriggeredAbility CustomPortrait = SpecialTriggeredAbilityManager.Add(PluginGuid, "Custom Portrait", typeof(SpecialAbilities.CustomPortraited)).Id;
 		public readonly static SpecialTriggeredAbility PotionStuff = SpecialTriggeredAbilityManager.Add(PluginGuid, "PotionStuff", typeof(SpecialAbilities.Potion)).Id;
@@ -95,6 +94,7 @@ namespace MagnificusMod
 			Sigils.BoneMarrows();
 			Sigils.SelectMox();
 			Sigils.GemReckoning();
+			Sigils.ScholarSigil();
 
 			SigilCode.CounterBatteryPower.InitStatIconAndAbility();
 			SigilCode.SpellPower.InitStatIconAndAbility();

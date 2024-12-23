@@ -72,7 +72,6 @@ namespace MagnificusMod
 					Singleton<ViewManager>.Instance.SwitchToView(View.Default);
 				}
 				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Unlocked;
-				MagnificusMod.Plugin.spellsPlayed = 0;
 				Singleton<ViewController>.Instance.SwitchToControlMode(ViewController.ControlMode.WizardBattleDefault);
 				yield break;
 			}

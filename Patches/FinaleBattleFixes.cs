@@ -75,20 +75,6 @@ namespace MagnificusMod
 							}
 						}*/
 					}
-					/*
-					else
-					{
-						if (KayceeStorage.IsKaycee && MagnificusMod.Generation.challenges.Contains("ShieldedMox"))
-						{
-							if (otherCard.Info.HasTrait(Trait.Gem))
-							{
-								ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.ShieldedMox);
-								CardModificationInfo shieldMod = new CardModificationInfo();
-								shieldMod.abilities.Add(Ability.DeathShield);
-								otherCard.AddTemporaryMod(shieldMod);
-							}
-						}
-					}*/
 
 					if (!otherCard.slot.IsPlayerSlot)
 					{
@@ -672,7 +658,7 @@ namespace MagnificusMod
 				if (attackingSlot.Card != null && attackingSlot.IsPlayerSlot && damage > 0)
 				{
 					PlayableCard queuedCard = Singleton<BoardManager>.Instance.GetCardQueuedForSlot(opposingSlot);
-					if (opposingSlot.Card != null && opposingSlot.Card.HasAbility(Ability.DeathShield) || opposingSlot.Card != null)
+					if (opposingSlot.Card != null && opposingSlot.Card.HasShield() || opposingSlot.Card != null)
 					{
 						yield break;
 					}

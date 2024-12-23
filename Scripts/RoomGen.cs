@@ -402,6 +402,7 @@ namespace MagnificusMod
                 if (edaxioRow[edaxioRow.Count - 1] == "-")
                 {
                     id2[row][edaxioRow.Count - 1] = "e";
+                    if (edaxioRow.Count - 2 >= 0 && edaxioRow[edaxioRow.Count - 2] == "-") { id2[row][edaxioRow.Count - 2] = "e"; }
                 }
                 else
                 {

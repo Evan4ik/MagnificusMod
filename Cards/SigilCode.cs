@@ -476,7 +476,46 @@ namespace MagnificusMod
 			}
 		}
 
+		public class DrawBook : DrawCreatedCard
+		{
+			public static Ability ability;
+			public override Ability Ability
+			{
+				get
+				{
+					return DrawBook.ability;
+				}
+			}
+			public override CardInfo CardToDraw
+			{
+				get
+				{
+					List<string> books = new List<string> { "mag_bleenebookalchemy", "mag_bleenebookbuffgems", "mag_bleenebookgold", "mag_bleenebookimpaled", "mag_bleenebookrepulsive", "mag_bleenebookrevivor", "mag_bleenebooksharp", "mag_bleenebookrunes", "mag_bleenebookslime", "mag_bleenebookstinky" };
+					List<CardInfo> selectedCards = new List<CardInfo>();
 
+					for (int i = 0; i < 1; i++)
+					{
+						int selected = Random.RandomRangeInt(0, books.Count);
+						selectedCards.Add(CardLoader.GetCardByName(books[selected]));
+						books.Remove(books[selected]);
+					}
+					return selectedCards[0];
+				}
+			}
+
+			public override bool RespondsToResolveOnBoard()
+			{
+				return true;
+			}
+
+			public override IEnumerator OnResolveOnBoard()
+			{
+				yield return base.PreSuccessfulTriggerSequence();
+				yield return base.CreateDrawnCard();
+				yield return base.LearnAbility(0f);
+				yield break;
+			}
+		}
 		public class BleeneDraw : AbilityBehaviour
 		{
 			public override Ability Ability
@@ -808,7 +847,9 @@ namespace MagnificusMod
 			{
 				yield return base.PreSuccessfulTriggerSequence();
 				yield return new WaitForSeconds(0.1f);
-				yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName("mag_spear"), base.Card.Slot, 0.1f, true);
+				string cardDrop = "mag_spear";
+				if (card.Info.name.Contains("scarecrow")) cardDrop = "mag_BOSSspear";
+				yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName(cardDrop), base.Card.Slot, 0.1f, true);
 				yield return base.LearnAbility(0.5f);
 				yield break;
 			}
@@ -1098,13 +1139,13 @@ namespace MagnificusMod
 			public override int[] GetStatValues()
 			{
 				int[] array = new int[2];
-				array[0] = Convert.ToInt32( MagnificusMod.Plugin.spellsPlayed * 1.5f );
+				array[0] = Convert.ToInt32( MagnificusMod.Plugin.spellsPlayed );
 				return array;
 			}
 
 			public static StatIconManager.FullStatIcon InitStatIconAndAbility()
 			{
-				AbilityInfo SpellPowere = AbilityManager.New(Plugin.PluginGuid, "Spell Power", "The value represented with this sigil will be equal to total amount of spells played during this battle, times 1.5 .", typeof(SigilCode.SpellPower), Tools.getImage("spellpower.png"))
+				AbilityInfo SpellPowere = AbilityManager.New(Plugin.PluginGuid, "Spell Power", "The value represented with this sigil will be equal to total amount of spells played during this current dungeon.", typeof(SigilCode.SpellPower), Tools.getImage("spellpower.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("spellpower.png"));
 				SpellPowere.powerLevel = 10;
@@ -1203,7 +1244,7 @@ namespace MagnificusMod
 
 			public override bool RespondsToOtherCardDie(PlayableCard card, CardSlot deathSlot, bool fromCombat, PlayableCard killer)
 			{
-				return base.Card.OnBoard && deathSlot.Card != null && !card.HasTrait(Trait.Gem) && deathSlot.Card.OpponentCard == base.Card.OpponentCard && deathSlot.Card != base.Card && !this.currentlyResurrectingCards.Contains(deathSlot.Card.Info) && deathSlot.Card == card && !(card.HasAbility(Ability.GemDependant) && !HasGems(false)) && !card.HasTrait(Trait.EatsWarrens);
+				return base.Card.OnBoard && deathSlot.Card != null && !card.HasAbility(SigilCode.LifeUpOmega.ability) && !card.HasTrait(Trait.Gem) && deathSlot.Card.OpponentCard == base.Card.OpponentCard && deathSlot.Card != base.Card && !this.currentlyResurrectingCards.Contains(deathSlot.Card.Info) && deathSlot.Card == card && !(card.HasAbility(Ability.GemDependant) && !HasGems(false)) && !card.HasTrait(Trait.EatsWarrens);
 			}
 
 			public override IEnumerator OnOtherCardDie(PlayableCard card, CardSlot deathSlot, bool fromCombat, PlayableCard killer)
@@ -1564,7 +1605,13 @@ namespace MagnificusMod
 				mod.abilities.Add(Ability.DeathShield);
 				foreach (CardSlot slot in list)
 				{
-					if (slot.Card != null && slot.Card.Info.HasTrait(Trait.Gem)) slot.Card.AddTemporaryMod(mod);
+					if (slot.Card != null && slot.Card.Info.HasTrait(Trait.Gem))
+					{
+						slot.Card.ResetShield();
+						slot.Card.AddTemporaryMod(mod);
+						slot.Card.Status.hiddenAbilities.Remove(Ability.DeathShield);
+						slot.Card.RenderCard();
+					}
 				}
 				yield return base.LearnAbility(0f);
 				yield break;
@@ -1579,10 +1626,12 @@ namespace MagnificusMod
 			{
 				CardModificationInfo mod = new CardModificationInfo();
 				mod.abilities.Add(Ability.DeathShield);
-				bool flag = otherCard.Info.HasTrait(Trait.Gem);
-				if (flag)
+				if (otherCard != null && otherCard.Info.HasTrait(Trait.Gem))
 				{
+					otherCard.ResetShield();
 					otherCard.AddTemporaryMod(mod);
+					otherCard.Status.hiddenAbilities.Remove(Ability.DeathShield);
+					otherCard.RenderCard();
 				}
 				yield return base.LearnAbility(0f);
 				yield break;
@@ -1836,6 +1885,13 @@ namespace MagnificusMod
 					}
 					base.Card.Anim.PlayTransformAnimation();
 
+					if (cardLol.HasAbility(MagGainGemTriple.ability))
+                    {
+						yield return Singleton<ResourcesManager>.Instance.AddGem(GemType.Green);
+						yield return Singleton<ResourcesManager>.Instance.AddGem(GemType.Orange);
+						yield return Singleton<ResourcesManager>.Instance.AddGem(GemType.Blue);
+					}
+
 					Singleton<ResourcesManager>.Instance.ForceGemsUpdate();
 				}
 				else
@@ -1988,6 +2044,7 @@ namespace MagnificusMod
 				{
 					if (slot.Card != null && slot.Card.Info.HasTrait(Trait.Gem))
 					{
+						if (slot.Card.Info.name.Contains("mag_maux")) continue;
 						List<string> cardNames = new List<string> { "MoxSapphire", "MoxRuby", "MoxEmerald" };
 
 						if ( slot.Card.Info.name.Contains("moxrabbit")) { cardNames = new List<string> { "mag_moxrabbit", "mag_orangemoxrabbit", "mag_greenmoxrabbit" }; }
@@ -2045,7 +2102,7 @@ namespace MagnificusMod
 			public override IEnumerator OnResolveOnBoard()
 			{
 				List<CardInfo> possible = new List<CardInfo> { CardLoader.GetCardByName("mag_crystalworm_orange"), CardLoader.GetCardByName("mag_crystalworm_green"), CardLoader.GetCardByName("mag_crystalworm_blue") };
-
+				if (base.Card.Info.name != "mag_crystalworm") possible = new List<CardInfo> { CardLoader.GetCardByName("MoxRuby"), CardLoader.GetCardByName("MoxEmerald"), CardLoader.GetCardByName("MoxSapphire") }; 
 				CardInfo selectedCard = null;
 
 				if (base.Card.slot.IsPlayerSlot)
@@ -2078,7 +2135,7 @@ namespace MagnificusMod
 					CardModificationInfo gemMod = new CardModificationInfo();
 					gemMod.abilities = selectedCard.abilities;
 					base.Card.AddTemporaryMod(gemMod);
-
+					base.Card.Status.hiddenAbilities.Add(SigilCode.MoxSelect.ability);
 				}
 				yield return new WaitForSeconds(0.2f);
 
@@ -2703,7 +2760,7 @@ namespace MagnificusMod
 				yield return new WaitForSeconds(0.15f);
 
 				List<List<GameObject>> cards = new List<List<GameObject>> { new List<GameObject>(), new List<GameObject>() };
-
+				if (Singleton<BoardManager>.Instance.OpponentSlotsCopy[0].Card != null && Singleton<BoardManager>.Instance.OpponentSlotsCopy[0].Card.HasTrait(Trait.Giant)) { yield break; }
 				foreach(CardSlot slot in Singleton<BoardManager>.Instance.PlayerSlotsCopy)
                 {
 					if (slot.Card == null || slot.Card.Info.HasTrait(Trait.EatsWarrens) && slot.Card.Info.GetExtendedPropertyAsBool("PhysicalSpell") == null || slot.Card.Info == Card.Info) { cards[0].Add(null); continue; }

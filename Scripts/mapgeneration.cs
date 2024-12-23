@@ -3150,7 +3150,7 @@ namespace MagnificusMod
 			{
 				AudioController.Instance.StopAllLoops();
 				AudioController.Instance.SetLoopAndPlay("School_of_Magicks", 0, true, true);
-				AudioController.Instance.SetLoopVolumeImmediate(0.55f);
+				AudioController.Instance.SetLoopVolumeImmediate(0.45f);
 			} else
 			{
 				AudioController.Instance.SetLoopAndPlay("wind_blow", 1, true, true);
@@ -3570,11 +3570,11 @@ namespace MagnificusMod
 			GameObject.Find("DungeonFloor").transform.GetChild(0).gameObject.SetActive(false);
 			GameObject.Find("DungeonFloor").transform.GetChild(2).gameObject.SetActive(false);
 			Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().backgroundColor = new Color(0.9333f, 0.9569f, 0.7765f, 1f);
-			for (int i = 0; i < 100; i++)
+			for (int i = 0; i < 120; i++)
 			{
-				GameObject.Find("DungeonFloor").transform.GetChild(1).gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.9333f - i / 100f, 0.9569f - i / 100f, 0.7765f - i / 100f, 1f);
-				Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().backgroundColor = new Color(0.9333f - i / 100f, 0.9569f - i / 100f, 0.7765f - i / 100f, 1f);
-				yield return new WaitForSeconds(0.03f);
+				GameObject.Find("DungeonFloor").transform.GetChild(1).gameObject.GetComponent<MeshRenderer>().material.color = new Color(0.9333f - i / 100f, 0.9569f - i / 100f, 0.7765f - i / 120f, 1f);
+				Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().backgroundColor = new Color(0.9333f - i / 100f, 0.9569f - i / 100f, 0.7765f - i / 120f, 1f);
+				yield return new WaitForSeconds(0.025f);
 			}
 			GameObject.Find("DungeonFloor").transform.GetChild(1).gameObject.GetComponent<MeshRenderer>().material.color = new Color(0, 0, 0, 1f);
 			Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().backgroundColor = new Color(0f, 0f, 0f, 1f);
@@ -3855,7 +3855,7 @@ namespace MagnificusMod
 			switch (which)
 			{
 				case "tower":
-
+					int level = 1;
 					bool dOoor = true;
 
 					map =
@@ -3874,6 +3874,7 @@ namespace MagnificusMod
 					string towerLevel = MagSave.layout;
 					if (towerLevel.Contains("2")) 
 					{
+						level = 2;
 						dOoor = false;
 
 						map = new List<List<string>> {
@@ -3891,6 +3892,7 @@ namespace MagnificusMod
 					}
 					else if (towerLevel.Contains("3"))
                     {
+						level = 3;
 						dOoor = false;
 
 						map = new List<List<string>> {
@@ -3906,6 +3908,7 @@ namespace MagnificusMod
 						new List<string>{ " ",     " ", " ",   " ", " ", " ", "-", "-", " " } };
 					} else if (towerLevel.Contains("4") || towerLevel.Contains("5"))
 					{
+						level = 4;
 						map = new List<List<string>> {
 						new List<string>{ " ", " ", " ", "CRT", "TO2", "CRT", " ", " ", " " },
 						new List<string>{ " ", "TO2", "-",  "-",   "-",   "TO2",    "-",  "CRT1", " " },
@@ -4017,7 +4020,22 @@ namespace MagnificusMod
 					GameObject.Find("GameTable").transform.Find("light").localPosition = new Vector3(0, 17, 0);
 					GameObject.Find("GameTable").transform.Find("light").gameObject.GetComponent<Light>().intensity = 1.2f;
 
-					if (towerLevel.Contains("4") || towerLevel.Contains("5"))
+					if (level < 4)
+                    {
+						GameObject rug = GameObject.Instantiate(GameObject.Find("wall"));
+						rug.name = "rug";
+						rug.transform.rotation = Quaternion.Euler(90, 0, 0);
+						rug.transform.parent = environment.transform;
+						rug.transform.position = new Vector3(80, 0.001f, -90);
+						rug.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(1, 1);
+						rug.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTextureOffset = new Vector2(0, 0);
+						rug.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("templerug"+ level + ".png");
+						rug.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().lightmapIndex = 0;
+						//floor.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.shaderKeywords = new string[0];
+						rug.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.SetTexture("_BumpMap", Tools.getImage("templerug_normal.png"));
+						rug.transform.localScale = new Vector3(10, 10, 1);
+					}
+					if (level >= 4)
                     {
 						GameObject tWalls4 = GameObject.Instantiate(GameObject.Find("towerWall4"));
 						tWalls4.transform.parent = environment.transform;
@@ -4094,7 +4112,7 @@ namespace MagnificusMod
 						floor.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("temple_topfloor.png");
 						floor.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.SetTexture("_BumpMap", Tools.getImage("temple_topfloor_nrm.png"));
 					}
-					else if (!towerLevel.Contains("3") || SavedVars.LearnedMechanics.Contains("druid;"))
+					else if (level != 3 || SavedVars.LearnedMechanics.Contains("druid;"))
 					{
 						GameObject tWalls = GameObject.Instantiate(GameObject.Find("towerWalls"));
 						tWalls.transform.parent = environment.transform;
@@ -4167,7 +4185,7 @@ namespace MagnificusMod
 					GameObject.Find("Player").transform.Find("Directional Light").GetComponent<Light>().intensity = 0f;
 					Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().farClipPlane = 400f;
 					Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().backgroundColor = new Color(0.9333f, 0.9569f, 0.7765f, 1f);
-					if (towerLevel.Contains("3"))
+					if (level == 3)
                     {
 						GameObject darkWall = GameObject.Instantiate(GameObject.Find("wall"));
 						darkWall.name = "border1";
@@ -4183,7 +4201,7 @@ namespace MagnificusMod
 						darkWall2.transform.parent = environment.transform;
 						Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().backgroundColor = new Color(0f, 0f, 0f, 1f);
 					}
-					if (towerLevel.Contains("4") || towerLevel.Contains("5"))
+					if (level >= 4)
                     {
 						Singleton<FirstPersonController>.Instance.GetComponentInChildren<Camera>().backgroundColor = new Color(0, 0, 0, 1f);
 					}
@@ -4818,13 +4836,9 @@ namespace MagnificusMod
 					//GameObject.Find("GameEnvironment").transform.position = new Vector3(0, -7, 0);
 					setTableClothColor(new Color(0.5f, 0, 0.16f, 1));
 					RunState.Run.regionTier = 0;
-					coords = "x4 y6";
-					spawn = new Vector3(80, 9.5f, -120f);
-					if (MagSave.layout.Contains("4"))
-                    {
-						coords = "x4 y7";
-						spawn = new Vector3(80, 9.5f, -140f);
-					} else if (MagSave.layout.Contains("5"))
+					coords = "x4 y7";
+					spawn = new Vector3(80, 9.5f, -140f);
+					if (MagSave.layout.Contains("5"))
 					{
 						coords = "x4 y3";
 						spawn = new Vector3(80, 9.5f, -60f);

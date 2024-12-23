@@ -392,7 +392,7 @@ namespace MagnificusMod
                         {
 							__state.pile.gameObject.transform.GetChild(1).gameObject.SetActive(false);
 						}
-						if (__state.sidePile.gameObject.transform.childCount > 1 && __state.SideDeck.CardsInDeck < 1)
+						if (__state.sidePile.gameObject.transform.childCount > 1 && __state.SideDeck.CardsInDeck < 1 || __state.SideDeck.CardsInDeck <= 0)
 						{
 							__state.sidePile.gameObject.transform.GetChild(1).gameObject.SetActive(false);
 							for (int i = 1; i < __state.sidePile.gameObject.transform.childCount; i++)

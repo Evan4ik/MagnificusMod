@@ -890,6 +890,7 @@ namespace MagnificusMod
 				{
 					AscensionSaveData.Data.currentOuroborosDeaths = 0;
 					SaveManager.saveFile.ouroborosDeaths = 0;
+					MagnificusMod.Plugin.spellsPlayed = 0;
 				}
 				regionTier++;
 				MagSave.clearedNode = new List<string>();

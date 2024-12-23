@@ -936,7 +936,7 @@ namespace MagnificusMod
 				{
 					GetChallenges();
 					File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(true, true)));
-					MagSave.SaveNode("x4 y6");
+					MagSave.SaveNode("x4 y7");
 					MagSave.SaveLayout("1");
 					File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(false, false)));
 				}
@@ -957,7 +957,7 @@ namespace MagnificusMod
 					{
 						GetChallenges();
 						File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(true, true)));
-						MagSave.SaveNode("x4 y6");
+						MagSave.SaveNode("x4 y7");
 						MagSave.SaveLayout("1");
 						File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(false, false)));
 					}
@@ -1222,7 +1222,7 @@ namespace MagnificusMod
 					Generation.nodes = new List<GameObject>();
 					GetChallenges();
 					File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(true, true)));
-					MagSave.SaveNode("x4 y6");
+					MagSave.SaveNode("x4 y7");
 					MagSave.SaveLayout("1");
 					File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagSave.GetNodeStuff(false, false)));
 				}

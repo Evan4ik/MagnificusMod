@@ -342,31 +342,6 @@ namespace MagnificusMod
 				}
 
 				[HarmonyPatch(typeof(SpecialNodeHandler), "StartSpecialNodeSequence")]
-				public class MapGenerator_patch10
-				{
-					public static bool Prefix(ref SpecialNodeHandler __instance, SpecialNodeData nodeData)
-					{
-						bool flag = nodeData is CustomNode4;
-						bool result;
-						if (flag)
-						{
-							bool flag2 = __instance.gameObject.GetComponent<newflame>() == null;
-							if (flag2)
-							{
-								__instance.gameObject.AddComponent<newflame>();
-							}
-							__instance.StartCoroutine(__instance.gameObject.GetComponent<newflame>().sequencer(nodeData as CustomNode4));
-							result = false;
-						}
-						else
-						{
-							result = true;
-						}
-						return result;
-					}
-				}
-
-				[HarmonyPatch(typeof(SpecialNodeHandler), "StartSpecialNodeSequence")]
 				public class MapGenerator_patch11
 				{
 					public static bool Prefix(ref SpecialNodeHandler __instance, SpecialNodeData nodeData)
@@ -2120,7 +2095,7 @@ namespace MagnificusMod
 				if (RunState.Run.regionTier == 4)
                 {
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("So, you truly wish to release that tyrant..", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I hope you understand the type of power you are wielding..", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("I hope you understand the type of power you are dealing with..", -1.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 				}
 				yield break;
 			}
@@ -2300,7 +2275,7 @@ namespace MagnificusMod
 					deck.Add(card);
 				}
 				int modCount = 0;
-				deck.RemoveAll((CardInfo x) => !x.HasTrait(Trait.EatsWarrens) || x.mods.Count > modCount || x.name == "mag_goldspell" || upgradedDescs.IndexOf(x.name) < 0);
+				deck.RemoveAll((CardInfo x) => !x.HasTrait(Trait.EatsWarrens) || x.mods.Count > modCount || x.name == "mag_goldspell");
 				int dength = deck.Count;
 				if (dength > 0)
 				{
@@ -2332,13 +2307,8 @@ namespace MagnificusMod
 						int selected = Random.RandomRangeInt(0, spellCards.Count);
 						CardInfo spell = spellCards[selected];
 						CardModificationInfo upgradeSpell = new CardModificationInfo();
-						upgradeSpell.nameReplacement = "+" + spell.displayedName + "+";
-						upgradeSpell.attackAdjustment = 1;
-						if (spell.name == "mag_windspell")
-						{
-							upgradeSpell.negateAbilities = new List<Ability> { SigilCode.WindSpell.ability };
-							upgradeSpell.AddAbilities(SigilCode.WhirlwindSpell.ability);
-						}
+						upgradeSpell.nameReplacement = "~" + spell.displayedName + "~";
+						upgradeSpell.healthAdjustment = 1;
 						spell.mods.Add(upgradeSpell);
 						selectedCards.Add(spell);
 						spellCards.Remove(spellCards[selected]);
@@ -2392,12 +2362,7 @@ namespace MagnificusMod
 					component.Anim.SetFaceDown(false);
 					if (!string.IsNullOrEmpty(component.Info.description) && !ProgressionData.IntroducedCard(component.Info))
 					{
-						base.StartCoroutine(tutorialtext(component, false));
 						ProgressionData.SetCardIntroduced(component.Info);
-					}
-					if (ProgressionData.IntroducedCard(component.Info))
-                    {
-						base.StartCoroutine(tutorialtext(component, true));
 					}
 				}
 				else
@@ -2470,21 +2435,6 @@ namespace MagnificusMod
 
 			public static bool upgraded = false;
 
-			public static List<string> upgradedDescs = new List<string> { "mag_frostspell", "Now, the freezing effect shouldn't increase the health of the cards.", "mag_goldspell", "Oops.. Looks like the upgrade backfired...", "mag_windspell", "Hmm, now instead of creating an updraft, it will create a horizontal one, pushing every card clockwise.", "mag_waterspell", "This one should only affect the opponent. Neat", "mag_tarflamespell", "This one shouldn't buff the opponent. Cool", "mag_magnusspell", "It will only be removed from your deck at the end of battle.. Great.",
-			"mag_vaseofgreed", "With it you draw 2 more cards..", "mag_gnomespell", "Now the little gnome should have scuba gear.. What for? I dont know.", "mag_cursedskull", "Ah! Now it should warp to the opponent's side of the board when placed.", "mag_hpspell", "Now it will heal more. Cool", "mag_atkspell", "Now it empowers more..", "mag_potion", "Giving it to a card will also boost it's stats now.", "mag_orluinspiration", "The effect now lasts for the whole battle.", "mag_goranjrage", "Seems a bit more unstable.. All incoming damage is doubled..", "mag_bleenecalculus", "Now, if a card were to die from the effect, it gains 1 more health..", "mag_fireball", "It's more deadly now. 1 damage, 4 times.." };
-
-			public static IEnumerator tutorialtext(SelectableCard component, bool onlyUpgrade)
-			{
-				float savedPos = component.transform.localPosition.x;
-				Tween.LocalPosition(component.transform, new Vector3(0, 6.45f, -2.5f), 0.1f, 0);
-				string desc = component.Info.description + "\n" + upgradedDescs[upgradedDescs.IndexOf(component.Info.name) + 1];
-				if (onlyUpgrade)
-                {
-					desc = upgradedDescs[upgradedDescs.IndexOf(component.Info.name) + 1];
-				}
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput(desc, -1.5f, 0.4f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-				Tween.LocalPosition(component.transform, new Vector3(savedPos, 5.01f, -1.5f), 0.1f, 0);
-			}
 
 			public int i = 0;
 
@@ -2772,6 +2722,7 @@ namespace MagnificusMod
 					yield return new WaitForSeconds(0.01f);
 				}
 				yield return new WaitForSeconds(4.5f);
+				CustomTextDisplayerStuff.switchToSpeakerStyle(0);
 				npc.SetActive(false);
 				
 				Singleton<GameFlowManager>.Instance.TransitionToGameState(GameState.Map, null);
@@ -2785,7 +2736,6 @@ namespace MagnificusMod
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default);
 				component.ExitBoard(0.3f, new Vector3(0f, 0f, -6f));
 				potion.ExitBoard(0.3f, new Vector3(0f, 0f, -6f));
-				RunState.Run.playerDeck.AddCard(potion.Info);
 				RunState.Run.playerDeck.RemoveCard(component.Info);
 				Tween.LocalPosition(Singleton<DeckSpellBook>.Instance.transform, new Vector3(0.75f, 5.65f, -7f), 0.55f, 0.35f, Tween.EaseInOut);
 				base.StartCoroutine(this.NodeOutroSequence());
@@ -3365,7 +3315,7 @@ namespace MagnificusMod
 				for (int i = 0; i < 2 + Random.RandomRangeInt(0, 3); i++)
 				{
 					random = Random.RandomRangeInt(0, 100);
-					if (random < 40)
+					if (random < 25)
 					{
 						random = Random.RandomRangeInt(0, 100);
 						if (random < 55 || component.Info.Attack < 1 && mod.attackAdjustment < 1)
@@ -3377,7 +3327,7 @@ namespace MagnificusMod
 							mod.attackAdjustment += -1;
 						}
 					}
-					else if (random < 75)
+					else if (random < 45)
 					{
 						random = Random.RandomRangeInt(0, 100);
 						if (random < 60 || component.Info.Health < 2 && mod.healthAdjustment < 2)
@@ -3389,7 +3339,7 @@ namespace MagnificusMod
 							mod.healthAdjustment += -1;
 						}
 					}
-					else
+					else if (random < 65)
 					{
 						random = Random.RandomRangeInt(0, 100);
 						if (random < 55 && component.Info.abilities.Count > 0 || component.Info.abilities.Count + mod.abilities.Count >= 4)
@@ -3847,440 +3797,17 @@ namespace MagnificusMod
 			public List<SelectableCard> created = new List<SelectableCard>();
 		}
 
-		public class newflame : CardChoicesSequencer
-		{
-
-			public ConfirmStoneButton confirmStone { get; set; }
-
-			public ConfirmStoneButton confirmTwo { get; set; }
-
-			public GameObject scenery { get; set; }
-
-			public void removeselectablecardfromdeck(SelectableCard component)
-			{
-				base.StartCoroutine(this.removeselectablecardfromdeckie(component));
-			}
-
-			public void cardpickingupscropt(SelectableCard component)
-			{
-				bool flag = !component.Anim.FaceDown || this.dead;
-				if (flag)
-				{
-					bool flag2 = this.timesDone > 0 || this.dead;
-					if (flag2)
-					{
-						GameObject.Find("TESTSTONE").GetComponent<BoxCollider>().size = new Vector3(0f, 0f, 0f);
-						GameObject.Find("TESTSTONE").SetActive(false);
-						GameObject.Find("TreeSceneryLol").SetActive(false);
-						this.fireSlot.SetActive(false);
-						component.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
-						Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
-						base.StartCoroutine(LeshyAnimationController.Instance.TakeOffMask());
-						this.confirmStone.Exit();
-						bool flag3 = Singleton<GameFlowManager>.Instance != null;
-						if (flag3)
-						{
-							Singleton<GameFlowManager>.Instance.TransitionToGameState(GameState.Map, null);
-						}
-						SaveManager.SaveToFile(true);
-					}
-					else
-					{
-						Tween.Position(this.fireSlot.transform, new Vector3(0.5662f, 4.999f, 2.12f), 0.2f, 0.2f, null, Tween.LoopType.None, null, null, true);
-						component.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
-						GameObject.Find("TESTSTONE").GetComponent<BoxCollider>().size = new Vector3(0f, 0f, 0f);
-						GameObject.Find("TESTSTONE").SetActive(false);
-						int num = RunState.Run.playerDeck.Cards.Count;
-						bool flag4 = num > 12;
-						if (flag4)
-						{
-							num = 12;
-						}
-						for (int i = this.card; i < num + this.card; i++)
-						{
-							GameObject gameObject = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
-							gameObject.transform.SetParent(base.transform);
-							SelectableCard component2 = gameObject.GetComponent<SelectableCard>();
-							component2.Initialize(RunState.Run.playerDeck.Cards[i], new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardSelected), null, false, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardInspected));
-							component2.SetEnabled(false);
-							Singleton<SelectableCardArray>.Instance.displayedCards.Add(component2);
-							Singleton<SelectableCardArray>.Instance.TweenInCard(component2.transform, new Vector3(-1.7f + 1.3f * (float)this.cd - 1f - (float)(this.cd / 6) * 7.8f, 5.01f, -2.18f + (float)(this.cd / 6 * 2)), 0f, false);
-							component2.Anim.PlayQuickRiffleSound();
-							component2.Initialize(RunState.Run.playerDeck.Cards[i], new Action<SelectableCard>(this.removeselectablecardfromdeck), null, false, null);
-							component2.GetComponent<Collider>().enabled = true;
-							this.cardpickedfromdeck.Add(component2);
-							this.cd++;
-						}
-					}
-				}
-			}
-
-			public void ApplyMod(CardInfo card, string buff)
-			{
-				CardModificationInfo cardModificationInfo = new CardModificationInfo();
-				if (!(buff == "Attack"))
-				{
-					if (buff == "Health")
-					{
-						cardModificationInfo.healthAdjustment = 2;
-					}
-				}
-				else
-				{
-					cardModificationInfo.attackAdjustment = 1;
-				}
-				RunState.Run.playerDeck.ModifyCard(card, cardModificationInfo);
-			}
-
-			public IEnumerator removeselectablecardfromdeckie(SelectableCard component)
-			{
-				this.cardpickedfromdeck.Remove(component);
-				this.cd = 0;
-				Tween.Position(this.fireSlot.transform, new Vector3(0.2662f, 5.01f, -0.96f), 0.2f, 0.2f, null, Tween.LoopType.None, null, null, true);
-				Tween.Position(component.transform, new Vector3(0.2662f, 5.25f, -0.96f), 0.4f, 0.2f, null, Tween.LoopType.None, null, null, true);
-				yield return new WaitForSeconds(0.2f);
-				GameObject.Instantiate(Resources.Load("prefabs\\specialnodesequences\\ConfirmStoneButton")).name = "TESTSTONE";
-				GameObject.Find("TESTSTONE").AddComponent<BoxCollider>().size = new Vector3(1.4f, 0.2f, 2.1f);
-				this.confirmStone = GameObject.Find("TESTSTONE").GetComponentInChildren<ConfirmStoneButton>();
-				foreach (SelectableCard VARIABLE in this.cardpickedfromdeck)
-				{
-					VARIABLE.ExitBoard(0.3f, new Vector3(0.5662f, 4.999f, 2.12f));
-				}
-				List<SelectableCard>.Enumerator enumerator = default(List<SelectableCard>.Enumerator);
-				component.Initialize(component.Info, new Action<SelectableCard>(this.cardpickingupscropt), null, false, null);
-				this.confirmStone.Enter();
-				int chance = 30;
-				string buff = "idk";
-				this.dead = false;
-				bool flag = component.Info.Attack + component.Info.Health > 5 || component.Info.HasAbility(Ability.PreventAttack) || component.Info.HasAbility(Ability.SplitStrike);
-				if (flag)
-				{
-					bool flag2 = component.Info.HasAbility(Ability.PreventAttack);
-					if (flag2)
-					{
-						chance = 25;
-						buff = "Attack";
-					}
-					else
-					{
-						chance = 0;
-						bool flag3 = component.Info.Attack > component.Info.Health;
-						if (flag3)
-						{
-							buff = "Health";
-						}
-						else
-						{
-							bool flag4 = component.Info.Attack < component.Info.Health;
-							if (flag4)
-							{
-								buff = "Attack";
-							}
-							else
-							{
-								bool flag5 = component.Info.Attack == component.Info.Health;
-								if (flag5)
-								{
-									bool flag6 = UnityEngine.Random.Range(0, 100) >= 50;
-									if (flag6)
-									{
-										buff = "Attack";
-									}
-									else
-									{
-										buff = "Health";
-									}
-								}
-							}
-						}
-					}
-					base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("A strong card.. Will you risk it? Or back away..?", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-				}
-				else
-				{
-					chance = 0;
-					bool flag7 = component.Info.Attack > component.Info.Health;
-					if (flag7)
-					{
-						buff = "Health";
-					}
-					else
-					{
-						bool flag8 = component.Info.Attack < component.Info.Health;
-						if (flag8)
-						{
-							buff = "Attack";
-						}
-						else
-						{
-							bool flag9 = component.Info.Attack == component.Info.Health;
-							if (flag9)
-							{
-								bool flag10 = UnityEngine.Random.Range(0, 100) >= 50;
-								if (flag10)
-								{
-									buff = "Attack";
-								}
-								else
-								{
-									buff = "Health";
-								}
-							}
-						}
-					}
-				}
-				if (component.Info.HasSpecialAbility(SpecialTriggeredAbility.Ant))
-				{
-					buff = "Health";
-				}
-				yield return this.confirmStone.WaitUntilConfirmation();
-				CardModificationInfo cardModificationInfo = new CardModificationInfo();
-				while (this.timesDone < 4 && !this.dead)
-				{
-					bool flag11 = component.Info.name == "mag_BellMage" && component.Info.BloodCost > 0 && component.Info.HasModFromCardMerge();
-					if (flag11)
-					{
-						chance = 972;
-					}
-					component.Anim.SetFaceDown(true, false);
-					yield return new WaitForSeconds(2f);
-					bool flag12 = UnityEngine.Random.Range(0, 100) >= chance;
-					if (flag12)
-					{
-						this.ApplyMod(component.Info, buff);
-						component.SetInfo(component.Info);
-						component.Anim.SetFaceDown(false, false);
-						switch (this.timesDone)
-						{
-							case 0:
-								base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your card had survived once, but are you brave enough to go again?", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-								break;
-							case 1:
-								base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your card managed to persist 2 times, do you flee or stay?", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-								break;
-							case 2:
-								base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("The poor " + component.Info.DisplayedNameLocalized + " had survived three flames, do you do one more, or leave?", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-								break;
-							case 3:
-								base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Incredible. The " + component.Info.DisplayedNameLocalized + " defied all odds, and survived 4 flames.", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-								yield return new WaitForSeconds(3f);
-								this.cardpickingupscropt(component);
-								break;
-						}
-					}
-					else
-					{
-						this.dead = true;
-						RunState.Run.playerDeck.RemoveCard(component.Info);
-						component.Anim.PlayDeathAnimation(true);
-						bool flag13 = component.Info.name != "mag_crystalworm";
-						if (flag13)
-						{
-							bool flag14 = chance != 972;
-							if (flag14)
-							{
-								base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("How pathetic..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-							}
-							else
-							{
-								AudioController.Instance.PlaySound2D("creepy_rattle_lofi", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
-								base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("I hope you understand what you have done..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-								ProgressionData.SetMechanicLearned((MechanicsConcept)972);
-								component.SetInfo(CardLoader.GetCardByName("mag_argbeast"));
-								component.Anim.SetFaceDown(false, false);
-								RunState.Run.playerDeck.AddCard(component.Info);
-							}
-							yield return new WaitForSeconds(2f);
-							this.cardpickingupscropt(component);
-						}
-						else
-						{
-							base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("The shiny [c:bR] Mox Worm [c:] had perished..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-							yield return new WaitForSeconds(2f);
-							base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("But a tiny larva had emerged from the carcass.. You may keep it and add it to your deck..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-							component.SetInfo(CardLoader.GetCardByName("mag_moxlarva"));
-							component.Anim.SetFaceDown(false, false);
-
-							RunState.Run.playerDeck.AddCard(component.Info);
-						}
-					}
-					yield return new WaitForSeconds(0.5f);
-					this.timesDone++;
-					bool flag15 = component.Info.Attack + component.Info.Health > 5 || component.Info.HasAbility(Ability.PreventAttack) || component.Info.HasAbility(Ability.SplitStrike);
-					if (flag15)
-					{
-						bool flag16 = component.Info.HasAbility(Ability.PreventAttack);
-						if (flag16)
-						{
-							chance = 75;
-							buff = "Attack";
-						}
-						else
-						{
-							chance = 65;
-							bool flag17 = component.Info.Attack > component.Info.Health;
-							if (flag17)
-							{
-								buff = "Health";
-							}
-							else
-							{
-								bool flag18 = component.Info.Attack < component.Info.Health;
-								if (flag18)
-								{
-									buff = "Attack";
-								}
-								else
-								{
-									bool flag19 = component.Info.Attack == component.Info.Health;
-									if (flag19)
-									{
-										bool flag20 = UnityEngine.Random.Range(0, 100) >= 50;
-										if (flag20)
-										{
-											buff = "Attack";
-										}
-										else
-										{
-											buff = "Health";
-										}
-									}
-								}
-							}
-						}
-					}
-					else
-					{
-						chance = 30;
-						bool flag21 = this.timesDone > 1;
-						if (flag21)
-						{
-							chance = 50;
-						}
-						bool flag22 = component.Info.Attack > component.Info.Health;
-						if (flag22)
-						{
-							buff = "Health";
-						}
-						else
-						{
-							bool flag23 = component.Info.Attack < component.Info.Health;
-							if (flag23)
-							{
-								buff = "Attack";
-							}
-							else
-							{
-								bool flag24 = component.Info.Attack == component.Info.Health;
-								if (flag24)
-								{
-									bool flag25 = UnityEngine.Random.Range(0, 100) >= 50;
-									if (flag25)
-									{
-										buff = "Attack";
-									}
-									else
-									{
-										buff = "Health";
-									}
-								}
-							}
-						}
-					}
-					bool flag26 = component.name == "mag_crystalworm";
-					if (flag26)
-					{
-						chance = 90;
-					}
-					this.confirmStone.SetEnabled(true);
-					yield return this.confirmStone.WaitUntilConfirmation();
-				}
-				yield return new WaitForSeconds(1f);
-				this.cardpickingupscropt(component);
-				yield break;
-			}
-
-			public IEnumerator sequencer(CustomNode4 tradeCardsData)
-			{
-				this.timesDone = 0;
-				GameObject.Instantiate(Resources.Load("Prefabs/Environment/TableEffects/ForestTableEffects")).name = "TreeSceneryLol";
-				this.fireSlot.SetActive(true);
-				this.fireSlot.transform.position = new Vector3(0.5662f, 4.999f, 2.12f);
-				this.fireSlot.GetComponent<SelectCardFromDeckSlot>().Disable();
-				Plugin p = new Plugin();
-				Texture2D fire = Tools.getImage("fire.png");
-				Texture2D slot = Tools.getImage("fireSlot.png");
-				AnimatingSprite spritet = this.fireSlot.GetComponentInChildren<AnimatingSprite>();
-				int num;
-				for (int z = 0; z < spritet.textureFrames.Count; z = num + 1)
-				{
-					spritet.textureFrames[z] = fire;
-					num = z;
-				}
-				this.fireSlot.GetComponentInChildren<SelectCardFromDeckSlot>().specificRenderers[0].material.mainTexture = slot;
-				this.fireSlot.GetComponent<SelectCardFromDeckSlot>().SetColors(GameColors.Instance.brightBlue, GameColors.Instance.darkBlue, GameColors.Instance.seafoam);
-				base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("You had arrived before the great [c:bR] Master Orlu's[c:] flame. \n Legends say that you may throw a card in, and it will come out more powerful..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-				yield return new WaitForSeconds(1.25f);
-				this.card = 0;
-				int dength = RunState.Run.playerDeck.Cards.Count;
-				bool flag = RunState.Run.playerDeck.Cards.Count > 12;
-				if (flag)
-				{
-					int thing = RunState.Run.playerDeck.Cards.Count - 12;
-					dength = 12;
-					this.card = UnityEngine.Random.Range(0, thing);
-				}
-				for (int i = this.card; i < dength + this.card; i = num + 1)
-				{
-					yield return new WaitForSeconds(Time.deltaTime);
-					yield return new WaitForSeconds(Time.deltaTime);
-					GameObject gameObject = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
-					gameObject.transform.SetParent(base.transform);
-					SelectableCard component = gameObject.GetComponent<SelectableCard>();
-					component.Initialize(RunState.Run.playerDeck.Cards[i], new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardSelected), null, false, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardInspected));
-					component.SetEnabled(false);
-					Singleton<SelectableCardArray>.Instance.displayedCards.Add(component);
-					Singleton<SelectableCardArray>.Instance.TweenInCard(component.transform, new Vector3(-1.7f + 1.3f * (float)this.cd - 1f - (float)(this.cd / 6) * 7.8f, 5.01f, -2.18f + (float)(this.cd / 6 * 2)), 0f, false);
-					component.Anim.PlayQuickRiffleSound();
-					component.Initialize(RunState.Run.playerDeck.Cards[i], new Action<SelectableCard>(this.removeselectablecardfromdeck), null, false, null);
-					yield return new WaitForSeconds(Time.deltaTime);
-					component.GetComponent<Collider>().enabled = true;
-					yield return new WaitForSeconds(Time.deltaTime * 0f);
-					this.cardpickedfromdeck.Add(component);
-					yield return new WaitForSeconds(Time.deltaTime);
-					this.cd++;
-					gameObject = null;
-					component = null;
-					num = i;
-				}
-				yield break;
-			}
-
-			public int i = 0;
-
-			public int cd = 0;
-
-			public int selectingoptions = 3;
-
-			public int timesDone = 0;
-
-			public bool dead = false;
-
-			public List<SelectableCard> cardpicked = new List<SelectableCard>();
-
-			public List<SelectableCard> cardpickedfromdeck = new List<SelectableCard>();
-
-			public List<SelectableCard> created = new List<SelectableCard>();
-
-			public int card;
-
-			private GameObject fireSlot = GameObject.Instantiate<GameObject>(Singleton<CardStatBoostSequencer>.Instance.selectionSlot.gameObject);
-		}
-
+	
 
 		public class enchant : CardChoicesSequencer
 		{
+			public List<List<Ability>> tier1 = new List<List<Ability>> { new List<Ability> { Ability.Flying, Ability.Reach, SigilCode.GemGuardianFix.ability, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability, SigilCode.MoxStrafe.ability }, new List<Ability> { Ability.ExplodeOnDeath, Ability.BuffEnemy, Ability.ExplodeGems, Ability.GemDependant, SigilCode.FamiliarA.ability, SigilCode.DiscardCards.ability, Ability.Submerge, Ability.MoveBeside, Ability.StrafePush, Ability.SwapStats, Ability.EdaxioTorso } };
+			public List<List<Ability>> tier2 = new List<List<Ability>> { new List<Ability> { Ability.Sharp, Ability.Sniper, Ability.Flying, Ability.Reach, SigilCode.GemGuardianFix.ability, Ability.BuffNeighbours, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability, SigilCode.BoneMarrow.ability }, new List<Ability> { Ability.ExplodeOnDeath, Ability.SwapStats, Ability.EdaxioLegs, SigilCode.MoxCycling.ability, Ability.GemDependant, SigilCode.FamiliarA.ability, SigilCode.RandomPower.ability, Ability.EdaxioTorso, Ability.RandomAbility } };
+			public List<List<Ability>> tier3 = new List<List<Ability>> { new List<Ability> { Ability.Sharp, Ability.Sniper, SigilCode.GemGuardianFix.ability, Ability.BuffGems, SigilCode.MagDropEmeraldOnDeath.ability, SigilCode.MagDropSapphireOnDeath.ability, Ability.EdaxioHead, SigilCode.FecundityCycle.ability, SigilCode.BoneMarrow.ability }, new List<Ability> { Ability.EdaxioLegs, Ability.SwapStats, SigilCode.GemAbsorber.ability, SigilCode.MoxCycling.ability, SigilCode.MagDropSpear.ability, SigilCode.RandomPower.ability, Ability.RandomAbility } };
+			public List<List<Ability>> tier4 = new List<List<Ability>> { new List<Ability> { SigilCode.BoneMarrow.ability, Ability.Sniper, SigilCode.BlueMageDraw.ability, SigilCode.OrluHit.ability, Ability.Deathtouch, Ability.EdaxioHead, SigilCode.FecundityCycle.ability, Ability.BuffGems, SigilCode.AstralProjection.ability, SigilCode.FrostyA.ability, SigilCode.MoxSelect.ability }, new List<Ability> { SigilCode.MidasTouchA.ability, Ability.EdaxioArms, SigilCode.GemAbsorber.ability, Ability.Sacrificial, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability, SigilCode.RandomPower.ability, SigilCode.WhirlwindSpell.ability, Ability.SwapStats } };
+			public List<List<Ability>> tier5 = new List<List<Ability>> { new List<Ability> { Ability.SplitStrike, SigilCode.LifeSteal.ability, Ability.Tutor, SigilCode.OrluHit.ability, SigilCode.FrostyA.ability, SigilCode.FecundityCycle.ability, SigilCode.AstralProjection.ability, SigilCode.MoxSelect.ability }, new List<Ability> { SigilCode.MidasTouchA.ability, Ability.Sacrificial, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability, SigilCode.WhirlwindSpell.ability, SigilCode.RandomPower.ability, SigilCode.GemAbsorber.ability } };
 
+			public List<Ability> selected = new List<Ability>();
 			public ConfirmStoneButton confirmStone { get; set; }
 
 			public ConfirmStoneButton confirmStoneTwo { get; set; }
@@ -4296,8 +3823,7 @@ namespace MagnificusMod
 			public void cardpickingupscropt(SelectableCard component)
 			{
 				GameObject fireSlot = GameObject.Find("enchantmentSlot");
-				bool flag2 = this.timesDone > 0;
-				if (flag2)
+				if (timesDone > 0)
 				{
 					Destroy(fireSlot);
 					Destroy(GameObject.Find("TBruins"));
@@ -4386,9 +3912,14 @@ namespace MagnificusMod
 				}
 				doneSacrifice = true;
 				sacValue++;
-				if (component.Info.Abilities.Count > 1){sacValue++;}
+				foreach (Ability ability in component.Info.abilities)
+                {
+					if (AbilitiesUtil.GetInfo(ability).powerLevel > 0) { sacValue++; }
+					if (AbilitiesUtil.GetInfo(ability).powerLevel >= 4) { sacValue++; }
+				}
+				if (component.Info.Attack > 1){sacValue++;}
 
-				if (component.Info.Attack > 1 || component.Info.Health > 2){sacValue++;}
+				if (component.Info.Health > 1) { sacValue++; }
 
 				if (component.Info.metaCategories.Contains(CardMetaCategory.Rare)){sacValue += 2;}
 
@@ -4397,7 +3928,9 @@ namespace MagnificusMod
 				if (component.Info.name == "mag_obelisk") { sacValue += 2; }
 
 				GameObject fireSlot = GameObject.Find("enchantmentSlot");
-				if (sacValue > 5) sacValue = 5;
+
+				generateAbilities(sacValue);
+
 				bool displeased = SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("DyingBreath");
 				fireSlot.GetComponent<Light>().intensity = 2;
 
@@ -4405,7 +3938,7 @@ namespace MagnificusMod
 				string description = "";
 
 				if (displeased) ChallengeActivationUI.TryShowActivation(KayceeFixes.ChallengeManagement.DyingBreath);
-
+				if (sacValue > 5) sacValue = 5;
 				switch (sacValue)
 				{
 					case 2:
@@ -4433,26 +3966,7 @@ namespace MagnificusMod
 
 				List<CardModificationInfo> mods = component.Info.mods;
 				RunState.Run.playerDeck.RemoveCard(component.Info);
-				/*if (component.Info.name == "mag_crystalworm")
-				{
-					component.SetCardback(Tools.getImage("magcardback.png"));
-					component.Anim.SetFaceDown(true);
-					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("The shiny [c:bR] Mox Worm [c:] had perished..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-					component.SetInfo(CardLoader.GetCardByName("mag_moxlarva"));
-					component.Anim.SetFaceDown(false, false);
-					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("But a tiny larva had emerged from the carcass.. You may keep it and add it to your deck..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-					component.Info.mods = mods;
-					RunState.Run.playerDeck.AddCard(component.Info);
-				}*/
-				if (!component.Info.HasTrait(Trait.EatsWarrens))
-				{
 
-					if (!SaveManager.saveFile.part3Data.deck.cardIdModInfos.ContainsKey("kill_" + component.Info.name))
-					{
-						SavedVars.KilledCards += component.Info.name + ";";
-						SaveManager.saveFile.part3Data.deck.cardIdModInfos.Add("kill_" + component.Info.name, component.Info.mods);
-					}
-				}
 				component.Anim.PlayDeathAnimation();
 				confirmStone.Exit();
 				confirmStoneTwo.Exit();
@@ -4550,224 +4064,139 @@ namespace MagnificusMod
                 {
 					GameObject.Find("TESTTWO").transform.localPosition = new Vector3(0, -10, -2.3f);
 				}
-				if (!tutorialDone && !component.Info.HasTrait(Trait.EatsWarrens))
+				if (!tutorialDone)
 				{
 					SavedVars.LearnedMechanics += "enchantment;";
+					SavedVars.LearnedMechanics += "sacrificesigils;";
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " sits on the enchanted grounds...\nYou could either leave it there, to enchant it..", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Or you can slaughter it to improve the enchantment.", -1.0f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Or you can slaughter it to improve the enchantment, dictated by the [c:g1]Ethereal Sigils[c:].", -1.0f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("The choice is yours.", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);// The choice is yours.
+					
+				}
+				else if (!SavedVars.LearnedMechanics.Contains("sacrificesigils;"))
+				{
+					SavedVars.LearnedMechanics += "sacrificesigils;";
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g1]Ethereal Sigils[c:] hover around the grounds.", -1.0f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You may use them to predict a possible outcome..", -1.0f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 				}
 				component.gameObject.GetComponent<BoxCollider>().enabled = true;
 				component.Initialize(component.Info, new Action<SelectableCard>(this.cardpickingupscropt), null, false, null);
 				base.StartCoroutine(waitforsacrifice(component));
 				yield return confirmStoneTwo.WaitUntilConfirmation();
-				if (component != null)
+				if (component == null) yield break;
+
+				component.gameObject.GetComponent<BoxCollider>().enabled = true;
+				CardModificationInfo cardModificationInfo = new CardModificationInfo();
+				//cardModificationInfo.fromCardMerge = true;
+				this.confirmStoneTwo.Unpress();
+				Tween.LocalPosition(this.confirmStoneTwo.transform.parent.parent.parent, new Vector3(10f, 30.75f, -2.6f), 0.15f, 0.1f, null, Tween.LoopType.None, null, null, true);
+				Tween.LocalPosition(this.confirmStone.transform.parent.parent.parent, new Vector3(10f, 30.75f, -2.6f), 0.15f, 0.1f, null, Tween.LoopType.None, null, null, true);
+
+				List<Ability> bannedAbilities = new List<Ability>();
+				if (component.Info.SpecialStatIcon != SpecialStatIcon.None) { bannedAbilities.AddRange(new List<Ability> { Ability.EdaxioArms, Ability.EdaxioHead, Ability.EdaxioLegs, Ability.EdaxioTorso, Ability.SwapStats }); }
+				if (component.Info.Attack < 1) { bannedAbilities.AddRange(new List<Ability> { Ability.Sniper, Ability.Flying, Ability.SplitStrike, SigilCode.OrluHit.ability, SigilCode.FrostyA.ability, SigilCode.MidasTouchA.ability, Ability.SwapStats  }); }
+				List<Ability> modifySelected = new List<Ability>(selected);
+				for (int i = 0; i < modifySelected.Count; i++)
+                {
+					if (bannedAbilities.Contains(modifySelected[i])) { modifySelected.RemoveAt(i); i--; }
+                }
+				if (modifySelected.Count < 1) { modifySelected = selected; }
+				int abilityIdx = SeededRandom.Range(0, modifySelected.Count, SaveManager.SaveFile.GetCurrentRandomSeed());
+				Ability selectedAbility = modifySelected[abilityIdx];
+				abilityIdx = selected.IndexOf(selectedAbility);
+				bool isCurse = (abilityIdx > 1 || SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("DyingBreath"));
+				int hpChange = 0;
+				int atkChange = 0;
+				bool nullifyCost = false;
+
+				int curHp = component.Info.Health;
+				int curAtk = component.Info.Attack;
+				if (selectedAbility == Ability.EdaxioLegs && curHp > 1 || selectedAbility == Ability.EdaxioTorso && curAtk < 1 && curHp > 1)
 				{
+					selectedAbility = Ability.None;
 
-					component.gameObject.GetComponent<BoxCollider>().enabled = true;
-					CardModificationInfo cardModificationInfo = new CardModificationInfo();
-					//cardModificationInfo.fromCardMerge = true;
-					this.confirmStoneTwo.Unpress();
-					Tween.LocalPosition(this.confirmStoneTwo.transform.parent.parent.parent, new Vector3(10f, 30.75f, -2.6f), 0.15f, 0.1f, null, Tween.LoopType.None, null, null, true);
-					Tween.LocalPosition(this.confirmStone.transform.parent.parent.parent, new Vector3(10f, 30.75f, -2.6f), 0.15f, 0.1f, null, Tween.LoopType.None, null, null, true);
-					List<List<Ability>> tier1 = new List<List<Ability>> { new List<Ability> { Ability.Flying, Ability.Reach, SigilCode.GemGuardianFix.ability, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability, SigilCode.MoxStrafe.ability }, new List<Ability> { Ability.ExplodeOnDeath, Ability.BuffEnemy, Ability.ExplodeGems, Ability.GemDependant, SigilCode.FamiliarA.ability, SigilCode.DiscardCards.ability, Ability.Submerge, Ability.MoveBeside, Ability.StrafePush, Ability.SwapStats } };
-					List<List<Ability>> tier2 = new List<List<Ability>> { new List<Ability> { Ability.Sharp, Ability.Sniper, Ability.Flying, Ability.Reach, SigilCode.GemGuardianFix.ability, Ability.BuffNeighbours, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability }, new List<Ability> { Ability.ExplodeOnDeath, Ability.SwapStats, Ability.EdaxioLegs, SigilCode.MoxCycling.ability, Ability.GemDependant, SigilCode.FamiliarA.ability, SigilCode.RandomPower.ability } };
-					List<List<Ability>> tier3 = new List<List<Ability>> { new List<Ability> { Ability.Sharp, Ability.Sniper, SigilCode.GemGuardianFix.ability, Ability.BuffGems, SigilCode.MagDropEmeraldOnDeath.ability, SigilCode.MagDropSapphireOnDeath.ability, Ability.EdaxioHead, Ability.SplitStrike, SigilCode.FecundityCycle.ability }, new List<Ability> { Ability.EdaxioLegs, Ability.SwapStats, SigilCode.GemAbsorber.ability, SigilCode.MoxCycling.ability, SigilCode.MagDropSpear.ability, SigilCode.RandomPower.ability } };
-					List<List<Ability>> tier4 = new List<List<Ability>> { new List<Ability> { Ability.SplitStrike, Ability.Sniper, SigilCode.BlueMageDraw.ability, SigilCode.OrluHit.ability, Ability.Deathtouch, Ability.EdaxioHead, SigilCode.FecundityCycle.ability, Ability.BuffGems, SigilCode.AstralProjection.ability, SigilCode.FrostyA.ability }, new List<Ability> { SigilCode.MidasTouchA.ability, Ability.EdaxioArms, SigilCode.GemAbsorber.ability, Ability.DeleteFile, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability, SigilCode.RandomPower.ability, SigilCode.WhirlwindSpell.ability, Ability.SwapStats } };
-					List<List<Ability>> tier5 = new List<List<Ability>> { new List<Ability> { Ability.SplitStrike, SigilCode.LifeSteal.ability, Ability.Tutor, SigilCode.OrluHit.ability, SigilCode.FrostyA.ability, SigilCode.FecundityCycle.ability, SigilCode.AstralProjection.ability }, new List<Ability> { SigilCode.MidasTouchA.ability, Ability.DeleteFile, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability, SigilCode.WhirlwindSpell.ability, SigilCode.RandomPower.ability,SigilCode.GemAbsorber.ability } };
+					curHp -= 1;
+					atkChange = curHp;
+					curHp = -curHp;
+					hpChange = curHp;
+					base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been burdened with Glass Cannon!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
+				}
+				else if (selectedAbility == Ability.EdaxioTorso && curAtk > 0 || selectedAbility == Ability.EdaxioLegs && curHp < 2 && curAtk > 0)
+				{
+					selectedAbility = Ability.None;
 
-					var curseOrBless = SeededRandom.Range(0, 100, SaveManager.SaveFile.GetCurrentRandomSeed());
+					curAtk -= 1;
+					hpChange = curAtk;
+					curAtk = -curAtk;
+					atkChange = curAtk;
+					base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been burdened with Tank!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
+				}
+				else if (selectedAbility == Ability.EdaxioHead || selectedAbility == Ability.EdaxioLegs || selectedAbility == Ability.EdaxioTorso)
+				{
+					selectedAbility = Ability.None;
+					bool doHp = (Random.RandomRangeInt(0, 100) > 45 || component.Info.name == "ForceMage");
+					hpChange = doHp ? 2 : 0;
+					atkChange = !doHp ? 1 : 0;
+					base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been blessed!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
+				}
+				else if (selectedAbility == Ability.EdaxioArms)
+				{
+					selectedAbility = Ability.None;
 
-					curseOrBless = (curseOrBless >= 60 || SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("DyingBreath")) ? 1 : 0;
-
-					List<List<Ability>> tier = tier1;
-
-					switch (sacValue)
+					curHp -= 1;
+					atkChange = curHp + 2;
+					curHp = -curHp;
+					hpChange = curHp;
+					base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been burdened with Glass Cannon!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
+				}
+				else if (selectedAbility == Ability.GemDependant || selectedAbility == SigilCode.FamiliarA.ability)
+				{
+					if (component.Info.HasAbility(Ability.GemDependant) && selectedAbility == Ability.GemDependant) { selectedAbility = SigilCode.FamiliarA.ability; }
+					else if (component.Info.HasAbility(SigilCode.FamiliarA.ability) && selectedAbility == SigilCode.FamiliarA.ability) { selectedAbility = Ability.GemDependant; }
+					if (sacValue > 1)
 					{
-						case 1:
-							tier = tier1;
-							break;
-						case 2:
-							tier = tier2;
-							break;
-						case 3:
-							tier = tier3;
-							break;
-						case 4:
-							tier = tier4;
-							break;
-						case 5:
-							tier = tier5;
-							break;
+						hpChange = 1;
+						atkChange = (component.Info.name != "ForceMage") ? 1 : 0;
 					}
+					base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been burdened!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
 
-					if (component.Info.specialStatIcon != SpecialStatIcon.None ) { tier[0].RemoveAll((Ability x) => x == Ability.VirtualReality || x == Ability.EdaxioTorso || x == Ability.EdaxioArms || x == Ability.DeleteFile); tier[1].RemoveAll((Ability x) => x == Ability.VirtualReality || x == Ability.EdaxioTorso || x == Ability.EdaxioArms || x == Ability.DeleteFile); }
-
-					Ability selectedAbility = tier[curseOrBless][SeededRandom.Range(0, tier[curseOrBless].Count, SaveManager.SaveFile.GetCurrentRandomSeed())];
-					int hpChange = 0;
-					int atkChange = 0;
-					bool nullifyCost = false;
-					if (selectedAbility == Ability.EdaxioLegs)
-					{
-						selectedAbility = Ability.None;
-						int curHp = component.Info.Health;
-						if (curHp > 1)
-						{
-							curHp -= 1;
-							atkChange = curHp;
-							curHp = -curHp;
-							hpChange = curHp;
-							base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been cursed with Glass Cannon!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-						}
-						else
-						{
-							int curAtk = component.Info.Attack;
-							if (curAtk > 1)
-							{
-								curAtk -= 1;
-								hpChange = curAtk;
-								curAtk = -curAtk;
-								atkChange = curAtk;
-								base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been cursed with Tank!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-							}
-							else
-							{
-								bool doHp = (Random.RandomRangeInt(0, 100) > 45 || component.Info.name == "ForceMage");
-								hpChange = doHp ? 2 : 0;
-								atkChange = !doHp ? 1 : 0;
-								base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been blessed!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-							}
-						}
-					}
-					else if (selectedAbility == Ability.EdaxioTorso)
-					{
-						selectedAbility = Ability.None;
-						int curAtk = component.Info.Attack;
-						if (curAtk > 1)
-						{
-							curAtk -= 1;
-							hpChange = curAtk;
-							curAtk = -curAtk;
-							atkChange = curAtk;
-							base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been cursed with Tank!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-						}
-						else
-						{
-							int curHp = component.Info.Health;
-							if (curHp > 1)
-							{
-								curHp -= 1;
-								atkChange = curHp;
-								curHp = -curHp;
-								hpChange = curHp;
-								base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been cursed with Glass Cannon!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-							}
-							else
-							{
-								bool doHp = (Random.RandomRangeInt(0, 100) > 45 || component.Info.name == "ForceMage");
-								hpChange = doHp ? 1 : 0;
-								atkChange = !doHp ? 1 : 0;
-								base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been blessed!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-							}
-						}
-					}
-					else if (selectedAbility == Ability.EdaxioHead)
-					{
-						selectedAbility = Ability.None;
-						bool doHp = (Random.RandomRangeInt(0, 100) > 45 || component.Info.name == "ForceMage");
-						hpChange = doHp ? 2 : 0;
-						atkChange = !doHp ? 1 : 0;
-						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been blessed!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-					}
-					else if (selectedAbility == Ability.EdaxioArms)
-					{
-						selectedAbility = Ability.None;
-						int curHp = component.Info.Health;
-						curHp -= 1;
-						atkChange = curHp + 2;
-						curHp = -curHp;
-						hpChange = curHp;
-						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been cursed with Glass Cannon!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-					}
-
-					else if (selectedAbility == Ability.GemDependant)
-					{
-						if (component.Info.HasAbility(Ability.GemDependant))
-						{
-							selectedAbility = SigilCode.FamiliarA.ability;
-						}
-						if (sacValue > 1)
-						{
-							hpChange = 1;
-							atkChange = (component.Info.name != "ForceMage") ? 1 : 0;
-						}
-						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been cursed!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-
-					}
-					else if (selectedAbility == SigilCode.FamiliarA.ability)
-					{
-						if (component.Info.HasAbility(SigilCode.FamiliarA.ability))
-						{
-							selectedAbility = Ability.GemDependant;
-						}
-						if (sacValue > 1)
-						{
-							hpChange = 1;
-							atkChange = (component.Info.name != "ForceMage") ? 1 : 0;
-						}
-						if (component.Info.name == "ForceMage")
-						{
-							atkChange = 0;
-						}
-						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been cursed!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-
-					}
-					else if (selectedAbility == Ability.DeleteFile)
-					{
-						nullifyCost = true;
-						if (component.Info.HasAbility(SigilCode.FamiliarA.ability))
-						{
-							selectedAbility = Ability.GemDependant;
-						}
-						else if (component.Info.HasAbility(Ability.GemDependant))
-						{
-							selectedAbility = SigilCode.FamiliarA.ability;
-						}
-						else
-						{
-							if (Random.RandomRangeInt(0, 100) > 50)
-							{
-								selectedAbility = Ability.GemDependant;
-							}
-							else
-							{
-								selectedAbility = SigilCode.FamiliarA.ability;
-							}
-						}
-						base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " is now free.. But more unstable..", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-
-					}
+				}
+				else if (selectedAbility == Ability.Sacrificial)
+				{
+					nullifyCost = true;
+					if (component.Info.HasAbility(SigilCode.FamiliarA.ability)) { selectedAbility = Ability.GemDependant; }
+					else if (component.Info.HasAbility(Ability.GemDependant)) { selectedAbility = SigilCode.FamiliarA.ability; }
 					else
 					{
-						if (curseOrBless == 0)
-						{
-							base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been blessed!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-						}
-						else
-						{
-							base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " has been cursed!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
-						}
+						if (Random.RandomRangeInt(0, 100) > 50) { selectedAbility = Ability.GemDependant; }
+						else { selectedAbility = SigilCode.FamiliarA.ability; }
 					}
+					base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("Your " + component.Info.DisplayedNameLocalized + " is now free.. But more unstable..", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
 
-
-
-					component.SetCardback(Tools.getImage("magcardback.png"));
-					component.Anim.PlayTransformAnimation();
-					this.ApplyMod(component.Info, atkChange, hpChange, selectedAbility, nullifyCost);
-					component.SetInfo(component.Info);
-					timesDone = 1;
-					component.gameObject.GetComponent<BoxCollider>().enabled = true;
 				}
+				else
+				{
+					string abilityName = AbilitiesUtil.GetInfo(selectedAbility).rulebookName;
+					base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput( String.Format("Your " + component.Info.DisplayedNameLocalized + " has been {0} with {1}!", (!isCurse) ? "blessed" : "burdened", abilityName), -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
+				}
+
+				GameObject abilityIconsParent = GameObject.Find("abilityIconsParent");
+				for (int i = 0; i < abilityIconsParent.transform.childCount; i++)
+				{
+					if (i == abilityIdx)
+                    {
+						Tween.LocalPosition(abilityIconsParent.transform.GetChild(i), new Vector3(-0.05f, 2f, 0.45f), 0.2f, 0, Tween.EaseInOutStrong);
+						continue;
+                    }
+					Tween.LocalScale(abilityIconsParent.transform.GetChild(i), Vector3.zero, 0.25f, 0f, Tween.EaseIn);
+				}
+				timesDone++;
+				component.SetCardback(Tools.getImage("magcardback.png"));
+				component.Anim.PlayTransformAnimation();
+				this.ApplyMod(component.Info, atkChange, hpChange, selectedAbility, nullifyCost);
+				component.SetInfo(component.Info);
+				component.gameObject.GetComponent<BoxCollider>().enabled = true;
+
 				yield break;
 			}
 
@@ -4812,6 +4241,34 @@ namespace MagnificusMod
 				}
 				fireSlot.GetComponentInChildren<SelectCardFromDeckSlot>().specificRenderers[0].material.mainTexture = slot;
 				fireSlot.GetComponent<SelectCardFromDeckSlot>().SetColors(GameColors.Instance.brightBlue, GameColors.Instance.darkBlue, GameColors.Instance.seafoam);
+
+				GameObject abilityIconsParent = new GameObject("abilityIconsParent");
+				abilityIconsParent.transform.parent = fireSlot.transform;
+				abilityIconsParent.transform.localPosition = Vector3.zero;
+
+				GameObject abilityIconInstance = GameObject.Instantiate(GameObject.Find("CardElements").transform.Find("CardAbilityIcons_Part3").Find("DefaultIcons_1Ability").gameObject); abilityIconInstance.name = "sacrificeAbility0";
+				abilityIconInstance.layer = 0;
+				abilityIconInstance.SetActive(true);
+				abilityIconInstance.transform.parent = abilityIconsParent.transform;
+				abilityIconInstance.transform.localPosition = new Vector3(-0.75f, 1.5f, 0.45f);
+				abilityIconInstance.transform.localRotation = Quaternion.Euler(35, 350, 0);
+				abilityIconInstance.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0.5f);
+				abilityIconInstance.GetComponent<AbilityIconInteractable>().AssignAbility(Ability.BeesOnHit, CardLoader.GetCardByName("JuniorSage"), null);
+				for (int i = 1; i < 4; i++)
+                {
+					GameObject iconInstance = GameObject.Instantiate(abilityIconInstance);
+					iconInstance.name = "sacrificeAbility" + i;
+					iconInstance.transform.parent = abilityIconsParent.transform;
+					float xMod = (i < 2) ? -0.75f : -1.0f;
+					xMod += (i % 2 != 0) ? 1 : 0;
+					if (i == 3) xMod += 0.5f;
+					iconInstance.transform.localPosition = new Vector3(xMod, 1.5f, (i < 2) ? 0.45f: -1);
+					iconInstance.transform.localRotation = Quaternion.Euler((i < 2) ? 35 : 55, (i % 2 != 0) ? 10 : 350, 0);
+				}
+				abilityIconsParent.AddComponent<SineWaveMovement>().speed = 0.5f;
+				abilityIconsParent.GetComponent<SineWaveMovement>().xMagnitude = 0.025f;
+				abilityIconsParent.GetComponent<SineWaveMovement>().yMagnitude = 0.05f;
+				generateAbilities(0);
 				base.StartCoroutine(Singleton<TextDisplayer>.Instance.ShowUntilInput("The [c:g1]Sacrifical Grounds[c:] stand before you.\nLegends tell of cards growing exponentially in power here, under the right circumstances..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true));
 				yield return new WaitForSeconds(1.25f);
 				this.card = 0;
@@ -4822,44 +4279,6 @@ namespace MagnificusMod
 				}
 
 				deck.RemoveAll((CardInfo x) => x.Abilities.Count >= 4 || x.HasTrait(Trait.EatsWarrens));
-				/*
-				int dength = deck.Count;
-				bool flag = deck.Count > 12;
-				if (flag)
-				{
-					int thing = deck.Count - 12;
-					dength = 12;
-					this.card = UnityEngine.Random.Range(0, thing);
-				}
-				for (int i = this.card; i < dength + this.card; i = num + 1)
-				{
-					yield return new WaitForSeconds(Time.deltaTime);
-					yield return new WaitForSeconds(Time.deltaTime);
-					GameObject gameObject = GameObject.Instantiate<GameObject>(Singleton<SelectableCardArray>.Instance.selectableCardPrefab);
-					gameObject.transform.SetParent(base.transform);
-					SelectableCard component = gameObject.GetComponent<SelectableCard>();
-					component.Initialize(deck[i], new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardSelected), null, false, new Action<SelectableCard>(Singleton<SelectableCardArray>.Instance.OnCardInspected));
-					component.SetEnabled(false);
-					Singleton<SelectableCardArray>.Instance.displayedCards.Add(component);
-					Singleton<SelectableCardArray>.Instance.TweenInCard(component.transform, new Vector3(-1.7f + 1.3f * (float)this.cd - 1f - (float)(this.cd / 6) * 7.8f, 5.01f, -2 + (float)(this.cd / 6 * 2)), 0f, false);
-					component.Anim.PlayQuickRiffleSound();
-					component.Initialize(deck[i], new Action<SelectableCard>(this.removeselectablecardfromdeck), null, false, null);
-					yield return new WaitForSeconds(Time.deltaTime);
-					component.GetComponent<Collider>().enabled = true;
-					yield return new WaitForSeconds(Time.deltaTime * 0f);
-					this.cardpickedfromdeck.Add(component);
-					yield return new WaitForSeconds(Time.deltaTime);
-					this.cd++;
-					gameObject = null;
-					component = null;
-					num = i;
-
-
-				 List<CardInfo> cards = new List<CardInfo> (RunState.Run.playerDeck.Cards);
-				cards.RemoveAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens));
-
-
-				}*/
 				GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 				theDeck.transform.parent = GameObject.Find("GameTable").transform;
 				theDeck.transform.localPosition = new Vector3(0, 5.01f, -1f);
@@ -4878,6 +4297,51 @@ namespace MagnificusMod
 					Singleton<GameFlowManager>.Instance.TransitionToGameState(GameState.Map, null);
 				}
 				yield break;
+			}
+
+			public void generateAbilities(int sacValue)
+            {
+				List<List<Ability>> tier = tier1;
+
+				if (sacValue > 5) sacValue = 5;
+				bool displeased = SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("DyingBreath");
+
+				switch (sacValue)
+				{
+					case 1:
+						tier = tier1;
+						break;
+					case 2:
+						tier = tier2;
+						break;
+					case 3:
+						tier = tier3;
+						break;
+					case 4:
+						tier = tier4;
+						break;
+					case 5:
+						tier = tier5;
+						break;
+				}
+				List<Ability> bannedAbilities = new List<Ability>();
+
+				selected = new List<Ability>();
+
+				for (int i = 0; i < 4; i++)
+                {
+					int pool = (i < 2 && !displeased) ? 0 : 1;
+					int card = SeededRandom.Range(0, tier[pool].Count, SaveManager.SaveFile.GetCurrentRandomSeed());
+					selected.Add(tier[pool][card]);
+					tier[pool].RemoveAt(card);
+                }
+				GameObject abilityIconsParent = GameObject.Find("abilityIconsParent");
+				for (int i = 0; i < abilityIconsParent.transform.childCount; i++)
+                {
+					abilityIconsParent.transform.GetChild(i).gameObject.GetComponent<AbilityIconInteractable>().AssignAbility(selected[i], CardLoader.GetCardByName("JuniorSage"), null);
+					abilityIconsParent.transform.GetChild(i).gameObject.GetComponent<AbilityIconInteractable>().Ability = selected[i];
+					abilityIconsParent.transform.GetChild(i).gameObject.SetActive(true);
+				}
 			}
 
 			public int i = 0;
@@ -5253,7 +4717,6 @@ namespace MagnificusMod
 					component.SetFaceDown(false);
 					if (!string.IsNullOrEmpty(component.Info.description) && !ProgressionData.IntroducedCard(component.Info))
 					{
-						base.StartCoroutine(tutorialtext(component));
 						ProgressionData.SetCardIntroduced(component.Info);
 					}
 				}
@@ -5787,26 +5250,6 @@ namespace MagnificusMod
 
 			public string name = "changecost";
 		}
-
-		public class CustomNode4 : SpecialNodeData
-		{
-			public CardChoicesType choicesType { get; set; }
-
-			public List<CardChoice> overrideChoices { get; set; }
-
-			public bool gemifyChoices { get; set; }
-
-			public override string PrefabPath
-			{
-				get
-				{
-					return "Prefabs/Map/MapNodesPart1/MapNode_Empty";
-				}
-			}
-
-			public string name = "newflame";
-		}
-
 		public class CustomNode14 : SpecialNodeData//SpellCardChoice
 		{
 			public CardChoicesType choicesType { get; set; }
