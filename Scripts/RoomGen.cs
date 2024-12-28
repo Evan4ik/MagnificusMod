@@ -33,7 +33,7 @@ namespace MagnificusMod
                     {
                         for (int x = 0; x < 5 + Random.RandomRangeInt(-1, 1); x++)
                         {
-                            if (y == seperatePart && Random.RandomRangeInt(0, 100) > 85 || x == seperatePartX) { lastChar = "-"; id2[y].Add("-");continue; }
+                            if (y == seperatePart && Random.RandomRangeInt(0, 100) > 62 || x == seperatePartX && Random.RandomRangeInt(0, 100) > 35) { lastChar = "-"; id2[y].Add("-");continue; }
                             
                             if (lastChar == "/" && Random.Range(0, 100) > 55)
                             {
@@ -108,7 +108,7 @@ namespace MagnificusMod
                     {
                         for (int x = 0; x < 5 + Random.Range(-2, 2); x++)
                         {
-                            if (y == seperatePart && Random.RandomRangeInt(0, 100) > 35 || x == seperatePartX) { lastChar = "-"; id2[y].Add("-"); continue; }
+                            if (y == seperatePart && Random.RandomRangeInt(0, 100) > 25 || x == seperatePartX) { lastChar = "-"; id2[y].Add("-"); continue; }
 
                             if (lastChar == "/" && Random.Range(0, 100) > 55)
                             {

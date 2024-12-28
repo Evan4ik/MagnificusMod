@@ -1293,10 +1293,10 @@ namespace MagnificusMod
 								gameObject.name = "trapdoor";
 								gameObject.transform.parent = GameObject.Find("walls").transform;
 								gameObject.transform.Find("BrickGround").localPosition = new Vector3(0, 0, 0);
-								gameObject.transform.position = new Vector3((float)(x * 20), 6f, (float)(y * -20 + -9));
+								gameObject.transform.position = new Vector3((float)(x * 20), 6f, (float)(y * -20) - 9);
 								gameObject.transform.rotation = Quaternion.Euler(new Vector3(90, 90, 0));
 								gameObject.transform.localScale = new Vector3(15f, 15f, 1);
-								gameObject.transform.position += new Vector3(-2.5f, 0, 2.5f);
+								gameObject.transform.position += new Vector3(-2.5f, 0, 0f);
 								gameObject.transform.position = new Vector3(gameObject.transform.position.x, 0.01f, gameObject.transform.position.z);
 								gameObject.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 1);
 								gameObject.transform.Find("BrickGround").gameObject.GetComponent<MeshRenderer>().material.mainTextureOffset = new Vector2(0, 0);

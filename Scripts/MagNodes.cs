@@ -1077,7 +1077,7 @@ namespace MagnificusMod
 							RunState.Run.currency -= 5;
 						} 
 					}
-					else if (component.Info.displayedName == "Sapphire Mox")
+					else if (component.Info.name == "MoxSapphire")
 					{
 						component.Anim.PlayTransformAnimation();
 						List<CardInfo> list3 = new List<CardInfo>();
@@ -1085,7 +1085,7 @@ namespace MagnificusMod
 						component.SetInfo(CardLoader.GetCardByName("MoxRuby"));
 						return;
 					}
-					else if (component.Info.displayedName == "Ruby Mox")
+					else if (component.Info.name == "MoxRuby")
 					{
 						component.Anim.PlayTransformAnimation();
 						List<CardInfo> list4 = new List<CardInfo>();
@@ -1093,7 +1093,7 @@ namespace MagnificusMod
 						component.SetInfo(CardLoader.GetCardByName("MoxEmerald"));
 						return;
 					}
-					else if (component.Info.displayedName == "Emerald Mox")
+					else if (component.Info.name == "MoxEmerald")
 					{
 						component.Anim.PlayTransformAnimation();
 						List<CardInfo> list5 = new List<CardInfo>();
@@ -1117,7 +1117,7 @@ namespace MagnificusMod
 						File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagCurrentNode.GetNodeStuff(false, true)));
 						return;
 					}
-					else if (component.Info.DisplayedNameLocalized == "Bleene's Mox" || component.Info.DisplayedNameLocalized == "Orlu's Mox" || component.Info.DisplayedNameLocalized == "Goranj's Mox")
+					else if (component.Info.name.Contains("MoxDual"))
 					{
 						if (RunState.Run.currency >= 9)
 						{
@@ -2154,6 +2154,7 @@ namespace MagnificusMod
 				componentInfoShite.healthAdjustment = 1;
 				componentInfoShite.nameReplacement = "~" + component.Info.DisplayedNameLocalized + "~";
 				if (component.Info.name == "mag_potion") { componentInfoShite.healthAdjustment = 2; }
+				if (component.Info.name == "mag_magnusspell") { componentInfoShite.bloodCostAdjustment = 1; }
 				RunState.Run.playerDeck.ModifyCard(component.Info, componentInfoShite);
 				component.SetInfo(component.Info);
 				component.gameObject.GetComponent<TerrainLayout>().ApplyAppearance();
