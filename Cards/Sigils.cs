@@ -521,7 +521,7 @@ namespace MagnificusMod
 
 		public static void FrostSpellAbility()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Frost Spell", "When a spell bearing this sigil is played, all cards belonging to the opponent will have their attack set to 0, but given +2 health.", typeof(SigilCode.FrostSpell), Tools.getImage("spell of frost_ability.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Freeze", "When a spell bearing this sigil is played, both sides of the board will be immune to damage for a turn.", typeof(SigilCode.FrostSpell), Tools.getImage("spell of frost_ability.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("spell of frost_ability.png"));
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
@@ -559,23 +559,14 @@ namespace MagnificusMod
 			SigilCode.WaterSpell.ability = newAbility.ability;
 		}
 
-		public static void TargetFlameSpellAbility()
+		public static void FlameSpellAbility()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Spell of Flame", "Select a side of the board, every card on that side will lose 2 health (without perishing) and have their attack increased by 1.", typeof(SigilCode.TargetFlame), Tools.getImage("spell of flame_ability.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Spell of Flame", "When a spell bearing this sigil is played, both sides of the board will take 1 direct damage for 3 turns.", typeof(SigilCode.TargetFlame), Tools.getImage("spell of flame_ability.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("spell of flame_ability.png"));
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			newAbility.powerLevel = 10;
 			SigilCode.TargetFlame.ability = newAbility.ability;
-		}
-
-		public static void FlameSpellAbility()
-		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Set Ablaze", "Every card on the opposite side will lose 2 health (without perishing) and have their attack increased by 1.", typeof(SigilCode.Flame), Tools.getImage("spell of flame_ability.png"))
-				.SetIcon(Tools.getImage("spell of flame_ability.png"));
-			newAbility.metaCategories = new List<AbilityMetaCategory>();
-			newAbility.powerLevel = 10;
-			SigilCode.Flame.ability = newAbility.ability;
 		}
 
 		public static void MagnusSpellAbility()

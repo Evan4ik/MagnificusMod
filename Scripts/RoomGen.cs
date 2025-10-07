@@ -106,7 +106,7 @@ namespace MagnificusMod
                 case "lonely":
                     for (int y = 0; y < limit; y++)
                     {
-                        for (int x = 0; x < 5 + Random.Range(-2, 2); x++)
+                        for (int x = 0; x < 5 + Random.Range(-1, 0); x++)
                         {
                             if (y == seperatePart && Random.RandomRangeInt(0, 100) > 25 || x == seperatePartX) { lastChar = "-"; id2[y].Add("-"); continue; }
 

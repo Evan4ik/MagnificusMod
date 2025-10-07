@@ -35,7 +35,8 @@ namespace MagnificusMod
 				}
 				bool manaCheck = __instance.Info.GetExtendedPropertyAsBool("ManaCost") == true;
 				bool bloodCheck = !manaCheck && __instance.Info.BloodCost <= MagGetValueOfSacrifices(Singleton<BoardManager>.Instance.playerSlots.FindAll((CardSlot x) => x.Card != null && !x.Card.HasTrait(Trait.Gem) && MagCanBeSacrificed(x.Card, false)), false) || manaCheck && __instance.Info.BloodCost <= MagGetValueOfSacrifices(Singleton<BoardManager>.Instance.playerSlots.FindAll((CardSlot x) => x.Card != null && x.Card.HasTrait(Trait.Gem) && MagCanBeSacrificed(x.Card, true)), true);
-				__result = bloodCheck && __instance.Info.BonesCost <= Singleton<ResourcesManager>.Instance.PlayerBones && __instance.EnergyCost <= Singleton<ResourcesManager>.Instance.PlayerEnergy && __instance.GemsCostRequirementMet() && Singleton<BoardManager>.Instance.SacrificesCreateRoomForCard(__instance, Singleton<BoardManager>.Instance.PlayerSlotsCopy);
+				bool monocleOverride = __instance.HasAbility(Ability.VirtualReality) && RunState.Run.eyeState == EyeballState.Wizard;
+				__result = (bloodCheck && __instance.Info.BonesCost <= Singleton<ResourcesManager>.Instance.PlayerBones && __instance.EnergyCost <= Singleton<ResourcesManager>.Instance.PlayerEnergy && __instance.GemsCostRequirementMet() && Singleton<BoardManager>.Instance.SacrificesCreateRoomForCard(__instance, Singleton<BoardManager>.Instance.PlayerSlotsCopy)) || monocleOverride;
 				return false;
 			}
 		}

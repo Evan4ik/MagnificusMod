@@ -630,7 +630,7 @@ namespace MagnificusMod
 			List<Ability> list2 = new List<Ability> { SigilCode.DrawSpell.ability };
 
 			List<GemType> gemCost = new List<GemType> { GemType.Blue };
-			CardInfo myCard = CardManager.New("mag", "mag_spellcaster", "Spellcaster", 1, 3, "It reads out spells from its book and casts them directly to your hand.")
+			CardInfo myCard = CardManager.New("mag", "mag_spellcaster", "Spellcaster", 1, 2, "It reads out spells from its book and casts them directly to your hand.")
 					.AddAppearances(CardAppearanceBehaviour.Appearance.RareCardBackground)
 					.SetPixelPortrait(Tools.getSprite("pixelportrait_spellcaster.png"))
 					.SetPortrait(Tools.getImage("pack mage.png"))
@@ -1920,7 +1920,7 @@ namespace MagnificusMod
 					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Blue })
 					.AddAbilities(Ability.PreventAttack, Ability.GemDependant);
 			repulsive.metaCategories = list;
-			CardInfo revivor = CardManager.New("mag", "mag_bleenebookrevivor", "Secrets of Life and Death", 0, 3, "[c:g2]The Secrets of Life and Death[c:]\n[c:g3]A[c:] [c:g1]forbidden[c:] [c:g3]book,[c:] [c:g1]I[c:] [c:g3]had[c:] [c:g1]to[c:] [c:g3]read[c:] [c:g1]it[c:] [c:g3]in[c:] [c:g1]secret![c:]")
+			CardInfo revivor = CardManager.New("mag", "mag_bleenebookrevivor", "Life and Death", 0, 3, "[c:g2]The Secrets of Life and Death[c:]\n[c:g3]A[c:] [c:g1]forbidden[c:] [c:g3]book,[c:] [c:g1]I[c:] [c:g3]had[c:] [c:g1]to[c:] [c:g3]read[c:] [c:g1]it[c:] [c:g3]in[c:] [c:g1]secret![c:]")
 
 					.SetPortrait(Tools.getImage("bleenebook_revivor.png"))
 					.SetCost(bloodCost: 1)
@@ -2062,7 +2062,7 @@ namespace MagnificusMod
 
 					.SetPortrait(Tools.getImage("moonshards.png"))
 					.SetCost(bloodCost: 0)
-					.AddAbilities(Ability.Reach, Ability.BuffGems, Ability.MadeOfStone);
+					.AddAbilities(Ability.Reach, Ability.BuffGems);
 
 			myCard.metaCategories = list;
 			myCard.temple = CardTemple.Wizard;
@@ -2072,7 +2072,7 @@ namespace MagnificusMod
 
 					.SetPortrait(Tools.getImage("moonshards.png"))
 					.SetCost(bloodCost: 0)
-					.AddAbilities(Ability.Reach, Ability.DeathShield, Ability.MadeOfStone);
+					.AddAbilities(Ability.Reach, Ability.DeathShield);
 
 			myCard.metaCategories = list3;
 			myCard.temple = CardTemple.Wizard;
@@ -2088,7 +2088,7 @@ namespace MagnificusMod
 					.AddTraits(Trait.Gem)
 					.SetCost(bloodCost: 0)
 					.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)
-					.AddAbilities(Ability.Reach, Ability.MadeOfStone, Ability.Sharp);
+					.AddAbilities(Ability.Reach, Ability.Sharp);
 
 			myCard.metaCategories = list;
 			myCard.temple = CardTemple.Wizard;
@@ -2103,7 +2103,7 @@ namespace MagnificusMod
 					.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)
 					.AddTraits(Trait.Gem)
 					.SetCost(bloodCost: 0)
-					.AddAbilities(Ability.Reach, Ability.GainAttackOnKill, Ability.MadeOfStone);
+					.AddAbilities(Ability.Reach, Ability.GainAttackOnKill);
 
 			myCard.metaCategories = list;
 			myCard.temple = CardTemple.Wizard;
@@ -2119,7 +2119,7 @@ namespace MagnificusMod
 					.AddTraits(Trait.Gem)
 					.SetCost(bloodCost: 0)
 					.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)
-					.AddAbilities(Ability.Reach, Ability.Deathtouch, Ability.MadeOfStone);
+					.AddAbilities(Ability.Deathtouch);
 
 			myCard.metaCategories = list;
 			myCard.temple = CardTemple.Wizard;
@@ -2134,13 +2134,29 @@ namespace MagnificusMod
 					.AddTraits(Trait.Gem)
 					.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)
 					.SetCost(bloodCost: 0)
-					.AddAbilities(Ability.Reach, SigilCode.FrostyA.ability);
+					.AddAbilities(SigilCode.FrostyA.ability);
 
 			myCard.metaCategories = list;
 			myCard.temple = CardTemple.Wizard;
 		}
 
-		public static void AddJupiter()
+        public static void AddUranus()
+        {
+            List<CardMetaCategory> list = new List<CardMetaCategory>();
+            List<Ability> list2 = new List<Ability>();
+            CardInfo myCard = CardManager.New("mag", "mag_urans", "Uranus", 0, 4, "Its a funny one!")
+
+                    .SetPortrait(Tools.getImage("neptune.png"))
+                    .AddTraits(Trait.Gem)
+                    .AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)
+                    .SetCost(bloodCost: 0)
+                    .AddAbilities(Ability.SquirrelOrbit);
+
+            myCard.metaCategories = list;
+            myCard.temple = CardTemple.Wizard;
+        }
+
+        public static void AddJupiter()
 		{
 			List<CardMetaCategory> list = new List<CardMetaCategory>();
 			List<Ability> list2 = new List<Ability>();
@@ -2162,13 +2178,30 @@ namespace MagnificusMod
 
 					.SetPortrait(Tools.getImage("saturn.png"))
 					.SetCost(bloodCost: 0)
-					.AddAbilities(Ability.Reach, Ability.AllStrike);
+					.AddAbilities(Ability.AllStrike);
 
 			myCard.metaCategories = list;
 			myCard.temple = CardTemple.Wizard;
 		}
 
-		public static void AddMasterKraken()
+        public static void AddPluto()
+        {
+            List<CardMetaCategory> list = new List<CardMetaCategory>();
+            List<Ability> list2 = new List<Ability>();
+            CardInfo myCard = CardManager.New("mag", "mag_pluto", "Pluto", 1, 2, "Little Guy comin' through")
+
+                    .SetPortrait(Tools.getImage("neptune.png"))
+                    .AddTraits(Trait.Gem)
+                    .AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)
+                    .SetCost(bloodCost: 0)
+                    .AddAbilities(Ability.StrafeSwap);
+
+            myCard.metaCategories = list;
+            myCard.temple = CardTemple.Wizard;
+        }
+
+
+        public static void AddMasterKraken()
 		{
 
 			List<CardMetaCategory> list = new List<CardMetaCategory> { CardMetaCategory.Rare };

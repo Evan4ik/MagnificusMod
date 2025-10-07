@@ -3454,7 +3454,8 @@ namespace MagnificusMod
 			}
 			GameObject.Find("GameTable").transform.Find("light").Find("deckLight").gameObject.GetComponent<Light>().enabled = true;
 			Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
-			yield break;
+            Singleton<FirstPersonController>.Instance.enabled = false;
+            yield break;
         }
 		public static IEnumerator unIsometricTransition(float delay = 0f, bool doPainting = true)
 		{

@@ -19,6 +19,7 @@ using Random = UnityEngine.Random;
 using MagSave = MagnificusMod.MagCurrentNode;
 using SavedVars = MagnificusMod.SaveVariables;
 using KayceeStorage = MagnificusMod.KayceeStorage;
+using InscryptionAPI.Helpers.Extensions;
 
 namespace MagnificusMod
 {
@@ -268,21 +269,29 @@ namespace MagnificusMod
 					}
 				}
 				float j = 0;
-				bool strongPull = Singleton<BoardManager>.Instance.GetSlots(false).Find((CardSlot x) => x.Card != null && x.Card.HasAbility(SigilCode.StrongPull.ability)) != null;
-				foreach (CardSlot opposingSlot in opposingSlots)
+				bool strongPull = Singleton<BoardManager>.Instance.GetSlots(false).Find((CardSlot x) => x.Card != null && x.Card.HasAbility(SigilCode.StrongPull.ability)) != null && slot.IsPlayerSlot;
+                bool strongPullOpp = Singleton<BoardManager>.Instance.GetSlots(true).Find((CardSlot x) => x.Card != null && x.Card.HasAbility(SigilCode.StrongPull.ability)) != null && slot.IsOpponentSlot();
+
+                foreach (CardSlot opposingSlot in opposingSlots)
 				{
-					if (strongPull && slot.IsPlayerSlot)
+					if (strongPull)
 					{
 						Singleton<ViewManager>.Instance.SwitchToView(Singleton<BoardManager>.Instance.CombatView, false, false);
 						yield return __state.SlotAttackSlot(slot, Singleton<BoardManager>.Instance.GetSlots(false).Find((CardSlot x) => x.Card != null && x.Card.HasAbility(SigilCode.StrongPull.ability)), j);
 						j += 0.01f;
 						continue;
-					}
-					Singleton<ViewManager>.Instance.SwitchToView(Singleton<BoardManager>.Instance.CombatView, false, false);
+					} else if (strongPullOpp)
+                    {
+                        Singleton<ViewManager>.Instance.SwitchToView(Singleton<BoardManager>.Instance.CombatView, false, false);
+                        yield return __state.SlotAttackSlot(slot, Singleton<BoardManager>.Instance.GetSlots(true).Find((CardSlot x) => x.Card != null && x.Card.HasAbility(SigilCode.StrongPull.ability)), j);
+                        j += 0.01f;
+                        continue;
+                    }
+                    Singleton<ViewManager>.Instance.SwitchToView(Singleton<BoardManager>.Instance.CombatView, false, false);
 					yield return __state.SlotAttackSlot(slot, opposingSlot, j);//(opposingSlots.Count > 1) ? 0.1f : 0f);
 					j += 0.01f;
 				}
-				yield break;
+                yield break;
 			}
 		}
 

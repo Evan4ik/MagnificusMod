@@ -499,10 +499,10 @@ namespace MagnificusMod
 						{
 							if (ChallengeManagement.PatchedChallengesReference.ContainsKey(challenges[i].Challenge.challengeType))
 							{
-								bool level2 = (challenges[i].Challenge.challengeType == AscensionChallenge.NoClover && KayceeStorage.ChallengeLevel < 2) || (challenges[i].Challenge.challengeType == AscensionChallenge.ExpensivePelts && KayceeStorage.ChallengeLevel < 2) || (challenges[i].Challenge.challengeType == AscensionChallenge.GrizzlyMode && KayceeStorage.ChallengeLevel < 2);
+								bool level2 = (challenges[i].Challenge.challengeType == AscensionChallenge.NoClover && KayceeStorage.ChallengeLevel < 2) || (challenges[i].Challenge.challengeType == AscensionChallenge.ExpensivePelts && KayceeStorage.ChallengeLevel < 2);
 								bool level3 = (challenges[i].Challenge.challengeType == AscensionChallenge.BossTotems && KayceeStorage.ChallengeLevel < 3) || (challenges[i].Challenge.challengeType == AscensionChallenge.StartingDamage && KayceeStorage.ChallengeLevel < 3);
 								bool level4 = (challenges[i].Challenge.challengeType == AscensionChallenge.AllTotems && KayceeStorage.ChallengeLevel < 4) || (challenges[i].Challenge.challengeType == AscensionChallenge.NoBossRares && KayceeStorage.ChallengeLevel < 4);
-								bool level5 = (challenges[i].Challenge.challengeType == AscensionChallenge.WeakStarterDeck && KayceeStorage.ChallengeLevel < 5) || (challenges[i].Challenge.challengeType == AscensionChallenge.LessLives && KayceeStorage.ChallengeLevel < 5);
+								bool level5 = (challenges[i].Challenge.challengeType == AscensionChallenge.WeakStarterDeck && KayceeStorage.ChallengeLevel < 5) || (challenges[i].Challenge.challengeType == AscensionChallenge.LessLives && KayceeStorage.ChallengeLevel < 5) || (challenges[i].Challenge.challengeType == AscensionChallenge.GrizzlyMode && KayceeStorage.ChallengeLevel < 5) || (challenges[i].Challenge.challengeType == AscensionChallenge.SubmergeSquirrels && KayceeStorage.ChallengeLevel < 5);
 								bool level6 = (challenges[i].Challenge.challengeType == AscensionChallenge.FinalBoss && KayceeStorage.ChallengeLevel < 6);
 								if (!level2 && !level3 && !level4 && !level5 && !level6 || config.unlockAllKaycee == true)
 								{

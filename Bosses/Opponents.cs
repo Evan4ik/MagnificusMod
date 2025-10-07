@@ -1019,6 +1019,7 @@ namespace MagnificusMod
 						newGame.SetActive(false);
 					}
 					yield return new WaitForSeconds(1f);
+					break;
 				}
 				yield break;
             }
@@ -3304,7 +3305,7 @@ namespace MagnificusMod
 				{
 					AudioController.Instance.FadeOutLoop(0.75f, Array.Empty<int>());
 					yield return new WaitForSeconds(0.2f);
-					planets = new List<string> { "mag_neptune", "mag_mercury", "mag_jupiter", "mag_saturn" };
+					planets = new List<string> { "mag_neptune", "mag_mercury", "mag_jupiter", "mag_saturn", "mag_pluto", "mag_uranus" };
 					killedPlanets = 0;
 					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName("mag_giantmoonshards"), Singleton<BoardManager>.Instance.OpponentSlotsCopy[0], 0.1f, true);
 					yield return Singleton<BoardManager>.Instance.CreateCardInSlot(CardLoader.GetCardByName("mag_giantmoonshards2"), Singleton<BoardManager>.Instance.OpponentSlotsCopy[3], 0.1f, true);

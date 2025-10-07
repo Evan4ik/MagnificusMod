@@ -21,6 +21,7 @@ using SavedVars = MagnificusMod.SaveVariables;
 using KayceeStorage = MagnificusMod.KayceeStorage;
 using MagModGeneration = MagnificusMod.Generation;
 using MagCurrentNode = MagnificusMod.MagCurrentNode;
+using static InscryptionAPI.Slots.SlotModificationManager;
 
 namespace MagnificusMod
 {
@@ -102,7 +103,7 @@ namespace MagnificusMod
 								gemType = GemType.Blue;
 								break;
 						}
-						List<CardInfo> list = CardLoader.GetUnlockedCards(CardMetaCategory.ChoiceNode, CardTemple.Wizard).FindAll((CardInfo x) => x.gemsCost.Count > 0 && x.gemsCost[0] == gemType && (x.gemsCost.Count == 1 || x.gemsCost.Count > 1 && x.gemsCost[0] == x.gemsCost[1]) );
+						List<CardInfo> list = CardLoader.GetUnlockedCards(CardMetaCategory.ChoiceNode, CardTemple.Wizard).FindAll((CardInfo x) => x.gemsCost.Count == 1 && x.gemsCost[0] == gemType );
 						cardInfo = list.Count <= 0 ? null : CardLoader.Clone(list[SeededRandom.Range(0, list.Count, Environment.TickCount)]);
 					}
 					else
@@ -884,7 +885,7 @@ namespace MagnificusMod
 					shopObjects.transform.localPosition = new Vector3(0, 0, 0);
 					clickEnabled = true;
 
-					Singleton<TextDisplayer>.Instance.ShowMessage(string.Format("[c:g3]~ {0} Crystals ~[c:]", RunState.Run.currency),Emotion.Laughter, TextDisplayer.LetterAnimation.WavyJitter);
+					Singleton<TextDisplayer>.Instance.ShowMessage(string.Format("[c:g3]~ {0} Crystal{1} ~[c:]", RunState.Run.currency, (RunState.Run.currency > 1) ? "s" : ""),Emotion.Laughter, TextDisplayer.LetterAnimation.WavyJitter);
 
 					yield break;
 				}
@@ -1077,7 +1078,7 @@ namespace MagnificusMod
 							RunState.Run.currency -= 5;
 						} 
 					}
-					else if (component.Info.name == "MoxSapphire")
+					else if (component.Info.name == "MoxSapphire" && component.Info.mods.Count < 1)
 					{
 						component.Anim.PlayTransformAnimation();
 						List<CardInfo> list3 = new List<CardInfo>();
@@ -1085,7 +1086,7 @@ namespace MagnificusMod
 						component.SetInfo(CardLoader.GetCardByName("MoxRuby"));
 						return;
 					}
-					else if (component.Info.name == "MoxRuby")
+					else if (component.Info.name == "MoxRuby" && component.Info.mods.Count < 1)
 					{
 						component.Anim.PlayTransformAnimation();
 						List<CardInfo> list4 = new List<CardInfo>();
@@ -1093,7 +1094,7 @@ namespace MagnificusMod
 						component.SetInfo(CardLoader.GetCardByName("MoxEmerald"));
 						return;
 					}
-					else if (component.Info.name == "MoxEmerald")
+					else if (component.Info.name == "MoxEmerald" && component.Info.mods.Count < 1)
 					{
 						component.Anim.PlayTransformAnimation();
 						List<CardInfo> list5 = new List<CardInfo>();
@@ -1229,14 +1230,14 @@ namespace MagnificusMod
 					}
 
 					if (RunState.Run.currency != oldCurrency) 
-						Singleton<TextDisplayer>.Instance.ShowMessage(string.Format("[c:g3]~ {0} Crystals ~[c:]", RunState.Run.currency), Emotion.Laughter, TextDisplayer.LetterAnimation.WavyJitter); 
+						Singleton<TextDisplayer>.Instance.ShowMessage(string.Format("[c:g3]~ {0} Crystal{1} ~[c:]", RunState.Run.currency, (RunState.Run.currency > 1) ? "s" : ""), Emotion.Laughter, TextDisplayer.LetterAnimation.WavyJitter); 
 
 				}
 
 				public IEnumerator fullSpellBook()
                 {
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Ah, but your [c:g1]spell book[c:] is full...", -0.15f, 0.15f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-					Singleton<TextDisplayer>.Instance.ShowMessage(string.Format("[c:g3]~ {0} Crystals ~[c:]", RunState.Run.currency), Emotion.Laughter, TextDisplayer.LetterAnimation.WavyJitter);
+					Singleton<TextDisplayer>.Instance.ShowMessage(string.Format("[c:g3]~ {0} Crystal{1} ~[c:]", RunState.Run.currency, (RunState.Run.currency > 1) ? "s" : ""), Emotion.Laughter, TextDisplayer.LetterAnimation.WavyJitter);
 
 				}
 
@@ -1307,6 +1308,18 @@ namespace MagnificusMod
 							cards.Add(cardByName3);
 						}
 
+						int[] amts = { 0, 0, 0 };
+						foreach (CardInfo card in cards)
+						{
+							int idx = 0;
+							if (card.name == "MoxEmerald") { idx = 1; }
+							else if (card.name == "MoxSapphire") { idx = 2; }
+
+							if (!SaveManager.saveFile.grimoraData.deck.cardIdModInfos.ContainsKey(card.name + "#" + amts[idx])) { continue; }
+
+							card.mods.AddRange(SaveManager.saveFile.grimoraData.deck.cardIdModInfos[card.name + "#" + amts[idx]]);
+							amts[idx]++;
+						}
 
 						for (int i = 0; i < cards.Count; i++)
 						{
@@ -2259,6 +2272,7 @@ namespace MagnificusMod
 							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Eurgh.. This place is disgusting..", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Seems like I'm forced to train spellcasting in here.", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Give me a [c:g1]spell[c:] of yours, and make it quick.", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+							yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Give me a [c:g1]spell[c:] of yours, and make it quick.", -1f, 0.5f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						}
 						else
 						{
@@ -2830,12 +2844,36 @@ namespace MagnificusMod
 
 			public IEnumerator spawnCards()
             {
-				List<CardInfo> deck = new List<CardInfo>();
-				foreach (CardInfo card in RunState.Run.playerDeck.Cards)
-				{
-					deck.Add(card);
-				}
-				deck.RemoveAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens) || x.HasAbility(Ability.RandomAbility) || x.HasAbility(Ability.EdaxioArms)  || x.HasAbility(Ability.EdaxioHead) || x.HasAbility(Ability.EdaxioLegs) || x.HasAbility(Ability.EdaxioTorso) || x.HasAbility(Ability.PreventAttack) || x.Abilities.Count < 1);
+
+
+                List<CardInfo> deck = new List<CardInfo>();
+
+                string text = File.ReadAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave");
+                string[] array3 = text.Split(new char[]
+                {
+                                    'R'
+                });
+                array3 = array3[1].Split(new char[]
+                {
+                                    ','
+                });
+                for (int j = 0; j < int.Parse(array3[0]); j++)
+                {
+                    CardInfo cardByName = CardLoader.GetCardByName("MoxRuby");
+                    deck.Add(cardByName);
+                }
+                for (int k = 0; k < int.Parse(array3[1]); k++)
+                {
+                    CardInfo cardByName2 = CardLoader.GetCardByName("MoxEmerald");
+                    deck.Add(cardByName2);
+                }
+                for (int l = 0; l < int.Parse(array3[2]); l++)
+                {
+                    CardInfo cardByName3 = CardLoader.GetCardByName("MoxSapphire");
+                    deck.Add(cardByName3);
+                }
+
+				deck.RemoveAll((CardInfo x) => x.Abilities.Count > 1);
 
 				Tween.LocalPosition(GameObject.Find("EventCauldron").transform, new Vector3(0, 5.88f, 2.5f), 0.5f, 0);
 
@@ -2844,7 +2882,7 @@ namespace MagnificusMod
 				theDeck.transform.localPosition = new Vector3(0, 5.01f, -1f);
 				theDeck.transform.localScale = new Vector3(1, 1, 1);
 				Singleton<DeckReviewSequencer>.Instance.cardArray.InitializeGamepadGrid();
-				yield return Singleton<DeckReviewSequencer>.Instance.cardArray.SpawnAndPlaceCards(deck, null, Singleton<DeckReviewSequencer>.Instance.cardArray.GetNumRows(deck.Count), false, true);
+				yield return Singleton<DeckReviewSequencer>.Instance.cardArray.SpawnAndPlaceCards(deck, null, 2, false, true);
 				yield return new WaitForSeconds(0.15f);
 				Singleton<DeckReviewSequencer>.Instance.cardArray.SetCardsEnabled(true);
 				Singleton<DeckReviewSequencer>.Instance.cardArray.selectedCard = null;
@@ -2895,19 +2933,19 @@ namespace MagnificusMod
 					cardsChosen++;
 					choice1 = component;
 					component.gameObject.GetComponent<BoxCollider>().size = new Vector3(0, 0, 0);
-					Tween.LocalPosition(component.transform, new Vector3(0, 2.6f, 1), 0.5f, 0);
-					yield return new WaitForSeconds(0.5f);
-					Tween.Rotation(component.transform, Quaternion.Euler(0, 0, 0), 0.3f, 0);
-					yield return new WaitForSeconds(0.4f);
+					Tween.LocalPosition(component.transform, new Vector3(0, 2.6f, 1), 0.25f, 0);
+					yield return new WaitForSeconds(0.25f);
+					Tween.Rotation(component.transform, Quaternion.Euler(0, 0, 0), 0.15f, 0);
+					yield return new WaitForSeconds(0.15f);
 					Tween.LocalPosition(component.transform, new Vector3(0, 2.6f, 3.75f), 0.25f, 0);
 					yield return new WaitForSeconds(0.25f);
 					Tween.LocalScale(component.transform, new Vector3(0.75f, 0.75f, 0.75f), 0.1f, 0.1f);
 					Tween.LocalPosition(component.transform, new Vector3(0, 0f, 3.75f), 0.15f, 0);
-					yield return new WaitForSeconds(1f);
+					yield return new WaitForSeconds(0.25f);
 					component.transform.parent = GameObject.Find("EventCauldron").transform;
-					Tween.LocalPosition(component.transform, new Vector3(-0.26f, 1f, -0.28f), 0.9f, 0);
+					Tween.LocalPosition(component.transform, new Vector3(-0.26f, 1f, -0.28f), 0.35f, 0);
 					component.transform.rotation = Quaternion.Euler(10, 22.5f, 357.25f);
-					yield return new WaitForSeconds(0.91f);
+					yield return new WaitForSeconds(0.35f);
 					component.gameObject.AddComponent<SineWaveMovement>().originalPosition = new Vector3(-0.26f, 0.8f, -0.28f);
 					component.gameObject.GetComponent<SineWaveMovement>().speed = 0.5f;
 					component.gameObject.GetComponent<SineWaveMovement>().yMagnitude = 0.2f;
@@ -2915,19 +2953,19 @@ namespace MagnificusMod
 				} else
                 {
 					choice2 = component;
-					Tween.LocalPosition(component.transform, new Vector3(0, 2.6f, 1), 0.5f, 0);
-					yield return new WaitForSeconds(0.5f);
-					Tween.Rotation(component.transform, Quaternion.Euler(0, 0, 0), 0.3f, 0);
-					yield return new WaitForSeconds(0.4f);
+					Tween.LocalPosition(component.transform, new Vector3(0, 2.6f, 1), 0.25f, 0);
+					yield return new WaitForSeconds(0.25f);
+					Tween.Rotation(component.transform, Quaternion.Euler(0, 0, 0), 0.15f, 0);
+					yield return new WaitForSeconds(0.15f);
 					Tween.LocalPosition(component.transform, new Vector3(0, 2.6f, 3.75f), 0.25f, 0);
 					yield return new WaitForSeconds(0.25f);
 					Tween.LocalScale(component.transform, new Vector3(0.75f, 0.75f, 0.75f), 0.1f, 0.1f);
 					Tween.LocalPosition(component.transform, new Vector3(0, 0f, 3.75f), 0.15f, 0);
-					yield return new WaitForSeconds(1f);
+					yield return new WaitForSeconds(0.25f);
 					component.transform.parent = GameObject.Find("EventCauldron").transform;
-					Tween.LocalPosition(component.transform, new Vector3(0.14f, 1.13f, 0.25f), 0.9f, 0);
+					Tween.LocalPosition(component.transform, new Vector3(0.14f, 1.13f, 0.25f), 0.25f, 0);
 					component.transform.rotation = Quaternion.Euler(9.9f, 337.5f, 356.1f);
-					yield return new WaitForSeconds(0.91f);
+					yield return new WaitForSeconds(0.25f);
 					component.gameObject.AddComponent<SineWaveMovement>().originalPosition = new Vector3(0.14f, 0.93f, 0.25f);
 					component.gameObject.GetComponent<SineWaveMovement>().speed = 0.5f;
 					component.gameObject.GetComponent<SineWaveMovement>().yMagnitude = 0.2f;
@@ -2949,7 +2987,7 @@ namespace MagnificusMod
 				choice2.gameObject.GetComponent<SineWaveMovement>().enabled = false;
 				Tween.LocalPosition(choice2.transform, new Vector3(0.14f, -0.25f, 0.25f), 0.3f, 0);
 				yield return new WaitForSeconds(0.3f);
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("NOW ITS TIME FOR ME TO PRACTICE MY BREWING MAGICKS!!", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("NOW ITS TIME FOR ME TO PRACTICE MY MIXING MAGICKS!!", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 
 				Tween.LocalRotation(GameObject.Find("EventCauldron").transform, Quaternion.Euler(0, 180, 10), 0.2f, 0);
 				Tween.Shake(GameObject.Find("EventCauldron").transform, GameObject.Find("EventCauldron").transform.localPosition, new Vector3(0.3f, 0f, 0.25f), 1.5f, 0.1f);
@@ -2975,83 +3013,52 @@ namespace MagnificusMod
 				yield return new WaitForSeconds(0.6f);
 				Tween.LocalPosition(component.transform, new Vector3(0,-0.25f, 0.15f), 0.1f, 0);
 				Tween.LocalRotation(component.transform, Quaternion.Euler(0, 180, 0), 0.1f, 0);
-				RunState.Run.playerDeck.RemoveCard(choice1.Info);
-				RunState.Run.playerDeck.RemoveCard(choice2.Info);
-				CardInfo potion = CardLoader.GetCardByName("mag_potion");
+
+				if (choice2.Info.HasAbility(Ability.GainGemOrange)) { MagCurrentNode.editSideDeck(-1, 0, 0); }
+				else if (choice2.Info.HasAbility(Ability.GainGemGreen)) { MagCurrentNode.editSideDeck(0, -1, 0); }
+				else if (choice2.Info.HasAbility(Ability.GainGemBlue)) { MagCurrentNode.editSideDeck(0, 0, -1); }
+
+                File.WriteAllText(SaveManager.SaveFolderPath + "MagnificusModSave.gwsave", SaveManager.ToJSON(MagCurrentNode.GetNodeStuff(false, true)));
+				
+                CardInfo potion = CardLoader.GetCardByName(choice1.Info.name);
 				CardModificationInfo potionMod = new CardModificationInfo();
-				List<string> colorChoices = new List<string>();
-				if (choice1.Info.gemsCost.Count > 0)
-                {
-					switch(choice1.Info.gemsCost[0])
-                    {
-						case GemType.Green:
-							colorChoices.Add("green");
-							break;
-						case GemType.Orange:
-							colorChoices.Add("orange");
-							break;
-						case GemType.Blue:
-							colorChoices.Add("blue");
-							break;
-					}
-                } else
-                {
-					colorChoices.Add("mana");
-                }
-				if (choice2.Info.gemsCost.Count > 0)
-				{
-					switch (choice2.Info.gemsCost[0])
-					{
-						case GemType.Green:
-							colorChoices.Add("green");
-							break;
-						case GemType.Orange:
-							colorChoices.Add("orange");
-							break;
-						case GemType.Blue:
-							colorChoices.Add("blue");
-							break;
-					}
-				}
-				else
-				{
-					colorChoices.Add("mana");
-				}
-				potionMod.decalIds = new List<string>();
-				potionMod.decalIds.Add(colorChoices[UnityEngine.Random.RandomRangeInt(0, colorChoices.Count)]);
-				List<Ability> abilites = new List<Ability>();
-				abilites.AddRange(choice1.Info.Abilities);
-				for (int i = 0; i < choice2.Info.Abilities.Count; i++)
-				{
-					if (abilites.Count < 4)
-                    {
-						abilites.Add(choice2.Info.Abilities[i]);
-                    }
-				}
-				potionMod.bloodCostAdjustment = 1;
-				if (abilites.Contains(Ability.PreventAttack))
-                {potionMod.bloodCostAdjustment++;}
-				potionMod.abilities.AddRange(abilites);
-				potion.mods.Add(potionMod);
+
+				string nameReplacement = "";
+
+				if (choice1.Info.HasAbility(Ability.GainGemGreen) || choice2.Info.HasAbility(Ability.GainGemGreen) && (choice1.Info.HasAbility(Ability.GainGemOrange) || choice2.Info.HasAbility(Ability.GainGemOrange))) { nameReplacement = "Goranj"; }
+                if (choice1.Info.HasAbility(Ability.GainGemOrange) || choice2.Info.HasAbility(Ability.GainGemOrange) && (choice1.Info.HasAbility(Ability.GainGemBlue) || choice2.Info.HasAbility(Ability.GainGemBlue))) { nameReplacement = "Orlu"; }
+                if (choice1.Info.HasAbility(Ability.GainGemBlue) || choice2.Info.HasAbility(Ability.GainGemBlue) && (choice1.Info.HasAbility(Ability.GainGemGreen) || choice2.Info.HasAbility(Ability.GainGemGreen))) { nameReplacement = "Bleene"; }
+
+				if (choice1.Info.name == choice2.Info.name)
+                    nameReplacement = choice1.Info.DisplayedNameEnglish.Split(' ')[0];
+
+                potionMod.nameReplacement = nameReplacement + " Mix";
+				potionMod.abilities = choice2.Info.abilities;
 				component.SetInfo(potion);
+				component.Info.mods.Add(potionMod);
+				component.RenderCard();
+
+
+				int amts = 0;
+				foreach (string modName in SaveManager.saveFile.grimoraData.deck.cardIdModInfos.Keys)
+				{
+					if (modName == choice1.Info.name)
+						amts++;
+				}
+                SaveManager.saveFile.grimoraData.deck.cardIdModInfos[choice1.Info.name + "#" + amts] = new List<CardModificationInfo>() { potionMod }; // Shitty hack but I dont know where else to store this information without it being needlessly complex
 
 				GameObject.Destroy(choice1.gameObject);
 
 				Tween.LocalPosition(component.transform, new Vector3(0, 2.2f, 0.15f), 0.5f, 0);
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default);
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("IT IS DONE!!! GO TAKE IT!!", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-				if (!SavedVars.LearnedMechanics.Contains("stimmyf3") && RunState.Run.regionTier == 3)
+				if (!SavedVars.LearnedMechanics.Contains("stimmyf3n;"))
 				{
-					SavedVars.LearnedMechanics += "stimmyf3;";
+					SavedVars.LearnedMechanics += "stimmyf3n;";
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("GO!!", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("[c:g2]GET OUT OF HERE!![c:]", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-				} else if (abilites.Contains(Ability.PreventAttack) && !SavedVars.LearnedMechanics.Contains("repulsivepotion"))
-				{
-					SavedVars.LearnedMechanics += "repulsivepotion;";
-					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("WOAH! LOOKS LIKE SOMETHING YOU PUT INTO THE POTION MADE IT A BIT.. [c:g1]PRICY[c:]..", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 				}
 				CustomTextDisplayerStuff.switchToSpeakerStyle(0);
-				RunState.Run.playerDeck.AddCard(component.Info);
 				done = true;
 				component.gameObject.GetComponent<BoxCollider>().enabled = true;
 				yield break;
@@ -3085,17 +3092,16 @@ namespace MagnificusMod
 
 				if (RunState.Run.regionTier == 3)
 				{
-					if (!SavedVars.LearnedMechanics.Contains("stimmyf3"))
+					if (!SavedVars.LearnedMechanics.Contains("stimmyf3n"))
 					{
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("W-What? Am I finally free?", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("A break from that endless darkness?", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Nevermind.. It's just potion making..", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Nevermind.. It's just alchemy..", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return new WaitForSeconds(0.26f);
 						if (SavedVars.LearnedMechanics.Contains("beatlonely"))
 						{ yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Oh, Hi Challenger!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);} 
 						else { yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Wow, someone new!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null); }
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Just give me two cards of yours and we'll make a potion out of them!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You can later give this potion to your cards and they gain some silly effects!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Just give me two mox cards of yours and we'll mix them together!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Come on!! It will be fun!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("And stimulating..", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("So stimulating", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
@@ -3104,26 +3110,26 @@ namespace MagnificusMod
 					{
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hello there challenger!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You know how this works now", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Just give me two cards and we'll make a potion!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Just give me two mox and we'll mix em together!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 					}
 				} else
                 {
-					if (!SavedVars.LearnedMechanics.Contains("stimmyf2"))
+					if (!SavedVars.LearnedMechanics.Contains("stimmyf2n"))
 					{
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Woah.. What.. Is this place?", -0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("So bright..", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return new WaitForSeconds(0.26f);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Oh, Hi there!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Let's make some potions!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Just hand over two cards and we'll be done with it..", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Let's make some mox mixes!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Just hand over two mox cards and we'll be done with it..", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Come on!! It will be fun!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						SavedVars.LearnedMechanics += "stimmyf2;";
+						SavedVars.LearnedMechanics += "stimmyf2n;";
 					}
 					else
 					{
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Hello there challenger!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You know how this works now", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Just give me two cards and we'll make a potion!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Just give me two mox and we'll mix em together!!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 					}
 				}
 				yield return new WaitForSeconds(1f);
@@ -3802,7 +3808,7 @@ namespace MagnificusMod
 
 		public class enchant : CardChoicesSequencer
 		{
-			public List<List<Ability>> tier1 = new List<List<Ability>> { new List<Ability> { Ability.Flying, Ability.Reach, SigilCode.GemGuardianFix.ability, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability, SigilCode.MoxStrafe.ability }, new List<Ability> { Ability.ExplodeOnDeath, Ability.BuffEnemy, Ability.ExplodeGems, Ability.GemDependant, SigilCode.FamiliarA.ability, SigilCode.DiscardCards.ability, Ability.Submerge, Ability.MoveBeside, Ability.StrafePush, Ability.SwapStats, Ability.EdaxioTorso } };
+			public List<List<Ability>> tier1 = new List<List<Ability>> { new List<Ability> { Ability.Flying, Ability.Reach, SigilCode.GemGuardianFix.ability, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability, SigilCode.MoxStrafe.ability }, new List<Ability> { Ability.ExplodeOnDeath, Ability.BuffEnemy, Ability.ExplodeGems, Ability.Submerge, Ability.MoveBeside, Ability.StrafePush, Ability.SwapStats, Ability.EdaxioTorso } };
 			public List<List<Ability>> tier2 = new List<List<Ability>> { new List<Ability> { Ability.Sharp, Ability.Sniper, Ability.Flying, Ability.Reach, SigilCode.GemGuardianFix.ability, Ability.BuffNeighbours, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability, SigilCode.BoneMarrow.ability }, new List<Ability> { Ability.ExplodeOnDeath, Ability.SwapStats, Ability.EdaxioLegs, SigilCode.MoxCycling.ability, Ability.GemDependant, SigilCode.FamiliarA.ability, SigilCode.RandomPower.ability, Ability.EdaxioTorso, Ability.RandomAbility } };
 			public List<List<Ability>> tier3 = new List<List<Ability>> { new List<Ability> { Ability.Sharp, Ability.Sniper, SigilCode.GemGuardianFix.ability, Ability.BuffGems, SigilCode.MagDropEmeraldOnDeath.ability, SigilCode.MagDropSapphireOnDeath.ability, Ability.EdaxioHead, SigilCode.FecundityCycle.ability, SigilCode.BoneMarrow.ability }, new List<Ability> { Ability.EdaxioLegs, Ability.SwapStats, SigilCode.GemAbsorber.ability, SigilCode.MoxCycling.ability, SigilCode.MagDropSpear.ability, SigilCode.RandomPower.ability, Ability.RandomAbility } };
 			public List<List<Ability>> tier4 = new List<List<Ability>> { new List<Ability> { SigilCode.BoneMarrow.ability, Ability.Sniper, SigilCode.BlueMageDraw.ability, SigilCode.OrluHit.ability, Ability.Deathtouch, Ability.EdaxioHead, SigilCode.FecundityCycle.ability, Ability.BuffGems, SigilCode.AstralProjection.ability, SigilCode.FrostyA.ability, SigilCode.MoxSelect.ability }, new List<Ability> { SigilCode.MidasTouchA.ability, Ability.EdaxioArms, SigilCode.GemAbsorber.ability, Ability.Sacrificial, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability, SigilCode.RandomPower.ability, SigilCode.WhirlwindSpell.ability, Ability.SwapStats } };

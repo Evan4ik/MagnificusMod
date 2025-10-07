@@ -129,10 +129,8 @@ namespace MagnificusMod
 					{
 						introDialogue = "";
 					}
-					else
+					else if (card.Info.displayedName.ToLower()[0] == 'a' || card.Info.displayedName.ToLower()[0] == 'e' || card.Info.displayedName.ToLower()[0] == 'o' || card.Info.displayedName.ToLower()[0] == 'i' || card.Info.displayedName.ToLower()[0] == 'u')
 					{
-						if (card.Info.displayedName.ToLower()[0] == 'a' || card.Info.displayedName.ToLower()[0] == 'e' || card.Info.displayedName.ToLower()[0] == 'o' || card.Info.displayedName.ToLower()[0] == 'i' || card.Info.displayedName.ToLower()[0] == 'u')
-						{
 							intros = new List<string>
 							{
 								"You glance at an " + card.Info.displayedName + ". ",
@@ -140,7 +138,6 @@ namespace MagnificusMod
 								"You gaze at an " + card.Info.displayedName + ". "
 							};
 							introDialogue = intros[UnityEngine.Random.Range(0, intros.Count)];
-						}
 
 					}
 					

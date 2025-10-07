@@ -231,7 +231,7 @@ namespace MagnificusMod
 			ChangeBoulder();
 			*/
 			Cards.AddGnome();
-			Cards.AddScubaGnome();
+			//Cards.AddScubaGnome();
 
 			Sigils.FlameSpellAbility();
 			Sigils.HPSpellAbility();
@@ -241,7 +241,6 @@ namespace MagnificusMod
 			Sigils.WindSpellAbility();
 			Sigils.WhirlwindSpellAbility();
 			Sigils.WaterSpellAbility();
-			Sigils.TargetFlameSpellAbility();
 			Sigils.MagnusSpellAbility();
 			Sigils.VaseofGreedAbility();
 			Sigils.GnomeAbility();
@@ -299,6 +298,8 @@ namespace MagnificusMod
 			Cards.AddMercury();
 			Cards.AddJupiter();
 			Cards.AddSaturn();
+			Cards.AddUranus();
+			Cards.AddPluto();
 			Cards.AddEarth();
 
 
@@ -352,9 +353,16 @@ namespace MagnificusMod
 				if (SceneLoader.ActiveSceneName != "finale_magnificus") { return; }
 				if (Generation.allcardssummoned) { return; }
 
-				List<Ability> bannedAbilites = new List<Ability> { Ability.QuadrupleBones, Ability.Sentry, Ability.PermaDeath, Ability.CellTriStrike, Ability.CellDrawRandomCardOnDeath, Ability.CellBuffSelf, Ability.ConduitSpawnGems, SigilCode.GemGuardianFix.ability, Ability.Transformer, Ability.DeleteFile, Ability.LatchBrittle, Ability.LatchDeathShield, Ability.LatchExplodeOnDeath, Ability.FileSizeDamage, Ability.GainBattery, Ability.ConduitNull, Ability.ConduitBuffAttack, Ability.GemsDraw, Ability.DropRubyOnDeath };
+				List<Ability> bannedAbilites = new List<Ability> { Ability.QuadrupleBones, Ability.BeesOnHit, Ability.Sentry, Ability.PermaDeath, Ability.CellTriStrike, Ability.CellDrawRandomCardOnDeath, Ability.CellBuffSelf, Ability.ConduitSpawnGems, SigilCode.GemGuardianFix.ability, Ability.Transformer, Ability.DeleteFile, Ability.LatchBrittle, Ability.LatchDeathShield, Ability.LatchExplodeOnDeath, Ability.FileSizeDamage, Ability.GainBattery, Ability.ConduitNull, Ability.ConduitBuffAttack, Ability.GemsDraw, Ability.DropRubyOnDeath };
 
-				Generation.allcardssummoned = true;
+                foreach (AbilityInfo ability in ScriptableObjectLoader<AbilityInfo>.AllData)
+				{
+					if (ability.ability != Ability.GainGemBlue && ability.ability != Ability.GainGemGreen && ability.ability != Ability.GainGemOrange) { continue; }
+					ability.canStack = true;
+				}
+
+
+                Generation.allcardssummoned = true;
 				List<RuleBookPageInfo> list = new List<RuleBookPageInfo>();
 				try
 				{

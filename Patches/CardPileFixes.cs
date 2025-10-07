@@ -248,7 +248,20 @@ namespace MagnificusMod
 					__instance.sideDeckList.Add(CardLoader.GetCardByName("MoxSapphire"));
 				}
 
-				bool spellPileExists = false;
+                int[] amts = { 0, 0, 0 };
+                foreach (CardInfo card in __instance.sideDeckList)
+                {
+                    int idx = 0;
+                    if (card.name == "MoxEmerald") { idx = 1; }
+                    else if (card.name == "MoxSapphire") { idx = 2; }
+
+                    if (!SaveManager.saveFile.grimoraData.deck.cardIdModInfos.ContainsKey(card.name + "#" + amts[idx])) { continue; }
+
+                    card.mods.AddRange(SaveManager.saveFile.grimoraData.deck.cardIdModInfos[card.name + "#" + amts[idx]]);
+                    amts[idx]++;
+                }
+
+                bool spellPileExists = false;
 				try
 				{
 					if (GameObject.Find("GameTable").transform.Find("CardBattle_Magnificus").Find("SpellPile").gameObject.activeSelf)
