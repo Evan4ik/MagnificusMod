@@ -50,6 +50,12 @@ namespace MagnificusMod
 						if (!otherCard.slot.IsPlayerSlot && otherCard.OriginatedFromQueue)
 						{
 							GameObject.Find("OpponentSlots").transform.GetChild(otherCard.slot.Index).transform.Find("QueuedCardFrame").gameObject.SetActive(false);
+
+							if (otherCard.Info.GetExtendedPropertyAsBool("TargetedSpell") == true)
+							{
+								object[] targetArgs = new object[] { otherCard.slot, otherCard };
+								yield return otherCard.TriggerHandler.OnTrigger(Trigger.SlotTargetedForAttack, targetArgs);
+							}
 						}
 						yield return new WaitForSeconds(0.3f);
 						if (otherCard.Info.HasTrait(Trait.EatsWarrens))
@@ -1100,10 +1106,30 @@ namespace MagnificusMod
 		[HarmonyPatch(typeof(ResourcesManager), "ForceGemsUpdate")]
 		public class DuelDiskGemsFix
 		{
-			public static void Postfix()
+			public static bool Prefix(ref ResourcesManager __instance)
 			{
-				Generation.updateDuelDiskGems();
-			}
+                __instance.gems.Clear();
+                foreach (CardSlot cardSlot in Singleton<BoardManager>.Instance.GetSlots(true))
+                {
+					if (cardSlot.Card == null || cardSlot.Card.Dead) continue;
+
+                    
+                    foreach (Ability ability in cardSlot.Card.Info.Abilities)
+                    {
+						if (ability == Ability.GainGemBlue || ability == Ability.GainGemTriple || ability == SigilCode.MagGainGemTriple.ability) { __instance.gems.Add(GemType.Blue); }
+                        if (ability == Ability.GainGemGreen || ability == Ability.GainGemTriple || ability == SigilCode.MagGainGemTriple.ability) { __instance.gems.Add(GemType.Green); }
+                        if (ability == Ability.GainGemOrange || ability == Ability.GainGemTriple || ability == SigilCode.MagGainGemTriple.ability) { __instance.gems.Add(GemType.Orange); }
+                    }
+                    
+                }
+                for (int j = 0; j < 3; j++)
+                {
+                    __instance.SetGemOnImmediate((GemType)j, __instance.gems.Contains((GemType)j));
+                }
+
+                Generation.updateDuelDiskGems();
+				return false;
+            }
 		}
 	}
 }

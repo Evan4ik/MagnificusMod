@@ -66,7 +66,7 @@ namespace MagnificusMod
 						boardCards++;
 					}
 				}
-				if (Singleton<PlayerHand>.Instance.ChoosingSlotCard.Info.GetExtendedPropertyAsBool("TargetAllSpell") != null)
+				if (Singleton<PlayerHand>.Instance.ChoosingSlotCard.Info.GetExtendedPropertyAsBool("TargetAllSpell") == true)
 				{
 					foreach (CardSlot slot in Singleton<BoardManager>.Instance.OpponentSlotsCopy)
 					{

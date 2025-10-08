@@ -258,6 +258,7 @@ namespace MagnificusMod
                     if (!SaveManager.saveFile.grimoraData.deck.cardIdModInfos.ContainsKey(card.name + "#" + amts[idx])) { continue; }
 
                     card.mods.AddRange(SaveManager.saveFile.grimoraData.deck.cardIdModInfos[card.name + "#" + amts[idx]]);
+					card.SetPortrait(MagCurrentNode.getMixPortrait(card.mods[0].nameReplacement));
                     amts[idx]++;
                 }
 
@@ -361,10 +362,53 @@ namespace MagnificusMod
 					}
 				}
 
-				return false;
+				fixCardPileRender(__instance);
+
+                return false;
 			}
 		}
 
+		public static void fixCardPileRender(CardDrawPiles3D __state)
+		{
+            try
+            {
+
+                if (__state.pile.gameObject.transform.childCount >= 23)
+                {
+                    for (int i = 22; i < __state.pile.gameObject.transform.childCount; i++)
+                    {
+                        if (!__state.pile.gameObject.transform.GetChild(i).gameObject.activeSelf) continue;
+                        __state.pile.gameObject.transform.GetChild(i).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0);
+                        if (!config.oldCardDesigns) __state.pile.gameObject.transform.GetChild(i).Find("cardBackFrame").gameObject.SetActive(false);
+                    }
+                }
+                if (__state.pile.gameObject.transform.childCount > 1 && __state.Deck.CardsInDeck <= 0)
+                {
+                    __state.pile.gameObject.transform.GetChild(1).gameObject.SetActive(false);
+                    for (int i = 1; i < __state.pile.gameObject.transform.childCount; i++)
+                    {
+                        if (!__state.pile.gameObject.transform.GetChild(i).gameObject.activeSelf) continue;
+                        __state.pile.gameObject.transform.GetChild(i).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0);
+                        if (!config.oldCardDesigns) __state.pile.gameObject.transform.GetChild(i).Find("cardBackFrame").gameObject.SetActive(false);
+                    }
+                }
+                else if (__state.Deck.CardsInDeck <= 0)
+                {
+                    __state.pile.gameObject.transform.GetChild(1).gameObject.SetActive(false);
+                }
+                if (__state.sidePile.gameObject.transform.childCount > 1 && __state.SideDeck.CardsInDeck < 1 || __state.SideDeck.CardsInDeck <= 0)
+                {
+                    __state.sidePile.gameObject.transform.GetChild(1).gameObject.SetActive(false);
+                    for (int i = 1; i < __state.sidePile.gameObject.transform.childCount; i++)
+                    {
+                        if (!__state.sidePile.gameObject.transform.GetChild(i).gameObject.activeSelf) continue;
+                        __state.sidePile.gameObject.transform.GetChild(i).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0);
+                        if (!config.oldCardDesigns) __state.sidePile.gameObject.transform.GetChild(i).Find("cardBackFrame").gameObject.SetActive(false);
+                    }
+                }
+            }
+            catch { }
+        }
 
 		[HarmonyPatch(typeof(CardDrawPiles3D), "ChooseDraw")]
 		public class cardPilesAddSpell
@@ -380,44 +424,8 @@ namespace MagnificusMod
 
 				if (SceneLoader.ActiveSceneName == "finale_magnificus")
 				{
-					try
-					{
-						
-						if (__state.pile.gameObject.transform.childCount >= 23)
-						{
-							for (int i = 22; i < __state.pile.gameObject.transform.childCount; i++)
-							{
-								if (!__state.pile.gameObject.transform.GetChild(i).gameObject.activeSelf) continue;
-								__state.pile.gameObject.transform.GetChild(i).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0);
-								if (!config.oldCardDesigns) __state.pile.gameObject.transform.GetChild(i).Find("cardBackFrame").gameObject.SetActive(false);
-							}
-						}
-						if (__state.pile.gameObject.transform.childCount > 1 && __state.Deck.CardsInDeck <= 0)
-                        {
-							__state.pile.gameObject.transform.GetChild(1).gameObject.SetActive(false);
-							for (int i = 1; i < __state.pile.gameObject.transform.childCount; i++)
-							{
-								if (!__state.pile.gameObject.transform.GetChild(i).gameObject.activeSelf) continue;
-								__state.pile.gameObject.transform.GetChild(i).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0);
-								if (!config.oldCardDesigns) __state.pile.gameObject.transform.GetChild(i).Find("cardBackFrame").gameObject.SetActive(false);
-							}
-						} else if (__state.Deck.CardsInDeck <= 0)
-                        {
-							__state.pile.gameObject.transform.GetChild(1).gameObject.SetActive(false);
-						}
-						if (__state.sidePile.gameObject.transform.childCount > 1 && __state.SideDeck.CardsInDeck < 1 || __state.SideDeck.CardsInDeck <= 0)
-						{
-							__state.sidePile.gameObject.transform.GetChild(1).gameObject.SetActive(false);
-							for (int i = 1; i < __state.sidePile.gameObject.transform.childCount; i++)
-							{
-								if (!__state.sidePile.gameObject.transform.GetChild(i).gameObject.activeSelf) continue;
-								__state.sidePile.gameObject.transform.GetChild(i).GetChild(0).gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 1, 1, 0);
-								if (!config.oldCardDesigns) __state.sidePile.gameObject.transform.GetChild(i).Find("cardBackFrame").gameObject.SetActive(false);
-							}
-						}
-					}
-					catch { }
-				} else
+					fixCardPileRender(__state);
+                } else
                 {
 					Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Unlocked;
 					Singleton<ViewManager>.Instance.Controller.SwitchToControlMode(__state.viewMode, false);

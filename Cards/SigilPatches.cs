@@ -224,7 +224,34 @@ namespace MagnificusMod
 
 			public static IEnumerator Postfix(IEnumerator enumerator, BoardManager __state, PlayableCard card, CardSlot slot, float transitionDuration = 0.1f, Action tweenCompleteCallback = null, bool resolveTriggers = true)
 			{
-				CardSlot slot2 = card.Slot;
+				CardSlot slot2 = card.slot;
+                bool doMovementAnim = slot2 != slot;
+				if (transitionDuration == 0.051f) {
+					bool playerSlot = false;
+					int index = -1;
+					int i = 0;
+					while(i < GameObject.Find("PlayerSlots").transform.childCount)
+					{
+                         if (GameObject.Find("PlayerSlots").transform.GetChild(i).childCount <= 5 || !GameObject.Find("PlayerSlots").transform.GetChild(i).GetChild(5).name.Contains(card.Info.displayedName)) { i++;continue ; }
+						index = i;
+						playerSlot = true;
+						break;
+                    }
+					if (!playerSlot)
+					{
+                        i = 0;
+                        while (i < GameObject.Find("OpponentSlots").transform.childCount)
+                        {
+                            if (GameObject.Find("OpponentSlots").transform.GetChild(i).childCount <= 5 || !GameObject.Find("OpponentSlots").transform.GetChild(i).GetChild(5).name.Contains(card.Info.displayedName)) { i++; continue; }
+                            index = i;
+                            playerSlot = false;
+                            break;
+                        }
+                    }
+					if (index >= 0) { slot2 = Singleton<BoardManager>.Instance.GetSlots(playerSlot)[index]; }
+
+                }
+
 				if (card.Slot != null)
 				{
 					card.Slot.Card = null;
@@ -244,7 +271,7 @@ namespace MagnificusMod
 				card.transform.parent = slot.transform;
 				card.Anim.PlayRiffleSound();
 				string slotName = slot.IsPlayerSlot ? "PlayerSlots" : "OpponentSlots";
-				if (SceneLoader.ActiveSceneName == "finale_magnificus" && !card.HasTrait(Trait.Giant) && slot2 != slot)
+				if (SceneLoader.ActiveSceneName == "finale_magnificus" && !card.HasTrait(Trait.Giant) && doMovementAnim)
 				{
 					try
 					{
@@ -252,7 +279,7 @@ namespace MagnificusMod
 						{
 							GameObject WizardCardBoy = GameObject.Find(slotName).transform.GetChild(slot2.Index).GetChild(5).gameObject;
 							Vector3 slotPos = new Vector3(GameObject.Find(slotName).transform.GetChild(slot.Index).position.x, WizardCardBoy.transform.position.y, WizardCardBoy.transform.position.z);
-							Tween.Position(WizardCardBoy.transform, slotPos, 0.25f, 0.05f);
+							Tween.Position(WizardCardBoy.transform, slotPos, 0.25f, 0.05f, Tween.EaseOut);
 						}
 					}
 					catch { }
@@ -269,14 +296,14 @@ namespace MagnificusMod
 				}, true);
 				if (SceneLoader.ActiveSceneName != "finale_magnificus") { Tween.Rotation(card.transform, slot.transform.GetChild(0).rotation, transitionDuration, 0f, Tween.EaseOut, Tween.LoopType.None, null, null, true); }
 				else { Tween.LocalRotation(card.transform, Quaternion.Euler(90, 0, 0), transitionDuration, 0f, Tween.EaseOut, Tween.LoopType.None, null, null, true); }
-				if (resolveTriggers && slot2 != card.Slot)
+				if (resolveTriggers && slot2 != slot)
 				{
 					yield return Singleton<GlobalTriggerHandler>.Instance.TriggerCardsOnBoard(Trigger.OtherCardAssignedToSlot, false, new object[]
 					{
 					card
 					});
 				}
-				if (SceneLoader.ActiveSceneName == "finale_magnificus" && !card.HasTrait(Trait.Giant) && slot2 != slot)
+				if (SceneLoader.ActiveSceneName == "finale_magnificus" && !card.HasTrait(Trait.Giant) && doMovementAnim)
 				{
 					try
 					{
@@ -322,7 +349,68 @@ namespace MagnificusMod
 			}
 		}
 
-		[HarmonyPatch(typeof(GemDependant), "OnResolveOnBoard")]
+        [HarmonyPatch(typeof(StrafeSwap), "DoStrafe")]
+        public class StrafeFix3
+        {
+            public static void Prefix(out StrafeSwap __state, ref StrafeSwap __instance)
+            {
+                __state = __instance;
+            }
+
+            public static IEnumerator Postfix(IEnumerator enumerator, Strafe __state, CardSlot toLeft, CardSlot toRight)
+            {
+                bool flag = toLeft != null;
+                bool flag2 = toRight != null;
+                if (__state.movingLeft && !flag)
+                {
+                    __state.movingLeft = false;
+                }
+                if (!__state.movingLeft && !flag2)
+                {
+                    __state.movingLeft = true;
+                }
+                CardSlot cardSlot = __state.movingLeft ? toLeft : toRight;
+                PlayableCard swappedCard = cardSlot.Card;
+                if (swappedCard != null)
+                {
+                    __state.Card.Anim.StrongNegationEffect();
+                    float x = (swappedCard.Slot.transform.position.x + __state.Card.Slot.transform.position.x) / 2f;
+                    float y = swappedCard.transform.position.y + 0.35f;
+                    float z = swappedCard.transform.position.z;
+                    Tween.Position(swappedCard.transform, new Vector3(x, y, z), 0.3f, 0f, Tween.EaseOut, Tween.LoopType.None, null, null, true);
+					if (SceneLoader.ActiveSceneName == "finale_magnificus")
+					{
+						string slotName = cardSlot.IsPlayerSlot ? "PlayerSlots" : "OpponentSlots";
+                        try
+                        {
+                            if (GameObject.Find(slotName).transform.GetChild(cardSlot.Index).childCount > 5 && GameObject.Find(slotName).transform.GetChild(cardSlot.Index).GetChild(5).gameObject != null)
+                            {
+                                GameObject WizardCardBoy = GameObject.Find(slotName).transform.GetChild(cardSlot.Index).GetChild(5).gameObject;
+								Vector3 slotPos = WizardCardBoy.transform.position + (Vector3.up * 0.5f);
+                                Tween.Position(WizardCardBoy.transform, slotPos, 0.3f, 0.0f, Tween.EaseOut);
+                            }
+                        }
+                        catch { }
+                    }
+                }
+                CardSlot originalSlot = __state.Card.Slot;
+                yield return __state.MoveToSlot(cardSlot, true);
+                bool didSwapCard = false;
+                if (swappedCard != null && !swappedCard.Dead)
+                {
+                    didSwapCard = true;
+                    yield return Singleton<BoardManager>.Instance.AssignCardToSlot(swappedCard, originalSlot, 0.051f, null, true);
+                }
+                if (didSwapCard)
+                {
+                    yield return __state.PreSuccessfulTriggerSequence();
+                    yield return __state.LearnAbility(0f);
+                }
+                yield break;
+            }
+        }
+
+        [HarmonyPatch(typeof(GemDependant), "OnResolveOnBoard")]
 		public class gemDependantResolveFix
 		{
 			public static void Prefix(out GemDependant __state, ref GemDependant __instance)
@@ -515,7 +603,7 @@ namespace MagnificusMod
 				// All card slots
 				List<CardSlot> allSlots = Singleton<BoardManager>.Instance.AllSlotsCopy;
 
-				if (card.Info.GetExtendedPropertyAsBool("TargetAllSpell") != null)
+				if (card.Info.GetExtendedPropertyAsBool("TargetAllSpell") == true)
 				{
 					Generation.SetBigOpponentSlotHitboxes(true, GameObject.Find("BoardManager"), true);
 					Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
@@ -626,7 +714,7 @@ namespace MagnificusMod
 							Singleton<InteractionCursor>.Instance.ClearForcedCursorType();
 							Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
 							Singleton<ViewManager>.Instance.SwitchToView(View.WizardBattleUnits, false, false);
-							if (card.Info.GetExtendedPropertyAsBool("TargetAllSpell") != null)
+							if (card.Info.GetExtendedPropertyAsBool("TargetAllSpell") == true)
 							{
 								Generation.SetBigOpponentSlotHitboxes(false, GameObject.Find("BoardManager"), true);
 							}
@@ -636,7 +724,7 @@ namespace MagnificusMod
 						}
 					}
 				}
-				if (card.Info.GetExtendedPropertyAsBool("TargetAllSpell") != null)
+				if (card.Info.GetExtendedPropertyAsBool("TargetAllSpell") == true)
 				{
 					Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
 					Singleton<ViewManager>.Instance.SwitchToView(View.WizardBattleUnits, false, false);

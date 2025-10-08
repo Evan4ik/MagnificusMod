@@ -100,6 +100,7 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.BaseGameCards.CardByName("MoxRuby")
 					.SetCost(bloodCost: 0)
 					.SetPortrait(Tools.getImage("red mox card.png"))
+					.SetAffectedByTidalLock(true)
 					.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground);
 			myCard.traits = new List<Trait> { Trait.Gem };
 			myCard.metaCategories = list;
@@ -113,7 +114,8 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.BaseGameCards.CardByName("MoxEmerald")
 					.SetCost(bloodCost: 0)
 					.SetPortrait(Tools.getImage("green mox card.png"))
-					.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground);
+                    .SetAffectedByTidalLock(true)
+                    .AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground);
 			myCard.traits = new List<Trait> { Trait.Gem };
 			myCard.metaCategories = list;
 			myCard.temple = CardTemple.Wizard;
@@ -126,7 +128,8 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.BaseGameCards.CardByName("MoxSapphire")
 					.SetCost(bloodCost: 0)
 					.SetPortrait(Tools.getImage("blue mox card.png"))
-					.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground);
+                    .SetAffectedByTidalLock(true)
+                    .AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground);
 			myCard.traits = new List<Trait> { Trait.Gem };
 			myCard.metaCategories = list;
 			myCard.temple = CardTemple.Wizard;
@@ -1454,7 +1457,8 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", "mag_maux", "Maux", 0, 1, "In all my years, I have NEVER seen an imitation cruder than this.")
 							.SetBloodCost(bloodCost: 0)
 							.AddTraits(Trait.Gem)
-							.SetPortrait(Tools.getImage("maux.png"))
+                            .SetAffectedByTidalLock(true)
+                            .SetPortrait(Tools.getImage("maux.png"))
 							.SetPixelPortrait(Tools.getImage("pixelportrait_maux.png"))
 							.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)
 							.AddMetaCategories(list[0]);
@@ -1524,6 +1528,7 @@ namespace MagnificusMod
 			CardInfo myCard = CardManager.New("mag", "mag_tutorworm", "Bookworm", 1, 1, "A rare kind of insect that absorbs knowledge out of books.")
 
 					.SetPortrait(Tools.getImage("tutorworm.png"))
+					.SetAffectedByTidalLock(true)
 					.SetCost(bloodCost: 1)
 					.AddAbilities(Ability.Tutor, SigilCode.FamiliarA.ability);
 			myCard.metaCategories = list;
@@ -1584,6 +1589,7 @@ namespace MagnificusMod
 			myCard.temple = CardTemple.Wizard;
 
 			CardInfo customCard = InscryptionAPI.Card.CardManager.BaseGameCards.CardByName("DausBell");
+			customCard.SetAffectedByTidalLock(true);
 			customCard.appearanceBehaviour = new List<CardAppearanceBehaviour.Appearance> { CardAppearanceBehaviour.Appearance.TerrainBackground };
 		}
 
@@ -1718,6 +1724,7 @@ namespace MagnificusMod
 
 			CardInfo myCard = CardManager.New("mag", "mag_moxrabbit", "Rabbit", 0, 1, "This is the last call, for alcohol.")
 								.SetCost(bloodCost: 0)
+								.SetAffectedByTidalLock(true)
 								.SetPortrait(Tools.getImage("moxrabbit.png"))
 								.AddTraits(Trait.Gem)
 								.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)
@@ -1734,7 +1741,8 @@ namespace MagnificusMod
 
 			CardInfo myCard = CardManager.New("mag", "greenmoxrabbit", "Rabbit", 0, 1, "This is the last call, for booze.")
 								.SetCost(bloodCost: 0)
-								.SetPortrait(Tools.getImage("moxrabbitgreen.png"))
+                                .SetAffectedByTidalLock(true)
+                                .SetPortrait(Tools.getImage("moxrabbitgreen.png"))
 								.AddTraits(Trait.Gem)
 								.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)
 								.AddAbilities(list2[0]);
@@ -1750,7 +1758,8 @@ namespace MagnificusMod
 
 			CardInfo myCard = CardManager.New("mag", "mag_orangemoxrabbit", "Rabbit", 0, 1, "This is the last call, for ale.")
 								.SetCost(bloodCost: 0)
-								.SetPortrait(Tools.getImage("moxrabbitorange.png"))
+                                .SetAffectedByTidalLock(true)
+                                .SetPortrait(Tools.getImage("moxrabbitorange.png"))
 								.AddTraits(Trait.Gem)
 								.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)
 								.AddAbilities(list2[0]);
@@ -2144,9 +2153,9 @@ namespace MagnificusMod
         {
             List<CardMetaCategory> list = new List<CardMetaCategory>();
             List<Ability> list2 = new List<Ability>();
-            CardInfo myCard = CardManager.New("mag", "mag_urans", "Uranus", 0, 4, "Its a funny one!")
+            CardInfo myCard = CardManager.New("mag", "mag_uranus", "Uranus", 0, 4, "Its a funny one!")
 
-                    .SetPortrait(Tools.getImage("neptune.png"))
+                    .SetPortrait(Tools.getImage("uranus.png"))
                     .AddTraits(Trait.Gem)
                     .AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)
                     .SetCost(bloodCost: 0)
@@ -2190,7 +2199,7 @@ namespace MagnificusMod
             List<Ability> list2 = new List<Ability>();
             CardInfo myCard = CardManager.New("mag", "mag_pluto", "Pluto", 1, 2, "Little Guy comin' through")
 
-                    .SetPortrait(Tools.getImage("neptune.png"))
+                    .SetPortrait(Tools.getImage("pluto.png"))
                     .AddTraits(Trait.Gem)
                     .AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)
                     .SetCost(bloodCost: 0)
@@ -2542,7 +2551,10 @@ namespace MagnificusMod
 					.SetBloodCost(0)
 					.AddTraits(traits[0])
 					.AddAppearances(appearanceBehaviours[0]);
-			myCard.SetExtendedProperty("ManaCost", true);
+
+            myCard.SetExtendedProperty("TargetedSpell", true);
+            myCard.SetExtendedProperty("TargetAllSpell", false);
+            myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
 		}
 
@@ -2563,7 +2575,10 @@ namespace MagnificusMod
 					.SetBloodCost(1)
 					.AddTraits(traits[0])
 					.AddAppearances(appearanceBehaviours[0]);
-			myCard.SetExtendedProperty("ManaCost", true);
+
+            myCard.SetExtendedProperty("TargetedSpell", true);
+            myCard.SetExtendedProperty("TargetAllSpell", false);
+            myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
 		}
 
@@ -2586,7 +2601,10 @@ namespace MagnificusMod
 					.AddTraits(traits[0])
 					.SetBloodCost(0)
 					.AddAppearances(appearanceBehaviours[0]);
-			myCard.SetExtendedProperty("ManaCost", true);
+
+            myCard.SetExtendedProperty("TargetedSpell", true);
+            myCard.SetExtendedProperty("TargetAllSpell", false);
+            myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
 		}
 
@@ -2609,7 +2627,10 @@ namespace MagnificusMod
 					.SetBloodCost(0)
 					
 					.AddAppearances(appearanceBehaviours[0]);
-			myCard.SetExtendedProperty("ManaCost", true);
+
+            myCard.SetExtendedProperty("TargetedSpell", true);
+            myCard.SetExtendedProperty("TargetAllSpell", false);
+            myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
 		}
 
@@ -2632,7 +2653,9 @@ namespace MagnificusMod
 					.SetBloodCost(0)
 					
 					.AddAppearances(appearanceBehaviours[0]);
-			myCard.SetExtendedProperty("ManaCost", true);
+            myCard.SetExtendedProperty("TargetedSpell", true);
+            myCard.SetExtendedProperty("TargetAllSpell", false);
+            myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
 		}
 
@@ -2723,7 +2746,10 @@ namespace MagnificusMod
 					.SetBloodCost(0)
 					
 					.AddAppearances(appearanceBehaviours[0]);
-			myCard.SetExtendedProperty("ManaCost", true);
+
+            myCard.SetExtendedProperty("TargetedSpell", true);
+            myCard.SetExtendedProperty("TargetAllSpell", false);
+            myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
 		}
 
@@ -2864,6 +2890,17 @@ namespace MagnificusMod
 			myCard.metaCategories = list;
 		}
 
+		public static void AddMushroomMage()
+		{
+            List<CardMetaCategory> list = new List<CardMetaCategory>();
+
+			CardInfo myCard = CardManager.New("mag", "mag_mushroommage", "Amalgamage", 0, 0, "The ninth chamber.")
+
+					.SetPortrait(Tools.getImage("mergeman.png"))
+					.SetBloodCost(0);
+            myCard.metaCategories = list;
+        }
+
 		public static void AddPotion()
 		{
 			List<CardMetaCategory> list = new List<CardMetaCategory> ();
@@ -2896,7 +2933,7 @@ namespace MagnificusMod
 			List<Ability> list5 = new List<Ability>();
 
 			CardInfo myCard = CardManager.New("mag", "mag_gnome", "Gnome", 0, 1, "joem")
-
+					.SetAffectedByTidalLock(true)
 					.SetPortrait(Tools.getImage("gnome.png"));
 			myCard.metaCategories = list;
 

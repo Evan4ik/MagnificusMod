@@ -446,7 +446,8 @@ namespace MagnificusMod
 				AudioController.Instance.SetLoopAndPlay("Lonely_Mage", 0, true, true);
 				AudioController.Instance.SetLoopVolume(0.85f, 0.25f, 0, true);
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("FINALLY!! STIMULATION!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-				yield return new WaitForSeconds(1f);
+                Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
+                yield return new WaitForSeconds(1f);
 				CustomTextDisplayerStuff.switchToSpeakerStyle(0);
 				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
 				yield return new WaitForSeconds(0.15f);
@@ -3557,6 +3558,7 @@ namespace MagnificusMod
 				{
 					if (!negateMod.negateAbilities.Contains(x)) negateMod.negateAbilities.Add(x);
 				});
+				if (card.Health < 1) negateMod.healthAdjustment = 1;
 				CardInfo cardInfo = card.Info.Clone() as CardInfo;
 				cardInfo.Mods.Add(negateMod);
 				card.SetInfo(cardInfo);

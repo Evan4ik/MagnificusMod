@@ -22,6 +22,7 @@ using KayceeStorage = MagnificusMod.KayceeStorage;
 using MagModGeneration = MagnificusMod.Generation;
 using MagCurrentNode = MagnificusMod.MagCurrentNode;
 using static InscryptionAPI.Slots.SlotModificationManager;
+using System.ComponentModel;
 
 namespace MagnificusMod
 {
@@ -1318,7 +1319,8 @@ namespace MagnificusMod
 							if (!SaveManager.saveFile.grimoraData.deck.cardIdModInfos.ContainsKey(card.name + "#" + amts[idx])) { continue; }
 
 							card.mods.AddRange(SaveManager.saveFile.grimoraData.deck.cardIdModInfos[card.name + "#" + amts[idx]]);
-							amts[idx]++;
+                            card.SetPortrait(MagCurrentNode.getMixPortrait(card.mods[0].nameReplacement));
+                            amts[idx]++;
 						}
 
 						for (int i = 0; i < cards.Count; i++)
@@ -3036,6 +3038,7 @@ namespace MagnificusMod
 				potionMod.abilities = choice2.Info.abilities;
 				component.SetInfo(potion);
 				component.Info.mods.Add(potionMod);
+				component.Info.SetPortrait(MagCurrentNode.getMixPortrait(nameReplacement));
 				component.RenderCard();
 
 
@@ -3605,18 +3608,23 @@ namespace MagnificusMod
 				}
 			}
 
-			public IEnumerator selectstatscardie(SelectableCard component)
+			public List<CardInfo> mixMatchInfo(CardInfo baseCard)
 			{
-				this.cardpickedfromdeck.Remove(component);
-				firstComponent = component;
+                List<CardInfo> listOfCards = new List<CardInfo>();
+                foreach (CardInfo card in RunState.Run.playerDeck.Cards)
+                {
+                    listOfCards.Add(card);
+                }
+                listOfCards.RemoveAll((CardInfo x) => x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x == baseCard || x.gemsCost.Count > 1 || (x.gemsCost.Count > 0 && baseCard.gemsCost.Contains(x.gemsCost[0])) || (x.BloodCost > 0 && baseCard.gemsCost.Count > 0) || (baseCard.BloodCost > 0 && x.gemsCost.Count > 0));
+				return listOfCards;
+            }
+            public IEnumerator selectstatscardie(SelectableCard component)
+            {
+                this.cardpickedfromdeck.Remove(component);
+                firstComponent = component;
 				GameObject table = GameObject.Find("GameTable");
 				Tween.Position(component.transform, new Vector3(table.transform.position.x - 0.7f, 14.75f, 1 + table.transform.position.z), 0.15f, 0.1f, null, Tween.LoopType.None, null, null, true);
-				List<CardInfo> listOfCards = new List<CardInfo>();
-				foreach (CardInfo card in RunState.Run.playerDeck.Cards)
-				{
-					listOfCards.Add(card);
-				}
-				listOfCards.RemoveAll((CardInfo x) => x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x == component.Info);
+				List<CardInfo> listOfCards = mixMatchInfo(component.Info);
 				GameObject theDeck = Singleton<DeckReviewSequencer>.Instance.gameObject;
 				theDeck.transform.parent = GameObject.Find("GameTable").transform;
 				theDeck.transform.localPosition = new Vector3(0, 5.01f, -2f);
@@ -3626,7 +3634,7 @@ namespace MagnificusMod
 				{
 					this.cardpickedfromdeck.Add(theDeck.transform.GetChild(i).gameObject.GetComponent<SelectableCard>());
 				}
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Now the mushrooms require a card that they will attach.. Increasing the stats of the host.", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+				//yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Now the mushrooms require a card that they will attach.. Increasing the stats of the host.", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 
 				yield break;
 			}
@@ -3740,6 +3748,7 @@ namespace MagnificusMod
 				List<CardInfo> listOfCards = new List<CardInfo>();
 				foreach (CardInfo card in RunState.Run.playerDeck.Cards)
 				{
+					if (mixMatchInfo(card).Count < 1) continue;
 					listOfCards.Add(card);
 				}
 				listOfCards.RemoveAll((CardInfo x) => x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens));
@@ -3769,9 +3778,9 @@ namespace MagnificusMod
 
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You encounter the abnormally disgusting fungi that infests this dungeon.", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("It is said to possess strange properties..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("The mushrooms yearn for a card they can use as a.. [c:g1]host[c:] of sorts.", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("One that they will attack to.", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("The mushrooms yearn for two cards they can [c:g1]merge[c:] together..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Using some.. highly forbidden means.", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+					
 				}
 				else
 				{

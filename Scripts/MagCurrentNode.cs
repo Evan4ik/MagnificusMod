@@ -167,6 +167,17 @@ namespace MagnificusMod
 			list[2] = list[2] + b;
 		}
 
+		public static Sprite getMixPortrait(string name) 
+		{
+			string spriteToGet = "mognus mox.png";
+			if (name.Contains("Orlu")) { spriteToGet = "moxmixOB.png"; }
+			else if (name.Contains("Bleene")) { spriteToGet = "moxmixBG.png"; }
+            else if (name.Contains("Goranj")) { spriteToGet = "moxmixGO.png"; }
+
+            return Tools.getSprite(spriteToGet);
+
+        }
+
 		public static string GetNodeStuff(bool clear, bool clearSideDeck = true)
 		{
 			string text = MagCurrentNode.currentNodeName;

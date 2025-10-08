@@ -773,7 +773,7 @@ namespace MagnificusMod
 				bool movingLeft = false;
 				bool leftExists = toLeft != null;
 				bool rightExists = toRight != null;
-				if (movingLeft && !leftExists)
+				if (movingLeft && leftExists)
 				{
 					movingLeft = false;
 				}
@@ -816,7 +816,7 @@ namespace MagnificusMod
 				if (swappedCard != null && !swappedCard.Dead)
 				{
 					didSwapCard = true;
-					yield return Singleton<BoardManager>.Instance.AssignCardToSlot(swappedCard, originalSlot, 0.2f, null, true);
+					yield return Singleton<BoardManager>.Instance.AssignCardToSlot(swappedCard, originalSlot, 0.051f, null, true);
 				}
 				if (didSwapCard)
 				{
@@ -1867,7 +1867,14 @@ namespace MagnificusMod
 				{
 					Singleton<ViewManager>.Instance.SwitchToView(View.WizardBattleSlots);
 					CardInfo cardLol = CardLoader.GetCardByName(base.Card.slot.opposingSlot.Card.Info.name);
-					base.Card.SetInfo(cardLol);
+
+
+
+                    List<CardModificationInfo> mods = base.Card.Info.mods;
+                    mods.AddRange(base.Card.slot.opposingSlot.Card.temporaryMods);
+                    mods.AddRange(base.Card.slot.opposingSlot.Card.Info.Mods);
+
+                    base.Card.SetInfo(cardLol);
 					if (cardLol.name == "mag_giantmoon" || cardLol.name == "mag_giantearth")
                     {
 						base.Card.SetInfo(CardLoader.GetCardByName("mag_giantmoonshards"));
@@ -1876,21 +1883,11 @@ namespace MagnificusMod
 						base.Card.SetInfo(CardLoader.GetCardByName("mag_mastertriple3"));
 					}
 
-					List<CardModificationInfo> mods = base.Card.slot.opposingSlot.Card.Info.Mods;
-					mods.AddRange(base.Card.slot.opposingSlot.Card.temporaryMods);
-
 					foreach (CardModificationInfo mod in mods)
 					{
 						base.Card.AddTemporaryMod(mod);
 					}
 					base.Card.Anim.PlayTransformAnimation();
-
-					if (cardLol.HasAbility(MagGainGemTriple.ability))
-                    {
-						yield return Singleton<ResourcesManager>.Instance.AddGem(GemType.Green);
-						yield return Singleton<ResourcesManager>.Instance.AddGem(GemType.Orange);
-						yield return Singleton<ResourcesManager>.Instance.AddGem(GemType.Blue);
-					}
 
 					Singleton<ResourcesManager>.Instance.ForceGemsUpdate();
 				}
@@ -2463,8 +2460,8 @@ namespace MagnificusMod
 			public static Ability ability;
 		}
 
-		public class HPSpell : AbilityBehaviour
-		{
+		public class HPSpell : TargetedSpell
+        {
 			public static Ability ability;
 			public override Ability Ability
 			{
@@ -2473,20 +2470,48 @@ namespace MagnificusMod
 					return ability;
 				}
 			}
-			public override bool RespondsToResolveOnBoard()
-			{
-				return true;
-			}
-			public override IEnumerator OnResolveOnBoard()
-			{
-				List<CardSlot> list = Singleton<BoardManager>.Instance.GetSlots(base.Card.slot.IsPlayerSlot);
+
+            public override bool TargetAlly
+            {
+                get
+                {
+                    return true;
+                }
+            }
+
+            public override bool TargetAll
+            {
+                get
+                {
+                    return false;
+                }
+            }
+
+            public override bool ConditionForOnPlayFromHand() => false;
+            public override bool ConditionForOnDie(bool wasSacrifice, PlayableCard killer) => false;
+            public override bool ConditionForOnSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                return true;
+            }
+
+            public override bool RespondsToSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                return true;
+            }
+
+
+
+            public override IEnumerator OnSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                AudioController.Instance.PlaySound2D("wizard_opponent_summon", MixerGroup.TableObjectsSFX, 1f, 0f, null, null, null, null, false);
+                List<CardSlot> list = Singleton<BoardManager>.Instance.GetSlots(slot.IsPlayerSlot);
 				CardModificationInfo mod = new CardModificationInfo();
 				mod.healthAdjustment = 2 + (base.Card.Attack * 2);
-				foreach (CardSlot slot in list)
+				foreach (CardSlot cSlot in list)
 				{
-					if (slot.Card != null)
+					if (cSlot.Card != null)
 					{
-						slot.Card.AddTemporaryMod(mod);
+                        cSlot.Card.AddTemporaryMod(mod);
 					}
 				}
 				yield break;
@@ -2494,7 +2519,7 @@ namespace MagnificusMod
 
 		}
 
-		public class ATKSpell : AbilityBehaviour
+		public class ATKSpell : TargetedSpell
 		{
 			public static Ability ability;
 			public override Ability Ability
@@ -2504,20 +2529,47 @@ namespace MagnificusMod
 					return ability;
 				}
 			}
-			public override bool RespondsToResolveOnBoard()
-			{
-				return true;
-			}
-			public override IEnumerator OnResolveOnBoard()
-			{
-				List<CardSlot> list = Singleton<BoardManager>.Instance.GetSlots(base.Card.slot.IsPlayerSlot);
+            public override bool TargetAlly
+            {
+                get
+                {
+                    return true;
+                }
+            }
+
+            public override bool TargetAll
+            {
+                get
+                {
+                    return false;
+                }
+            }
+
+            public override bool ConditionForOnPlayFromHand() => false;
+            public override bool ConditionForOnDie(bool wasSacrifice, PlayableCard killer) => false;
+            public override bool ConditionForOnSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                return true;
+            }
+
+            public override bool RespondsToSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                return true;
+            }
+
+
+
+            public override IEnumerator OnSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                AudioController.Instance.PlaySound2D("wizard_opponent_summon", MixerGroup.TableObjectsSFX, 1f, 0f, null, null, null, null, false);
+                List<CardSlot> list = Singleton<BoardManager>.Instance.GetSlots(slot.IsPlayerSlot);
 				CardModificationInfo mod = new CardModificationInfo();
 				mod.attackAdjustment = 1 + base.Card.Attack;
-				foreach (CardSlot slot in list)
+				foreach (CardSlot cSlot in list)
 				{
-					if (slot.Card != null)
+					if (cSlot.Card != null)
 					{
-						slot.Card.AddTemporaryMod(mod);
+                        cSlot.Card.AddTemporaryMod(mod);
 					}
 				}
 				yield break;
@@ -2705,7 +2757,7 @@ namespace MagnificusMod
 			}
 
 		}
-		public class WindSpell : AbilityBehaviour
+		public class WindSpell : TargetedSpell
 		{
 			public static Ability ability;
 			public override Ability Ability
@@ -2716,21 +2768,47 @@ namespace MagnificusMod
 				}
 			}
 
-			public override bool RespondsToResolveOnBoard()
-			{
-				return true;
-			}
+            public override bool TargetAlly
+            {
+                get
+                {
+                    return true;
+                }
+            }
 
-			public override IEnumerator OnResolveOnBoard()
-			{
-				List<CardSlot> list = Singleton<BoardManager>.Instance.GetSlots(true);
+            public override bool TargetAll
+            {
+                get
+                {
+                    return false;
+                }
+            }
+
+            public override bool ConditionForOnPlayFromHand() => false;
+            public override bool ConditionForOnDie(bool wasSacrifice, PlayableCard killer) => false;
+            public override bool ConditionForOnSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                return true;
+            }
+
+            public override bool RespondsToSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                return true;
+            }
+
+
+
+            public override IEnumerator OnSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                AudioController.Instance.PlaySound2D("wizard_opponent_summon", MixerGroup.TableObjectsSFX, 1f, 0f, null, null, null, null, false);
+                List<CardSlot> list = Singleton<BoardManager>.Instance.GetSlots(slot.IsPlayerSlot);
 				CardModificationInfo mod = new CardModificationInfo();
 				mod.abilities.Add(Ability.Flying);
-				foreach (CardSlot slot in list)
+				foreach (CardSlot cslot in list)
 				{
-					if (slot.Card != null)
+					if (cslot.Card != null)
 					{
-						slot.Card.AddTemporaryMod(mod);
+                        cslot.Card.AddTemporaryMod(mod);
 					}
 				}
 				yield break;
@@ -2829,7 +2907,7 @@ namespace MagnificusMod
 
 		}
 
-		public class WaterSpell : AbilityBehaviour
+		public class WaterSpell : TargetedSpell
 		{
 			public static Ability ability;
 			public override Ability Ability
@@ -2840,22 +2918,47 @@ namespace MagnificusMod
 				}
 			}
 
-			public override bool RespondsToResolveOnBoard()
-			{
-				return true;
-			}
+            public override bool TargetAlly
+            {
+                get
+                {
+                    return true;
+                }
+            }
 
-			public override IEnumerator OnResolveOnBoard()
-			{
-				AudioController.Instance.PlaySound2D("magnificus_brush_splatter_bleach", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
+            public override bool TargetAll
+            {
+                get
+                {
+                    return true;
+                }
+            }
+
+            public override bool ConditionForOnPlayFromHand() => false;
+            public override bool ConditionForOnDie(bool wasSacrifice, PlayableCard killer) => false;
+            public override bool ConditionForOnSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                return true;
+            }
+
+            public override bool RespondsToSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                return true;
+            }
+
+
+
+            public override IEnumerator OnSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                AudioController.Instance.PlaySound2D("magnificus_brush_splatter_bleach", MixerGroup.None, 0.5f, 0f, null, null, null, null, false);
 				List<CardSlot> list = Singleton<BoardManager>.Instance.GetSlots(false);
-				foreach (CardSlot slot in list)
+				foreach (CardSlot cslot in list)
 				{
-					if (slot.Card != null && slot.Card.Info.name != "mag_waterspell")
+					if (cslot.Card != null && cslot.Card.Info.name != "mag_waterspell")
 					{
 						int dex;
-						dex = slot.Index;
-						RemoveCardAbilities(slot.Card);
+						dex = cslot.Index;
+						RemoveCardAbilities(cslot.Card);
 						if (GameObject.Find("OpponentSlots").transform.GetChild(dex).childCount > 5)
 						{
 							GameObject model = GameObject.Find("OpponentSlots").transform.GetChild(dex).GetChild(5).gameObject;
@@ -2866,13 +2969,13 @@ namespace MagnificusMod
 					}
 				}
 				list = Singleton<BoardManager>.Instance.GetSlots(true);
-				foreach (CardSlot slot in list)
+				foreach (CardSlot cslot in list)
 				{
-					if (slot.Card != null && slot.Card.Info.name != "mag_waterspell")
+					if (cslot.Card != null && cslot.Card.Info.name != "mag_waterspell")
 					{
 						int dex;
-						dex = slot.Index;
-						RemoveCardAbilities(slot.Card);
+						dex = cslot.Index;
+						RemoveCardAbilities(cslot.Card);
 						if (GameObject.Find("PlayerSlots").transform.GetChild(dex).childCount > 5)
 						{
 							GameObject model = GameObject.Find("PlayerSlots").transform.GetChild(dex).GetChild(5).gameObject;
@@ -3079,7 +3182,7 @@ namespace MagnificusMod
 
 		}
 
-		public class VaseofGreed : AbilityBehaviour
+		public class VaseofGreed : TargetedSpell
 		{
 			public static Ability ability;
 			public override Ability Ability
@@ -3090,14 +3193,40 @@ namespace MagnificusMod
 				}
 			}
 
-			public override bool RespondsToResolveOnBoard()
-			{
-				return true;
-			}
+            public override bool TargetAlly
+            {
+                get
+                {
+                    return true;
+                }
+            }
 
-			public override IEnumerator OnResolveOnBoard()
-			{
-				yield return new WaitForSeconds(0.25f);
+            public override bool TargetAll
+            {
+                get
+                {
+                    return true;
+                }
+            }
+
+            public override bool ConditionForOnPlayFromHand() => false;
+            public override bool ConditionForOnDie(bool wasSacrifice, PlayableCard killer) => false;
+            public override bool ConditionForOnSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                return true;
+            }
+
+            public override bool RespondsToSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                return true;
+            }
+
+
+
+            public override IEnumerator OnSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                AudioController.Instance.PlaySound2D("wizard_opponent_summon", MixerGroup.TableObjectsSFX, 1f, 0f, null, null, null, null, false);
+                yield return new WaitForSeconds(0.25f);
 				if (this.originalDeckCards == null)
 				{
 					this.originalDeckCards = Singleton<CardDrawPiles>.Instance.Deck.cards;
@@ -3124,8 +3253,6 @@ namespace MagnificusMod
 				yield return Singleton<CardDrawPiles3D>.Instance.pile.SpawnCards(this.originalDeckCards.Count, 0.5f);
 				yield return base.LearnAbility(0.5f);
 				Singleton<ViewManager>.Instance.Controller.LockState = ViewLockState.Unlocked;
-				yield return new WaitForSeconds(0.3f);
-				yield return base.Card.Die(false, null, true);
 			}
 
 			List<CardInfo> originalDeckCards;

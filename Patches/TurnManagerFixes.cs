@@ -339,7 +339,7 @@ namespace MagnificusMod
                 {
 					if (slot.Card == null || !slot.Card.HasTrait(Trait.EatsWarrens)) { continue; }
 
-					if (slot.Card.Info.GetExtendedPropertyAsBool("PhysicalSpell") != null) 
+					if (slot.Card.Info.GetExtendedPropertyAsBool("PhysicalSpell") == true) 
 						__instance.StartCoroutine(slot.Card.Die(false)); 
                 }
 
@@ -347,7 +347,7 @@ namespace MagnificusMod
 				{
 					if (slot.Card == null || !slot.Card.HasTrait(Trait.EatsWarrens)) { continue; }
 
-					if (slot.Card.Info.GetExtendedPropertyAsBool("PhysicalSpell") != null)
+					if (slot.Card.Info.GetExtendedPropertyAsBool("PhysicalSpell") == true)
 						__instance.StartCoroutine(slot.Card.Die(false));
 				}
 			}

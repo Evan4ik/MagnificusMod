@@ -231,6 +231,7 @@ namespace MagnificusMod
 			ChangeBoulder();
 			*/
 			Cards.AddGnome();
+			Cards.AddMushroomMage();
 			//Cards.AddScubaGnome();
 
 			Sigils.FlameSpellAbility();
