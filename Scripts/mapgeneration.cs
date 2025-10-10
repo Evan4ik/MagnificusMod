@@ -3163,7 +3163,7 @@ namespace MagnificusMod
 			if (RunState.Run.regionTier == 0 && MagSave.layout.Contains("1") && !SaveManager.saveFile.ascensionActive)
             {
 				SavedVars.NodesCleared = 0;
-				SaveManager.saveFile.part3Data.deck.cardIdModInfos = new Dictionary<string, List<CardModificationInfo>>();
+				SaveManager.saveFile.grimoraData.deck.cardIdModInfos = new Dictionary<string, List<CardModificationInfo>>();
 				SavedVars.KilledCards = "";
 				SavedVars.HasMap = true;
 				SavedVars.HasMapIcons = false;
@@ -3222,7 +3222,7 @@ namespace MagnificusMod
 				SavedVars.HasMapIcons = false;
 				if (SaveManager.saveFile.ascensionActive && challenges.Contains("FadingMox"))
 					RunState.Run.playerLives = 1;
-				SaveManager.saveFile.part3Data.deck.cardIdModInfos = new Dictionary<string, List<CardModificationInfo>>();
+				SaveManager.saveFile.grimoraData.deck.cardIdModInfos = new Dictionary<string, List<CardModificationInfo>>();
 				SavedVars.KilledCards = "";
 				if (!KayceeStorage.DialogueEvent1)
                 {
@@ -5960,9 +5960,9 @@ namespace MagnificusMod
 			if (card.HasAbility(Ability.Flying))
             {
 				Vector3 flight = cardModel2.transform.position;
-				flight.y += (0.75f + ((RunState.Run.regionTier == 4) ?  2.5f : 0f) );
+				flight.y += (0.75f + ((RunState.Run.regionTier == 4) ?  0.15f : 0f) );
 				Tween.Position(cardModel2.transform, flight, 0.65f, 0);
-				Tween.Rotation(cardModel2.transform, Quaternion.Euler((!card.OpponentCard) ? 45 : 41, 0, 0), 0.35f, 0);
+				Tween.Rotation(cardModel2.transform, Quaternion.Euler((!card.OpponentCard) ? (RunState.Run.regionTier != 4 ? 45 : 65) : 41, 0, 0), 0.35f, 0);
 				yield return new WaitForSeconds(0.35f);
 				cardModel2.AddComponent<SineWaveMovement>();
 				cardModel2.GetComponent<SineWaveMovement>().originalPosition = cardModel2.transform.localPosition;

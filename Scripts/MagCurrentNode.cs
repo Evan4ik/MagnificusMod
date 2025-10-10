@@ -173,6 +173,9 @@ namespace MagnificusMod
 			if (name.Contains("Orlu")) { spriteToGet = "moxmixOB.png"; }
 			else if (name.Contains("Bleene")) { spriteToGet = "moxmixBG.png"; }
             else if (name.Contains("Goranj")) { spriteToGet = "moxmixGO.png"; }
+            else if (name.Contains("Sapphire")) { spriteToGet = "moxmixBB.png"; }
+            else if (name.Contains("Emerald")) { spriteToGet = "moxmixGG.png"; }
+            else if (name.Contains("Ruby")) { spriteToGet = "moxmixOO.png"; }
 
             return Tools.getSprite(spriteToGet);
 

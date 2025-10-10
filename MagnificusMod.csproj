@@ -115,9 +115,12 @@
     <None Remove="Resources\cards\midas.png" />
     <None Remove="Resources\cards\moxmage_emerald.png" />
     <None Remove="Resources\cards\moxmage_sapphire.png" />
+    <None Remove="Resources\cards\moxmixBB.png" />
     <None Remove="Resources\cards\moxmixBG.png" />
+    <None Remove="Resources\cards\moxmixGG.png" />
     <None Remove="Resources\cards\moxmixGO.png" />
     <None Remove="Resources\cards\moxmixOB.png" />
+    <None Remove="Resources\cards\moxmixOO.png" />
     <None Remove="Resources\cards\moxochain.png" />
     <None Remove="Resources\cards\orcunderling.png" />
     <None Remove="Resources\cards\pixelportrait_bunnymage.png" />
@@ -515,9 +518,12 @@
     <EmbeddedResource Include="Resources\cards\midas.png" />
     <EmbeddedResource Include="Resources\cards\moxmage_emerald.png" />
     <EmbeddedResource Include="Resources\cards\moxmage_sapphire.png" />
+    <EmbeddedResource Include="Resources\cards\moxmixBB.png" />
     <EmbeddedResource Include="Resources\cards\moxmixBG.png" />
+    <EmbeddedResource Include="Resources\cards\moxmixGG.png" />
     <EmbeddedResource Include="Resources\cards\moxmixGO.png" />
     <EmbeddedResource Include="Resources\cards\moxmixOB.png" />
+    <EmbeddedResource Include="Resources\cards\moxmixOO.png" />
     <EmbeddedResource Include="Resources\cards\moxochain.png" />
     <EmbeddedResource Include="Resources\cards\orcunderling.png" />
     <EmbeddedResource Include="Resources\cards\pixelportrait_bunnymage.png" />

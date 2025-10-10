@@ -209,6 +209,7 @@ namespace MagnificusMod
 			{
 
 				base.Card.RenderCard();
+				if (base.Card.Info.mods.Count < 1 || base.Card.Info.mods.Count > 0 && base.Card.Info.mods[0].bountyHunterInfo == null) { return; }
 				Transform CardCameraParent = Singleton<CardRenderCamera>.Instance.GetLiveRenderCamera(base.Card.StatsLayer).transform;
 
 				GameObject paintSplotch = Instantiate(new GameObject());
@@ -217,7 +218,7 @@ namespace MagnificusMod
 				List<Color> random = new List<Color> { new Color(1, 0.5f, 0, 1), new Color(0, 0.5f, 1, 1), new Color(0, 1, 0.1f, 1) };
 				List<GemType> gemTypes = new List<GemType> { GemType.Orange, GemType.Blue, GemType.Green };
 
-				paintSplotch.GetComponent<SpriteRenderer>().color = random[gemTypes.IndexOf(base.Card.Info.mods[0].addGemCost[0])];
+				paintSplotch.GetComponent<SpriteRenderer>().color = random[gemTypes.IndexOf((GemType)base.Card.Info.mods[0].bountyHunterInfo.tier)];
 				paintSplotch.transform.position = new Vector3(0, 0, 0);
 				paintSplotch.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
 				paintSplotch.layer = 13;
@@ -286,7 +287,7 @@ namespace MagnificusMod
 					switch (splotchData[3])
 					{
 						case "0":
-							splotch.GetComponent<SpriteRenderer>().color = random[gemTypes.IndexOf(base.Card.Info.mods[0].addGemCost[0])];
+							splotch.GetComponent<SpriteRenderer>().color = random[gemTypes.IndexOf((GemType)base.Card.Info.mods[0].bountyHunterInfo.tier)];
 							break;
 						case "1":
 							splotch.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0, 1);

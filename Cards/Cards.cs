@@ -2898,6 +2898,7 @@ namespace MagnificusMod
 
 					.SetPortrait(Tools.getImage("mergeman.png"))
 					.SetBloodCost(0);
+            myCard.SetExtendedProperty("ManaCost", true);
             myCard.metaCategories = list;
         }
 

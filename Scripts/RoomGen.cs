@@ -395,7 +395,7 @@ namespace MagnificusMod
 
 
 
-            if (room == "goobert" && SavedVars.LearnedMechanics.Contains("died") && !SaveManager.saveFile.ascensionActive || room == "espeara" && hasEdaxio || room == "lonely" && hasEdaxio)//add edaxio
+            if (room == "goobert" && !SaveManager.saveFile.ascensionActive || room == "espeara" && hasEdaxio || room == "lonely" && hasEdaxio)//add edaxio
             {
                 int row = Random.RandomRangeInt(1, id2.Count - 1);
                 List<string> edaxioRow = id2[row];

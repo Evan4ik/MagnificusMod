@@ -1108,6 +1108,7 @@ namespace MagnificusMod
 		{
 			public static bool Prefix(ref ResourcesManager __instance)
 			{
+				if (SceneLoader.ActiveSceneName != "finale_magnificus") { return true; }
                 __instance.gems.Clear();
                 foreach (CardSlot cardSlot in Singleton<BoardManager>.Instance.GetSlots(true))
                 {

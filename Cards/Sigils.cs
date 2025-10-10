@@ -70,7 +70,7 @@ namespace MagnificusMod
 
 		public static void BoneMarrows()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Bone Marrow", "When one of your non-gem cards perishes, a card bearing this sigil gains 1 power, maxing out at 5.", typeof(SigilCode.BoneMarrow), Tools.getImage("bonemarrow.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Bone Marrow", "When one of your cards perishes, a card bearing this sigil gains 1 power, maxing out at 5.", typeof(SigilCode.BoneMarrow), Tools.getImage("bonemarrow.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("bonemarrow.png"));
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
