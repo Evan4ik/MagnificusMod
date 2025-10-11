@@ -209,7 +209,7 @@ namespace MagnificusMod
 			{
 
 				base.Card.RenderCard();
-				if (base.Card.Info.mods.Count < 1 || base.Card.Info.mods.Count > 0 && base.Card.Info.mods[0].bountyHunterInfo == null) { return; }
+				if (base.Card.Info.mods.Count < 1 || base.Card.Info.mods.Count > 0 && base.Card.Info.mods[0].bountyHunterInfo == null || base.Card.Info.mods.Count > 0 && base.Card.Info.mods[0].decalIds.Count < 1) { return; }
 				Transform CardCameraParent = Singleton<CardRenderCamera>.Instance.GetLiveRenderCamera(base.Card.StatsLayer).transform;
 
 				GameObject paintSplotch = Instantiate(new GameObject());
@@ -230,9 +230,11 @@ namespace MagnificusMod
 
 				Sprite smallSplotch = Tools.getSprite("smallpaint.png");
 
+				Char splitter = (base.Card.Info.mods[0].decalIds[0].Contains(';')) ? ';' : ',';
+
 				for (int i = 0; i < base.Card.Info.mods[0].decalIds.Count; i++)
 				{
-					string[] splotchData = base.Card.Info.mods[0].decalIds[i].Split(',');
+					string[] splotchData = base.Card.Info.mods[0].decalIds[i].Split(splitter);
 					if (splotchData.Length == 5)
 					{
 						string[] newSplotchData = new string[4];
@@ -289,10 +291,10 @@ namespace MagnificusMod
 						case "0":
 							splotch.GetComponent<SpriteRenderer>().color = random[gemTypes.IndexOf((GemType)base.Card.Info.mods[0].bountyHunterInfo.tier)];
 							break;
-						case "1":
+						case "2":
 							splotch.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0, 1);
 							break;
-						case "2":
+						case "1":
 							splotch.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
 							break;
 					}

@@ -748,10 +748,6 @@ namespace MagnificusMod
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Bleach is not easily restorable.", 0f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You may only pick a [c:g3]rare card[c:].", 0.5f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 					}
-					else
-					{
-						yield return Singleton<TextDisplayer>.Instance.ShowThenClear("Choose wisely.", 2f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-					}
 					yield return new WaitForSeconds(0.5f);
 					__state.selectableCards = __state.SpawnCards(3, GameObject.Find("GameTable").transform, new Vector3(-1.55f, 5.01f, 0.5f), 1.5f);
 					int randomSeed = SaveManager.saveFile.GetCurrentRandomSeed();
@@ -791,7 +787,9 @@ namespace MagnificusMod
 					__state.SetCollidersEnabled(true);
 					__state.gamepadGrid.enabled = true;
 					__state.chosenReward = null;
-				}
+                    yield return new WaitForSeconds(0.5f);
+                    Singleton<TextDisplayer>.Instance.Clear();
+                }
 				else
 				{
 					if (!SavedVars.LearnedMechanics.Contains("beatbosswithdamage;") && !SaveManager.saveFile.ascensionActive)
@@ -803,13 +801,10 @@ namespace MagnificusMod
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("Bleach is not easily restorable.", 1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 						yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You may only pick a [c:g3]rare card[c:].", 2f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
 					}
-					else
-					{
-						yield return Singleton<TextDisplayer>.Instance.ShowThenClear("Choose wisely.", 2f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
-					}
 					yield return new WaitForSeconds(0.5f);
 					Singleton<ViewManager>.Instance.SwitchToView(View.OpponentQueueCentered, false, false);
-					GameObject lifePainting = GameObject.Find("GameTable").transform.Find("LifePainting").gameObject;
+
+                    GameObject lifePainting = GameObject.Find("GameTable").transform.Find("LifePainting").gameObject;
 					lifePainting.SetActive(true);
 					lifePainting.transform.localPosition = new Vector3(1.45f, 7.54f, -0.4f);
 					Tween.LocalRotation(lifePainting.transform, Quaternion.Euler(71, 0, 0), 0.5f, 0);
@@ -848,7 +843,9 @@ namespace MagnificusMod
 							component.name = "rareChoice";
 						}
 					}
-				}
+                    yield return new WaitForSeconds(0.5f);
+                    Singleton<TextDisplayer>.Instance.Clear();
+                }
 				yield return new WaitUntil(() => __state.chosenReward != null);
 				__state.chosenReward.transform.parent = null;
 				Singleton<RuleBookController>.Instance.SetShown(false, true);

@@ -2594,7 +2594,7 @@ namespace MagnificusMod
 			List<Ability> list5 = new List<Ability>();
 			list5.Add(SigilCode.FrostSpell.ability);
 
-			CardInfo myCard = CardManager.New("mag", "mag_frostspell", "Blizzard", 0, 1, "Freeze over your opponents side with a mighty blizzard..")
+			CardInfo myCard = CardManager.New("mag", "mag_frostspell", "Blizzard", 0, 1, "Freeze over the battle with a mighty blizzard..")
 
 					.SetPortrait(Tools.getImage("spell of frost.png"))
 					.AddAbilities(list5[0])
@@ -2665,41 +2665,19 @@ namespace MagnificusMod
 			List<CardAppearanceBehaviour.Appearance> appearanceBehaviours = new List<CardAppearanceBehaviour.Appearance> { CardAppearanceBehaviour.Appearance.TerrainLayout };
 			List<Trait> traits = new List<Trait> { Trait.EatsWarrens };
 
-			CardInfo myCard = CardManager.New("mag", "mag_tarflamespell", "Engulf", 0, 1, "Select a side of the board to be set ablaze.")
+			CardInfo myCard = CardManager.New("mag", "mag_tarflamespell", "Engulf", 0, 1, "Set the whole battle ablaze, and watch it burn.")
 
 					.SetPortrait(Tools.getImage("spell of flame.png"))
-					.AddAbilities(SigilCode.TargetFlame.ability)
+					.AddAbilities(SigilCode.Engulf.ability)
 					.AddTraits(traits[0])
 					.SetBloodCost(0)
 					
 					.AddAppearances(appearanceBehaviours[0]);
 			myCard.SetExtendedProperty("TargetedSpell", true);
-			myCard.SetExtendedProperty("TargetAllSpell", true);
+			myCard.SetExtendedProperty("TargetAllSpell", false);
 			myCard.SetExtendedProperty("ManaCost", true);
 			myCard.metaCategories = list;
 		}
-
-		public static void AddFlameSpell()
-		{
-			List<CardMetaCategory> list = new List<CardMetaCategory>();
-			List<CardAppearanceBehaviour.Appearance> appearanceBehaviours = new List<CardAppearanceBehaviour.Appearance> { CardAppearanceBehaviour.Appearance.TerrainLayout };
-			List<Trait> traits = new List<Trait> { Trait.EatsWarrens };
-
-			List<Ability> list5 = new List<Ability>();
-			list5.Add(SigilCode.Flame.ability);
-
-			CardInfo myCard = CardManager.New("mag", "mag_flamespell", "Engulf", 0, 1, "Erm.,, erxcsqueeze me sauce?.")
-
-					.SetPortrait(Tools.getImage("spell of flame.png"))
-					.AddAbilities(list5[0])
-					.AddTraits(traits[0])
-					.SetBloodCost(0)
-					
-					.AddAppearances(appearanceBehaviours[0]);
-			myCard.SetExtendedProperty("ManaCost", true);
-			myCard.metaCategories = list;
-		}
-
 		public static void AddMagnusspell()
 		{
 			List<CardMetaCategory> list = new List<CardMetaCategory> { Plugin.SpellPool };

@@ -1487,18 +1487,18 @@ namespace MagnificusMod
 							splotch.GetComponent<SpriteRenderer>().color = color;
 							break;
 						case "black":
-							colorId = 1;
+							colorId = 2;
 							splotch.GetComponent<SpriteRenderer>().color = new Color(0, 0, 0, 1);
 							break;
 						case "white":
-							colorId = 2;
+							colorId = 1;
 							splotch.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
 							break;
 					}
 					GameObject cursor = GameObject.Find("Cursor");
 					splotch.transform.localRotation = Quaternion.Euler(0, 0, UnityEngine.Random.RandomRangeInt(0, 180));
 					splotch.transform.localPosition = new Vector3(cursor.transform.position.x, cursor.transform.position.y + 6.1f, -2.61f - (0.01f * colorId));
-					splotchData.Add(Math.Round(splotch.transform.localPosition.x, 2) + "," + Math.Round(splotch.transform.localPosition.y, 2) + "," + size + "," + colorId);
+					splotchData.Add(Math.Round(splotch.transform.localPosition.x, 2) + ";" + Math.Round(splotch.transform.localPosition.y, 2) + ";" + size + ";" + colorId);
 					splotches.Add(splotch);
 					yield return new WaitForSeconds(0.025f);
 				}
@@ -3660,14 +3660,13 @@ namespace MagnificusMod
 
 			public List<CardInfo> mixMatchInfo(CardInfo baseCard)
 			{
-				Debug.Log("Started match search for " + baseCard.name);
                 List<CardInfo> listOfCards = new List<CardInfo>();
                 foreach (CardInfo card in RunState.Run.playerDeck.Cards)
                 {
                     listOfCards.Add(card);
                 }
-                listOfCards.RemoveAll((CardInfo x) => x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x == baseCard || x.gemsCost.Count > 1 || (x.gemsCost.Count > 0 && baseCard.gemsCost.Contains(x.gemsCost[0])) || (x.BloodCost > 0 && baseCard.gemsCost.Count > 0) || (baseCard.BloodCost > 0 && x.gemsCost.Count > 0));
-				Debug.Log("got matches for " + listOfCards.Count);
+                listOfCards.RemoveAll((CardInfo x) => x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x == baseCard || (x.gemsCost.Count > 1 && baseCard.gemsCost.Count > 1) || (baseCard.gemsCost.Count > 1 && x.gemsCost.Count > 0 && baseCard.gemsCost.Contains(x.gemsCost[0])) || (x.gemsCost.Count > 1 && baseCard.gemsCost.Count > 0 && x.gemsCost.Contains(baseCard.gemsCost[0])) || (x.BloodCost > 0 && baseCard.gemsCost.Count > 0) || (baseCard.BloodCost > 0 && x.gemsCost.Count > 0) 
+				|| (x.gemsCost.Count > 1 && x.gemsCost[0] == x.gemsCost[1] && baseCard.gemsCost.Count > 0) || (baseCard.gemsCost.Count > 1 && baseCard.gemsCost[0] == baseCard.gemsCost[1] && x.gemsCost.Count > 0) || (x.BloodCost > 0 && baseCard.BloodCost >= 3) || (baseCard.BloodCost >= 3 && x.BloodCost > 0) || (baseCard.Abilities.Count > 3 && x.abilities.Count > 0) || (x.Abilities.Count > 3 && baseCard.abilities.Count > 0));
 				return listOfCards;
             }
             public IEnumerator selectstatscardie(SelectableCard component)
@@ -3838,7 +3837,7 @@ namespace MagnificusMod
 				else
 				{
 					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("You encounter the disgusting fungi yet again..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("The fungi yearn for a card they can use as a [c:g1]host[c:].. to attach to.", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
+					yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("The fungi yearn for two card they can [c:g1]splice together[c:]..", -2.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
 				}
 				if (listOfCards.Count < 2)
 				{
@@ -5046,35 +5045,32 @@ namespace MagnificusMod
 
 
 		[HarmonyPatch(typeof(CardInfo), "GemsCost", MethodType.Getter)]
-		public class DanielMullinsWriteBetterCode
+		public class DanielMullinsWriteBetterCode //I don't know why this code works
 		{
 			public static bool Prefix(ref List<GemType> __result, ref CardInfo __instance)
 			{
+				List<GemType> gCost = new List<GemType>(__instance.gemsCost);
 				foreach (CardModificationInfo cardModificationInfo in __instance.mods)
 				{
-					bool flag = cardModificationInfo.addGemCost.Count > 0;
-					if (flag)
+
+                    if (cardModificationInfo.nullifyGemsCost)
+                    {
+                        gCost = new List<GemType>();
+                    }
+                    if (cardModificationInfo.addGemCost.Count > 0)
 					{
 						List<GemType> list = new List<GemType>();
 						for (int i = 0; i < cardModificationInfo.addGemCost.Count; i++)
 						{
-							try
-							{
-								list.Add(cardModificationInfo.addGemCost[i]);
-								__instance.gemsCost = list;
-							}
-							catch
-							{
-							}
+							list.Add(cardModificationInfo.addGemCost[i]);
+                            gCost = list;
+							
 						}
-						__instance.gemsCost = list;
-					}
-					if (cardModificationInfo.addGemCost.Count == 0 && cardModificationInfo.nullifyGemsCost)
-					{
-						__instance.gemsCost = new List<GemType>();
+                        gCost = list;
 					}
 				}
-				__result = __instance.gemsCost;
+				__instance.gemsCost = gCost;
+				__result = gCost;
 				return false;
 			}
 		}

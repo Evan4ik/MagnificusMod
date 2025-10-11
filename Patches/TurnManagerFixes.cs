@@ -19,6 +19,7 @@ using Random = UnityEngine.Random;
 using MagSave = MagnificusMod.MagCurrentNode;
 using SavedVars = MagnificusMod.SaveVariables;
 using KayceeStorage = MagnificusMod.KayceeStorage;
+using Steamworks;
 
 namespace MagnificusMod
 {
@@ -67,6 +68,9 @@ namespace MagnificusMod
 			{
 				if (SceneLoader.ActiveSceneName == "finale_magnificus")
 				{
+                    setLifeColor(new Color(0, 0, 0, 1), new Color(0, 0, 0, 1));
+                    turnEffects = new List<int[]>();
+					frozenHp = false;
 					GameObject portraitSlots = GameObject.Find("OpponentSlots");
 					GameObject.Find("GameTable").transform.Find("CardBattle_Magnificus").Find("CombatBell_Magnificus").transform.Find("Anim").localPosition = new Vector3(0, 0, 0);
 					for (int i = 0; i < portraitSlots.transform.childCount; i++)
@@ -84,6 +88,15 @@ namespace MagnificusMod
 				}
 			}
 		}
+
+		public static void setLifeColor(Color player, Color opp)
+		{
+			Singleton<MagnificusLifeManager>.Instance.transform.Find("PlayerLife").Find("Digit2").gameObject.GetComponent<MeshRenderer>().material.color = player;
+            Singleton<MagnificusLifeManager>.Instance.transform.Find("PlayerLife").Find("Digit3").gameObject.GetComponent<MeshRenderer>().material.color = player;
+
+            Singleton<MagnificusLifeManager>.Instance.transform.Find("OpponentLife").Find("Digit2").gameObject.GetComponent<MeshRenderer>().material.color = opp;
+            Singleton<MagnificusLifeManager>.Instance.transform.Find("OpponentLife").Find("Digit3").gameObject.GetComponent<MeshRenderer>().material.color = opp;
+        }
 
 		[HarmonyPatch(typeof(GameFlowManager), "PlayerLostBattleSequence")]
 		public class IsGameOver235
@@ -420,7 +433,22 @@ namespace MagnificusMod
 			}
 		}
 
-		[HarmonyPatch(typeof(TurnManager), "PlayerTurn")]
+		public static List<int[]> turnEffects = new List<int[]>();
+		public static bool frozenHp = false;
+
+        [HarmonyPatch(typeof(MagnificusLifeManager), "ShowLifeLoss")]
+        public class frozeHpFix
+		{
+			public static bool Prefix(bool player, ref int amount)
+			{
+				if (frozenHp) { amount = 0; }
+				return true;
+			}
+		}
+
+
+
+        [HarmonyPatch(typeof(TurnManager), "PlayerTurn")]
 		public class ironMaiden
 		{
 			public static void Prefix(ref TurnManager __instance)
@@ -429,6 +457,22 @@ namespace MagnificusMod
 				{
 					return;
 				}
+
+					for (int i = 0; i < turnEffects.Count; i++)
+					{
+						if (turnEffects[i][0] != 0 && !frozenHp)
+						{
+							Singleton<ViewManager>.Instance.SwitchToView(View.Default);
+							__instance.StartCoroutine(Singleton<MagnificusLifeManager>.Instance.ShowLifeLoss(true, turnEffects[i][0]));
+							__instance.StartCoroutine(Singleton<MagnificusLifeManager>.Instance.ShowLifeLoss(false, turnEffects[i][0]));
+						}
+						turnEffects[i][1]--;
+						if (turnEffects[i][1] <= 0) { turnEffects.RemoveAt(i); i--; }
+						if (turnEffects.Count < 1) { setLifeColor(new Color(0, 0, 0, 1), new Color(0, 0, 0, 1)); }
+					}
+				if (turnEffects.Count > 0) { TurnManagerStuff.setLifeColor(new Color(0.45f, 0, 0, 1), new Color(0f, 0.55f, 0, 1)); } 
+				frozenHp = false;
+
 
 				if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("IronMaiden") && __instance.TurnNumber > 1)
 				{
@@ -532,6 +576,7 @@ namespace MagnificusMod
 							excessDamage = Mathf.Max(0, excessDamage);
 						}
 						int damage = MagnificusMod.Generation.damageDoneThisTurn - excessDamage;
+						if (frozenHp) { damage = 0; excessDamage = 0; }
 						
 						if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("ShieldedMox") && damage > 4 && playerIsAttacker && SceneLoader.ActiveSceneName == "finale_magnificus")
 						{

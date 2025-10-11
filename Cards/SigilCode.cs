@@ -2651,60 +2651,56 @@ namespace MagnificusMod
 			}
 
 		}
-		public class FrostSpell : AbilityBehaviour
-		{
-			public static Ability ability;
-			public override Ability Ability
-			{
-				get
-				{
-					return ability;
-				}
-			}
+        public class FrostSpell : TargetedSpell
+        {
+            public override bool TargetAlly
+            {
+                get
+                {
+                    return true;
+                }
+            }
 
-			public override bool RespondsToResolveOnBoard()
-			{
-				return true;
-			}
+            public override bool TargetAll
+            {
+                get
+                {
+                    return true;
+                }
+            }
+            public override bool ConditionForOnPlayFromHand() => false;
+            public override bool ConditionForOnDie(bool wasSacrifice, PlayableCard killer) => false;
+            public override bool ConditionForOnSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                return true;
+            }
 
-			public override IEnumerator OnResolveOnBoard()
-			{
-				List<CardSlot> list = Singleton<BoardManager>.Instance.GetSlots(!base.Card.slot.IsPlayerSlot);
-				string slotName = base.Card.slot.IsPlayerSlot ? "OpponentSlots" : "PlayerSlots";
-				foreach (CardSlot slot in list)
-				{
-					if (slot.Card != null && slot.Card.Info.name != "mag_frostspell" && slot.Card.Info.abilities.Count < 4)
-					{
-						int dex;
-						dex = slot.Index;
-						if (GameObject.Find(slotName).transform.GetChild(dex).childCount > 5)
-						{
-							GameObject model = GameObject.Find(slotName).transform.GetChild(dex).GetChild(5).gameObject;
-							for (int i = 5; i < model.transform.parent.childCount; i++)
-							{
-								if (model.transform.parent.GetChild(i).gameObject.GetComponent<Card>() != null)
-								{
-									model = model.transform.parent.GetChild(i).gameObject;
+            public static Ability ability;
+            public override Ability Ability
+            {
+                get
+                {
+                    return ability;
+                }
+            }
 
-								}
-							}
-							model.transform.Find("RenderStatsLayer").Find("Quad").gameObject.SetActive(true);
-							model.transform.Find("RenderStatsLayer").Find("Quad").GetComponent<MeshRenderer>().material.color = new Color(0.329f, 0.682f, 1f, 0.5f);
-						}
-						CardModificationInfo mod = new CardModificationInfo();
-						mod.singletonId = "frost";
-						mod.abilities.Add(SigilCode.Frozen.ability);
-						mod.attackAdjustment = -slot.Card.Attack;
-						mod.healthAdjustment = 2;
-						slot.Card.AddTemporaryMod(mod);
-					}
-				}
-				yield break;
-			}
+            public override bool RespondsToSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                return true;
+            }
 
-		}
 
-		public class GoldSpell : AbilityBehaviour
+
+            public override IEnumerator OnSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
+            {
+                AudioController.Instance.PlaySound2D("wizard_opponent_summon", MixerGroup.TableObjectsSFX, 1f, 0f, null, null, null, null, false);
+				TurnManagerStuff.frozenHp = true;
+                TurnManagerStuff.setLifeColor(new Color(1f, 1, 1, 1), new Color(1f, 1f, 1, 1));
+                yield break;
+            }
+        }
+
+        public class GoldSpell : AbilityBehaviour
 		{
 			public static Ability ability;
 			public override Ability Ability
@@ -3002,65 +2998,7 @@ namespace MagnificusMod
 
 		}
 
-		public class Flame : AbilityBehaviour
-		{
-			public static Ability ability;
-			public override Ability Ability
-			{
-				get
-				{
-					return ability;
-				}
-			}
-
-			public override bool RespondsToResolveOnBoard()
-			{
-				return true;
-			}
-
-			public override IEnumerator OnResolveOnBoard()
-			{
-				List<CardSlot> list = Singleton<BoardManager>.Instance.GetSlots(!base.Card.slot.IsPlayerSlot);
-				string slotName = base.Card.slot.IsPlayerSlot ? "OpponentSlots" : "PlayerSlots";
-				foreach (CardSlot slot in list)
-				{
-					if (slot.Card != null && slot.Card.Info.name != "mag_flamespell")
-					{
-						CardModificationInfo mod = new CardModificationInfo();
-						mod.attackAdjustment = 1;
-						int dex;
-						dex = slot.Index;
-						if (GameObject.Find(slotName).transform.GetChild(dex).childCount > 5)
-						{
-							GameObject model = GameObject.Find(slotName).transform.GetChild(dex).GetChild(5).gameObject;
-							for (int i = 5; i < model.transform.parent.childCount; i++)
-							{
-								if (model.transform.parent.GetChild(i).gameObject.GetComponent<Card>() != null)
-								{
-									model = model.transform.parent.GetChild(i).gameObject;
-
-								}
-							}
-							model.transform.Find("RenderStatsLayer").Find("Quad").gameObject.SetActive(true);
-							model.transform.Find("RenderStatsLayer").Find("Quad").GetComponent<MeshRenderer>().material.color = new Color(1f, 0.31f, 0f, 0.5f);
-						}
-						mod.attackAdjustment = 1;
-						mod.healthAdjustment = -2;
-						int predict = base.Card.Health - 2;
-						if (predict <= 0)
-						{
-							mod.healthAdjustment = (base.Card.Health * -1) + 1;
-
-						}
-						slot.Card.AddTemporaryMod(mod);
-					}
-				}
-				yield break;
-			}
-
-		}
-
-		public class TargetFlame : TargetedSpell
+		public class Engulf : TargetedSpell
 		{
 			public override bool TargetAlly
 			{
@@ -3103,40 +3041,9 @@ namespace MagnificusMod
 			public override IEnumerator OnSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
 			{
 				AudioController.Instance.PlaySound2D("wizard_opponent_summon", MixerGroup.TableObjectsSFX, 1f, 0f, null, null, null, null, false);
-				List<CardSlot> list = Singleton<BoardManager>.Instance.GetSlots(slot.IsPlayerSlot);
-				string slotName = !slot.IsPlayerSlot ? "OpponentSlots" : "PlayerSlots";
-				foreach (CardSlot sloot in list)
-				{
-					if (sloot.Card != null && sloot.Card.Info.name != "mag_tarflamespell")
-					{
-						int dex;
-						dex = sloot.Index;
-						if (GameObject.Find(slotName).transform.GetChild(dex).childCount > 5)
-						{
-							GameObject model = GameObject.Find(slotName).transform.GetChild(dex).GetChild(5).gameObject;
-							for (int i = 5; i < model.transform.parent.childCount; i++)
-							{
-								if (model.transform.parent.GetChild(i).gameObject.GetComponent<Card>() != null)
-								{
-									model = model.transform.parent.GetChild(i).gameObject;
-
-								}
-							}
-							model.transform.Find("RenderStatsLayer").Find("Quad").gameObject.SetActive(true);
-							model.transform.Find("RenderStatsLayer").Find("Quad").GetComponent<MeshRenderer>().material.color = new Color(1f, 0.31f, 0f, 0.5f);
-						}
-						int hp = -2;
-						int predict = base.Card.Health - 2;
-						if (predict <= 0)
-						{
-							hp = (base.Card.Health * -1) + 1;
-
-						}
-						CardModificationInfo mod = new CardModificationInfo(1, hp);
-						sloot.Card.AddTemporaryMod(mod);
-					}
-				}
-				yield break;
+				TurnManagerStuff.turnEffects.Add(new int[] { 1, 3 });
+				if (!TurnManagerStuff.frozenHp) { TurnManagerStuff.setLifeColor(new Color(0.45f, 0, 0, 1), new Color(0f, 0.55f, 0, 1)); }
+                yield break;
 			}
 		}
 

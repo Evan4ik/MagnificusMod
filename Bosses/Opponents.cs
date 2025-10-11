@@ -304,14 +304,16 @@ namespace MagnificusMod
 
 				yield return new WaitForSeconds(1f);
 				CustomTextDisplayerStuff.switchToSpeakerStyle(0);
-				Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
+				Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
+                Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
 				GameObject.Find("GameTable").transform.Find("Espeara").gameObject.AddComponent<SineWaveRotation>();
 				GameObject.Find("GameTable").transform.Find("Espeara").gameObject.GetComponent<SineWaveRotation>().originalRotation = new Vector3(1, 270, 0);
 				GameObject.Find("GameTable").transform.Find("Espeara").gameObject.GetComponent<SineWaveRotation>().xMagnitude = -2f;
 				GameObject.Find("GameTable").transform.Find("Espeara").gameObject.GetComponent<SineWaveRotation>().speed = 1;
 				base.StartCoroutine(paintTheFloor());
 				yield return new WaitForSeconds(0.75f);
-				yield break;
+                Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
+                yield break;
 			}
 
 			public static string GetGameObjectPath(GameObject obj)
@@ -446,6 +448,7 @@ namespace MagnificusMod
 				AudioController.Instance.SetLoopAndPlay("Lonely_Mage", 0, true, true);
 				AudioController.Instance.SetLoopVolume(0.85f, 0.25f, 0, true);
 				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("FINALLY!! STIMULATION!", -1f, 0f, Emotion.None, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null);
+                Singleton<ViewController>.Instance.LockState = ViewLockState.Unlocked;
                 Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, false);
                 yield return new WaitForSeconds(1f);
 				CustomTextDisplayerStuff.switchToSpeakerStyle(0);

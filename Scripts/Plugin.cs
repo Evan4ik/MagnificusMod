@@ -258,7 +258,6 @@ namespace MagnificusMod
 			Cards.AddWindspell();
 			Cards.AddWaterspell();
 			Cards.AddTargetFlameSpell();
-			Cards.AddFlameSpell();
 			Cards.AddMagnusspell();
 			Cards.AddVaseofgreed();
 			Cards.AddTrasmogification();

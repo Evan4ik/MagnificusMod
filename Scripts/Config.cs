@@ -18,13 +18,13 @@ namespace MagnificusMod
     {
         private const string PluginGuid = "silenceman.inscryption.magnificusmod";
 
-        private static ConfigEntry<bool> _configUnlockAllKaycee;
+        private static ConfigEntry<bool> _kayceeProgression;
         private static ConfigEntry<bool> _conifgCardBalance;
         private static ConfigEntry<bool> _oldCardDesigns;
         private static ConfigEntry<bool> _paintSplashes;
         private static ConfigEntry<bool> _isometricMode;
         private static ConfigEntry<bool> _visibleGrid;
-        public static bool unlockAllKaycee => _configUnlockAllKaycee.Value;
+        public static bool kayceeProgression => _kayceeProgression.Value;
 
         public static bool classicCardBalance => _conifgCardBalance.Value;
         public static bool oldCardDesigns => _oldCardDesigns.Value;
@@ -43,10 +43,10 @@ namespace MagnificusMod
         public static void bindConfig()
         {
 
-            _configUnlockAllKaycee = magConfig.Bind("Kaycee",
-                "UnlockAllKaycee",
+            _kayceeProgression = magConfig.Bind("Kaycee",
+                "KayceeProgression",
                 false,
-                "Automatically unlocks every challenge and starter deck in Magnificus' Kaycees Mod. This does NOT change your magnificus challenge point value. If you have a change of heart and decide to unlock the challenges fairly, your challenge points will remain the same.");
+                "Enable to play through a sort of campaign mode in Kaycee's Mod, where you have to unlock each challenge and deck like in the vanilla game.");
            
             _conifgCardBalance = magConfig.Bind("Cards",
                  "OriginalCardBalance",

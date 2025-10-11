@@ -275,7 +275,7 @@ namespace MagnificusMod
 					if (acceptableTemple == CardTemple.Wizard)
 					{
 						decks.RemoveAll((StarterDeckManager.FullStarterDeck info) => info.Info.cards.FirstOrDefault((CardInfo ci) => ci.temple == acceptableTemple) == null);
-						if (config.unlockAllKaycee == false)
+						if (config.kayceeProgression == true)
 						{
 							for (int i = 0; i < decks.Count; i++)
 							{
@@ -504,7 +504,7 @@ namespace MagnificusMod
 								bool level4 = (challenges[i].Challenge.challengeType == AscensionChallenge.AllTotems && KayceeStorage.ChallengeLevel < 4) || (challenges[i].Challenge.challengeType == AscensionChallenge.NoBossRares && KayceeStorage.ChallengeLevel < 4);
 								bool level5 = (challenges[i].Challenge.challengeType == AscensionChallenge.WeakStarterDeck && KayceeStorage.ChallengeLevel < 5) || (challenges[i].Challenge.challengeType == AscensionChallenge.LessLives && KayceeStorage.ChallengeLevel < 5) || (challenges[i].Challenge.challengeType == AscensionChallenge.GrizzlyMode && KayceeStorage.ChallengeLevel < 5) || (challenges[i].Challenge.challengeType == AscensionChallenge.SubmergeSquirrels && KayceeStorage.ChallengeLevel < 5);
 								bool level6 = (challenges[i].Challenge.challengeType == AscensionChallenge.FinalBoss && KayceeStorage.ChallengeLevel < 6);
-								if (!level2 && !level3 && !level4 && !level5 && !level6 || config.unlockAllKaycee == true)
+								if (!level2 && !level3 && !level4 && !level5 && !level6 || config.kayceeProgression == true)
 								{
 									challenges[i] = new ChallengeManager.FullChallenge
 									{
@@ -545,7 +545,7 @@ namespace MagnificusMod
 					gameObject.transform.Find("BottomRow").Find("Icon_14").transform.localPosition = new Vector3(1.1f, -0.01f, 0f);
 					gameObject.transform.Find("TopRow").Find("Icon_5").gameObject.SetActive(false);
 					gameObject.transform.Find("BottomRow").Find("Icon_12").gameObject.SetActive(false);
-					if (KayceeStorage.ChallengeLevel >= 5 || config.unlockAllKaycee == true)
+					if (KayceeStorage.ChallengeLevel >= 5 || config.kayceeProgression == true)
                     {
 						gameObject.transform.Find("BottomRow").Find("Icon_15").gameObject.SetActive(true);//1.7 0.165 0
 						gameObject.transform.Find("BottomRow").Find("Icon_15").localPosition = new Vector3(1.7f, 0.24f, 0);
