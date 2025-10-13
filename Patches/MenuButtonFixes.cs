@@ -201,6 +201,12 @@ namespace MagnificusMod
 		public static IEnumerator ViewDeckbutton(MenuCard optionsCard, bool ignoreCard = false)
 		{
 			if (!SavedVars.LearnedMechanics.Contains("tabviewdeck")) { SavedVars.LearnedMechanics += "tabviewdeck;"; SaveManager.SaveToFile(); }
+
+      if (Singleton<RuleBookController>.Instance.rigParent.activeSelf) {
+        Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<RuleBookController>.Instance.WaitThenDisableRig());
+      }
+
+
 			Singleton<UIManager>.Instance.SetControlsHintShown(shown: false);
 			Singleton<UIManager>.Instance.SetControlsHintShown(shown: false, right: false);
 			if (!ignoreCard)

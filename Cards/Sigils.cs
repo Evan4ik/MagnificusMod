@@ -491,14 +491,24 @@ namespace MagnificusMod
 
 		public static void SummonRunes()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Summon Runes", "When a card bearing this sigil is played, it will summon two runes beside it. A rune is defined as 0 power, 1 health, Detonator.", typeof(SigilCode.SummonRunes), Tools.getImage("spawnrunes.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Summon Runes", "When a card bearing this sigil is played, it will summon two runes beside it. A rune is defined as 0 power, 1 health, Runic.", typeof(SigilCode.SummonRunes), Tools.getImage("spawnrunes.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("spawnrunes.png"));
-			newAbility.powerLevel = 0;
+			newAbility.powerLevel = 3;
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
 			SigilCode.SummonRunes.ability = newAbility.ability;
 		}
 
+	public static void RuneSigil()
+		{
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Runic", "When a card bearing this sigil perishes, trigger 1 of 3 effects: Deal 1 Direct Damage; Heal 1 Health; Gain another rune card.", typeof(SigilCode.Runic), Tools.getImage("runic.png"))
+				.SetDefaultPart1Ability()
+				.SetIcon(Tools.getImage("runic.png"));
+			newAbility.powerLevel = 2;
+			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };
+			SigilCode.Runic.ability = newAbility.ability;
+		}
+    
 		public static void HPSpellAbility()
 		{
 			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Spell of Health", "When a spell bearing this sigil is played, all cards on your side of the board gain +2 health.", typeof(SigilCode.HPSpell), Tools.getImage("hpspell_ability.png"))
@@ -561,7 +571,7 @@ namespace MagnificusMod
 
 		public static void FlameSpellAbility()
 		{
-			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Engulf", "When a spell bearing this sigil is played, both sides of the board will take 1 direct damage for 3 turns, at the start of every turn.", typeof(SigilCode.Engulf), Tools.getImage("spell of flame_ability.png"))
+			AbilityInfo newAbility = AbilityManager.New(Plugin.PluginGuid, "Engulf", "When a spell bearing this sigil is played, both players will take 1 direct damage for 3 turns, at the start of every turn.", typeof(SigilCode.Engulf), Tools.getImage("spell of flame_ability.png"))
 				.SetDefaultPart1Ability()
 				.SetIcon(Tools.getImage("spell of flame_ability.png"));
 			newAbility.metaCategories = new List<AbilityMetaCategory> { AbilityMetaCategory.MagnificusRulebook };

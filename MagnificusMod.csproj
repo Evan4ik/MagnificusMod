@@ -947,6 +947,7 @@
     <EmbeddedResource Include="Resources\cards\snipesage.png" />
     <EmbeddedResource Include="Resources\cards\sodermage.png" />
     <EmbeddedResource Include="Resources\sigils\scholarsigil.png" />
+    <EmbeddedResource Include="Resources\sigils\runic.png" />
     <EmbeddedResource Include="Resources\sigils\spawnrunes.png" />
     <EmbeddedResource Include="Resources\cards\spell of flame.png" />
     <EmbeddedResource Include="Resources\sigils\spell of flame_ability.png" />
@@ -1129,7 +1130,7 @@
 	<Reference Include="CommunityPatch">
       <HintPath>lib\API.dll</HintPath>
     </Reference>
-	  <PackageReference Include="Inscryption.GameLibs" Version="1.9.0-r.0" />
+    <PackageReference Include="Inscryption.GameLibs" Version="1.9.0-r.0" />
     <Reference Include="InscryptionAPI">
       <HintPath>lib\InscryptionAPI.dll</HintPath>
     </Reference>

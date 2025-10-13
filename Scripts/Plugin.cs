@@ -23,7 +23,7 @@ namespace MagnificusMod
 {
 	[BepInPlugin(PluginGuid, PluginName, PluginVersion)]
 	[BepInDependency("cyantist.inscryption.api", BepInDependency.DependencyFlags.HardDependency)]
-	[BepInDependency("zorro.inscryption.infiniscryption.achievements")]
+  //[BepInDependency("zorro.inscryption.infiniscryption.achievements")]
 	public class Plugin : BaseUnityPlugin
 	{
 
@@ -44,7 +44,7 @@ namespace MagnificusMod
 
 		private void Awake()
 		{
-			Achievements.addAchievements();
+	//	  Achievements.addAchievements();
 			WallTextures.getImages();
 			base.Logger.LogInfo("Loaded MagnificusMod!");
 			Plugin.Directory = base.Info.Location.Replace("MagnificusMod.dll", "");
@@ -85,6 +85,7 @@ namespace MagnificusMod
 			Sigils.Brewery();
 			Sigils.FecundityCycleAbility();
 			Sigils.SummonRunes();
+      Sigils.RuneSigil();
 			Sigils.Ignition();
 			Sigils.MoxStrf();
 			Sigils.PlatingWork();

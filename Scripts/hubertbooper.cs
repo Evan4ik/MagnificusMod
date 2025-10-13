@@ -16,7 +16,7 @@ namespace MagnificusMod
 			AudioController.Instance.PlaySound3D("hoo", MixerGroup.TableObjectsSFX, base.transform.position, 10f, 0f, new AudioParams.Pitch(AudioParams.Pitch.Variation.VerySmall), null, null, null, false);
 			if (SaveManager.saveFile.ascensionActive)
             {
-				AchievementManager.Unlock(MagnificusMod.Achievements.CrowningOfTheEmperor);
+//				AchievementManager.Unlock(MagnificusMod.Achievements.CrowningOfTheEmperor);
 			}
 		}
 	}

@@ -436,19 +436,44 @@ namespace MagnificusMod
 		public static List<int[]> turnEffects = new List<int[]>();
 		public static bool frozenHp = false;
 
-        [HarmonyPatch(typeof(MagnificusLifeManager), "ShowLifeLoss")]
-        public class frozeHpFix
+    [HarmonyPatch(typeof(MagnificusLifeManager), "ShowLifeLoss")]
+    public class lifeLossFixes
 		{
-			public static bool Prefix(bool player, ref int amount)
+
+    	public static void Prefix(out MagnificusLifeManager __state, ref MagnificusLifeManager __instance)
 			{
-				if (frozenHp) { amount = 0; }
-				return true;
-			}
-		}
+			  __state = __instance;	
+      }
+
+      public static IEnumerator Postfix(IEnumerator enumerator, MagnificusLifeManager __state, bool player, int amount)
+			{
+        bool overrideAll = frozenHp;
+          Singleton<ViewManager>.Instance.SwitchToView(View.Default);
+          yield return new WaitForSeconds(0.3f);
+          while (Math.Abs(amount) > 0 && !overrideAll)
+          {
+            int change = (amount > 0) ? -1 : 1;
+            if (player)
+            {
+              __state.playerLife+=change;
+            }
+            else
+            {
+              __state.opponentLife+=change;
+            }
+            (player ? __state.playerLifeCounter : __state.opponentLifeCounter).ShowValue(player ? __state.playerLife : __state.opponentLife, immediate: false);
+            amount+=change;
+            yield return new WaitForSeconds(0.15f);
+          }
+          yield return new WaitForSeconds(0.3f);
+
+      }
+			
+ 		}
 
 
 
-        [HarmonyPatch(typeof(TurnManager), "PlayerTurn")]
+    [HarmonyPatch(typeof(TurnManager), "PlayerTurn")]
 		public class ironMaiden
 		{
 			public static void Prefix(ref TurnManager __instance)
@@ -561,7 +586,7 @@ namespace MagnificusMod
 								excessDamage = -excessDamage;
 								if (MagnificusMod.Generation.damageDoneThisTurn >= 10 && SaveManager.saveFile.ascensionActive)
 								{
-									AchievementManager.Unlock(MagnificusMod.Achievements.BlueEyesWhiteDragon);
+								//	AchievementManager.Unlock(MagnificusMod.Achievements.BlueEyesWhiteDragon);
 								}
 							}
 							else

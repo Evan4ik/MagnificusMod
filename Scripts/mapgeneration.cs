@@ -3416,6 +3416,7 @@ namespace MagnificusMod
 
 		public static IEnumerator isometricTransition(Texture icon, bool doPainting = true)
         {
+      Singleton<UIManager>.Instance.SetControlsHintShown(false, true);
 			Singleton<InteractionCursor>.Instance.ClearForcedCursorType();
 			GameObject.Find("deckLight").GetComponent<Light>().enabled = false;
 			GameObject.Find("Player").transform.Find("figure").gameObject.SetActive(true);
@@ -3459,6 +3460,11 @@ namespace MagnificusMod
         }
 		public static IEnumerator unIsometricTransition(float delay = 0f, bool doPainting = true)
 		{
+
+      if (Singleton<RuleBookController>.Instance.rigParent.activeSelf) {
+        Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<RuleBookController>.Instance.WaitThenDisableRig());
+      }
+
 			Singleton<FirstPersonController>.Instance.enabled = false;
 			GameObject.Find("Player").GetComponentInChildren<ViewController>().allowedViews = new List<View>();
 			Singleton<FirstPersonController>.Instance.enabled = false;
@@ -5167,7 +5173,7 @@ namespace MagnificusMod
                     {
 						if (!card.HasTrait(Trait.EatsWarrens)) { cards++; }
                     }
-					if (cards <= 10) { AchievementManager.Unlock(Achievements.CardofSacrifice); }
+					//if (cards <= 10) { AchievementManager.Unlock(Achievements.CardofSacrifice); }
 				}
 			}
 			else if (location == "tower")

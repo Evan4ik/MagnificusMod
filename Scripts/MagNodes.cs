@@ -869,7 +869,7 @@ namespace MagnificusMod
 					float x4 = -0.25f;
 					if (RunState.Run.regionTier > 0 && RunState.Run.regionTier != 4 && !MagModGeneration.minimap || RunState.Run.regionTier > 0 && RunState.Run.regionTier != 4 && SavedVars.HasMap == true && SavedVars.HasMapIcons == false) { x4 = 0.5f; }
 
-					createCard(masterMox[masterDex], shopObjects.transform, new Vector3(x4, 5.01f, -1.5f), 9, false);
+					createCard(masterMox[masterDex], shopObjects.transform, new Vector3(x4, 5.01f, -1.5f), 7, false);
 
 					createCard("Squirrel", shopObjects.transform, new Vector3(1.82f, 5.01f, -0.62f), 0, false, "n", "exitshop.png", "exitShop");
 
@@ -3666,7 +3666,8 @@ namespace MagnificusMod
                     listOfCards.Add(card);
                 }
                 listOfCards.RemoveAll((CardInfo x) => x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x == baseCard || (x.gemsCost.Count > 1 && baseCard.gemsCost.Count > 1) || (baseCard.gemsCost.Count > 1 && x.gemsCost.Count > 0 && baseCard.gemsCost.Contains(x.gemsCost[0])) || (x.gemsCost.Count > 1 && baseCard.gemsCost.Count > 0 && x.gemsCost.Contains(baseCard.gemsCost[0])) || (x.BloodCost > 0 && baseCard.gemsCost.Count > 0) || (baseCard.BloodCost > 0 && x.gemsCost.Count > 0) 
-				|| (x.gemsCost.Count > 1 && x.gemsCost[0] == x.gemsCost[1] && baseCard.gemsCost.Count > 0) || (baseCard.gemsCost.Count > 1 && baseCard.gemsCost[0] == baseCard.gemsCost[1] && x.gemsCost.Count > 0) || (x.BloodCost > 0 && baseCard.BloodCost >= 3) || (baseCard.BloodCost >= 3 && x.BloodCost > 0) || (baseCard.Abilities.Count > 3 && x.abilities.Count > 0) || (x.Abilities.Count > 3 && baseCard.abilities.Count > 0));
+				|| (x.gemsCost.Count > 1 && x.gemsCost[0] == x.gemsCost[1] && baseCard.gemsCost.Count > 0) || (baseCard.gemsCost.Count > 1 && baseCard.gemsCost[0] == baseCard.gemsCost[1] && x.gemsCost.Count > 0) || (x.BloodCost > 0 && baseCard.BloodCost >= 3) || (baseCard.BloodCost >= 3 && x.BloodCost > 0) || (baseCard.Abilities.Count > 3 && x.abilities.Count > 0) || (x.Abilities.Count > 3 && baseCard.abilities.Count > 0) || baseCard.SpecialStatIcon != SpecialStatIcon.None || x.SpecialStatIcon != SpecialStatIcon.None);
+
 				return listOfCards;
             }
             public IEnumerator selectstatscardie(SelectableCard component)
@@ -4369,7 +4370,7 @@ namespace MagnificusMod
 
 			public void generateAbilities(int sacValue)
             {
-				List<List<Ability>> tier = tier1;
+				List<List<Ability>> tier = new List<List<Ability>>(tier1);
 
 				if (sacValue > 5) sacValue = 5;
 				bool displeased = SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("DyingBreath");
@@ -4377,19 +4378,19 @@ namespace MagnificusMod
 				switch (sacValue)
 				{
 					case 1:
-						tier = tier1;
+						tier = new List<List<Ability>>(tier1);
 						break;
 					case 2:
-						tier = tier2;
+						tier = new List<List<Ability>>(tier2);
 						break;
 					case 3:
-						tier = tier3;
+						tier = new List<List<Ability>>(tier3);
 						break;
 					case 4:
-						tier = tier4;
+						tier = new List<List<Ability>>(tier4);
 						break;
 					case 5:
-						tier = tier5;
+						tier = new List<List<Ability>>(tier5);
 						break;
 				}
 				List<Ability> bannedAbilities = new List<Ability>();

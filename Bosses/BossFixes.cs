@@ -343,14 +343,14 @@ namespace MagnificusMod
 					case 1:
 						if (SaveManager.saveFile.ascensionActive && SavedVars.NodesCleared <= 3)
                         {
-							AchievementManager.Unlock(MagnificusMod.Achievements.RushRecklessly);
+							//AchievementManager.Unlock(MagnificusMod.Achievements.RushRecklessly);
 						}
 						int rand = Random.RandomRangeInt(0, 100);
 						if (!Generation.challenges.Contains("MasterBosses") || !SaveManager.saveFile.ascensionActive)
 						{
 							if (Singleton<BossOpponents.GoobertOpponnent>.Instance.NumLives == 0 && SaveManager.saveFile.ascensionActive && !Singleton<BossOpponents.GoobertOpponnent>.Instance.gooedCards)
 							{
-								AchievementManager.Unlock(MagnificusMod.Achievements.HumanoidSlime);
+							//	AchievementManager.Unlock(MagnificusMod.Achievements.HumanoidSlime);
 							}
 							if (!SavedVars.LearnedMechanics.Contains("beatgoobert;"))
 								SavedVars.LearnedMechanics += "beatgoobert;";
@@ -402,7 +402,7 @@ namespace MagnificusMod
 						{
 							if (Singleton<BossOpponents.EspeararaOpponnent>.Instance.NumLives == 0 && SaveManager.saveFile.ascensionActive && !Singleton<BossOpponents.EspeararaOpponnent>.Instance.triggeredEnchantedSpear)
 							{
-								AchievementManager.Unlock(MagnificusMod.Achievements.HeadlessKnight);
+								//AchievementManager.Unlock(MagnificusMod.Achievements.HeadlessKnight);
 							}
 							if (!SavedVars.LearnedMechanics.Contains("beatamber;"))
 							{
@@ -455,10 +455,10 @@ namespace MagnificusMod
 						{
 							if (Singleton<BossOpponents.LonelyMageOpponnent>.Instance.NumLives == 0 && SaveManager.saveFile.ascensionActive && Singleton<BossOpponents.LonelyMageOpponnent>.Instance.TurnTimerTriggered <= 0)
 							{
-								AchievementManager.Unlock(MagnificusMod.Achievements.QuickSummon);
+							//	AchievementManager.Unlock(MagnificusMod.Achievements.QuickSummon);
 							} else if (Singleton<BossOpponents.LonelyMageOpponnent>.Instance.NumLives == 0 && SaveManager.saveFile.ascensionActive && Singleton<BossOpponents.LonelyMageOpponnent>.Instance.TurnTimerTriggered >= 5)
 							{
-								AchievementManager.Unlock(MagnificusMod.Achievements.MischiefOfTheTimeGoddess);
+							//	AchievementManager.Unlock(MagnificusMod.Achievements.MischiefOfTheTimeGoddess);
 							}
 							if (!SavedVars.LearnedMechanics.Contains("beatlonely;"))
 							{

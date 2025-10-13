@@ -1691,7 +1691,7 @@ namespace MagnificusMod
 		{
 			List<CardMetaCategory> list = new List<CardMetaCategory>();
 			List<Ability> list2 = new List<Ability>();
-			list2.Add(Ability.ExplodeOnDeath);
+			list2.Add(SigilCode.Runic.ability);
 
 			CardInfo myCard = CardManager.New("mag", "mag_runes", "Rune", 0, 1, "This is the last call, for alcohol.")
 								.AddAppearances(CardAppearanceBehaviour.Appearance.TerrainBackground)

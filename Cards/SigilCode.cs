@@ -1413,6 +1413,58 @@ namespace MagnificusMod
 			public static Ability ability;
 		}
 
+	public class Runic: AbilityBehaviour   
+		{
+			public override Ability Ability
+			{
+				get
+				{
+					return Runic.ability;
+				}
+			}
+
+			public override bool RespondsToDie(bool wasSacrifice, PlayableCard killer)
+			{
+				return true;
+			}
+
+			public override IEnumerator OnDie(bool wasSacrifice, PlayableCard killer)
+			{
+		    int randomNum = UnityEngine.Random.RandomRangeInt(0, 100);
+        Debug.Log(randomNum);
+
+        if (randomNum <= 33) {
+          yield return Singleton<MagnificusLifeManager>.Instance.ShowLifeLoss(!base.Card.slot.IsPlayerSlot, 1);
+        } else if (randomNum <= 66) {
+          yield return Singleton<MagnificusLifeManager>.Instance.ShowLifeLoss(base.Card.slot.IsPlayerSlot, -1);
+        } else if (randomNum <= 100) {
+          if (Singleton<ViewManager>.Instance.CurrentView != View.Default)
+	      	{
+			        Singleton<ViewManager>.Instance.SwitchToView(View.Default);
+        			yield return new WaitForSeconds(0.2f);
+      		}
+          yield return Singleton<CardSpawner>.Instance.SpawnCardToHand(CardLoader.GetCardByName("mag_runes"), new List<CardModificationInfo>());
+         // yield return base.PreSuccessfulTriggerSequence();
+			  	//yield return base.CreateDrawnCard();
+        } 
+
+
+				yield return base.LearnAbility(0f);
+				yield break;
+			}
+
+/*      public override CardInfo CardToDraw
+			{
+				get
+				{
+				  return CardLoader.GetCardByName("mag_runes");	
+        }
+			}
+*/
+			public static Ability ability;
+		}
+
+
 		public class PlatingWork : AbilityBehaviour
 		{
 			public override Ability Ability
