@@ -340,7 +340,7 @@ namespace MagnificusMod
 
 			public override bool RespondsToOtherCardDie(PlayableCard card, CardSlot deathSlot, bool fromCombat, PlayableCard killer)
 			{
-				return base.Card.OnBoard && deathSlot.Card != null && deathSlot.Card.OpponentCard == base.Card.OpponentCard && deathSlot.Card != base.Card && !card.HasTrait(Trait.EatsWarrens);
+				return base.Card.OnBoard && deathSlot.Card != null && deathSlot.Card.OpponentCard == base.Card.OpponentCard && deathSlot.Card != base.Card && !card.HasTrait(Trait.EatsWarrens) && !card.HasTrait(Trait.Gem);
 			}
 
 			public override IEnumerator OnOtherCardDie(PlayableCard card, CardSlot deathSlot, bool fromCombat, PlayableCard killer)
@@ -3502,7 +3502,7 @@ namespace MagnificusMod
 			public override bool ConditionForOnSlotTargetedForAttack(CardSlot slot, PlayableCard attacker)
 			{
 				if (slot.Card != null)
-					return slot.Card != null;
+					return slot.Card != null && slot.Card.Attack > 0;
 
 				return false;
 			}
@@ -3520,7 +3520,7 @@ namespace MagnificusMod
 			{
 				if (slot.Card != null)
 				{
-					return slot.Card != null;
+					return slot.Card != null && slot.Card.Attack > 0;
 				}
 
 				return false;

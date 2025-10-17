@@ -962,9 +962,14 @@ namespace MagnificusMod
 			{
 				if (GameObject.Find("GameTable").transform.position.y < 1)
 				{
-					GameObject.Find("walls").SetActive(false);
-					GameObject.Find("GameEnvironment").transform.Find("battleRoom").gameObject.SetActive(true);
-					GameObject.Find("GameEnvironment").transform.Find("battleRoom").position = new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x - 60, 0, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z + 100);
+          GameObject.Find("NavigationGrid").transform.position = Vector3.up * -50;
+          
+          for (int i = 0; i < GameObject.Find("scenery").transform.childCount; i++) {
+            GameObject.Find("scenery").transform.GetChild(i).gameObject.SetActive(GameObject.Find("scenery").transform.GetChild(i).name == "lights");
+          }
+
+          //	GameObject.Find("GameEnvironment").transform.Find("battleRoom").gameObject.SetActive(true);
+					//GameObject.Find("GameEnvironment").transform.Find("battleRoom").position = new Vector3(GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.x - 60, 0, GameObject.Find("Player").GetComponentInChildren<FirstPersonController>().currentZone.transform.position.z + 100);
 					if (RunState.Run.regionTier == 0)
 					{
 						GameObject.Find("roof").SetActive(false);
@@ -1111,6 +1116,26 @@ namespace MagnificusMod
 					Tween.Rotation(GameObject.Find("Player").transform, Quaternion.Euler(0, 0, 0), 0.25f, 1);
 					Tween.LocalPosition(GameObject.Find("tbPillar").transform, new Vector3(0, -6.83f, 6.5f), 0.25f, 1);
 
+          GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+          obj.transform.parent = GameObject.Find("GameTable").transform;
+          obj.name = "battlebg";
+          MeshFilter meshCollider = obj.GetComponent<MeshFilter>();
+
+          var mesh = meshCollider.mesh;
+          mesh.triangles = mesh.triangles.Reverse().ToArray();
+          mesh.normals = mesh.normals.Select(n => -n).ToArray();
+
+          obj.GetComponent<MeshRenderer>().material.mainTexture = Tools.getImage("stars.png");
+					obj.GetComponent<MeshRenderer>().material.shaderKeywords = new string[0];
+          obj.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(4, 4);
+					obj.gameObject.AddComponent<UVScroller>();
+					obj.GetComponent<UVScroller>().XscrollSpeed = 0.005f;
+          obj.GetComponent<UVScroller>().YscrollSpeed = 0.0001f;
+					obj.transform.localPosition = new Vector3(0f, 0f, 7f);
+					obj.transform.localScale =  Vector3.one * 500;
+
+          Tween.LocalScale(obj.transform,  new Vector3(107, 100, 100), 2.5f, 0f, Tween.EaseIn);
+          Tween.LocalPosition(GameObject.Find("walls").transform, new Vector3(0, -45f, 9), 5f, 0f, Tween.EaseOut);
 				}
 			};
 

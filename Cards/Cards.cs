@@ -951,6 +951,21 @@ namespace MagnificusMod
 			myCard.temple = CardTemple.Wizard;
 		}
 
+    
+    public static void AddGrazer()
+		{
+			List<CardMetaCategory> list = new List<CardMetaCategory> { CardMetaCategory.ChoiceNode };
+			List<Ability> list2 = new List<Ability>();
+			list2.Add(SigilCode.FrostyA.ability);
+			List<GemType> gemCost = new List<GemType> { GemType.Blue, GemType.Blue };
+			CardInfo myCard = CardManager.New("mag", "mag_gazer", "The Gazer", 1, 2, "A quiet mage with a cold, piercing gaze.")
+
+					.SetPortrait(Tools.getImage("gazer.png"))
+					.SetCost(bloodCost: 0, gemsCost: gemCost)
+					.AddAbilities(list2[0]);
+			myCard.metaCategories = list;
+			myCard.temple = CardTemple.Wizard;
+		}
 
 		public static void AddCoffeMage()
 		{
@@ -1290,7 +1305,7 @@ namespace MagnificusMod
 		public static void AddGemboundRipper()
 		{
 			List<CardMetaCategory> list = new List<CardMetaCategory> { CardMetaCategory.ChoiceNode };
-			CardInfo myCard = CardManager.New("mag", "mag_gemboundripper", "Gembound Ripper", 3, 1, "It is unstable, but such is the price for unending power.")
+			CardInfo myCard = CardManager.New("mag", "mag_gemboundripper", "Gembound Ripper", 3, 2, "It is unstable, but such is the price for unending power.")
 
 						.SetCost(bloodCost: 2)
 						.SetPixelPortrait(Tools.getSprite("pixelportrait_gemboundripper.png"))
@@ -1905,7 +1920,7 @@ namespace MagnificusMod
 		{
 			List<CardMetaCategory> list = new List<CardMetaCategory>();
 
-			CardInfo alchemy = CardManager.New("mag", "mag_bleenebookalchemy", "Alchemy 101", 0, 2, "[c:g2]Alchemy 101[c:]\n[c:g3]I[c:] [c:g1]never[c:] [c:g3]was[c:] [c:g1]that[c:] [c:g3]great[c:] [c:g1]at[c:] [c:g3]alchemy..[c:]")
+			CardInfo alchemy = CardManager.New("mag", "mag_bleenebookalchemy", "Alchemy 101", 0, 2, "[c:g2]Alchemy IOI[c:]\n[c:g3]I[c:] [c:g1]never[c:] [c:g3]was[c:] [c:g1]that[c:] [c:g3]great[c:] [c:g1]at[c:] [c:g3]alchemy..[c:]")
 
 					.SetPortrait(Tools.getImage("bleenebook_alchemy.png"))
 					.SetCost(bloodCost: 0, gemsCost: new List<GemType> { GemType.Green })
@@ -2499,7 +2514,7 @@ namespace MagnificusMod
 			List<Ability> list54 = new List<Ability>();
 			EvolveParams evolveParams5 = null;
 
-			CardInfo myCard8 = CardManager.New("mag", text17, "Enchanted Spear", 1, 1, text3)
+			CardInfo myCard8 = CardManager.New("mag", text17, "Enchanted Spear", 0, 1, text3)
 
 					.SetCost()
 					.SetPortrait(Tools.getImage("mag_enchspear.png"))
@@ -2560,7 +2575,7 @@ namespace MagnificusMod
 
 		public static void AddATKspell()
 		{
-			List<CardMetaCategory> list = new List<CardMetaCategory>();
+			List<CardMetaCategory> list = new List<CardMetaCategory> { Plugin.SpellPool };
 			List<CardAppearanceBehaviour.Appearance> appearanceBehaviours = new List<CardAppearanceBehaviour.Appearance> { CardAppearanceBehaviour.Appearance.TerrainLayout };
 
 			List<Trait> traits = new List<Trait> { Trait.EatsWarrens };

@@ -1550,7 +1550,7 @@ namespace MagnificusMod
 								node.GetComponentInChildren<NavigationZone3D>().events.Add(Generation.bleach);
 								if (RunState.Run.regionTier == 1)
 								{
-									if (random < 33)
+									if (random < 40)
 									{
 										if (!loading) { SavedVars.GeneratedEvents += "bleach;"; }
 										icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = bleachTex;
@@ -1597,7 +1597,7 @@ namespace MagnificusMod
 									}
 								} else if (RunState.Run.regionTier == 2)
                                 {
-									if (random < 33)
+									if (random < 40)
 									{
 										if (!loading) { SavedVars.GeneratedEvents += "bleach;"; }
 										icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = bleachTex;
@@ -1652,7 +1652,7 @@ namespace MagnificusMod
 								}
 								else if (RunState.Run.regionTier == 3)
 								{
-									if (random < 28)
+									if (random < 32)
 									{
 										if (!loading) { SavedVars.GeneratedEvents += "bleach;"; }
 										icon2.transform.Find("Frame").Find("CanvasQuad").gameObject.GetComponent<MeshRenderer>().material.mainTexture = bleachTex;
@@ -3462,7 +3462,7 @@ namespace MagnificusMod
 		{
 
       if (Singleton<RuleBookController>.Instance.rigParent.activeSelf) {
-        Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<RuleBookController>.Instance.WaitThenDisableRig());
+        Singleton<RuleBookController>.Instance.SetShown(false, false);
       }
 
 			Singleton<FirstPersonController>.Instance.enabled = false;
@@ -3868,7 +3868,7 @@ namespace MagnificusMod
 					map =
 					new List<List<string>> {
 						new List<string>{ " ", " ", " ", "CRT", "TO2", "CRT", " ", " ", " " },
-						new List<string>{ " ", "CRT1", "MCL",  "-",   "TO2",   "CRTG",    "CC",  "CRT1", " " },
+						new List<string>{ " ", "CRT1", "-",  "-",   "TO2",   "CRTG",    "CC",  "CRT1", " " },
 						new List<string>{ " ", "CRTG", "TO2",  "-",   "-",   "TO1",    "-",  "CRT", " " },
 						new List<string>{ "-", "TO1", "-",  "-",   "-",   "-",    "-",  "-", "-" },
 						new List<string>{ "-", "-", "-",  "-",   "T1",   "-",    "-",  "-", "TO1" },

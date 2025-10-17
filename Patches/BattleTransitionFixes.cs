@@ -105,7 +105,7 @@ namespace MagnificusMod
 					bool battleRoom = false;
 					try
 					{
-						if (GameObject.Find("battleRoom").activeSelf)
+						if (GameObject.Find("battlebg").activeSelf)
 						{
 							battleRoom = true;
 						}
@@ -116,8 +116,8 @@ namespace MagnificusMod
 						Singleton<FirstPersonController>.Instance.enabled = false;
 						float delay = battleRoom ? 1.25f : 0.4f;
 						__instance.StartCoroutine(Generation.unIsometricTransition(delay));
-                        }
-                    if (battleRoom)
+          }
+          if (battleRoom)
 					{
 						if (SaveManager.saveFile.ascensionActive && MagnificusMod.Generation.challenges.Contains("FadingMox"))
 						{
@@ -126,12 +126,20 @@ namespace MagnificusMod
 
 						if (Singleton<SpellPile>.Instance != null)
 							Singleton<SpellPile>.Instance.senableCards(false);
+            
 
+            GameObject.Find("NavigationGrid").transform.position = Vector3.zero;
+          
+            for (int i = 0; i < GameObject.Find("scenery").transform.childCount; i++) {
+              GameObject.Find("scenery").transform.GetChild(i).gameObject.SetActive(true);
+            }
+
+
+            Tween.LocalScale(GameObject.Find("battlebg").transform,  new Vector3(500, 500, 500), 2.5f, 0f, Tween.EaseOut);
 						GameObject.Find("GameEnvironment").transform.Find("walls").gameObject.SetActive(true);
-						GameObject.Find("GameEnvironment").transform.Find("walls").position = new Vector3(GameObject.Find("walls").transform.position.x, 70.5f, GameObject.Find("walls").transform.position.z);
+						//GameObject.Find("GameEnvironment").transform.Find("walls").position = new Vector3(GameObject.Find("walls").transform.position.x, 70.5f, GameObject.Find("walls").transform.position.z);
 						Tween.Position(GameObject.Find("walls").transform, new Vector3(GameObject.Find("walls").transform.position.x, 0, GameObject.Find("walls").transform.position.z), 0.75f, 0.2f);
-						Tween.Position(GameObject.Find("GameEnvironment").transform.Find("battleRoom"), new Vector3(GameObject.Find("battleRoom").transform.position.x, 70.5f, GameObject.Find("battleRoom").transform.position.z), 0.75f, 0.2f);
-						Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.WaitThenDisable(GameObject.Find("GameEnvironment").transform.Find("battleRoom").gameObject, 1.5f));
+						Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(MagnificusMod.Generation.WaitThenDestroy(GameObject.Find("battlebg").gameObject, 2.65f));
 						if (RunState.Run.regionTier == 0)
 						{
 							GameObject.Find("GameEnvironment").transform.Find("walls layer 2").gameObject.SetActive(true);

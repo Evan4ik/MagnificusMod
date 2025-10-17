@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime;
 using APIPlugin;
 using InscryptionAPI.Card;
 using InscryptionCommunityPatch.Card;
@@ -44,10 +45,11 @@ namespace MagnificusMod
 
 		private void Awake()
 		{
-	//	  Achievements.addAchievements();
+		  //Achievements.addAchievements();
 			WallTextures.getImages();
 			base.Logger.LogInfo("Loaded MagnificusMod!");
-			Plugin.Directory = base.Info.Location.Replace("MagnificusMod.dll", "");
+		
+      Plugin.Directory = base.Info.Location.Replace("MagnificusMod.dll", "");
 			Harmony harmony = new Harmony("silenceman.inscryption.magnificusmod");
 			harmony.PatchAll();
 
@@ -273,6 +275,7 @@ namespace MagnificusMod
 			Cards.AddSeniorSage();
 			Cards.AddWhiteSmith();
 			Cards.AddPuppeteer();
+      Cards.AddGrazer();
 			Cards.AddCoffeMage();//cider
 			Cards.AddTeaMage();//brewery
 			Cards.AddSodaMage();

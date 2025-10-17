@@ -1002,6 +1002,7 @@
     <EmbeddedResource Include="Resources\cards\trasmogification spell.png" />
     <EmbeddedResource Include="Resources\cards\valkyrie.png" />
     <EmbeddedResource Include="Resources\cards\valkyriethief.png" />
+    <EmbeddedResource Include="Resources\cards\gazer.png" />
     <EmbeddedResource Include="Resources\cards\vase of greed.png" />
     <EmbeddedResource Include="Resources\sigils\vase of greed_ability.png" />
     <EmbeddedResource Include="Resources\cards\venus.png" />

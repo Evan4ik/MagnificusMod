@@ -600,7 +600,7 @@ namespace MagnificusMod
 					AudioController.Instance.StopAllLoops();
 					Singleton<InteractionCursor>.Instance.SetHidden(true);
 					yield return new WaitForSeconds(0.5f);
-				//	if (SaveFile.IsAscension) { AchievementManager.Unlock(MagnificusMod.Achievements.MagicalLabyrinth); }
+			  	////if (SaveFile.IsAscension) { AchievementManager.Unlock(MagnificusMod.Achievements.MagicalLabyrinth); }
 					yield return new WaitForSeconds(3f);
 					if (!SavedVars.LearnedMechanics.Contains("beatmagnificus;"))
 						SavedVars.LearnedMechanics += "beatmagnificus;";
@@ -1648,12 +1648,12 @@ namespace MagnificusMod
 					AudioController.Instance.StopAllLoops();
 					Singleton<InteractionCursor>.Instance.SetHidden(true);
 					yield return new WaitForSeconds(0.5f);
-					//if (SaveFile.IsAscension) { AchievementManager.Unlock(MagnificusMod.Achievements.OwloftheBlackForest); }
+					////if (SaveFile.IsAscension) { AchievementManager.Unlock(MagnificusMod.Achievements.OwloftheBlackForest); }
 					yield return new WaitForSeconds(1f);
 					if (Generation.challenges.Contains("RandomSidedeck") && Generation.challenges.Contains("WeakBleach") && Generation.challenges.Contains("TurnWipeout") && Generation.challenges.Contains("MoreHpOpponent") && Generation.challenges.Contains("DyingBreath") && Generation.challenges.Contains("MasterMagnus") && Generation.challenges.Contains("GemDependantDeck") && Generation.challenges.Contains("ShieldedMox") && Generation.challenges.Contains("FadingMox") && Generation.challenges.Contains("SmallSpellbook") && Generation.challenges.Contains("IronMaiden") && Generation.challenges.Contains("PaintedSigils"))
                     {
 						yield return new WaitForSeconds(3f);
-					//	AchievementManager.Unlock(MagnificusMod.Achievements.BlackSkullDragon);
+						////AchievementManager.Unlock(MagnificusMod.Achievements.BlackSkullDragon);
 						yield return new WaitForSeconds(1f);
 					}
 					yield return new WaitForSeconds(2f);

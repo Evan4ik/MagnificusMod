@@ -627,7 +627,7 @@ namespace MagnificusMod
 				List<CardInfo> list = new List<CardInfo>(__instance.cards);
 				List<CardInfo> hand = new List<CardInfo>();
 
-				Dictionary<string, GemType> gemTypes = new Dictionary<string, GemType> { { "MoxEmerald", GemType.Green }, { "MoxRuby", GemType.Blue }, { "MoxSapphire", GemType.Blue } };
+				Dictionary<string, GemType> gemTypes = new Dictionary<string, GemType> { { "MoxEmerald", GemType.Green }, { "MoxRuby", GemType.Orange }, { "MoxSapphire", GemType.Blue } };
 				GemType drawnGem = existingHand.Count > 0 && gemTypes.ContainsKey(existingHand[0].name) ? gemTypes[existingHand[0].name] : gemTypes.ElementAt(Random.RandomRangeInt(0, 2)).Value;
 
 				if (existingHand != null)

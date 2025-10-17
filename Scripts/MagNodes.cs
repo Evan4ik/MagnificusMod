@@ -1122,9 +1122,9 @@ namespace MagnificusMod
 					}
 					else if (component.Info.name.Contains("MoxDual"))
 					{
-						if (RunState.Run.currency >= 9)
+						if (RunState.Run.currency >= 7)
 						{
-							RunState.Run.currency -= 9;
+							RunState.Run.currency -= 7;
 							component.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
 							RunState.Run.playerDeck.AddCard(CardLoader.GetCardByName(component.Info.name));
 							SaveManager.SaveToFile();
@@ -2807,11 +2807,6 @@ namespace MagnificusMod
 					this.confirmStone.Exit();
 					Destroy(GameObject.Find("TESTSTONE"));
 
-					if (RunState.Run.playerDeck.Cards.FindAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens)).Count >= ((SaveManager.saveFile.ascensionActive && Generation.challenges.Contains("SmallSpellbook")) ? 4 : 8))
-					{
-						base.StartCoroutine(tradeSequence(component));
-						return;
-					}
 
 					choice2.gameObject.GetComponent<SineWaveMovement>().enabled = false;
 					choice2.ExitBoard(0.3f, new Vector3(-1f, -1f, 6f));
@@ -2842,49 +2837,7 @@ namespace MagnificusMod
 
 			public SelectableCard potion;
 
-			public IEnumerator tradeSequence(SelectableCard component)
-			{
-				Vector3 savePosition = component.transform.position;
-				component.transform.parent = GameObject.Find("GameTable").transform;
-				component.transform.position = savePosition;
-				component.coll.enabled = false;
-
-				Tween.LocalPosition(GameObject.Find("EventCauldron").transform, new Vector3(0.0327f, 5.88f, 3f), 1f, 0);
-
-				GameObject spellBook = new GameObject("DeckSpellBook");
-				spellBook.gameObject.AddComponent<MagnificusMod.DeckSpellBook>();
-				spellBook.transform.parent = GameObject.Find("GameTable").transform;
-				spellBook.transform.localPosition = new Vector3(4.5f, 27.5f, 3f);
-				spellBook.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
-				spellBook.transform.localRotation = Quaternion.Euler(65, 358, 0);
-
-				spellBook.GetComponent<DeckSpellBook>().initializeItems();
-				Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(spellBook.GetComponent<DeckSpellBook>().initialize(new Vector3(0f, 5.65f, 3.5f), 0.1f, false));
-				spellBook.GetComponent<DeckSpellBook>().refreshSpellBookCards(RunState.Run.playerDeck.Cards.FindAll((CardInfo x) => x.HasTrait(Trait.EatsWarrens)));
-
-				CustomTextDisplayerStuff.switchToSpeakerStyle(2);
-				Singleton<ViewManager>.Instance.SwitchToView(View.TradingTopDown);
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("WAIT!! YOUR SPELLBOOK IS FULL", -0.5f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-				Tween.LocalPosition(component.transform, new Vector3(-1.8f, 5.75f, -2.15f), 0.13f, 0f, Tween.EaseInOut);
-				Tween.LocalRotation(component.transform, Quaternion.Euler(90, 0, 0), 0.13f, 0);
-				yield return Singleton<TextDisplayer>.Instance.ShowUntilInput("GET RID OF ONE OF YOUR SPELLS, OR YOU WONT BE ABLE TO TAKE OUR POTION!!", -0.25f, 0.5f, Emotion.Neutral, TextDisplayer.LetterAnimation.Jitter, DialogueEvent.Speaker.Single, null, true);
-				yield return new WaitForSeconds(0.15f);
-				Tween.LocalPosition(Singleton<DeckSpellBook>.Instance.transform, new Vector3(0.75f, 5.65f, -1.75f), 0.35f, 0.15f, Tween.EaseIn);
-				yield return new WaitForSeconds(0.35f);
-
-				GameObject spellCards = Singleton<DeckSpellBook>.Instance.transform.Find("selectableSpells").gameObject;
-				potion = component;
-				component.coll.enabled = false;
-				for (int i = 0; i < spellCards.transform.childCount; i++)
-				{
-					SelectableCard component2 = spellCards.transform.GetChild(i).gameObject.GetComponent<SelectableCard>();
-
-					component2.Initialize(component2.Info, new Action<SelectableCard>(this.tradeCard), null, false, null);
-				}
-
-				yield break;
-			}
-
+		
 			public IEnumerator spawnCards()
             {
 
@@ -3666,7 +3619,8 @@ namespace MagnificusMod
                     listOfCards.Add(card);
                 }
                 listOfCards.RemoveAll((CardInfo x) => x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x == baseCard || (x.gemsCost.Count > 1 && baseCard.gemsCost.Count > 1) || (baseCard.gemsCost.Count > 1 && x.gemsCost.Count > 0 && baseCard.gemsCost.Contains(x.gemsCost[0])) || (x.gemsCost.Count > 1 && baseCard.gemsCost.Count > 0 && x.gemsCost.Contains(baseCard.gemsCost[0])) || (x.BloodCost > 0 && baseCard.gemsCost.Count > 0) || (baseCard.BloodCost > 0 && x.gemsCost.Count > 0) 
-				|| (x.gemsCost.Count > 1 && x.gemsCost[0] == x.gemsCost[1] && baseCard.gemsCost.Count > 0) || (baseCard.gemsCost.Count > 1 && baseCard.gemsCost[0] == baseCard.gemsCost[1] && x.gemsCost.Count > 0) || (x.BloodCost > 0 && baseCard.BloodCost >= 3) || (baseCard.BloodCost >= 3 && x.BloodCost > 0) || (baseCard.Abilities.Count > 3 && x.abilities.Count > 0) || (x.Abilities.Count > 3 && baseCard.abilities.Count > 0) || baseCard.SpecialStatIcon != SpecialStatIcon.None || x.SpecialStatIcon != SpecialStatIcon.None);
+				|| (x.gemsCost.Count > 1 && x.gemsCost[0] == x.gemsCost[1] && baseCard.gemsCost.Count > 0) || (baseCard.gemsCost.Count > 1 && baseCard.gemsCost[0] == baseCard.gemsCost[1] && x.gemsCost.Count > 0) || (x.BloodCost > 0 && baseCard.BloodCost >= 3) || (baseCard.BloodCost >= 3 && x.BloodCost > 0) || (baseCard.Abilities.Count > 3 && x.abilities.Count > 0) || (x.Abilities.Count > 3 && baseCard.abilities.Count > 0) || baseCard.SpecialStatIcon != SpecialStatIcon.None || x.SpecialStatIcon != SpecialStatIcon.None
+        || x.traits.Contains(Trait.Gem) || baseCard.traits.Contains(Trait.Gem) );
 
 				return listOfCards;
             }
@@ -3872,7 +3826,7 @@ namespace MagnificusMod
 		{
 			public List<List<Ability>> tier1 = new List<List<Ability>> { new List<Ability> { Ability.Flying, Ability.Reach, SigilCode.GemGuardianFix.ability, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability, SigilCode.MoxStrafe.ability }, new List<Ability> { Ability.ExplodeOnDeath, Ability.BuffEnemy, Ability.ExplodeGems, Ability.Submerge, Ability.MoveBeside, Ability.StrafePush, Ability.SwapStats, Ability.EdaxioTorso } };
 			public List<List<Ability>> tier2 = new List<List<Ability>> { new List<Ability> { Ability.Sharp, Ability.Sniper, Ability.Flying, Ability.Reach, SigilCode.GemGuardianFix.ability, Ability.BuffNeighbours, Ability.DebuffEnemy, SigilCode.MagDropRubyOnDeath.ability, SigilCode.MagDropEmeraldOnDeath.ability, SigilCode.BoneMarrow.ability }, new List<Ability> { Ability.ExplodeOnDeath, Ability.SwapStats, Ability.EdaxioLegs, SigilCode.MoxCycling.ability, Ability.GemDependant, SigilCode.FamiliarA.ability, SigilCode.RandomPower.ability, Ability.EdaxioTorso, Ability.RandomAbility } };
-			public List<List<Ability>> tier3 = new List<List<Ability>> { new List<Ability> { Ability.Sharp, Ability.Sniper, SigilCode.GemGuardianFix.ability, Ability.BuffGems, SigilCode.MagDropEmeraldOnDeath.ability, SigilCode.MagDropSapphireOnDeath.ability, Ability.EdaxioHead, SigilCode.FecundityCycle.ability, SigilCode.BoneMarrow.ability }, new List<Ability> { Ability.EdaxioLegs, Ability.SwapStats, SigilCode.GemAbsorber.ability, SigilCode.MoxCycling.ability, SigilCode.MagDropSpear.ability, SigilCode.RandomPower.ability, Ability.RandomAbility } };
+			public List<List<Ability>> tier3 = new List<List<Ability>> { new List<Ability> { Ability.Sharp, Ability.Sniper, SigilCode.GemGuardianFix.ability, Ability.BuffGems, SigilCode.MagDropEmeraldOnDeath.ability, SigilCode.MagDropSapphireOnDeath.ability, Ability.EdaxioHead, SigilCode.FecundityCycle.ability, SigilCode.BoneMarrow.ability }, new List<Ability> { Ability.EdaxioLegs, Ability.SwapStats, SigilCode.GemAbsorber.ability, SigilCode.MagDropSpear.ability, SigilCode.RandomPower.ability, Ability.RandomAbility } };
 			public List<List<Ability>> tier4 = new List<List<Ability>> { new List<Ability> { SigilCode.BoneMarrow.ability, Ability.Sniper, SigilCode.BlueMageDraw.ability, SigilCode.OrluHit.ability, Ability.Deathtouch, Ability.EdaxioHead, SigilCode.FecundityCycle.ability, Ability.BuffGems, SigilCode.AstralProjection.ability, SigilCode.FrostyA.ability, SigilCode.MoxSelect.ability }, new List<Ability> { SigilCode.MidasTouchA.ability, Ability.EdaxioArms, SigilCode.GemAbsorber.ability, Ability.Sacrificial, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability, SigilCode.RandomPower.ability, SigilCode.WhirlwindSpell.ability, Ability.SwapStats } };
 			public List<List<Ability>> tier5 = new List<List<Ability>> { new List<Ability> { Ability.SplitStrike, SigilCode.LifeSteal.ability, Ability.Tutor, SigilCode.OrluHit.ability, SigilCode.FrostyA.ability, SigilCode.FecundityCycle.ability, SigilCode.AstralProjection.ability, SigilCode.MoxSelect.ability }, new List<Ability> { SigilCode.MidasTouchA.ability, Ability.Sacrificial, SigilCode.MagDropSpear.ability, SigilCode.GoobertDebuff.ability, SigilCode.WhirlwindSpell.ability, SigilCode.RandomPower.ability, SigilCode.GemAbsorber.ability } };
 

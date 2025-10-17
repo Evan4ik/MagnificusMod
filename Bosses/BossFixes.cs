@@ -350,7 +350,7 @@ namespace MagnificusMod
 						{
 							if (Singleton<BossOpponents.GoobertOpponnent>.Instance.NumLives == 0 && SaveManager.saveFile.ascensionActive && !Singleton<BossOpponents.GoobertOpponnent>.Instance.gooedCards)
 							{
-							//	AchievementManager.Unlock(MagnificusMod.Achievements.HumanoidSlime);
+								//AchievementManager.Unlock(MagnificusMod.Achievements.HumanoidSlime);
 							}
 							if (!SavedVars.LearnedMechanics.Contains("beatgoobert;"))
 								SavedVars.LearnedMechanics += "beatgoobert;";
@@ -455,10 +455,10 @@ namespace MagnificusMod
 						{
 							if (Singleton<BossOpponents.LonelyMageOpponnent>.Instance.NumLives == 0 && SaveManager.saveFile.ascensionActive && Singleton<BossOpponents.LonelyMageOpponnent>.Instance.TurnTimerTriggered <= 0)
 							{
-							//	AchievementManager.Unlock(MagnificusMod.Achievements.QuickSummon);
+								//AchievementManager.Unlock(MagnificusMod.Achievements.QuickSummon);
 							} else if (Singleton<BossOpponents.LonelyMageOpponnent>.Instance.NumLives == 0 && SaveManager.saveFile.ascensionActive && Singleton<BossOpponents.LonelyMageOpponnent>.Instance.TurnTimerTriggered >= 5)
 							{
-							//	AchievementManager.Unlock(MagnificusMod.Achievements.MischiefOfTheTimeGoddess);
+								//AchievementManager.Unlock(MagnificusMod.Achievements.MischiefOfTheTimeGoddess);
 							}
 							if (!SavedVars.LearnedMechanics.Contains("beatlonely;"))
 							{

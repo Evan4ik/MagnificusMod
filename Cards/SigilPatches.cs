@@ -146,12 +146,12 @@ namespace MagnificusMod
 					GameObject slotCard = GameObject.Find(attacker.slot.IsPlayerSlot ? "PlayerSlots" : "OpponentSlots").transform.GetChild(attacker.slot.Index).gameObject; 
 					bomb.transform.position = slotCard.transform.position + Vector3.up * 0.95f;
 					GameObject oppCard = GameObject.Find(target.slot.IsPlayerSlot ? "PlayerSlots" : "OpponentSlots").transform.GetChild(target.slot.Index).gameObject;
-					Tween.Position(bomb.transform, oppCard.transform.position + Vector3.up * 0.75f, 0.5f, 0f, Tween.EaseLinear);
+					Tween.Position(bomb.transform, oppCard.transform.position + Vector3.up * 0.75f, 0.5f, 0f, Tween.EaseOut);
 				}
 				yield return new WaitForSeconds(0.5f);
 				target.Anim.PlayHitAnimation();
 				GameObject.Destroy(bomb);
-				yield return target.TakeDamage(10, attacker);
+				yield return target.TakeDamage((SceneLoader.ActiveSceneName != "finale_magnificus") ? 10 : 5 , attacker);
 				yield break;
 			}
 		}

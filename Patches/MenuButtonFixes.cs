@@ -203,7 +203,7 @@ namespace MagnificusMod
 			if (!SavedVars.LearnedMechanics.Contains("tabviewdeck")) { SavedVars.LearnedMechanics += "tabviewdeck;"; SaveManager.SaveToFile(); }
 
       if (Singleton<RuleBookController>.Instance.rigParent.activeSelf) {
-        Singleton<MagnificusGameFlowManager>.Instance.StartCoroutine(Singleton<RuleBookController>.Instance.WaitThenDisableRig());
+        Singleton<RuleBookController>.Instance.SetShown(false, false);
       }
 
 
