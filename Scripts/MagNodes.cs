@@ -707,7 +707,7 @@ namespace MagnificusMod
 					this.cd = 0;
 					GameObject.Find("Player").GetComponentInChildren<ViewManager>().SwitchToView(View.Choices, false, false);
 					yield return new WaitForSeconds(1f);
-					List<CardInfo> listOfCards = new List<CardInfo>(RunState.Run.playerDeck.Cards);
+					List<CardInfo> listOfCards = new List<CardInfo>(RunState.DeckList);
 					listOfCards.RemoveAll((CardInfo x) => x.SpecialAbilities.Contains(SpecialTriggeredAbility.RandomCard) || x.traits.Contains(Trait.Pelt) || x.traits.Contains(Trait.EatsWarrens) || x.name.Contains("edaxio"));
 					listOfCards.RemoveAll((CardInfo x) => x.abilities.Count < 1 && x.Abilities.Count < 1);
 					GameObject pot = Instantiate(Resources.Load("prefabs/items/BleachPotItem") as GameObject);

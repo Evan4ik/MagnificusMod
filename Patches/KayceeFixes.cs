@@ -1124,6 +1124,10 @@ namespace MagnificusMod
 				if (isKaycee)
 				{
 					__instance.backgroundSpriteRenderer.sprite = (victory ? Tools.getSprite("ascension_endscreen_victory.png") : Tools.getSprite("ascension_endscreen_defeat.png"));
+          for (int i = 0; i < __instance.transform.Find("Stats").Find("ScreenAnchor").childCount; i++) {
+            Debug.Log(__instance.transform.Find("Stats").Find("ScreenAnchor").GetChild(i).Find("PixelText").gameObject.GetComponent<GBC.PixelText>().Text);
+
+          }
 				}
 			}
 		}
