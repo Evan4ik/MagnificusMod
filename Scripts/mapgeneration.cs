@@ -2875,6 +2875,7 @@ namespace MagnificusMod
                 }
             }
         }
+
         public static void CreateMiniMap(bool wIcons = false, bool doAnimation = false)
         {
             SavedVars.HasMap = true;
@@ -2895,19 +2896,13 @@ namespace MagnificusMod
             GameObject mapNode = GameObject.Find("MapParent").transform.Find("VisibleParent").gameObject;
             mapNode.SetActive(true);
             mapNode.transform.Find("Footer").gameObject.SetActive(false);
-            mapNode.transform.Find("Header").gameObject.layer = 5;
-            mapNode.transform.Find("Header").Find("IconSprite").gameObject.layer = 5;
             mapNode.transform.Find("Header").Find("IconSprite").Find("Back").gameObject.SetActive(false);
             mapNode.transform.Find("Header").Find("IconSprite").Find("Activated").gameObject.SetActive(false);
             GameObject.Destroy(mapNode.transform.Find("Header").Find("IconSprite").gameObject.GetComponentByName("DiskCardGame.AscensionIconBlinkEffect"));
             mapNode.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
             mapNode.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().sprite = WallTextures.minimapNode;
-            mapNode.transform.Find("Header").Find("IconSprite").localScale = new Vector3(0.0215f, 0.0215f, 0.1f);
-            mapNode.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(1.66f, -0.835f, 0);
-            mapNode.AddComponent<UnityEngine.UI.CanvasScaler>();
-            mapNode.GetComponent<UnityEngine.Canvas>().worldCamera = GameObject.Find("PerspectiveUICamera").GetComponent<Camera>();
-            mapNode.transform.Find("Header").gameObject.AddComponent<UnityEngine.UI.CanvasScaler>();
-            mapNode.transform.Find("Header").gameObject.GetComponent<UnityEngine.Canvas>().worldCamera = GameObject.Find("PerspectiveUiCamera").GetComponent<Camera>();
+            mapNode.transform.Find("Header").Find("IconSprite").localScale = new Vector3(0.1f, 0.1f, 0.1f);
+            mapNode.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(-0.15f, 0.15f, 0);
             mapNode.transform.Find("Header").Find("IconSprite").gameObject.GetComponent<PixelSnapSprite>().enabled = false;
             mapNode.transform.position = new Vector3(0, 0, 0);
             mapNode.name = "mapNodeBase";
@@ -2921,16 +2916,16 @@ namespace MagnificusMod
             List<List<string>> map = RoomGen.DecompileLayout(MagSave.layout);
             for (int y = 0; y < map.Count; y++)
             {
-                float yPos = 0.0305f * y;
+                float yPos = 0.15f * y;
                 for (int x = 0; x < map[y].Count; x++)
                 {
-                    float xPos = 0.032f * x;
+                    float xPos = 0.15f * x;
                     if (map[y][x] != "-" && !Utility.IsNullOrWhiteSpace(map[y][x]) && map[y][x] != " ")
                     {
                         GameObject node = GameObject.Instantiate(mapNode);
                         node.transform.SetParent(GameObject.Find("MapParent").transform);
                         node.transform.position = new Vector3(0, 0, 1);
-                        node.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(1.66f + xPos, -0.835f - yPos, 0);
+                        node.transform.Find("Header").Find("IconSprite").localPosition = new Vector3(-0.15f + xPos, 0.15f - yPos, 0);
                         node.name = "mapnode x" + x + " y" + y;
                         if (x != map[y].Count - 1)
                         {
@@ -2939,8 +2934,8 @@ namespace MagnificusMod
                                 GameObject xBridge = GameObject.Instantiate(node.transform.Find("Header").gameObject);
                                 xBridge.name = "xBridge";
                                 xBridge.transform.parent = node.transform;
-                                xBridge.transform.Find("IconSprite").localScale = new Vector3(0.005f, 0.005f, 0.1f);
-                                xBridge.transform.Find("IconSprite").position = new Vector3(node.transform.Find("Header").Find("IconSprite").transform.position.x + 0.03f, node.transform.Find("Header").Find("IconSprite").transform.position.y, 1);
+                                xBridge.transform.Find("IconSprite").localScale = new Vector3(0.015f, 0.025f, 0.1f);
+                                xBridge.transform.Find("IconSprite").position = new Vector3(node.transform.Find("Header").Find("IconSprite").transform.position.x + 0.15f, node.transform.Find("Header").Find("IconSprite").transform.position.y, 1);
                                 if (map[y][x + 1].Contains("bl") && (SavedVars.HasMapIcons || wIcons) || map[y][x].Contains("bl") && (SavedVars.HasMapIcons || wIcons))
                                 {
                                     xBridge.transform.Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0f, 0f, 1);
@@ -2956,8 +2951,8 @@ namespace MagnificusMod
                                     GameObject yBridge = GameObject.Instantiate(node.transform.Find("Header").gameObject);
                                     yBridge.name = "yBridge";
                                     yBridge.transform.parent = node.transform;
-                                    yBridge.transform.Find("IconSprite").localScale = new Vector3(0.008f, 0.005f, 0.1f);
-                                    yBridge.transform.Find("IconSprite").position = new Vector3(node.transform.Find("Header").Find("IconSprite").transform.position.x - 0.001f, node.transform.Find("Header").Find("IconSprite").transform.position.y - 0.015f, 1);
+                                    yBridge.transform.Find("IconSprite").localScale = new Vector3(0.025f, 0.015f, 0.1f);
+                                    yBridge.transform.Find("IconSprite").position = new Vector3(node.transform.Find("Header").Find("IconSprite").transform.position.x, node.transform.Find("Header").Find("IconSprite").transform.position.y - 0.15f, 1);
                                     if (map[y + 1][x].Contains("bl") && (SavedVars.HasMapIcons || wIcons) || map[y][x].Contains("bl") && (SavedVars.HasMapIcons || wIcons))
                                     {
                                         yBridge.transform.Find("IconSprite").gameObject.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0f, 0f, 1);
@@ -3165,6 +3160,7 @@ namespace MagnificusMod
             if (doAnimation)
                 Tween.LocalScale(playerIcon.transform, new Vector3(1, 1, 1), 0.75f, 1f, Tween.EaseIn);
         }
+
 
         //coroutines
         private static IEnumerator WAKEUP()
