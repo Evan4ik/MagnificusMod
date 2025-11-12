@@ -153,6 +153,7 @@
     <None Remove="Resources\challenge_nocostchange.png" />
     <None Remove="Resources\challenge_nocostchange_active.png" />
     <None Remove="Resources\challenge_randommox.png" />
+    <None Remove="Resources\challenge_shieldedmox_active.png" />
     <None Remove="Resources\challenge_shieldedmox.png" />
     <None Remove="Resources\challenge_turnwipeout.png" />
     <None Remove="Resources\cloudfloor.png" />
@@ -588,6 +589,10 @@
     <EmbeddedResource Include="Resources\cards\pixelportrait_gemabsorber.png" />
     <EmbeddedResource Include="Resources\cards\pixelportrait_gemboundripper.png" />
     <EmbeddedResource Include="Resources\cards\pixelportrait_homonculus.png" />
+    <EmbeddedResource Include="Resources\cards\souldude.png" />
+    <EmbeddedResource Include="Resources\cards\wispG.png" />
+    <EmbeddedResource Include="Resources\cards\wispB.png" />
+    <EmbeddedResource Include="Resources\cards\wispO.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -655,11 +660,13 @@
     <EmbeddedResource Include="Resources\kayceestuff\challenge_2lives_active.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_base_active.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_bleach.png" />
+    <EmbeddedResource Include="Resources\kayceestuff\challenge_bleach_active.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_dyingbreath.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_fadingmox.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_fadingmox_active.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_gemdependant.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_itemspells.png" />
+    <EmbeddedResource Include="Resources\kayceestuff\challenge_itemspells_active.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_lesshealth.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_masterbosses.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_morehpopponent.png" />
@@ -668,6 +675,7 @@
     <EmbeddedResource Include="Resources\kayceestuff\challenge_nocostchange_active.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_randommox.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_shieldedmox.png" />
+    <EmbeddedResource Include="Resources\kayceestuff\challenge_shieldedmox_active.png" />
     <EmbeddedResource Include="Resources\kayceestuff\challenge_turnwipeout.png" />
     <EmbeddedResource Include="Resources\environment\cloudfloor.png" />
     <EmbeddedResource Include="Resources\environment\cloudfloornormal.png" />
